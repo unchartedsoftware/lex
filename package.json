@@ -7,6 +7,10 @@
     "name": "Sean McIntyre",
     "email": "smcintyre@uncharted.software"
   },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@stash.uncharted.software:7999/un/lex.git"
+  },
   "scripts": {
     "start": "if-env NODE_ENV=production && npm run -s serve || npm run -s dev",
     "build": "preact build",
