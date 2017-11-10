@@ -9,30 +9,31 @@ const _value = new WeakMap();
 /**
  * Descibes a particular state in a state machine (DAG) which
  * represents the interactive build process for a token.
+ * Classes extending this class must always have `parent` as the first constructor argument.
  */
 export class StateTemplate {
   /**
-   * @param {string} name - A useful label for this state.
    * @param {State|undefined} parent - The parent state. Undefined if this is a root.
+   * @param {string} name - A useful label for this state.
    * @param {Function} validationFunction - A function accepting the value of this state, returning true if this state's value is valid.
    * @param {Function|undefined} transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is a root.
    * @param {any} defaultValue - The default value for this state before it has been touched. Can be undefined.
    */
-  constructor (name, parent, validationFunction, transitionFunction, defaultValue) {
-    _name.set(this, name);
+  constructor (parent, name, validationFunction, transitionFunction, defaultValue) {
     _parent.set(this, parent);
+    _name.set(this, name);
     _validationFunction.set(this, validationFunction);
     _transitionFunction.set(this, transitionFunction);
     _defaultValue.set(this, defaultValue);
     _children.set(this, []);
   }
 
-  get name () {
-    return _name.get(this);
-  }
-
   get parent () {
     return _parent.get(this);
+  }
+
+  get name () {
+    return _name.get(this);
   }
 
   get validationFunction () {
@@ -69,17 +70,12 @@ export class StateTemplate {
   /**
    * Add a child to this `State`.
    *
-   * @param {any|Function} transitionRule - A function returning true if the new child is the next child to transition to given the value of this `State`. If a value is supplied instead of a function, the transition rule will check for equality between the value and this.value.
-   * @param {any} defaultValue - The default value for this state before it has been touched. Can be undefined.
-   * @returns {State} A reference to the new child `State`, for chaining purposes.
+   * @param {StateTemplate} StateTemplateClass - A child state - might be a class which extends `StateTemplate`. Parent should always be the first constructor argument.
+   * @param {...any} args - Construction parameters for the child `StateTemplate` class.
+   * @returns {StateTemplate} A reference to the new child `State`, for chaining purposes.
    */
-  addChild (transitionRule, defaultValue) {
-    let child;
-    if (typeof transitionRule === 'function') {
-      child = new StateTemplate(this, transitionRule, defaultValue);
-    } else {
-      child = new StateTemplate(this, () => this.value === transitionRule, defaultValue);
-    }
+  addChild (StateTemplateClass, ...args) {
+    const child = new StateTemplateClass(this, ...args);
     _children.get(this).push(child);
     return child;
   }
@@ -89,8 +85,8 @@ export class StateTemplate {
  * Same as `StateTemplate`, but with concrete values
  */
 export class State extends StateTemplate {
-  constructor (name, parent, validationFunction, transitionFunction, defaultValue) {
-    super(name, parent, validationFunction, transitionFunction, defaultValue);
+  constructor (parent, name, validationFunction, transitionFunction, defaultValue) {
+    super(parent, name, validationFunction, transitionFunction, defaultValue);
     _value.set(this, defaultValue);
   }
 
