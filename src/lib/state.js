@@ -124,7 +124,7 @@ export class State extends StateTemplate {
     const oldVal = this.value;
     _value.set(this, newVal);
     if (newVal !== oldVal) {
-      this.valueChanged(oldVal, newVal);
+      this.valueChanged(newVal, oldVal);
     }
   }
 
@@ -132,10 +132,10 @@ export class State extends StateTemplate {
    * Fires after this.value changes. Override in subclasses to implement
    * logic such as loading new autocomplete values.
    *
-   * @param {any} oldVal - The old value.
    * @param {any} newVal - The new value.
+   * @param {any} oldVal - The old value.
    */
-  valueChanged (oldVal, newVal) {
+  valueChanged (newVal, oldVal) {
     // do nothing.
   }
 }

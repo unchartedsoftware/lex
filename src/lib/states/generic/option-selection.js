@@ -43,10 +43,32 @@ export default class OptionSelection extends StateTemplate {
   }
 
   /**
-   * @returns {Array[string]} - The list of options to select from.
+   * @returns {Array[Option]} - The list of options to select from.
    */
   get options () {
     return _options.get(this);
+  }
+
+  /**
+   * @param {Array[Option]} newOptions - A new set of options for this selector.
+   */
+  set options (newOptions) {
+    const oldOptions = this.options;
+    _options.set(this, newOptions);
+    if (oldOptions !== newOptions) {
+      this.optionsChanged(newOptions, oldOptions);
+    }
+  }
+
+  /**
+   * Fires after this.options changes. Override in subclasses to implement
+   * logic such as modifying a UI for listing options.
+   *
+   * @param {Array[Option]} newOptions - The new options.
+   * @param {Array[Option]} oldOptions - The old options.
+   */
+  optionsChanged (newOptions, oldOptions) {
+    // do nothing
   }
 
   /**
