@@ -19,6 +19,9 @@
     "watch": "preact watch",
     "lint": "eslint src"
   },
+  "dependencies": {
+    "wolfy87-eventemitter": "5.2.4"
+  },
   "devDependencies": {
     "eslint": "4.10.0",
     "eslint-config-semistandard": "11.0.0",

@@ -56,19 +56,8 @@ export default class OptionSelection extends StateTemplate {
     if (this.options !== newOptions) {
       const oldOptions = this.options;
       _options.set(this, newOptions);
-      this.optionsChanged(newOptions, oldOptions);
+      this.emit('options changed', newOptions, oldOptions);
     }
-  }
-
-  /**
-   * Fires after this.options changes. Override in subclasses to implement
-   * logic such as modifying a UI for listing options.
-   *
-   * @param {Array[Option]} newOptions - The new options.
-   * @param {Array[Option]} oldOptions - The old options.
-   */
-  optionsChanged (newOptions, oldOptions) {
-    // do nothing
   }
 
   /**

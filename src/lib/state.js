@@ -1,3 +1,5 @@
+import EventEmitter from 'wolfy87-eventemitter';
+
 const _name = new WeakMap();
 const _parent = new WeakMap();
 const _defaultValue = new WeakMap();
@@ -9,13 +11,14 @@ const _value = new WeakMap();
  * represents the interactive build process for a token.
  * Classes extending this class must always have `parent` as the first constructor argument.
  */
-export class StateTemplate {
+export class StateTemplate extends EventEmitter {
   /**
    * @param {State|undefined} parent - The parent state. Undefined if this is a root.
    * @param {string} name - A useful label for this state.
    * @param {any} defaultValue - The default value for this state before it has been touched. Can be undefined.
    */
   constructor (parent, name, defaultValue) {
+    super();
     _parent.set(this, parent);
     _name.set(this, name);
     _defaultValue.set(this, defaultValue);
@@ -36,6 +39,10 @@ export class StateTemplate {
 
   get children () {
     return _children.get(this);
+  }
+
+  get isTerminal () {
+    return this.children.length > 0;
   }
 
   /**
@@ -124,18 +131,7 @@ export class State extends StateTemplate {
     if (newVal !== this.value) {
       const oldVal = this.value;
       _value.set(this, newVal);
-      this.valueChanged(newVal, oldVal);
+      this.emit('value changed', newVal, oldVal);
     }
-  }
-
-  /**
-   * Fires after this.value changes. Override in subclasses to implement
-   * logic such as loading new autocomplete values.
-   *
-   * @param {any} newVal - The new value.
-   * @param {any} oldVal - The old value.
-   */
-  valueChanged (newVal, oldVal) {
-    // do nothing.
   }
 }
