@@ -36,12 +36,9 @@ export default class OptionSelection extends StateTemplate {
    * @param {State|undefined} parent - The parent state. Undefined if this is a root.
    * @param {string} name - A useful label for this state.
    * @param {Array[Option]} options - The list of options to select from.
-   * @param {Function|undefined} transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent. If not supplied, then transition will always be valid.
    */
-  constructor (parent, name, options, transitionFunction = () => true) {
-    super(parent, name, (val) => {
-      return options.filter(o => o.key === val).length === 1;
-    }, transitionFunction, options[0]);
+  constructor (parent, name, options) {
+    super(parent, name, options[0]);
     _options.set(this, options);
   }
 
@@ -50,5 +47,13 @@ export default class OptionSelection extends StateTemplate {
    */
   get options () {
     return _options.get(this);
+  }
+
+  /**
+   *
+   * @param {Option} thisVal - The currently selected option.
+   */
+  validationFunction (thisVal) {
+    return this.options.filter(o => o.key === thisVal.key).length === 1;
   }
 }

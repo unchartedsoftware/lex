@@ -1,7 +1,5 @@
 const _name = new WeakMap();
 const _parent = new WeakMap();
-const _validationFunction = new WeakMap();
-const _transitionFunction = new WeakMap();
 const _defaultValue = new WeakMap();
 const _children = new WeakMap();
 const _value = new WeakMap();
@@ -15,15 +13,11 @@ export class StateTemplate {
   /**
    * @param {State|undefined} parent - The parent state. Undefined if this is a root.
    * @param {string} name - A useful label for this state.
-   * @param {Function} validationFunction - A function accepting the value of this state, returning true if this state's value is valid.
-   * @param {Function|undefined} transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is a root.
    * @param {any} defaultValue - The default value for this state before it has been touched. Can be undefined.
    */
-  constructor (parent, name, validationFunction, transitionFunction, defaultValue) {
+  constructor (parent, name, defaultValue) {
     _parent.set(this, parent);
     _name.set(this, name);
-    _validationFunction.set(this, validationFunction);
-    _transitionFunction.set(this, transitionFunction);
     _defaultValue.set(this, defaultValue);
     _children.set(this, []);
   }
@@ -36,14 +30,6 @@ export class StateTemplate {
     return _name.get(this);
   }
 
-  get validationFunction () {
-    return _validationFunction.get(this);
-  }
-
-  get transitionFunction () {
-    return _transitionFunction.get(this);
-  }
-
   get defaultValue () {
     return _defaultValue.get(this);
   }
@@ -53,13 +39,29 @@ export class StateTemplate {
   }
 
   /**
+   * Validate the value of this state. Override in subclasses.
+   *
+   * @returns {boolean} Returns true iff this state has a valid value. Should throw an exception otherwise.
+   */
+  validationFunction () {
+    return true;
+  }
+
+  /**
+   * A function which returns true if this state is the next child to transition to, given the value of its parent.
+   */
+  transitionFunction () {
+    return true;
+  }
+
+  /**
    * Recursively clones this `StateTemplate` chain, to retrieve an identical DAG of `State`s,
    * populated with their `defaultValue`s and ready to be traversed.
    *
    * @returns {State} A clone of the DAG rooted at this `StateTemplate`, with each node instanced as a `State.
    */
   getInstance () {
-    const instance = new State(this.parent, this.validationFunction, this.transitionFunction, this.defaultValue);
+    const instance = new State(this.parent, this.transitionFunction, this.defaultValue);
     const childInstances = this.children.map(c => {
       c.getInstance();
     });
@@ -85,8 +87,8 @@ export class StateTemplate {
  * Same as `StateTemplate`, but with concrete values
  */
 export class State extends StateTemplate {
-  constructor (parent, name, validationFunction, transitionFunction, defaultValue) {
-    super(parent, name, validationFunction, transitionFunction, defaultValue);
+  constructor (parent, name, defaultValue) {
+    super(parent, name, defaultValue);
     _value.set(this, defaultValue);
   }
 
@@ -119,6 +121,21 @@ export class State extends StateTemplate {
    * @param {any} newVal - A new value for this `State`.
    */
   set value (newVal) {
+    const oldVal = this.value;
     _value.set(this, newVal);
+    if (newVal !== oldVal) {
+      this.valueChanged(oldVal, newVal);
+    }
+  }
+
+  /**
+   * Fires after this.value changes. Override in subclasses to implement
+   * logic such as loading new autocomplete values.
+   *
+   * @param {any} oldVal - The old value.
+   * @param {any} newVal - The new value.
+   */
+  valueChanged (oldVal, newVal) {
+    // do nothing.
   }
 }
