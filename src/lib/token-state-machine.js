@@ -8,7 +8,7 @@ const _currentState = new WeakMap();
  * variety of search token, handling transitions,
  * validation etc.
  */
-class TokenStateMachine {
+export default class TokenStateMachine {
   /**
    * @param {StateTemplate} rootStateTemplate - The DAG describing the states for this state machine.
    */
@@ -55,5 +55,3 @@ class TokenStateMachine {
     }
   }
 }
-
-export default TokenStateMachine;
