@@ -53,9 +53,9 @@ export default class OptionSelection extends StateTemplate {
    * @param {Array[Option]} newOptions - A new set of options for this selector.
    */
   set options (newOptions) {
-    const oldOptions = this.options;
-    _options.set(this, newOptions);
-    if (oldOptions !== newOptions) {
+    if (this.options !== newOptions) {
+      const oldOptions = this.options;
+      _options.set(this, newOptions);
       this.optionsChanged(newOptions, oldOptions);
     }
   }

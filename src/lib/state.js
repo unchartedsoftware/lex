@@ -121,9 +121,9 @@ export class State extends StateTemplate {
    * @param {any} newVal - A new value for this `State`.
    */
   set value (newVal) {
-    const oldVal = this.value;
-    _value.set(this, newVal);
-    if (newVal !== oldVal) {
+    if (newVal !== this.value) {
+      const oldVal = this.value;
+      _value.set(this, newVal);
       this.valueChanged(newVal, oldVal);
     }
   }
