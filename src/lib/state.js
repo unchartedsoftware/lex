@@ -113,7 +113,7 @@ export class State extends StateTemplate {
     if (this.parent === undefined) {
       return true;
     } else {
-      return this.transitionFunction(this.value);
+      return this.transitionFunction(this.parent.value);
     }
   }
 
