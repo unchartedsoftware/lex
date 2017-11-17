@@ -1,5 +1,5 @@
 import EventEmitter from 'wolfy87-eventemitter';
-import StateTransitionError from './errors';
+import { StateTransitionError } from './errors';
 
 const _rootState = new WeakMap();
 const _currentState = new WeakMap();
@@ -8,7 +8,7 @@ const _currentState = new WeakMap();
  * variety of search token, handling transitions,
  * validation etc.
  */
-export default class TokenStateMachine extends EventEmitter {
+export class TokenStateMachine extends EventEmitter {
   /**
    * @param {StateTemplate} rootStateTemplate - The DAG describing the states for this state machine.
    */

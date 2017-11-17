@@ -1,4 +1,5 @@
 import { Component } from 'preact';
+import { TokenTypeSelector } from './token-type-selector';
 
 export class SearchBar extends Component {
   constructor () {
@@ -9,7 +10,8 @@ export class SearchBar extends Component {
   render (props, {tokens}) {
     return (
       <div className='search-box form-control'>
-        <input type='text' className='token-input' />
+        {tokens.map(t => <div className='token' />)}
+        <TokenTypeSelector />
       </div>
     );
   }

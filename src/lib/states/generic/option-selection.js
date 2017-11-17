@@ -1,4 +1,4 @@
-import StateTemplate from '../../state';
+import { StateTemplate } from '../../state';
 
 const _key = new WeakMap();
 const _meta = new WeakMap();
@@ -31,7 +31,7 @@ const _options = new WeakMap();
  * Select an option from a list of options, such as
  * choosing "is", "is like", or "contains"
  */
-export default class OptionSelection extends StateTemplate {
+export class OptionSelection extends StateTemplate {
   /**
    * @param {State|undefined} parent - The parent state. Undefined if this is a root.
    * @param {string} name - A useful label for this state.

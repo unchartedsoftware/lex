@@ -4,6 +4,7 @@ const _name = new WeakMap();
 const _parent = new WeakMap();
 const _defaultValue = new WeakMap();
 const _children = new WeakMap();
+const _template = new WeakMap();
 const _value = new WeakMap();
 
 /**
@@ -42,7 +43,7 @@ export class StateTemplate extends EventEmitter {
   }
 
   get isTerminal () {
-    return this.children.length > 0;
+    return this.children.length === 0;
   }
 
   /**
@@ -68,7 +69,7 @@ export class StateTemplate extends EventEmitter {
    * @returns {State} A clone of the DAG rooted at this `StateTemplate`, with each node instanced as a `State.
    */
   getInstance () {
-    const instance = new State(this.parent, this.transitionFunction, this.defaultValue);
+    const instance = new State(this);
     const childInstances = this.children.map(c => {
       c.getInstance();
     });
@@ -93,11 +94,20 @@ export class StateTemplate extends EventEmitter {
 /**
  * Same as `StateTemplate`, but with concrete values
  */
-export class State extends StateTemplate {
-  constructor (parent, name, defaultValue) {
-    super(parent, name, defaultValue);
-    _value.set(this, defaultValue);
+export class State {
+  constructor (template) {
+    _template.set(this, template);
+    _value.set(this, template.defaultValue);
   }
+
+  get template () { return _template.get(this); }
+  get parent () { return this.template.parent; }
+  get name () { return this.template.name; }
+  get defaultValue () { return this.template.defaultValue; }
+  get children () { return this.template.children; }
+  get isTerminal () { return this.template.isTerminal; }
+  transitionFunction (...args) { return this.template.transitionFunction(...args); }
+  validationFunction (...args) { return this.template.validationFunction(...args); }
 
   /**
    * @returns {boolean} Returns `true` iff this state is valid. Should throw an exception with information about validation error otherwise.
