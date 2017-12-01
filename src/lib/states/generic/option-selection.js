@@ -27,6 +27,7 @@ export class Option {
 }
 
 const _options = new WeakMap();
+const _allowUnknown = new WeakMap();
 /**
  * Select an option from a list of options, such as
  * choosing "is", "is like", or "contains"
@@ -36,10 +37,12 @@ export class OptionSelection extends StateTemplate {
    * @param {State|undefined} parent - The parent state. Undefined if this is a root.
    * @param {string} name - A useful label for this state.
    * @param {Array[Option]} options - The list of options to select from.
+   * @param {boolean} allowUnknown - Allow user to enter unknown options by entering custom values.
    */
-  constructor (parent, name, options) {
+  constructor (parent, name, options, allowUnknown = false) {
     super(parent, name, options[0]);
     _options.set(this, options);
+    _allowUnknown.set(this, allowUnknown);
   }
 
   /**
@@ -61,10 +64,45 @@ export class OptionSelection extends StateTemplate {
   }
 
   /**
+   * @returns {boolean} - Whether or not this option selector allows the creation of unknown options.
+   */
+  get allowUnknown () {
+    return _allowUnknown.get(this);
+  }
+
+  /**
+   * Transform a user-supplied value into an internal representation.
+   *
+   * @param {string} key - The user-supplied value.
+   * @returns {Option} An Option instance.
+   */
+  boxValue (key) {
+    const matches = this.options.filter(o => o.key === key);
+    if (matches.length > 0) {
+      return matches[0];
+    } else if (this.allowUnknown) {
+      return new Option(key, {});
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Transforms an internal representation of a value into a user-supplied-style value.
+   *
+   * @param {Option} option - An `Option instance.
+   * @returns {string} - The string value of the `Option`'s key.
+   */
+  unboxValue (option) {
+    return option.key;
+  }
+
+  /**
    *
    * @param {Option} thisVal - The currently selected option.
    */
   validationFunction (thisVal) {
+    if (thisVal === null || thisVal === undefined) return false;
     return this.options.filter(o => o.key === thisVal.key).length === 1;
   }
 }

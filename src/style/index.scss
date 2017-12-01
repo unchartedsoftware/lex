@@ -10,5 +10,9 @@ div.search-box {
     margin-bottom: 6px;
     box-shadow: none;
     outline: 0;
+
+    &.invalid {
+      background: rgba(255,0,0,0.3)
+    }
   }
 }

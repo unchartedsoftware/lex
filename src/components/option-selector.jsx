@@ -1,16 +1,19 @@
 import { Component } from 'preact';
 import { bind } from 'decko';
 import { StateTransitionError } from '../lib/errors';
-import { OptionSelection } from '../lib/states/generic/option-selection';
+import { Option, OptionSelection } from '../lib/states/generic/option-selection';
 import { TokenStateMachine } from '../lib/token-state-machine';
 
-export class TokenTypeSelector extends Component {
+export class OptionSelector extends Component {
   constructor () {
     super(arguments);
-    const machineTemplate = new OptionSelection(undefined, 'field selection', []);
+    const options = [
+      new Option('first')
+    ];
+    const machineTemplate = new OptionSelection(undefined, 'field selection', options);
     this.machine = new TokenStateMachine(machineTemplate);
     this.machine.on('submit', () => this.submit());
-    this.state = {};
+    this.state = {valid: true};
   }
 
   submit () {
@@ -19,7 +22,9 @@ export class TokenTypeSelector extends Component {
 
   @bind
   handleKeyDown (e) {
+    this.machine.state.unboxedValue = e.target.value;
     try {
+      this.setState({valid: true, errorMsg: undefined});
       switch (e.code) {
         case 'Tab':
           e.preventDefault();
@@ -40,13 +45,13 @@ export class TokenTypeSelector extends Component {
 
   @bind
   handleKeyUp (e) {
-    console.log(e.target.value);
+    this.machine.state.unboxedValue = e.target.value;
   }
 
   render (props, state) {
     return (
       <input type='text'
-        className='token-input'
+        className={this.state.valid ? 'token-input' : 'token-input invalid'}
         onKeyDown={this.handleKeyDown}
         onKeyUp={this.handleKeyUp} />
     );

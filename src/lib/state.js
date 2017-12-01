@@ -11,6 +11,9 @@ const _value = new WeakMap();
  * Descibes a particular state in a state machine (DAG) which
  * represents the interactive build process for a token.
  * Classes extending this class must always have `parent` as the first constructor argument.
+ *
+ * Supports a notion of boxed/unboxed values, where the `State` will utilize an
+ * internal representation of a value which is richer than the user-supplied one.
  */
 export class StateTemplate extends EventEmitter {
   /**
@@ -63,6 +66,26 @@ export class StateTemplate extends EventEmitter {
   }
 
   /**
+   * Transform a user-supplied value into an internal representation. A no-op by default.
+   *
+   * @param {string} userVal - The user-supplied value.
+   * @returns {string} A reference to userVal (no-op).
+   */
+  boxValue (userVal) {
+    return userVal;
+  }
+
+  /**
+   * Transforms an internal representation of a value into a user-supplied-style value. A no-op by default.
+   *
+   * @param {any} internalRepresentation - An internal representation of a value.
+   * @returns {string} - The user-supplied-style value.
+   */
+  unboxValue (internalRepresentation) {
+    return internalRepresentation;
+  }
+
+  /**
    * Recursively clones this `StateTemplate` chain, to retrieve an identical DAG of `State`s,
    * populated with their `defaultValue`s and ready to be traversed.
    *
@@ -92,10 +115,17 @@ export class StateTemplate extends EventEmitter {
 }
 
 /**
- * Same as `StateTemplate`, but with concrete values
+ * Same as `StateTemplate`, but with concrete values.
+ *
+ * Supports a notion of boxed/unboxed values, where the `State` will utilize an
+ * internal representation of a value which is richer than the user-supplied one.
+ *
+ * `this.vaue` always accepts/returns a boxed value. Where desired, the boxed and
+ * unboxed versions of the value can be identical.
  */
-export class State {
+export class State extends EventEmitter {
   constructor (template) {
+    super();
     _template.set(this, template);
     _value.set(this, template.defaultValue);
   }
@@ -106,6 +136,8 @@ export class State {
   get defaultValue () { return this.template.defaultValue; }
   get children () { return this.template.children; }
   get isTerminal () { return this.template.isTerminal; }
+  boxValue (...args) { return this.template.boxValue(...args); }
+  unboxValue (...args) { return this.template.unboxValue(...args); }
   transitionFunction (...args) { return this.template.transitionFunction(...args); }
   validationFunction (...args) { return this.template.validationFunction(...args); }
 
@@ -128,14 +160,28 @@ export class State {
   }
 
   /**
-   * @returns {any} The current value from this `State`.
+   * @returns {any} The current (boxed) value from this `State`.
    */
   get value () {
     return _value.get(this);
   }
 
   /**
-   * @param {any} newVal - A new value for this `State`.
+   * @returns {any} The current (boxed) value from this `State`. An alias for this.value getter.
+   */
+  get boxedValue () {
+    return this.value;
+  }
+
+  /**
+   * @returns {any} The current (unboxed) value from this `State`.
+   */
+  get unboxedValue () {
+    return this.unboxValue(this.value);
+  }
+
+  /**
+   * @param {any} newVal - A new (boxed) value for this `State`.
    */
   set value (newVal) {
     if (newVal !== this.value) {
@@ -143,5 +189,19 @@ export class State {
       _value.set(this, newVal);
       this.emit('value changed', newVal, oldVal);
     }
+  }
+
+  /**
+   * @param {any} newBoxedVal - A new (boxed) value for this `State`. Alias for this.value setter.
+   */
+  set boxedValue (newBoxedVal) {
+    this.value = newBoxedVal;
+  }
+
+  /**
+   * @param {any} newUnboxedVal - A new (unboxed) value for this `State`.
+   */
+  set unboxedValue (newUnboxedVal) {
+    this.value = this.boxValue(newUnboxedVal);
   }
 }
