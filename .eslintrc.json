@@ -6,6 +6,7 @@
   "rules": {
     "no-var": "error",
     "prefer-const": "error",
+    "semistandard-react/prop-types": "warn", // preact doesn't include PropTypes out of the box
     "jsdoc/check-param-names": "warn",
     "jsdoc/check-tag-names": "warn",
     "jsdoc/check-types": "warn",

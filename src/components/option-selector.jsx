@@ -1,34 +1,50 @@
 import { Component } from 'preact';
 import { bind } from 'decko';
 import { StateTransitionError } from '../lib/errors';
-import { Option, OptionSelection } from '../lib/states/generic/option-selection';
-import { TokenStateMachine } from '../lib/token-state-machine';
 
 export class OptionSelector extends Component {
   constructor () {
     super(arguments);
-    const options = [
-      new Option('first')
-    ];
-    const machineTemplate = new OptionSelection(undefined, 'field selection', options);
-    this.machine = new TokenStateMachine(machineTemplate);
-    this.machine.on('submit', () => this.submit());
-    this.state = {valid: true};
+    this.state = {
+      valid: true
+    };
   }
 
-  submit () {
-    console.log('submit!');
+  processProps (props) {
+    const { machineState, onTransition } = props;
+    if (onTransition !== this.state.onTransition) {
+      this.setState({
+        onTransition: onTransition
+      });
+    }
+    if (machineState !== this.state.machineState) {
+      this.setState({
+        machineState: machineState
+      });
+    }
+  }
+
+  componentWillMount () {
+    this.processProps(this.props);
+  }
+
+  componentWillReceiveProps (nextProps) {
+    this.processProps(nextProps);
+  }
+
+  transition () {
+    this.state.onTransition();
   }
 
   @bind
   handleKeyDown (e) {
-    this.machine.state.unboxedValue = e.target.value;
+    this.state.machineState.unboxedValue = e.target.value;
     try {
       this.setState({valid: true, errorMsg: undefined});
       switch (e.code) {
         case 'Tab':
           e.preventDefault();
-          this.machine.transition();
+          this.transition();
           break;
         case 'Escape':
           e.preventDefault();
@@ -45,7 +61,7 @@ export class OptionSelector extends Component {
 
   @bind
   handleKeyUp (e) {
-    this.machine.state.unboxedValue = e.target.value;
+    this.state.machineState.unboxedValue = e.target.value;
   }
 
   render (props, state) {

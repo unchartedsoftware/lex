@@ -45,6 +45,10 @@ export class StateTemplate extends EventEmitter {
     return _children.get(this);
   }
 
+  get isRoot () {
+    return this.parent === undefined;
+  }
+
   get isTerminal () {
     return this.children.length === 0;
   }

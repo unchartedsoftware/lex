@@ -1,6 +1,6 @@
-export class UnknownTokenBuilderTypeError extends Error {
-  constructor (name) {
-    super(`Unknown token builder type: ${name}`);
+export class NoStateBuilderTypeError extends Error {
+  constructor (stateClass) {
+    super(`No state builder for State type: ${stateClass.name}`);
   }
 }
 
