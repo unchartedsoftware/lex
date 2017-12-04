@@ -36,6 +36,7 @@ export class OptionSelector extends Builder {
     if (this.state.machineState) this.state.machineState.removeListener(this.state.optionChangeListener);
     super.processProps(props);
     this.state.machineState.on('options changed', this.state.optionChangeListener);
+    // TODO do we need to modify validation state?
   }
 
   render (props, state) {

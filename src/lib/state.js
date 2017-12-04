@@ -93,13 +93,12 @@ export class StateTemplate extends EventEmitter {
    * Recursively clones this `StateTemplate` chain, to retrieve an identical DAG of `State`s,
    * populated with their `defaultValue`s and ready to be traversed.
    *
+   * @param {State} parent - A reference to the concrete parent `State`. Do not set when calling - used internally for recursion.
    * @returns {State} A clone of the DAG rooted at this `StateTemplate`, with each node instanced as a `State.
    */
-  getInstance () {
-    const instance = new State(this);
-    const childInstances = this.children.map(c => {
-      c.getInstance();
-    });
+  getInstance (parent = undefined) {
+    const instance = new State(this, parent);
+    const childInstances = this.children.map(c => c.getInstance(instance));
     _children.set(instance, childInstances);
     return instance;
   }
@@ -128,17 +127,18 @@ export class StateTemplate extends EventEmitter {
  * unboxed versions of the value can be identical.
  */
 export class State extends EventEmitter {
-  constructor (template) {
+  constructor (template, parent) {
     super();
+    _parent.set(this, parent);
     _template.set(this, template);
     _value.set(this, template.defaultValue);
   }
 
   get template () { return _template.get(this); }
-  get parent () { return this.template.parent; }
+  get parent () { return _parent.get(this); }
   get name () { return this.template.name; }
   get defaultValue () { return this.template.defaultValue; }
-  get children () { return this.template.children; }
+  get children () { return _children.get(this); }
   get isTerminal () { return this.template.isTerminal; }
   boxValue (...args) { return this.template.boxValue(...args); }
   unboxValue (...args) { return this.template.unboxValue(...args); }
