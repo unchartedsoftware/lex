@@ -62,4 +62,19 @@ export class TokenStateMachine extends EventEmitter {
       throw new StateTransitionError(`Cannot transition from invalid current state ${this.state.name} with value ${this.state.value}.`);
     }
   }
+
+  /**
+   * Transition to the parent state from the current state, regardless of whether or not the current state
+   * is valid, or has a parent.  If the current state has no parent, then this is a no-op.
+   *
+   * @returns {State} The new current state.
+   */
+  rewind () {
+    if (this.state.parent) {
+      const oldState = this.state;
+      _currentState.set(this, this.state.parent);
+      this.emit('state changed', this.state, oldState);
+    }
+    return this.state;
+  }
 }
