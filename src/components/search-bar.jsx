@@ -1,24 +1,36 @@
 import { Component } from 'preact';
-import { OptionSelector } from './option-selector';
-import { StateBuilderFactory } from '../lib/state-builder-factory';
-import { Option, OptionSelection } from '../lib/states/generic/option-selection';
 import { Token } from './token';
 
 export class SearchBar extends Component {
   constructor () {
-    super(arguments);
+    super();
     this.state = {
-      tokens: []
+      tokens: [],
+      builders: undefined,
+      machineTemplate: undefined
     }; // TODO bind values to incoming TokenStateMachine
+  }
 
-    // TODO move this stuff up a level when ready - these things should be passed in to SearchBar
-    this.state.builders = new StateBuilderFactory();
-    this.state.builders.registerBuilder(OptionSelection, OptionSelector);
+  processProps (props) {
+    const { machineTemplate, builders } = props;
+    if (machineTemplate !== this.state.machineTemplate) {
+      this.setState({
+        machineTemplate: machineTemplate
+      });
+    }
+    if (builders !== this.state.builders) {
+      this.setState({
+        builders: builders
+      });
+    }
+  }
 
-    const options = [
-      new Option('first')
-    ];
-    this.state.machineTemplate = new OptionSelection(undefined, 'field selection', options);
+  componentWillMount () {
+    this.processProps(this.props);
+  }
+
+  componentWillReceiveProps (nextProps) {
+    this.processProps(nextProps);
   }
 
   render (props, {tokens, builders, machineTemplate}) {
