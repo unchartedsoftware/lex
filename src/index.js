@@ -2,7 +2,7 @@ import './style/index.scss';
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import { Component } from 'preact';
 // TODO make a top-level lib module that exposes all of this so no relative requires
-import { OptionSelector } from './components/option-selector';
+import { OptionSelector } from './components/builders/option-selector';
 import { StateBuilderFactory } from './lib/state-builder-factory';
 import { Option, OptionSelection } from './lib/states/generic/option-selection';
 import { SearchBar } from './components/search-bar';
