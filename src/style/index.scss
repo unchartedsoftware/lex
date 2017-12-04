@@ -1,4 +1,6 @@
-div.search-box {
+div.token  {
+  display: inline-block;
+
   input.token-input {
     display: inline-block;
     background: rgba(0,0,0,0.3);
@@ -7,7 +9,7 @@ div.search-box {
     border: 0;
     height: 20px;
     padding: 0;
-    margin-bottom: 6px;
+    margin: 0;
     box-shadow: none;
     outline: 0;
 
