@@ -13,10 +13,9 @@ export default class App extends Component {
     this.state.builders = new StateBuilderFactory();
     this.state.builders.registerBuilder(OptionSelection, OptionSelector);
 
-    const options = [
+    this.state.machineTemplate = new OptionSelection(undefined, 'field selection', [
       new Option('first')
-    ];
-    this.state.machineTemplate = new OptionSelection(undefined, 'field selection', options);
+    ]);
   }
 
   render (props, {builders, machineTemplate}) {
