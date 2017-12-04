@@ -21,6 +21,7 @@ export class Token extends Component {
         machineTemplate: machineTemplate,
         machine: new TokenStateMachine(machineTemplate)
       });
+      // TODO deatch when component unmounts
       this.state.machine.on('submit', () => console.log('submit'));
       this.state.machine.on('state changed', () => this.getStateArray());
       this.getStateArray();
@@ -57,12 +58,12 @@ export class Token extends Component {
     });
   }
 
-  render (props, {tokens}) {
+  render (props, {machine, tokens}) {
     return (
       <div className='token'>
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);
-          return (<Builder machineState={s} onTransition={this.transition} />);
+          return (<Builder machineState={s} onTransition={this.transition} readOnly={s !== machine.state} />);
         })}
       </div>
     );

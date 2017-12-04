@@ -6,12 +6,18 @@ export class Builder extends Component {
   constructor () {
     super(arguments);
     this.state = {
-      valid: true
+      valid: true,
+      readOnly: false
     };
   }
 
   processProps (props) {
-    const { machineState, onTransition } = props;
+    const { machineState, onTransition, readOnly } = props;
+    if (readOnly !== this.state.readOnly) {
+      this.setState({
+        readOnly: readOnly
+      });
+    }
     if (onTransition !== this.state.onTransition) {
       this.setState({
         onTransition: onTransition

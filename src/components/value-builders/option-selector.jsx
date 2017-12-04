@@ -35,16 +35,18 @@ export class OptionSelector extends Builder {
   processProps (props) {
     if (this.state.machineState) this.state.machineState.removeListener(this.state.optionChangeListener);
     super.processProps(props);
+    // TODO detach when component unmounts
     this.state.machineState.on('options changed', this.state.optionChangeListener);
     // TODO do we need to modify validation state?
   }
 
-  render (props, state) {
+  render (props, {valid, readOnly}) {
     return (
       <input type='text'
-        className={this.state.valid ? 'token-input' : 'token-input invalid'}
+        className={valid ? 'token-input' : 'token-input invalid'}
         onKeyDown={this.handleKeyDown}
-        onKeyUp={this.handleKeyUp} />
+        onKeyUp={this.handleKeyUp}
+        disabled={readOnly} />
     );
   }
 }
