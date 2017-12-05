@@ -16,9 +16,11 @@ export class StateBuilderFactory {
    *
    * @param {*} templateClass - A class extending `StateTemplate`.
    * @param {*} builderClass - A class extending `Component`, which can supply values to a `State` created from the `StateTemplate`.
+   * @returns {StateBuilderFactory} A reference to `this` for chaining.
    */
   registerBuilder (templateClass, builderClass) {
     _builderMap.get(this).set(templateClass, builderClass);
+    return this;
   }
 
   /**

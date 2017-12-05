@@ -5,11 +5,11 @@ const options = ['is', 'is like', 'contains'].map(o => new Option(o));
 /**
  * This state supports the selection of a text relation from a list of options.
  */
-export default class TextRelationSelection extends OptionSelection {
+export class TextRelationSelection extends OptionSelection {
   /**
    * @param {State|undefined} parent - The parent state. Undefined if this is a root.
    */
   constructor (parent) {
-    super(parent, 'TextRelationSelection', options);
+    super(parent, 'text relation selection', options);
   }
 }
