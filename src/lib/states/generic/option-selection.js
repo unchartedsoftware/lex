@@ -40,7 +40,7 @@ export class OptionSelection extends StateTemplate {
    * @param {boolean} allowUnknown - Allow user to enter unknown options by entering custom values.
    */
   constructor (parent, name, options, allowUnknown = false) {
-    super(parent, name, options[0]);
+    super(parent, name, options.length > 0 ? options[0] : null);
     _options.set(this, options);
     _allowUnknown.set(this, allowUnknown);
   }

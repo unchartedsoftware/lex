@@ -12,10 +12,15 @@ export class Builder extends Component {
   }
 
   processProps (props) {
-    const { machineState, onTransition, onRewind, readOnly } = props;
+    const { machineState, onTransition, onRewind, readOnly, blank } = props;
     if (readOnly !== this.state.readOnly) {
       this.setState({
         readOnly: readOnly
+      });
+    }
+    if (blank !== this.state.blank) {
+      this.setState({
+        blank: blank
       });
     }
     if (onTransition !== this.state.onTransition) {

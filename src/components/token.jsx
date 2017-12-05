@@ -63,12 +63,16 @@ export class Token extends Component {
     });
   }
 
+  get blank () {
+    return this.state.machine.state === this.state.machine.rootState && (this.state.machine.state.value === null || this.state.machine.state.unboxedValue.length === 0);
+  }
+
   render (props, {machine, tokens}) {
     return (
       <div className='token'>
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);
-          return (<Builder machineState={s} onTransition={this.transition} onRewind={this.rewind} readOnly={s !== machine.state} />);
+          return (<Builder machineState={s} onTransition={this.transition} onRewind={this.rewind} readOnly={s !== machine.state} blank={this.blank} />);
         })}
       </div>
     );
