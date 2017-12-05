@@ -77,7 +77,7 @@ export class OptionSelection extends StateTemplate {
    * @returns {Option} An Option instance.
    */
   boxValue (key) {
-    const matches = this.options.filter(o => o.key === key);
+    const matches = this.options.filter(o => o.key.toLowerCase() === key.toLowerCase());
     if (matches.length > 0) {
       return matches[0];
     } else if (this.allowUnknown) {
