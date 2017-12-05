@@ -46,6 +46,11 @@ export class Token extends Component {
     this.state.machine.transition();
   }
 
+  @bind
+  rewind () {
+    this.state.machine.rewind();
+  }
+
   getStateArray () {
     const result = [];
     let current = this.state.machine.state;
@@ -63,7 +68,7 @@ export class Token extends Component {
       <div className='token'>
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);
-          return (<Builder machineState={s} onTransition={this.transition} readOnly={s !== machine.state} />);
+          return (<Builder machineState={s} onTransition={this.transition} onRewind={this.rewind} readOnly={s !== machine.state} />);
         })}
       </div>
     );

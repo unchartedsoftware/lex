@@ -94,6 +94,7 @@ export class OptionSelection extends StateTemplate {
    * @returns {string} - The string value of the `Option`'s key.
    */
   unboxValue (option) {
+    if (option === undefined || option === null) return null;
     return option.key;
   }
 

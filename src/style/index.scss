@@ -1,14 +1,13 @@
 div.token  {
   display: inline-block;
 
-  input.token-input {
+  .token-input {
     display: inline-block;
     background: rgba(0,0,0,0.3);
-    width: 60px;
-    min-width: 60px;
     border: 0;
+    width: auto;
     height: 20px;
-    padding: 0;
+    padding: 0 3px;
     margin: 0;
     box-shadow: none;
     outline: 0;
@@ -16,5 +15,10 @@ div.token  {
     &.invalid {
       background: rgba(255,0,0,0.3)
     }
+  }
+
+  input.token-input {
+    width: 60px;
+    min-width: 60px;
   }
 }

@@ -12,7 +12,7 @@ export class Builder extends Component {
   }
 
   processProps (props) {
-    const { machineState, onTransition, readOnly } = props;
+    const { machineState, onTransition, onRewind, readOnly } = props;
     if (readOnly !== this.state.readOnly) {
       this.setState({
         readOnly: readOnly
@@ -21,6 +21,11 @@ export class Builder extends Component {
     if (onTransition !== this.state.onTransition) {
       this.setState({
         onTransition: onTransition
+      });
+    }
+    if (onRewind !== this.state.onRewind) {
+      this.setState({
+        onRewind: onRewind
       });
     }
     if (machineState !== this.state.machineState) {
@@ -49,6 +54,29 @@ export class Builder extends Component {
         throw err;
       }
     }
+  }
+
+  rewind () {
+    this.state.onRewind();
+  }
+
+  focus () {
+    // TODO override in subclass
+  }
+
+  renderReadOnly (props, state) {
+    return (
+      <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.unboxedValue}</span>
+    );
+  }
+
+  renderInteractive (props, state) {
+    throw new Error(`${this.constructor.name} must implement renderInteractive()`);
+  }
+
+  render (props, state) {
+    setTimeout(() => { this.focus(); });
+    return state.readOnly ? this.renderReadOnly(props, state) : this.renderInteractive(props, state);
   }
 
   /**

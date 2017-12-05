@@ -16,6 +16,12 @@ export class OptionSelector extends Builder {
         e.preventDefault();
         this.transition();
         break;
+      case 'Backspace':
+        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
+          e.preventDefault();
+          this.rewind();
+        }
+        break;
       case 'Escape':
         e.preventDefault();
         // TODO cancellation
@@ -26,6 +32,10 @@ export class OptionSelector extends Builder {
   @bind
   handleKeyUp (e) {
     this.unboxedValue = e.target.value;
+  }
+
+  focus () {
+    if (this.textInput) this.textInput.focus();
   }
 
   onOptionsChanged (newOptions, oldOptions) {
@@ -40,12 +50,13 @@ export class OptionSelector extends Builder {
     // TODO do we need to modify validation state?
   }
 
-  render (props, {valid, readOnly}) {
+  renderInteractive (props, {valid, readOnly}) {
     return (
       <input type='text'
         className={valid ? 'token-input' : 'token-input invalid'}
         onKeyDown={this.handleKeyDown}
         onKeyUp={this.handleKeyUp}
+        ref={(input) => { this.textInput = input; }}
         disabled={readOnly} />
     );
   }
