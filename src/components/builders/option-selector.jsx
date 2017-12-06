@@ -7,6 +7,14 @@ export class OptionSelector extends Builder {
     this.state.options = [];
   }
 
+  componentWillUnmount () {
+    this.cleanupListeners();
+  }
+
+  cleanupListeners () {
+    if (this.state.machineState) this.state.machineState.removeListener('options changed', this.onOptionsChanged);
+  }
+
   @bind
   handleKeyDown (e) {
     this.unboxedValue = e.target.value;
@@ -43,9 +51,7 @@ export class OptionSelector extends Builder {
   }
 
   processProps (props) {
-    if (this.state.machineState) this.state.machineState.removeListener(this.onOptionsChanged);
     super.processProps(props);
-    // TODO detach when component unmounts
     this.state.machineState.on('options changed', this.onOptionsChanged);
     // TODO do we need to modify validation state?
   }

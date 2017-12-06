@@ -14,13 +14,12 @@ export class Token extends Component {
   processProps (props) {
     const { machine, builders } = props;
     if (machine !== this.state.machine) {
-      if (this.state.machine) this.state.machine.removeAllListeners();
+      if (this.state.machine) this.state.machine.removeListener('state changed', this.getStateArray);
       this.setState({
         machine: machine
       });
-      // TODO deatch when component unmounts
-      this.state.machine.on('submit', () => console.log('submit'));
-      this.state.machine.on('state changed', () => this.getStateArray());
+      this.state.machine.on('submit', () => console.log('submit')); // TODO deatch when component unmounts
+      this.state.machine.on('state changed', this.getStateArray);
       this.getStateArray();
     }
     if (builders !== this.state.builders) {
@@ -28,6 +27,14 @@ export class Token extends Component {
         builders: builders
       });
     }
+  }
+
+  componentWillUnmount () {
+    this.cleanupListeners();
+  }
+
+  cleanupListeners () {
+    if (this.state.machine) this.state.machine.removeListener('state changed', this.getStateArray);
   }
 
   componentWillMount () {
@@ -48,6 +55,7 @@ export class Token extends Component {
     this.state.machine.rewind();
   }
 
+  @bind
   getStateArray () {
     const result = [];
     let current = this.state.machine.state;

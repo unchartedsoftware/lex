@@ -20,18 +20,27 @@ export class OptionAssistant extends Assistant {
   }
 
   processProps (props) {
-    if (this.state.machineState) this.state.machineState.removeListener(this.onOptionChange);
-    if (this.state.machineState) this.state.machineState.removeListener(this.onUnboxedValueChangeAttempted);
+    this.cleanupListeners();
     super.processProps(props);
-    // TODO detach when component unmounts
     if (this.state.machineState) {
-      this.state.machineState.on('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
       this.state.machineState.on('options changed', this.onOptionChange);
+      this.state.machineState.on('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
       this.setState({
         options: this.state.machineState.template.options
       });
     }
     // TODO do we need to modify validation state?
+  }
+
+  cleanupListeners () {
+    if (this.state.machineState) {
+      this.state.machineState.removeListener('options changed', this.onOptionChange);
+      this.state.machineState.removeListener('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
+    }
+  }
+
+  componentWillUnmount () {
+    this.cleanupListeners();
   }
 
   renderInteractive (props, {valid, readOnly, options, unboxedValue}) {
