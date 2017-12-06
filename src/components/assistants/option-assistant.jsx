@@ -19,6 +19,11 @@ export class OptionAssistant extends Assistant {
     });
   }
 
+  @bind
+  onOptionSelected (key) {
+    this.state.machineState.unboxedValue = key;
+  }
+
   processProps (props) {
     this.cleanupListeners();
     super.processProps(props);
@@ -41,11 +46,6 @@ export class OptionAssistant extends Assistant {
 
   componentWillUnmount () {
     this.cleanupListeners();
-  }
-
-  @bind
-  onOptionSelected (key) {
-    this.state.machineState.unboxedValue = key;
   }
 
   renderInteractive (props, {valid, readOnly, options, unboxedValue}) {
