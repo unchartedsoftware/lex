@@ -190,8 +190,9 @@ export class State extends EventEmitter {
   set value (newVal) {
     if (newVal !== this.value) {
       const oldVal = this.value;
+      const oldUnboxedVal = this.unboxedValue;
       _value.set(this, newVal);
-      this.emit('value changed', newVal, oldVal);
+      this.emit('value changed', newVal, oldVal, this.unboxedValue, oldUnboxedVal);
     }
   }
 
@@ -206,6 +207,7 @@ export class State extends EventEmitter {
    * @param {any} newUnboxedVal - A new (unboxed) value for this `State`.
    */
   set unboxedValue (newUnboxedVal) {
+    this.emit('unboxed value change attempted', newUnboxedVal, this.unboxedValue);
     this.value = this.boxValue(newUnboxedVal);
   }
 }

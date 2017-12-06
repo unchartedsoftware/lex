@@ -1,5 +1,4 @@
 import { Component } from 'preact';
-import { TokenStateMachine } from '../lib/token-state-machine';
 import { bind } from '../../node_modules/decko/dist/decko';
 
 export class Token extends Component {
@@ -8,18 +7,16 @@ export class Token extends Component {
     this.state = {
       stateArray: [],
       machine: undefined,
-      machineTemplate: undefined,
       builders: undefined
     };
   }
 
   processProps (props) {
-    const { machineTemplate, builders } = props;
-    if (machineTemplate !== this.state.machineTemplate) {
+    const { machine, builders } = props;
+    if (machine !== this.state.machine) {
       if (this.state.machine) this.state.machine.removeAllListeners();
       this.setState({
-        machineTemplate: machineTemplate,
-        machine: new TokenStateMachine(machineTemplate)
+        machine: machine
       });
       // TODO deatch when component unmounts
       this.state.machine.on('submit', () => console.log('submit'));
@@ -63,8 +60,47 @@ export class Token extends Component {
     });
   }
 
-  get blank () {
+  get isBlank () {
     return this.state.machine.state === this.state.machine.rootState && (this.state.machine.state.value === null || this.state.machine.state.unboxedValue.length === 0);
+  }
+
+  /**
+   * Get the values bound to underlying states, up to the current state.
+   *
+   * @returns {Array[any]} An array of boxed values.
+   */
+  get value () {
+    const result = [];
+    let current = this.state.machine.state;
+    while (current !== undefined) {
+      result.unshift(current.value);
+      current = current.parent;
+    }
+    return result;
+  }
+
+  /**
+   * Alias for this.value.
+   *
+   * @returns {Array[any]} An array of boxed values.
+   */
+  get boxedValue () {
+    return this.value;
+  }
+
+  /**
+   * Get the (unboxed) values bound to underlying states, up to the current state.
+   *
+   * @returns {Array[String]} An array of unboxed values.
+   */
+  get unboxedValue () {
+    const result = [];
+    let current = this.state.machine.state;
+    while (current !== undefined) {
+      result.unshift(current.unboxedValue);
+      current = current.parent;
+    }
+    return result;
   }
 
   render (props, {machine, tokens}) {
@@ -72,7 +108,7 @@ export class Token extends Component {
       <div className='token'>
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);
-          return (<Builder machineState={s} onTransition={this.transition} onRewind={this.rewind} readOnly={s !== machine.state} blank={this.blank} />);
+          return (<Builder machineState={s} onTransition={this.transition} onRewind={this.rewind} readOnly={s !== machine.state} blank={this.isBlank} />);
         })}
       </div>
     );

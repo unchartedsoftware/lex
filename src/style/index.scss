@@ -29,3 +29,21 @@ div.token  {
     min-width: 60px;
   }
 }
+
+div.assistant-box {
+  display: block;
+  position: relative;
+  top: 7px;
+  margin: 0 auto;
+  width: 100%;
+  min-height: 20px;
+  background-color: white;
+  border:  1px solid #d9d9d9;
+  ul {
+    list-style-type: none;
+    margin: 0; padding: 0;
+    li {
+      margin: 0; padding: 5px 10px;
+    }
+  }
+}

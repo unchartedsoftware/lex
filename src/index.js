@@ -2,7 +2,8 @@ import './style/index.scss';
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import { Component } from 'preact';
 // TODO make a top-level lib module that exposes all of this so no relative requires
-import { OptionSelector } from './components/value-builders/option-selector';
+import { OptionAssistant } from './components/assistants/option-assistant';
+import { OptionSelector } from './components/builders/option-selector';
 import { StateBuilderFactory } from './lib/state-builder-factory';
 import { Option, OptionSelection } from './lib/states/generic/option-selection';
 import { TextRelationSelection } from './lib/states/text/text-relation-selection';
@@ -12,7 +13,11 @@ export default class App extends Component {
   constructor () {
     super();
     this.state.builders = new StateBuilderFactory();
-    this.state.builders.registerBuilder(OptionSelection, OptionSelector).registerBuilder(TextRelationSelection, OptionSelector);
+    this.state.builders
+      .registerBuilder(OptionSelection, OptionSelector)
+      .registerBuilder(TextRelationSelection, OptionSelector)
+      .registerAssistant(OptionSelection, OptionAssistant)
+      .registerAssistant(TextRelationSelection, OptionAssistant);
 
     // TODO make chainable using a Builder class
     this.state.machineTemplate = new OptionSelection(undefined, 'field selection', [

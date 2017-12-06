@@ -1,7 +1,6 @@
 import { Component } from 'preact';
 import { StateTransitionError } from '../lib/errors';
 
-// TODO support drop-down-like "add-ons" and manage positioning here.
 export class Builder extends Component {
   constructor () {
     super(arguments);

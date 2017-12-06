@@ -5,7 +5,6 @@ export class OptionSelector extends Builder {
   constructor () {
     super();
     this.state.options = [];
-    this.state.optionChangeListener = this.onOptionsChanged.bind(this);
   }
 
   @bind
@@ -38,15 +37,16 @@ export class OptionSelector extends Builder {
     if (this.textInput) this.textInput.focus();
   }
 
+  @bind
   onOptionsChanged (newOptions, oldOptions) {
     this.setState({options: newOptions});
   }
 
   processProps (props) {
-    if (this.state.machineState) this.state.machineState.removeListener(this.state.optionChangeListener);
+    if (this.state.machineState) this.state.machineState.removeListener(this.onOptionsChanged);
     super.processProps(props);
     // TODO detach when component unmounts
-    this.state.machineState.on('options changed', this.state.optionChangeListener);
+    this.state.machineState.on('options changed', this.onOptionsChanged);
     // TODO do we need to modify validation state?
   }
 

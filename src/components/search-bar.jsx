@@ -1,4 +1,5 @@
 import { Component } from 'preact';
+import { TokenStateMachine } from '../lib/token-state-machine';
 import { Token } from './token';
 
 export class SearchBar extends Component {
@@ -7,16 +8,21 @@ export class SearchBar extends Component {
     this.state = {
       tokens: [],
       builders: undefined,
-      machineTemplate: undefined
-    }; // TODO bind values to incoming TokenStateMachine
+      machineTemplate: undefined,
+      machines: undefined
+    };
   }
 
   processProps (props) {
     const { machineTemplate, builders } = props;
     if (machineTemplate !== this.state.machineTemplate) {
       this.setState({
-        machineTemplate: machineTemplate
+        machineTemplate: machineTemplate,
+        activeMachine: new TokenStateMachine(machineTemplate), // TODO how do we edit tokens?
+        machines: this.state.tokens.map(t => new TokenStateMachine(machineTemplate)) // TODO bind incoming values to TokenStateMachine
       });
+      // TODO emit search change event because we just wiped out the search?
+      this.state.activeMachine.on('state changed', () => this.forceUpdate());
     }
     if (builders !== this.state.builders) {
       this.setState({
@@ -33,10 +39,30 @@ export class SearchBar extends Component {
     this.processProps(nextProps);
   }
 
-  render (props, {tokens, builders, machineTemplate}) {
+  get machineInstance () {
+    if (!this.state.machineTemplate) return null;
+    return new TokenStateMachine(this.state.machineTemplate);
+  }
+
+  renderAssistant (activeMachine) {
+    try {
+      const Assistant = this.state.builders.getAssistant(activeMachine.state.template.constructor);
+      return (
+        <div className='assistant-box'>
+          <Assistant machineState={activeMachine.state} />
+        </div>
+      );
+    } catch (err) {
+      // do nothing if there is no assistant.
+    }
+  }
+
+  render (props, {tokens, builders, machines, activeMachine}) {
     return (
       <div className='search-box form-control'>
-        <Token machineTemplate={machineTemplate} builders={builders} />
+        { machines.map(m => <Token machine={m} builders={builders} />) }
+        <Token machine={activeMachine} builders={builders} />
+        { this.renderAssistant(activeMachine) }
       </div>
     );
   }
