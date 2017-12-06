@@ -131,4 +131,11 @@ export class Builder extends Component {
   set unboxedValue (newUnboxedVal) {
     this.state.machineState.unboxedValue = newUnboxedVal;
   }
+
+  /**
+   * @returns {any} The (boxed) default value from this `State`.
+   */
+  get defaultValue () {
+    return this.state.machineState.defaultValue;
+  }
 }

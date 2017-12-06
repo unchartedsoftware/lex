@@ -43,13 +43,26 @@ export class OptionAssistant extends Assistant {
     this.cleanupListeners();
   }
 
+  @bind
+  onOptionSelected (key) {
+    this.state.machineState.unboxedValue = key;
+  }
+
   renderInteractive (props, {valid, readOnly, options, unboxedValue}) {
     const val = unboxedValue === undefined ? unboxedValue = '' : unboxedValue.toLowerCase();
     const suggestions = options.filter(o => o.key.toLowerCase().startsWith(val)).slice(0, 10);
     return (
-      <ul>
-        { suggestions.map(o => <li>{o.key}</li>) }
-      </ul>
+      <div>
+        <div className='assistant-header'>
+          {this.state.machineState.name}
+          <span className='pull-right'><strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;<strong>Tab</strong> to select</span>
+        </div>
+        <div className='assistant-body'>
+          <ul>
+            { suggestions.map(o => <li onClick={() => this.onOptionSelected(o.key)}>{o.key}</li>) }
+          </ul>
+        </div>
+      </div>
     );
   }
 }

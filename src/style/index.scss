@@ -1,3 +1,7 @@
+div.search-box {
+  height: auto;
+}
+
 div.token  {
   display: inline-block;
   background: #ededed;
@@ -32,18 +36,30 @@ div.token  {
 
 div.assistant-box {
   display: block;
-  position: relative;
-  top: 7px;
   margin: 0 auto;
   width: 100%;
   min-height: 20px;
   background-color: white;
   border:  1px solid #d9d9d9;
+
+  div.assistant-header {
+    color: #8d8d8d;
+    background-color: #ededed;
+    display:block;
+    min-height: 2.5rem;
+    padding: 0.5rem 1rem;
+  }
+
   ul {
     list-style-type: none;
     margin: 0; padding: 0;
     li {
-      margin: 0; padding: 5px 10px;
+      margin: 0; padding: 0.5rem 1rem;
+      cursor: pointer;
+      &:hover {
+        color: #fff;
+        background-color: #0097a7;
+      }
     }
   }
 }

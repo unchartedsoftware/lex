@@ -41,9 +41,12 @@
     "if-env": "1.0.0",
     "node-sass": "4.6.0",
     "preact-cli": "2.1.0",
+    "preact": "8.x",
+    "linkstate": "1.1.x",
     "sass-loader": "6.0.6"
   },
   "peerDependencies": {
-    "preact": "8.x"
+    "preact": "8.x",
+    "linkstate": "1.1.x"
   }
 }
