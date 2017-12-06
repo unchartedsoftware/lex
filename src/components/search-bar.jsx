@@ -1,3 +1,4 @@
+import { bind } from 'decko';
 import { Component } from 'preact';
 import { TokenStateMachine } from '../lib/token-state-machine';
 import { Token } from './token';
@@ -9,7 +10,8 @@ export class SearchBar extends Component {
       tokens: [],
       builders: undefined,
       machineTemplate: undefined,
-      machines: undefined
+      machines: undefined,
+      focused: false
     };
   }
 
@@ -46,6 +48,7 @@ export class SearchBar extends Component {
 
   renderAssistant (activeMachine) {
     try {
+      if (!this.state.focused) return;
       const Assistant = this.state.builders.getAssistant(activeMachine.state.template.constructor);
       return (
         <div className='assistant-box'>
@@ -57,11 +60,21 @@ export class SearchBar extends Component {
     }
   }
 
+  @bind
+  onFocus () {
+    this.setState({focused: true});
+  }
+
+  @bind
+  onBlur () {
+    this.setState({focused: false});
+  }
+
   render (props, {tokens, builders, machines, activeMachine}) {
     return (
       <div className='search-box form-control'>
         { machines.map(m => <Token machine={m} builders={builders} />) }
-        <Token machine={activeMachine} builders={builders} />
+        <Token machine={activeMachine} builders={builders} onFocus={this.onFocus} onBlur={this.onBlur} />
         { this.renderAssistant(activeMachine) }
       </div>
     );

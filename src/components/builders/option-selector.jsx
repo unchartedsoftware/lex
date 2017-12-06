@@ -79,6 +79,8 @@ export class OptionSelector extends Builder {
         onKeyUp={this.handleKeyUp}
         value={typedText}
         onInput={linkState(this, 'typedText')}
+        onFocus={this.informFocus}
+        onBlur={this.informBlur}
         ref={(input) => { this.textInput = input; }}
         disabled={readOnly} />
     );

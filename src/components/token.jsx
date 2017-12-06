@@ -6,13 +6,16 @@ export class Token extends Component {
     super(arguments);
     this.state = {
       stateArray: [],
+      focused: false,
       machine: undefined,
-      builders: undefined
+      builders: undefined,
+      onFocus: () => {},
+      onBlur: () => {}
     };
   }
 
   processProps (props) {
-    const { machine, builders } = props;
+    const { machine, builders, onFocus, onBlur } = props;
     if (machine !== this.state.machine) {
       if (this.state.machine) this.state.machine.removeListener('state changed', this.getStateArray);
       this.setState({
@@ -25,6 +28,16 @@ export class Token extends Component {
     if (builders !== this.state.builders) {
       this.setState({
         builders: builders
+      });
+    }
+    if (onFocus !== this.state.onFocus) {
+      this.setState({
+        onFocus: onFocus
+      });
+    }
+    if (onBlur !== this.state.onBlur) {
+      this.setState({
+        onBlur: onBlur
       });
     }
   }
@@ -48,11 +61,15 @@ export class Token extends Component {
   @bind
   transition () {
     this.state.machine.transition();
+    this.setState({focused: true});
+    this.state.onFocus();
   }
 
   @bind
   rewind () {
     this.state.machine.rewind();
+    this.setState({focused: true});
+    this.state.onFocus();
   }
 
   @bind
@@ -111,12 +128,32 @@ export class Token extends Component {
     return result;
   }
 
-  render (props, {machine, tokens}) {
+  @bind
+  onFocus () {
+    this.setState({focused: true});
+    this.state.onFocus();
+  }
+
+  @bind
+  onBlur () {
+    this.setState({focused: false});
+    this.state.onBlur();
+  }
+
+  render (props, {machine, tokens, onFocus, onBlur, focused}) {
     return (
       <div className='token'>
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);
-          return (<Builder machineState={s} onTransition={this.transition} onRewind={this.rewind} readOnly={s !== machine.state} blank={this.isBlank} />);
+          return (<Builder
+            machineState={s}
+            onTransition={this.transition}
+            onRewind={this.rewind}
+            onFocus={this.onFocus}
+            onBlur={this.onBlur}
+            readOnly={s !== machine.state}
+            blank={this.isBlank}
+            focused={s === machine.state && focused} />);
         })}
       </div>
     );

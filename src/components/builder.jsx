@@ -1,3 +1,4 @@
+import { bind } from 'decko';
 import { Component } from 'preact';
 import { StateTransitionError } from '../lib/errors';
 
@@ -6,12 +7,14 @@ export class Builder extends Component {
     super(arguments);
     this.state = {
       valid: true,
-      readOnly: false
+      readOnly: false,
+      onFocus: () => {},
+      onBlur: () => {}
     };
   }
 
   processProps (props) {
-    const { machineState, onTransition, onRewind, readOnly, blank } = props;
+    const { machineState, onTransition, onRewind, readOnly, blank, focused, onFocus, onBlur } = props;
     if (readOnly !== this.state.readOnly) {
       this.setState({
         readOnly: readOnly
@@ -25,6 +28,19 @@ export class Builder extends Component {
     if (onTransition !== this.state.onTransition) {
       this.setState({
         onTransition: onTransition
+      });
+    }
+    if (focused) {
+      setTimeout(() => { this.focus(); });
+    }
+    if (onFocus !== this.state.onFocus) {
+      this.setState({
+        onFocus: onFocus
+      });
+    }
+    if (onBlur !== this.state.onBlur) {
+      this.setState({
+        onBlur: onBlur
       });
     }
     if (onRewind !== this.state.onRewind) {
@@ -65,7 +81,21 @@ export class Builder extends Component {
   }
 
   focus () {
-    // TODO override in subclass
+    // override in subclass
+  }
+
+  blur () {
+    // override in subclass
+  }
+
+  @bind
+  informFocus () {
+    this.state.onFocus();
+  }
+
+  @bind
+  informBlur () {
+    this.state.onBlur();
   }
 
   renderReadOnly (props, state) {
@@ -79,7 +109,6 @@ export class Builder extends Component {
   }
 
   render (props, state) {
-    setTimeout(() => { this.focus(); });
     return state.readOnly ? this.renderReadOnly(props, state) : this.renderInteractive(props, state);
   }
 
