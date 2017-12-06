@@ -10,6 +10,6 @@ export class NumericRelationSelection extends OptionSelection {
    * @param {State|undefined} parent - The parent state. Undefined if this is a root.
    */
   constructor (parent) {
-    super(parent, 'numeric relation selection', options);
+    super(parent, 'Choose a numeric relation', options);
   }
 }
