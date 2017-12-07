@@ -65,9 +65,6 @@ export class OptionSelector extends Builder {
     super.processProps(props);
     this.state.machineState.on('options changed', this.onOptionsChanged);
     this.state.machineState.on('value changed', this.onValueChanged);
-    this.setState({
-      typedText: this.defaultValue.key
-    });
     // TODO do we need to modify validation state?
   }
 
