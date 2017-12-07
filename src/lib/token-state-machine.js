@@ -55,13 +55,13 @@ export class TokenStateMachine extends EventEmitter {
           this.emit('state changed', this.state, oldState);
           return this.state;
         } else {
-          const err = new StateTransitionError(`No valid transitions from current state ${this.state.name} given current state's value ${this.state.value}.`);
+          const err = new StateTransitionError(`No valid transitions from current state "${this.state.name}" given current state's value: ${this.state.value}.`);
           this.emit('state change failed', err);
           throw err;
         }
       }
     } else {
-      const err = new StateTransitionError(`Cannot transition from invalid current state ${this.state.name} with value ${this.state.value}.`);
+      const err = new StateTransitionError(`Cannot transition from invalid current state "${this.state.name}" with value: ${this.state.value}.`);
       this.emit('state change failed', err);
       throw err;
     }
