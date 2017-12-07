@@ -35,7 +35,7 @@ export class TokenStateMachine extends EventEmitter {
 
   /**
    * Transition to the first viable child state, iff the current state is valid. If this is a terminal state, this will
-   * trigger onFinished().
+   * trigger an 'end' event.
    *
    * @throws {StateTransitionError} If this state is invalid, or if there is no valid child transition given the current state's value.
    * @returns {State} The new current state.
@@ -44,7 +44,7 @@ export class TokenStateMachine extends EventEmitter {
     // validate current state value
     if (this.state.isValid) {
       if (this.state.isTerminal) {
-        this.emit('submit', this.state);
+        this.emit('end', this.state);
       } else {
         // Find the first legal transition to a child, if possible
         const transitions = this.state.children.filter(c => c.isValidTransition);

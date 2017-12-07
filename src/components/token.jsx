@@ -23,7 +23,9 @@ export class Token extends Component {
       this.setState({
         machine: machine
       });
-      this.state.machine.on('submit', () => console.log('submit')); // TODO deatch when component unmounts
+      this.state.machine.on('end', () => {
+        console.log(this.value);
+      }); // TODO deatch when component unmounts
       this.state.machine.on('state changed', this.onStateChanged);
       this.onStateChanged();
     }

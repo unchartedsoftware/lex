@@ -29,10 +29,14 @@ export default class App extends Component {
     // TODO make chainable using a Builder class
     this.state.machineTemplate = new OptionSelection({
       name: 'Choose a field to search',
-      options: [
-        new Option('Name', {type: 'string'}),
-        new Option('Income', {type: 'number'})
-      ]
+      options: function () {
+        return new Promise((resolve) => {
+          resolve([
+            new Option('Name', {type: 'string'}),
+            new Option('Income', {type: 'number'})
+          ]);
+        });
+      }
     });
     this.state.machineTemplate.addChild(TextRelationSelection, {
       transitionFunction: (parentVal) => parentVal && parentVal.meta.type === 'string'
