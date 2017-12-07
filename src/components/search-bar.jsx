@@ -85,9 +85,11 @@ export class SearchBar extends Component {
   transition () {
     try {
       this.state.activeMachine.transition();
+      return true;
     } catch (err) {
       if (err instanceof StateTransitionError) {
         console.error(err.message);
+        return false;
       } else {
         throw err;
       }

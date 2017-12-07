@@ -28,22 +28,28 @@ export class OptionSelector extends Builder {
 
   @bind
   handleKeyDown (e) {
+    let consumed = true;
     this.unboxedValue = e.target.value;
     switch (e.code) {
       case 'Tab':
-        e.preventDefault();
-        this.requestTransition();
+        consumed = this.requestTransition(); // only consume the event if the transition succeeds
         break;
       case 'Backspace':
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
-          e.preventDefault();
           this.requestRewind();
+        } else {
+          consumed = false;
         }
         break;
       case 'Escape':
-        e.preventDefault();
         // TODO cancellation
         break;
+      default:
+        consumed = false;
+    }
+    if (consumed) {
+      e.stopPropagation();
+      e.preventDefault();
     }
   }
 
