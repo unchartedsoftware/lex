@@ -1,7 +1,8 @@
 import EventEmitter from 'wolfy87-eventemitter';
 
-const _name = new WeakMap();
 const _parent = new WeakMap();
+const _transitionFunction = new WeakMap();
+const _name = new WeakMap();
 const _defaultValue = new WeakMap();
 const _children = new WeakMap();
 const _template = new WeakMap();
@@ -18,12 +19,14 @@ const _value = new WeakMap();
 export class StateTemplate extends EventEmitter {
   /**
    * @param {State|undefined} parent - The parent state. Undefined if this is a root.
+   * @param {Function} transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
    * @param {string} name - A useful label for this state.
    * @param {any} defaultValue - The default value for this state before it has been touched. Can be undefined.
    */
-  constructor (parent, name, defaultValue) {
+  constructor (parent, transitionFunction, name, defaultValue) {
     super();
     _parent.set(this, parent);
+    _transitionFunction.set(this, transitionFunction);
     _name.set(this, name);
     _defaultValue.set(this, defaultValue);
     _children.set(this, []);
@@ -59,13 +62,6 @@ export class StateTemplate extends EventEmitter {
    * @returns {boolean} Returns true iff this state has a valid value. Should throw an exception otherwise.
    */
   validationFunction () {
-    return true;
-  }
-
-  /**
-   * A function which returns true if this state is the next child to transition to, given the value of its parent.
-   */
-  transitionFunction () {
     return true;
   }
 
@@ -106,12 +102,13 @@ export class StateTemplate extends EventEmitter {
   /**
    * Add a child to this `State`.
    *
-   * @param {StateTemplate} StateTemplateClass - A child state - might be a class which extends `StateTemplate`. Parent should always be the first constructor argument.
+   * @param {StateTemplate} StateTemplateClass - A child state - might be a class which extends `StateTemplate`. Parent should always be the first constructor argument, and transitionFunction the second.
+   * @param {Function} transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent.
    * @param {...any} args - Construction parameters for the child `StateTemplate` class.
    * @returns {StateTemplate} A reference to the new child `State`, for chaining purposes.
    */
-  addChild (StateTemplateClass, ...args) {
-    const child = new StateTemplateClass(this, ...args);
+  addChild (StateTemplateClass, transitionFunction, ...args) {
+    const child = new StateTemplateClass(this, transitionFunction, ...args);
     _children.get(this).push(child);
     return child;
   }
@@ -142,7 +139,6 @@ export class State extends EventEmitter {
   get isTerminal () { return this.template.isTerminal; }
   boxValue (...args) { return this.template.boxValue(...args); }
   unboxValue (...args) { return this.template.unboxValue(...args); }
-  transitionFunction (...args) { return this.template.transitionFunction(...args); }
   validationFunction (...args) { return this.template.validationFunction(...args); }
 
   /**
@@ -159,7 +155,7 @@ export class State extends EventEmitter {
     if (this.parent === undefined) {
       return true;
     } else {
-      return this.transitionFunction(this.parent.value);
+      return _transitionFunction.get(this.template)(this.parent.value);
     }
   }
 

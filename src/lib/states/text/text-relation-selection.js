@@ -8,8 +8,9 @@ const options = ['is', 'is like', 'contains'].map(o => new Option(o));
 export class TextRelationSelection extends OptionSelection {
   /**
    * @param {State|undefined} parent - The parent state. Undefined if this is a root.
+   * @param {Function} transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
    */
-  constructor (parent) {
-    super(parent, 'Choose a text relation', options);
+  constructor (parent, transitionFunction) {
+    super(parent, transitionFunction, 'Choose a text relation', options);
   }
 }

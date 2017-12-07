@@ -35,12 +35,13 @@ const _allowUnknown = new WeakMap();
 export class OptionSelection extends StateTemplate {
   /**
    * @param {State|undefined} parent - The parent state. Undefined if this is a root.
+   * @param {Function} transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
    * @param {string} name - A useful label for this state.
    * @param {Array[Option]} options - The list of options to select from.
    * @param {boolean} allowUnknown - Allow user to enter unknown options by entering custom values.
    */
-  constructor (parent, name, options, allowUnknown = false) {
-    super(parent, name, null);
+  constructor (parent, transitionFunction, name, options, allowUnknown = false) {
+    super(parent, transitionFunction, name, null);
     _options.set(this, options);
     _allowUnknown.set(this, allowUnknown);
   }
