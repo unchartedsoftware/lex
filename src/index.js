@@ -35,10 +35,10 @@ export default class App extends Component {
       ]
     });
     this.state.machineTemplate.addChild(TextRelationSelection, {
-      transitionFunction: (parentVal) => parentVal.meta.type === 'string'
+      transitionFunction: (parentVal) => parentVal && parentVal.meta.type === 'string'
     }).addChild(TextEntry);
     this.state.machineTemplate.addChild(NumericRelationSelection, {
-      transitionFunction: (parentVal) => parentVal.meta.type === 'number'
+      transitionFunction: (parentVal) => parentVal && parentVal.meta.type === 'number'
     }).addChild(NumericEntry);
   }
 

@@ -40,26 +40,27 @@ export class OptionSelection extends StateTemplate {
    *   @property {boolean} allowUnknown - Allow user to enter unknown options by entering custom values.
    *   @property See StateTemplate for other properties.
    */
-  constructor ({
-    transitionFunction = () => true,
-    validationFunction = (thisVal) => {
-      if (thisVal === null || thisVal === undefined) return false;
-      return this.options.filter(o => o.key === thisVal.key).length === 1;
-    },
-    options = [],
-    allowUnknown = false
-  }) {
-    super(arguments[0]);
-    if (Array.isArray(options)) {
-      _options.set(this, options);
+  constructor (config) {
+    if (config.validationFunction === undefined) {
+      config.validationFunction = (thisVal) => {
+        if (thisVal === null || thisVal === undefined) return false;
+        return this.options.filter(o => o.key === thisVal.key).length === 1;
+      };
+    }
+    if (config.transitionFunction === undefined) config.transitionFunction = () => true;
+    if (config.options === undefined) config.options = [];
+    if (config.allowUnknown === undefined) config.allowUnknown = false;
+    super(config);
+    if (Array.isArray(config.options)) {
+      _options.set(this, config.options);
     } else {
       _options.set(this, []);
       _refreshOptions.set(this, async () => {
-        this.options = await options();
+        this.options = await config.options();
       });
       this.refreshOptions();
     }
-    _allowUnknown.set(this, allowUnknown);
+    _allowUnknown.set(this, config.allowUnknown);
   }
 
   /**

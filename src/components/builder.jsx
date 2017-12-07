@@ -42,7 +42,7 @@ export class Builder extends Component {
       this.setState({
         machine: machine
       });
-      machine.on('state change', this.onTransition);
+      machine.on('state changed', this.onTransition);
       machine.on('state change failed', this.onTransitionFailed);
     }
     if (machineState !== this.state.machineState) {
