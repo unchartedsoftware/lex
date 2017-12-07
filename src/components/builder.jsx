@@ -128,7 +128,7 @@ export class Builder extends Component {
 
   @bind
   requestBlur (e) {
-    if (e.relatedTarget && !e.relatedTarget.classList.contains('lex-box')) {
+    if (!e.relatedTarget || !e.relatedTarget.classList.contains('lex-box')) {
       this.state.requestBlur();
     }
   }
