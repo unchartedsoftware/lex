@@ -27,38 +27,22 @@ export class Option {
 }
 
 const _options = new WeakMap();
-const _refreshOptions = new WeakMap();
 const _allowUnknown = new WeakMap();
 /**
  * Select an option from a list of options, such as
  * choosing "is", "is like", or "contains"
  */
-export class OptionSelection extends StateTemplate {
+export class ValueEntry extends StateTemplate {
   /**
-   * @param {Object} config - A configuration object.
-   *   @property {Array[Option] | AsyncFunction} options - The list of options to select from, or an async function that generates them.
-   *   @property {boolean} allowUnknown - Allow user to enter unknown options by entering custom values.
-   *   @property See StateTemplate for other properties.
+   * @param {State|undefined} parent - The parent state. Undefined if this is a root.
+   * @param {Function} transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
+   * @param {string} name - A useful label for this state.
+   * @param {Array[Option]} options - The list of options to select from.
+   * @param {boolean} allowUnknown - Allow user to enter unknown options by entering custom values.
    */
-  constructor ({
-    transitionFunction = () => true,
-    validationFunction = (thisVal) => {
-      if (thisVal === null || thisVal === undefined) return false;
-      return this.options.filter(o => o.key === thisVal.key).length === 1;
-    },
-    options = [],
-    allowUnknown = false
-  }) {
-    super(arguments[0]);
-    if (Array.isArray(options)) {
-      _options.set(this, options);
-    } else {
-      _options.set(this, []);
-      _refreshOptions.set(this, async () => {
-        this.options = await options();
-      });
-      this.refreshOptions();
-    }
+  constructor (parent, transitionFunction, name, options, allowUnknown = false) {
+    super(parent, transitionFunction, name, null);
+    _options.set(this, options);
     _allowUnknown.set(this, allowUnknown);
   }
 
@@ -77,12 +61,6 @@ export class OptionSelection extends StateTemplate {
       const oldOptions = this.options;
       _options.set(this, newOptions);
       this.emit('options changed', newOptions, oldOptions);
-    }
-  }
-
-  refreshOptions () {
-    if (_refreshOptions.has(this)) {
-      _refreshOptions.get(this)();
     }
   }
 
@@ -119,5 +97,14 @@ export class OptionSelection extends StateTemplate {
   unboxValue (option) {
     if (option === undefined || option === null) return null;
     return option.key;
+  }
+
+  /**
+   *
+   * @param {Option} thisVal - The currently selected option.
+   */
+  validationFunction (thisVal) {
+    if (thisVal === null || thisVal === undefined) return false;
+    return this.options.filter(o => o.key === thisVal.key).length === 1;
   }
 }

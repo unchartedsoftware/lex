@@ -20,10 +20,14 @@ export default class App extends Component {
       .registerAssistant(TextRelationSelection, OptionAssistant);
 
     // TODO make chainable using a Builder class
-    this.state.machineTemplate = new OptionSelection(undefined, undefined, 'Choose a field to search', [
-      new Option('name')
-    ]);
-    this.state.machineTemplate.addChild(TextRelationSelection, () => true);
+    this.state.machineTemplate = new OptionSelection({
+      name: 'Choose a field to search',
+      options: [
+        new Option('name')
+      ]
+    });
+    this.state.machineTemplate.addChild(TextRelationSelection, {
+    });
   }
 
   render (props, {builders, machineTemplate}) {

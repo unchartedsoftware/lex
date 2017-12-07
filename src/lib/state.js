@@ -1,6 +1,7 @@
 import EventEmitter from 'wolfy87-eventemitter';
 
 const _parent = new WeakMap();
+const _validationFunction = new WeakMap();
 const _transitionFunction = new WeakMap();
 const _name = new WeakMap();
 const _defaultValue = new WeakMap();
@@ -18,17 +19,20 @@ const _value = new WeakMap();
  */
 export class StateTemplate extends EventEmitter {
   /**
-   * @param {State|undefined} parent - The parent state. Undefined if this is a root.
-   * @param {Function} transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
-   * @param {string} name - A useful label for this state.
-   * @param {any} defaultValue - The default value for this state before it has been touched. Can be undefined.
+   * @param {Object} config - Options for `StateTemplate`.
+   *   @property {State|undefined} parent - The parent state. Undefined if this is a root.
+   *   @property {string} name - A useful label for this state.
+   *   @property {Function} transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
+   *   @property {Function} validationFunction - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
+   *   @property {any} defaultValue - The default value for this state before it has been touched. Can be undefined.
    */
-  constructor (parent, transitionFunction, name, defaultValue) {
+  constructor ({parent, name, transitionFunction, validationFunction, defaultValue}) {
     super();
     _parent.set(this, parent);
-    _transitionFunction.set(this, transitionFunction);
     _name.set(this, name);
-    _defaultValue.set(this, defaultValue);
+    _transitionFunction.set(this, transitionFunction !== undefined ? transitionFunction : () => true);
+    _validationFunction.set(this, validationFunction !== undefined ? validationFunction : () => true);
+    _defaultValue.set(this, defaultValue !== undefined ? defaultValue : null);
     _children.set(this, []);
   }
 
@@ -54,15 +58,6 @@ export class StateTemplate extends EventEmitter {
 
   get isTerminal () {
     return this.children.length === 0;
-  }
-
-  /**
-   * Validate the value of this state. Override in subclasses.
-   *
-   * @returns {boolean} Returns true iff this state has a valid value. Should throw an exception otherwise.
-   */
-  validationFunction () {
-    return true;
   }
 
   /**
@@ -102,13 +97,13 @@ export class StateTemplate extends EventEmitter {
   /**
    * Add a child to this `State`.
    *
-   * @param {StateTemplate} StateTemplateClass - A child state - might be a class which extends `StateTemplate`. Parent should always be the first constructor argument, and transitionFunction the second.
-   * @param {Function} transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent.
-   * @param {...any} args - Construction parameters for the child `StateTemplate` class.
+   * @param {StateTemplate} StateTemplateClass - A child state - might be a class which extends `StateTemplate`.
+   * @param {Object} config - Construction parameters for the child `StateTemplate` class.
    * @returns {StateTemplate} A reference to the new child `State`, for chaining purposes.
    */
-  addChild (StateTemplateClass, transitionFunction, ...args) {
-    const child = new StateTemplateClass(this, transitionFunction, ...args);
+  addChild (StateTemplateClass, config) {
+    config.parent = this;
+    const child = new StateTemplateClass(config);
     _children.get(this).push(child);
     return child;
   }
@@ -139,13 +134,12 @@ export class State extends EventEmitter {
   get isTerminal () { return this.template.isTerminal; }
   boxValue (...args) { return this.template.boxValue(...args); }
   unboxValue (...args) { return this.template.unboxValue(...args); }
-  validationFunction (...args) { return this.template.validationFunction(...args); }
 
   /**
    * @returns {boolean} Returns `true` iff this state is valid. Should throw an exception with information about validation error otherwise.
    */
   get isValid () {
-    return this.validationFunction(this.value);
+    return _validationFunction.get(this.template)(this.value);
   }
 
   /**
