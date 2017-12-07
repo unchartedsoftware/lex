@@ -27,6 +27,7 @@ export class Option {
 }
 
 const _options = new WeakMap();
+const _refreshOptions = new WeakMap();
 const _allowUnknown = new WeakMap();
 /**
  * Select an option from a list of options, such as
@@ -37,12 +38,20 @@ export class OptionSelection extends StateTemplate {
    * @param {State|undefined} parent - The parent state. Undefined if this is a root.
    * @param {Function} transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
    * @param {string} name - A useful label for this state.
-   * @param {Array[Option]} options - The list of options to select from.
+   * @param {Array[Option] | AsyncFunction} options - The list of options to select from, or an async function that generates them.
    * @param {boolean} allowUnknown - Allow user to enter unknown options by entering custom values.
    */
   constructor (parent, transitionFunction, name, options, allowUnknown = false) {
     super(parent, transitionFunction, name, null);
-    _options.set(this, options);
+    if (Array.isArray(options)) {
+      _options.set(this, options);
+    } else {
+      _options.set(this, []);
+      _refreshOptions.set(this, async () => {
+        this.options = await options();
+      });
+      this.refreshOptions();
+    }
     _allowUnknown.set(this, allowUnknown);
   }
 
@@ -61,6 +70,12 @@ export class OptionSelection extends StateTemplate {
       const oldOptions = this.options;
       _options.set(this, newOptions);
       this.emit('options changed', newOptions, oldOptions);
+    }
+  }
+
+  refreshOptions () {
+    if (_refreshOptions.has(this)) {
+      _refreshOptions.get(this)();
     }
   }
 
