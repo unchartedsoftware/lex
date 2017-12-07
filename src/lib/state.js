@@ -101,7 +101,7 @@ export class StateTemplate extends EventEmitter {
    * @param {Object} config - Construction parameters for the child `StateTemplate` class.
    * @returns {StateTemplate} A reference to the new child `State`, for chaining purposes.
    */
-  addChild (StateTemplateClass, config) {
+  addChild (StateTemplateClass, config = {}) {
     config.parent = this;
     const child = new StateTemplateClass(config);
     _children.get(this).push(child);
