@@ -9,35 +9,47 @@ export class Token extends Component {
       focused: false,
       machine: undefined,
       builders: undefined,
-      onFocus: () => {},
-      onBlur: () => {}
+      requestFocus: () => {},
+      requestBlur: () => {},
+      requestTransition: () => {},
+      requestRewind: () => {}
     };
   }
 
   processProps (props) {
-    const { machine, builders, onFocus, onBlur } = props;
+    const { machine, builders, requestFocus, requestBlur, requestTransition, requestRewind } = props;
     if (machine !== this.state.machine) {
-      if (this.state.machine) this.state.machine.removeListener('state changed', this.getStateArray);
+      if (this.state.machine) this.state.machine.removeListener('state changed', this.onStateChanged);
       this.setState({
         machine: machine
       });
       this.state.machine.on('submit', () => console.log('submit')); // TODO deatch when component unmounts
-      this.state.machine.on('state changed', this.getStateArray);
-      this.getStateArray();
+      this.state.machine.on('state changed', this.onStateChanged);
+      this.onStateChanged();
     }
     if (builders !== this.state.builders) {
       this.setState({
         builders: builders
       });
     }
-    if (onFocus !== this.state.onFocus) {
+    if (requestTransition !== this.state.requestTransition) {
       this.setState({
-        onFocus: onFocus
+        requestTransition: requestTransition
       });
     }
-    if (onBlur !== this.state.onBlur) {
+    if (requestRewind !== this.state.requestRewind) {
       this.setState({
-        onBlur: onBlur
+        requestRewind: requestRewind
+      });
+    }
+    if (requestFocus !== this.state.requestFocus) {
+      this.setState({
+        requestFocus: requestFocus
+      });
+    }
+    if (requestBlur !== this.state.requestBlur) {
+      this.setState({
+        requestBlur: requestBlur
       });
     }
   }
@@ -59,21 +71,7 @@ export class Token extends Component {
   }
 
   @bind
-  transition () {
-    this.state.machine.transition();
-    this.setState({focused: true});
-    this.state.onFocus();
-  }
-
-  @bind
-  rewind () {
-    this.state.machine.rewind();
-    this.setState({focused: true});
-    this.state.onFocus();
-  }
-
-  @bind
-  getStateArray () {
+  onStateChanged () {
     const result = [];
     let current = this.state.machine.state;
     while (current !== undefined) {
@@ -83,6 +81,8 @@ export class Token extends Component {
     this.setState({
       stateArray: result
     });
+    this.setState({focused: true});
+    this.state.requestFocus();
   }
 
   get isBlank () {
@@ -129,28 +129,29 @@ export class Token extends Component {
   }
 
   @bind
-  onFocus () {
+  requestFocus () {
     this.setState({focused: true});
-    this.state.onFocus();
+    this.state.requestFocus();
   }
 
   @bind
-  onBlur () {
+  requestBlur () {
     this.setState({focused: false});
-    this.state.onBlur();
+    this.state.requestBlur();
   }
 
-  render (props, {machine, tokens, onFocus, onBlur, focused}) {
+  render (props, {machine, tokens, requestFocus, requestBlur, focused}) {
     return (
       <div className='token'>
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);
           return (<Builder
+            machine={machine}
             machineState={s}
-            onTransition={this.transition}
-            onRewind={this.rewind}
-            onFocus={this.onFocus}
-            onBlur={this.onBlur}
+            requestTransition={this.state.requestTransition}
+            requestRewind={this.state.requestRewind}
+            requestFocus={this.requestFocus}
+            requestBlur={this.requestBlur}
             readOnly={s !== machine.state}
             blank={this.isBlank}
             focused={s === machine.state && focused} />);

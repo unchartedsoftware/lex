@@ -1,6 +1,5 @@
 import { bind } from 'decko';
 import { Component } from 'preact';
-import { StateTransitionError } from '../lib/errors';
 
 export class Builder extends Component {
   constructor () {
@@ -8,13 +7,49 @@ export class Builder extends Component {
     this.state = {
       valid: true,
       readOnly: false,
-      onFocus: () => {},
-      onBlur: () => {}
+      requestFocus: () => {},
+      requestBlur: () => {},
+      requestTransition: () => {},
+      requestRewind: () => {}
     };
   }
 
+  cleanupListeners () {
+    if (this.state.machine) {
+      this.state.machine.removeListener('state change', this.onTransition);
+      this.state.machine.removeListener('state change failed', this.onTransitionFailed);
+    }
+  }
+
+  componentWillUnmount () {
+    this.cleanupListeners();
+  }
+
   processProps (props) {
-    const { machineState, onTransition, onRewind, readOnly, blank, focused, onFocus, onBlur } = props;
+    const {
+      machine,
+      machineState,
+      requestTransition,
+      requestRewind,
+      readOnly,
+      blank,
+      focused,
+      requestFocus,
+      requestBlur
+    } = props;
+    if (machine !== this.state.machine) {
+      this.cleanupListeners();
+      this.setState({
+        machine: machine
+      });
+      machine.on('state change', this.onTransition);
+      machine.on('state change failed', this.onTransitionFailed);
+    }
+    if (machineState !== this.state.machineState) {
+      this.setState({
+        machineState: machineState
+      });
+    }
     if (readOnly !== this.state.readOnly) {
       this.setState({
         readOnly: readOnly
@@ -25,32 +60,27 @@ export class Builder extends Component {
         blank: blank
       });
     }
-    if (onTransition !== this.state.onTransition) {
+    if (requestTransition !== this.state.requestTransition) {
       this.setState({
-        onTransition: onTransition
+        requestTransition: requestTransition
+      });
+    }
+    if (requestRewind !== this.state.requestRewind) {
+      this.setState({
+        requestRewind: requestRewind
       });
     }
     if (focused) {
       setTimeout(() => { this.focus(); });
     }
-    if (onFocus !== this.state.onFocus) {
+    if (requestFocus !== this.state.requestFocus) {
       this.setState({
-        onFocus: onFocus
+        requestFocus: requestFocus
       });
     }
-    if (onBlur !== this.state.onBlur) {
+    if (requestBlur !== this.state.requestBlur) {
       this.setState({
-        onBlur: onBlur
-      });
-    }
-    if (onRewind !== this.state.onRewind) {
-      this.setState({
-        onRewind: onRewind
-      });
-    }
-    if (machineState !== this.state.machineState) {
-      this.setState({
-        machineState: machineState
+        requestBlur: requestBlur
       });
     }
   }
@@ -63,21 +93,24 @@ export class Builder extends Component {
     this.processProps(nextProps);
   }
 
-  transition () {
-    try {
-      this.setState({valid: true, errorMsg: undefined});
-      this.state.onTransition();
-    } catch (err) {
-      if (err instanceof StateTransitionError) {
-        this.setState({valid: false, errorMsg: err.message});
-      } else {
-        throw err;
-      }
-    }
+  @bind
+  onTransition () {
+    this.setState({valid: true, errorMsg: undefined});
   }
 
-  rewind () {
-    this.state.onRewind();
+  @bind
+  onTransitionFailed (reason) {
+    this.setState({valid: true, errorMsg: reason.message});
+  }
+
+  @bind
+  requestTransition () {
+    this.state.requestTransition();
+  }
+
+  @bind
+  requestRewind () {
+    this.state.requestRewind();
   }
 
   focus () {
@@ -89,13 +122,15 @@ export class Builder extends Component {
   }
 
   @bind
-  informFocus () {
-    this.state.onFocus();
+  requestFocus () {
+    this.state.requestFocus();
   }
 
   @bind
-  informBlur () {
-    this.state.onBlur();
+  requestBlur (e) {
+    if (e.relatedTarget && !e.relatedTarget.classList.contains('lex-box')) {
+      this.state.requestBlur();
+    }
   }
 
   renderReadOnly (props, state) {

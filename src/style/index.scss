@@ -1,4 +1,4 @@
-div.search-box {
+div.lex-box {
   height: auto;
 }
 
@@ -56,7 +56,7 @@ div.assistant-box {
     li {
       margin: 0; padding: 0.5rem 1rem;
       cursor: pointer;
-      &:hover {
+      &:hover, &.active {
         color: #fff;
         background-color: #0097a7;
       }

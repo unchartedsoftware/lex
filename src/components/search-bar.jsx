@@ -1,7 +1,13 @@
 import { bind } from 'decko';
 import { Component } from 'preact';
 import { TokenStateMachine } from '../lib/token-state-machine';
+import { StateTransitionError } from '../lib/errors';
 import { Token } from './token';
+
+const eventsToDelegate = new Map();
+eventsToDelegate.set('ArrowUp', true);
+eventsToDelegate.set('ArrowDown', true);
+eventsToDelegate.set('Tab', true);
 
 export class SearchBar extends Component {
   constructor () {
@@ -52,7 +58,12 @@ export class SearchBar extends Component {
       const Assistant = this.state.builders.getAssistant(activeMachine.state.template.constructor);
       return (
         <div className='assistant-box'>
-          <Assistant machineState={activeMachine.state} />
+          <Assistant
+            machineState={activeMachine.state}
+            ref={(a) => { this.assistant = a; }}
+            requestTransition={this.transition}
+            requestRewind={this.rewind}
+          />
         </div>
       );
     } catch (err) {
@@ -61,20 +72,53 @@ export class SearchBar extends Component {
   }
 
   @bind
-  onFocus () {
+  focus () {
     this.setState({focused: true});
   }
 
   @bind
-  onBlur () {
+  blur () {
     this.setState({focused: false});
+  }
+
+  @bind
+  transition () {
+    try {
+      this.state.activeMachine.transition();
+    } catch (err) {
+      if (err instanceof StateTransitionError) {
+        console.error(err.message);
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  @bind
+  rewind () {
+    this.state.activeMachine.rewind();
+  }
+
+  @bind
+  onKeyDown (e) {
+    this.unboxedValue = e.target.value;
+    if (this.assistant && eventsToDelegate.has(e.code) && eventsToDelegate.get(e.code)) {
+      this.assistant.delegateEvent(e);
+    }
   }
 
   render (props, {tokens, builders, machines, activeMachine}) {
     return (
-      <div className='search-box form-control'>
+      <div className='lex-box form-control' onKeyDown={this.onKeyDown} tabIndex='0'>
         { machines.map(m => <Token machine={m} builders={builders} />) }
-        <Token machine={activeMachine} builders={builders} onFocus={this.onFocus} onBlur={this.onBlur} />
+        <Token
+          machine={activeMachine}
+          builders={builders}
+          requestFocus={this.focus}
+          requestBlur={this.blur}
+          requestTransition={this.transition}
+          requestRewind={this.rewind}
+        />
         { this.renderAssistant(activeMachine) }
       </div>
     );

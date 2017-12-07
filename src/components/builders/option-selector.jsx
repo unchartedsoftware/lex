@@ -25,12 +25,12 @@ export class OptionSelector extends Builder {
     switch (e.code) {
       case 'Tab':
         e.preventDefault();
-        this.transition();
+        this.requestTransition();
         break;
       case 'Backspace':
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
           e.preventDefault();
-          this.rewind();
+          this.requestRewind();
         }
         break;
       case 'Escape':
@@ -76,8 +76,8 @@ export class OptionSelector extends Builder {
         onKeyUp={this.handleKeyUp}
         value={typedText}
         onInput={linkState(this, 'typedText')}
-        onFocus={this.informFocus}
-        onBlur={this.informBlur}
+        onFocus={this.requestFocus}
+        onBlur={this.requestBlur}
         ref={(input) => { this.textInput = input; }}
         disabled={readOnly} />
     );

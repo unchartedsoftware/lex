@@ -10,4 +10,8 @@ export class Assistant extends Builder {
   renderReadOnly (props, state) {
     // do nothing
   }
+
+  delegateEvent () {
+    // override in subclass - keyDown events coming from search-box
+  }
 }
