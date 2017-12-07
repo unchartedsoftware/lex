@@ -100,7 +100,9 @@ export class Builder extends Component {
 
   @bind
   onTransitionFailed (reason) {
-    this.setState({valid: false, errorMsg: reason.message});
+    if (this.state.machineState === this.state.machine.state) {
+      this.setState({valid: false, errorMsg: reason.message});
+    }
   }
 
   @bind
