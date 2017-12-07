@@ -15,6 +15,7 @@ import { SearchBar } from './components/search-bar';
 export default class App extends Component {
   constructor () {
     super();
+    // TODO move to library object - as a bunch of overridable defaults
     this.state.builders = new StateBuilderFactory();
     this.state.builders
       .registerBuilder(OptionSelection, OptionSelector)
@@ -26,7 +27,7 @@ export default class App extends Component {
       .registerAssistant(TextRelationSelection, OptionAssistant)
       .registerAssistant(NumericRelationSelection, OptionAssistant);
 
-    // TODO make chainable using a Builder class
+    // TODO make chainable using some kind of awesome Builder class
     this.state.machineTemplate = new OptionSelection({
       name: 'Choose a field to search',
       options: function () {
