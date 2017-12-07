@@ -56,7 +56,7 @@ export class OptionSelector extends Builder {
   @bind
   handleKeyUp (e) {
     this.unboxedValue = e.target.value;
-    this.state.machineState.template.refreshOptions();
+    this.state.machineState.template.refreshOptions(e.target.value);
   }
 
   focus () {

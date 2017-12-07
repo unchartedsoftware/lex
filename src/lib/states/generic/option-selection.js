@@ -55,8 +55,13 @@ export class OptionSelection extends StateTemplate {
       _options.set(this, config.options);
     } else {
       _options.set(this, []);
-      _refreshOptions.set(this, async () => {
-        this.options = await config.options();
+      _refreshOptions.set(this, async (hint = '') => {
+        try {
+          this.options = await config.options(hint);
+        } catch (err) {
+          console.error('Could not refresh list of options.');
+          throw err;
+        }
       });
       this.refreshOptions();
     }
@@ -81,9 +86,15 @@ export class OptionSelection extends StateTemplate {
     }
   }
 
-  refreshOptions () {
+  /**
+   * A function which refreshes the list of options based on what a user has entered so far.
+   *
+   * @param {String | undefined} hint - What the user has typed, if anything.
+   * @returns {Promise} Resolves with the new list of options.
+   */
+  refreshOptions (hint = '') {
     if (_refreshOptions.has(this)) {
-      _refreshOptions.get(this)();
+      _refreshOptions.get(this)(hint);
     }
   }
 
