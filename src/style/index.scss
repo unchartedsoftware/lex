@@ -38,13 +38,23 @@ div.token  {
   }
 }
 
+div.lex-box.focused {
+  div.token {
+    opacity: 0.5;
+    &.active {
+      opacity: 1;
+    }
+  }
+}
+
 div.assistant-box {
   display: block;
   margin: 0 auto;
-  width: 100%;
+  min-width: 400px;
   min-height: 20px;
   background-color: white;
   border:  1px solid #d9d9d9;
+  position: absolute;
 
   div.assistant-header {
     color: #8d8d8d;

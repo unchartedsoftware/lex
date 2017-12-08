@@ -20,7 +20,8 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "wolfy87-eventemitter": "5.2.4"
+    "wolfy87-eventemitter": "5.2.4",
+    "preact-portal": "1.1.x"
   },
   "devDependencies": {
     "bootstrap": "3.3.7",

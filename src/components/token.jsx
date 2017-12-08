@@ -193,7 +193,7 @@ export class Token extends Component {
 
   render (props, {active, machine, tokens, requestFocus, requestBlur, focused}) {
     return (
-      <div className='token'>
+      <div className={active ? 'token active' : 'token'}>
         &#128269;
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);

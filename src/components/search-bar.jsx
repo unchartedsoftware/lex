@@ -1,5 +1,6 @@
 import { bind } from 'decko';
 import { Component } from 'preact';
+import Portal from 'preact-portal';
 import { TokenStateMachine } from '../lib/token-state-machine';
 import { StateTransitionError } from '../lib/errors';
 import { Token } from './token';
@@ -116,15 +117,23 @@ export class SearchBar extends Component {
     try {
       if (!this.state.active || !this.state.focused) return;
       const Assistant = this.state.builders.getAssistant(activeMachine.state.template.constructor);
+      const rect = this.searchBox.getBoundingClientRect();
+      const pos = {
+        left: rect.left,
+        top: rect.top + rect.height,
+        'min-width': rect.width
+      };
       return (
-        <div className='assistant-box'>
-          <Assistant
-            machineState={activeMachine.state}
-            ref={(a) => { this.assistant = a; }}
-            requestTransition={this.transition}
-            requestRewind={this.rewind}
-          />
-        </div>
+        <Portal into='body'>
+          <div className='assistant-box' style={pos}>
+            <Assistant
+              machineState={activeMachine.state}
+              ref={(a) => { this.assistant = a; }}
+              requestTransition={this.transition}
+              requestRewind={this.rewind}
+            />
+          </div>
+        </Portal>
       );
     } catch (err) {
       // do nothing if there is no assistant.
@@ -203,9 +212,9 @@ export class SearchBar extends Component {
     this.state.onSubmit(this.state.tokenValues);
   }
 
-  render (props, {tokenValues, builders, machineTemplate, activeMachine}) {
+  render (props, {focused, tokenValues, builders, machineTemplate, activeMachine}) {
     return (
-      <div className='lex-box form-control' onKeyDown={this.onKeyDown} onClick={this.activate} tabIndex='0'>
+      <div className={focused ? 'lex-box form-control focused' : 'lex-box form-control'} onKeyDown={this.onKeyDown} onClick={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         {
           tokenValues.map((v, i) => {
             return <Token machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeToken} idx={i} />;

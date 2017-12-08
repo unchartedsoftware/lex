@@ -52,6 +52,11 @@ export default class App extends Component {
       <div>
         <h1> Search Bar Test </h1>
         <SearchBar builders={builders} machineTemplate={machineTemplate} onSubmit={(val) => console.log(val)} />
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus condimentum ex quam, sed tincidunt dolor maximus eu. Donec vel mi lacus. Etiam quam eros, iaculis sit amet ante a, pharetra consectetur libero. Fusce eu felis tempor, gravida dolor nec, tempor felis. Nulla lacus sapien, efficitur id blandit in, condimentum sed massa. Vestibulum et dui neque. Aliquam vulputate eget ex nec sodales. Donec dolor tortor, varius a sodales quis, ornare vel diam. Aliquam a diam ex. Maecenas ac luctus nisi. Curabitur rhoncus sapien vitae mi fermentum, a fringilla magna suscipit. Pellentesque ultrices odio vel erat posuere condimentum.
+
+        Ut urna ipsum, semper vitae venenatis eu, vehicula sit amet libero. Nam scelerisque ante vitae felis aliquam aliquam. Sed sit amet bibendum mi. Suspendisse at hendrerit nunc, vitae scelerisque est. In hac habitasse platea dictumst. Proin viverra magna nec nunc consectetur malesuada. In nec feugiat elit, nec mattis nulla. Donec lacinia tellus sed sem viverra, viverra condimentum neque faucibus. Pellentesque in turpis porttitor, vestibulum augue et, lacinia sem. Morbi accumsan faucibus nisi sed ullamcorper. Integer venenatis gravida leo a fringilla.
+
+        Nullam malesuada mauris id purus hendrerit, vitae feugiat diam porttitor. Nullam sagittis, eros eu ultrices pellentesque, dolor magna lobortis quam, nec pretium sem turpis aliquam dui. Duis sed magna sed sem placerat sodales vel eu ante. Suspendisse tempor auctor lectus sed porta. Vivamus in fringilla elit. Curabitur ac elit mollis, efficitur sem vel, tempor leo. Praesent sagittis et risus eget ullamcorper. Curabitur eu mollis dui. In non eros at ligula pellentesque fermentum ac vel est. Vestibulum consectetur lacus eu molestie</p>
       </div>
     );
   }
