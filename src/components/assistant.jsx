@@ -12,6 +12,6 @@ export class Assistant extends Builder {
   }
 
   delegateEvent () {
-    // override in subclass - keyDown events coming from search-box
+    // override in subclass - keyDown events coming from search-box. Return true if the event was consumed.
   }
 }

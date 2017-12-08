@@ -139,6 +139,8 @@ export class State extends EventEmitter {
     this.value = this.defaultValue;
   }
 
+  get isDefault () { return this.value === this.defaultValue; }
+
   /**
    * @returns {boolean} Returns `true` iff this state is valid. Should throw an exception with information about validation error otherwise.
    */

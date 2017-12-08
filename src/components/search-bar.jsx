@@ -17,6 +17,7 @@ export class SearchBar extends Component {
       builders: undefined,
       machineTemplate: undefined,
       machines: undefined,
+      active: false,
       focused: false
     };
   }
@@ -74,14 +75,34 @@ export class SearchBar extends Component {
     this.forceUpdate();
   }
 
+  @bind
+  activate () {
+    this.setState({active: true});
+  }
+
   get machineInstance () {
     if (!this.state.machineTemplate) return null;
     return new TokenStateMachine(this.state.machineTemplate);
   }
 
+  renderTokenBuilder (activeMachine, builders) {
+    if (this.state.active) {
+      return (<Token
+        active
+        machine={activeMachine}
+        builders={builders}
+        requestFocus={this.focus}
+        requestBlur={this.blur}
+        requestTransition={this.transition}
+        requestRewind={this.rewind}
+        onEndToken={this.onEndToken}
+      />);
+    }
+  }
+
   renderAssistant (activeMachine) {
     try {
-      if (!this.state.focused) return;
+      if (!this.state.active || !this.state.focused) return;
       const Assistant = this.state.builders.getAssistant(activeMachine.state.template.constructor);
       return (
         <div className='assistant-box'>
@@ -105,7 +126,11 @@ export class SearchBar extends Component {
 
   @bind
   blur () {
-    this.setState({focused: false});
+    if (this.state.activeMachine.rootState.isDefault) {
+      this.setState({focused: false, active: false});
+    } else {
+      this.setState({focused: false});
+    }
   }
 
   @bind
@@ -125,7 +150,11 @@ export class SearchBar extends Component {
 
   @bind
   rewind () {
-    this.state.activeMachine.rewind();
+    const oldState = this.state.activeMachine.state;
+    const newState = this.state.activeMachine.rewind();
+    if (oldState === newState) {
+      this.setState({active: false});
+    }
   }
 
   @bind
@@ -146,22 +175,13 @@ export class SearchBar extends Component {
 
   render (props, {tokenValues, builders, machineTemplate, activeMachine}) {
     return (
-      <div className='lex-box form-control' onKeyDown={this.onKeyDown} tabIndex='0'>
+      <div className='lex-box form-control' onKeyDown={this.onKeyDown} onClick={this.activate} tabIndex='0'>
         {
           tokenValues.map(v => {
             return <Token machine={new TokenStateMachine(machineTemplate, v)} builders={builders} />;
           })
         }
-        <Token
-          active
-          machine={activeMachine}
-          builders={builders}
-          requestFocus={this.focus}
-          requestBlur={this.blur}
-          requestTransition={this.transition}
-          requestRewind={this.rewind}
-          onEndToken={this.onEndToken}
-        />
+        { this.renderTokenBuilder(activeMachine, builders) }
         { this.renderAssistant(activeMachine) }
       </div>
     );

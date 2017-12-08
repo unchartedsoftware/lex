@@ -85,6 +85,7 @@ export class OptionAssistant extends Assistant {
       e.stopPropagation();
       e.preventDefault();
     }
+    return consumed;
   }
 
   renderInteractive (props, {valid, readOnly, options, unboxedValue, activeOption, suggestions}) {
