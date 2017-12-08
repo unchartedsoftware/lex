@@ -23,16 +23,21 @@ export class SearchBar extends Component {
   }
 
   processProps (props) {
-    const { machineTemplate, builders } = props;
+    const { machineTemplate, builders, value = [] } = props;
     if (machineTemplate !== this.state.machineTemplate) {
       this.setState({
         machineTemplate: machineTemplate,
-        activeMachine: new TokenStateMachine(machineTemplate), // TODO how do we edit tokens?
+        activeMachine: new TokenStateMachine(machineTemplate) // TODO how do we edit tokens?
       });
     }
     if (builders !== this.state.builders) {
       this.setState({
         builders: builders
+      });
+    }
+    if (value !== this.state.tokenValues) {
+      this.setState({
+        tokenValues: value
       });
     }
   }
