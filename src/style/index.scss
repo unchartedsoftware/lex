@@ -7,9 +7,10 @@ div.token  {
   background: #ededed;
   border-radius: 3px;
   border: 1px solid #d9d9d9;
-  margin-top: -0.5px;
+  margin: -0.5px 0.6rem 0 0;
   white-space: nowrap;
   cursor: default;
+  user-select: none;
 
   .token-input {
     display: inline-block;

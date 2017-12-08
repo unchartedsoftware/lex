@@ -8,22 +8,18 @@ export class OptionSelector extends Builder {
     this.state.options = [];
   }
 
-  componentWillUnmount () {
-    this.cleanupListeners();
-  }
-
   cleanupListeners () {
+    super.cleanupListeners();
     if (this.state.machineState) {
       this.state.machineState.removeListener('options changed', this.onOptionsChanged);
       this.state.machineState.removeListener('value changed', this.onValueChanged);
     }
   }
 
-  processProps (props) {
-    super.processProps(props);
+  connectListeners () {
+    super.connectListeners();
     this.state.machineState.on('options changed', this.onOptionsChanged);
     this.state.machineState.on('value changed', this.onValueChanged);
-    // TODO do we need to modify validation state?
   }
 
   @bind

@@ -13,7 +13,7 @@ export class SearchBar extends Component {
   constructor () {
     super();
     this.state = {
-      tokens: [],
+      tokenValues: [],
       builders: undefined,
       machineTemplate: undefined,
       machines: undefined,
@@ -27,10 +27,7 @@ export class SearchBar extends Component {
       this.setState({
         machineTemplate: machineTemplate,
         activeMachine: new TokenStateMachine(machineTemplate), // TODO how do we edit tokens?
-        machines: this.state.tokens.map(t => new TokenStateMachine(machineTemplate)) // TODO bind incoming values to TokenStateMachine
       });
-      // TODO emit search change event because we just wiped out the search?
-      this.state.activeMachine.on('state changed', () => this.forceUpdate());
     }
     if (builders !== this.state.builders) {
       this.setState({
@@ -45,6 +42,36 @@ export class SearchBar extends Component {
 
   componentWillReceiveProps (nextProps) {
     this.processProps(nextProps);
+  }
+
+  componentWillUnmount () {
+    this.cleanupListeners();
+  }
+
+  componentDidUpdate () {
+    this.connectListeners();
+  }
+
+  componentDidMount () {
+    this.connectListeners();
+  }
+
+  connectListeners () {
+    if (this.state.activeMachine) {
+      // TODO emit search change event because we just wiped out the search?
+      this.state.activeMachine.on('state changed', this.forceDraw);
+    }
+  }
+
+  cleanupListeners () {
+    if (this.state.activeMachine) {
+      this.state.activeMachine.removeListener('state changed', this.forceDraw);
+    }
+  }
+
+  @bind
+  forceDraw () {
+    this.forceUpdate();
   }
 
   get machineInstance () {
@@ -109,17 +136,31 @@ export class SearchBar extends Component {
     }
   }
 
-  render (props, {tokens, builders, machines, activeMachine}) {
+  @bind
+  onEndToken (v) {
+    this.setState({
+      tokenValues: [...this.state.tokenValues, v]
+    });
+    this.state.activeMachine.reset();
+  }
+
+  render (props, {tokenValues, builders, machineTemplate, activeMachine}) {
     return (
       <div className='lex-box form-control' onKeyDown={this.onKeyDown} tabIndex='0'>
-        { machines.map(m => <Token machine={m} builders={builders} />) }
+        {
+          tokenValues.map(v => {
+            return <Token machine={new TokenStateMachine(machineTemplate, v)} builders={builders} />;
+          })
+        }
         <Token
+          active
           machine={activeMachine}
           builders={builders}
           requestFocus={this.focus}
           requestBlur={this.blur}
           requestTransition={this.transition}
           requestRewind={this.rewind}
+          onEndToken={this.onEndToken}
         />
         { this.renderAssistant(activeMachine) }
       </div>

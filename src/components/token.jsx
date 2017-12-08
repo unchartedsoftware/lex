@@ -7,26 +7,38 @@ export class Token extends Component {
     this.state = {
       stateArray: [],
       focused: false,
+      active: false,
       machine: undefined,
       builders: undefined,
       requestFocus: () => {},
       requestBlur: () => {},
       requestTransition: () => {},
-      requestRewind: () => {}
+      requestRewind: () => {},
+      onEndToken: () => {}
     };
   }
 
   processProps (props) {
-    const { machine, builders, requestFocus, requestBlur, requestTransition, requestRewind } = props;
+    const {
+      active,
+      machine,
+      builders,
+      requestFocus = () => {},
+      requestBlur = () => {},
+      requestTransition = () => {},
+      requestRewind = () => {},
+      onEndToken = () => {}
+    } = props;
+    if (active !== this.state.active) {
+      this.setState({
+        active: active
+      });
+    }
     if (machine !== this.state.machine) {
-      if (this.state.machine) this.state.machine.removeListener('state changed', this.onStateChanged);
+      this.cleanupListeners();
       this.setState({
         machine: machine
       });
-      this.state.machine.on('end', () => {
-        console.log(this.value);
-      }); // TODO deatch when component unmounts
-      this.state.machine.on('state changed', this.onStateChanged);
       this.onStateChanged();
     }
     if (builders !== this.state.builders) {
@@ -54,22 +66,51 @@ export class Token extends Component {
         requestBlur: requestBlur
       });
     }
+    if (onEndToken !== this.state.onEndToken) {
+      this.setState({
+        onEndToken: onEndToken
+      });
+    }
+  }
+
+  cleanupListeners () {
+    if (this.state.machine) {
+      this.state.machine.removeListener('state changed', this.getStateArray);
+      this.state.machine.removeListener('end', this.endToken);
+    }
+  }
+
+  connectListeners () {
+    if (this.state.machine) {
+      this.state.machine.on('end', this.endToken);
+      this.state.machine.on('state changed', this.onStateChanged);
+    }
   }
 
   componentWillUnmount () {
     this.cleanupListeners();
   }
 
-  cleanupListeners () {
-    if (this.state.machine) this.state.machine.removeListener('state changed', this.getStateArray);
+  componentDidUpdate () {
+    this.connectListeners();
   }
 
   componentWillMount () {
     this.processProps(this.props);
   }
 
+  componentDidMount () {
+    this.connectListeners();
+  }
+
   componentWillReceiveProps (nextProps) {
+    this.cleanupListeners();
     this.processProps(nextProps);
+  }
+
+  @bind
+  endToken () {
+    this.state.onEndToken(this.value);
   }
 
   @bind
@@ -97,13 +138,7 @@ export class Token extends Component {
    * @returns {Array[any]} An array of boxed values.
    */
   get value () {
-    const result = [];
-    let current = this.state.machine.state;
-    while (current !== undefined) {
-      result.unshift(current.value);
-      current = current.parent;
-    }
-    return result;
+    return this.state.machine.value;
   }
 
   /**
@@ -121,13 +156,7 @@ export class Token extends Component {
    * @returns {Array[String]} An array of unboxed values.
    */
   get unboxedValue () {
-    const result = [];
-    let current = this.state.machine.state;
-    while (current !== undefined) {
-      result.unshift(current.unboxedValue);
-      current = current.parent;
-    }
-    return result;
+    return this.state.machine.unboxedValue;
   }
 
   @bind
@@ -142,7 +171,7 @@ export class Token extends Component {
     this.state.requestBlur();
   }
 
-  render (props, {machine, tokens, requestFocus, requestBlur, focused}) {
+  render (props, {active, machine, tokens, requestFocus, requestBlur, focused}) {
     return (
       <div className='token'>
         &nbsp;&#128269;
@@ -155,9 +184,9 @@ export class Token extends Component {
             requestRewind={this.state.requestRewind}
             requestFocus={this.requestFocus}
             requestBlur={this.requestBlur}
-            readOnly={s !== machine.state}
+            readOnly={!active || s !== machine.state}
             blank={this.isBlank}
-            focused={s === machine.state && focused} />);
+            focused={active && s === machine.state && focused} />);
         })}
       </div>
     );

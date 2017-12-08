@@ -16,8 +16,15 @@ export class Builder extends Component {
 
   cleanupListeners () {
     if (this.state.machine) {
-      this.state.machine.removeListener('state change', this.onTransition);
+      this.state.machine.removeListener('state changed', this.onTransition);
       this.state.machine.removeListener('state change failed', this.onTransitionFailed);
+    }
+  }
+
+  connectListeners () {
+    if (this.state.machine) {
+      this.state.machine.on('state changed', this.onTransition);
+      this.state.machine.on('state change failed', this.onTransitionFailed);
     }
   }
 
@@ -25,25 +32,35 @@ export class Builder extends Component {
     this.cleanupListeners();
   }
 
+  componentDidUpdate () {
+    this.connectListeners();
+  }
+
+  componentWillMount () {
+    this.processProps(this.props);
+  }
+
+  componentWillReceiveProps (nextProps) {
+    this.cleanupListeners();
+    this.processProps(nextProps);
+  }
+
   processProps (props) {
     const {
       machine,
       machineState,
-      requestTransition,
-      requestRewind,
+      requestTransition = () => {},
+      requestRewind = () => {},
       readOnly,
       blank,
       focused,
-      requestFocus,
-      requestBlur
+      requestFocus = () => {},
+      requestBlur = () => {}
     } = props;
     if (machine !== this.state.machine) {
-      this.cleanupListeners();
       this.setState({
         machine: machine
       });
-      machine.on('state changed', this.onTransition);
-      machine.on('state change failed', this.onTransitionFailed);
     }
     if (machineState !== this.state.machineState) {
       this.setState({
@@ -85,14 +102,6 @@ export class Builder extends Component {
     }
   }
 
-  componentWillMount () {
-    this.processProps(this.props);
-  }
-
-  componentWillReceiveProps (nextProps) {
-    this.processProps(nextProps);
-  }
-
   @bind
   onTransition () {
     this.setState({valid: true, errorMsg: undefined});
@@ -107,12 +116,12 @@ export class Builder extends Component {
 
   @bind
   requestTransition () {
-    this.state.requestTransition();
+    return this.state.requestTransition();
   }
 
   @bind
   requestRewind () {
-    this.state.requestRewind();
+    return this.state.requestRewind();
   }
 
   focus () {

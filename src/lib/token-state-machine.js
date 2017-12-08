@@ -11,12 +11,25 @@ const _currentState = new WeakMap();
 export class TokenStateMachine extends EventEmitter {
   /**
    * @param {StateTemplate} rootStateTemplate - The DAG describing the states for this state machine.
+   * @param {Array[any] | undefined} values - A set of initial (boxed) values to apply to the machine one by one (optional).
    */
-  constructor (rootStateTemplate) {
+  constructor (rootStateTemplate, values = undefined) {
     super();
+    this._dispatchId = Math.random();
     const root = rootStateTemplate.getInstance();
     _rootState.set(this, root);
     _currentState.set(this, root);
+    // bind to states
+    if (values !== undefined) {
+      for (const v of values) {
+        this.state.value = v;
+        try {
+          this.transition();
+        } catch (err) {
+          break;
+        }
+      }
+    }
   }
 
   /**
@@ -69,16 +82,76 @@ export class TokenStateMachine extends EventEmitter {
 
   /**
    * Transition to the parent state from the current state, regardless of whether or not the current state
-   * is valid, or has a parent.  If the current state has no parent, then this is a no-op.
+   * is valid, or has a parent. Resets the value of the current state before rewinding.
+   * If the current state has no parent, then this will only reset the value of the current state.
    *
    * @returns {State} The new current state.
    */
   rewind () {
     if (this.state.parent) {
       const oldState = this.state;
+      oldState.reset();
       _currentState.set(this, this.state.parent);
       this.emit('state changed', this.state, oldState);
     }
     return this.state;
+  }
+
+  /**
+   * Reset all values in this state machine, from its current state upwards, and
+   * reset all progress to the root `State`.
+   *
+   * @returns {State} The new current state.
+   */
+  reset () {
+    // erase all values
+    const oldState = this.state;
+    let s = this.state;
+    do {
+      s.reset();
+      s = s.parent;
+    } while (s);
+    _currentState.set(this, this.rootState);
+    this.emit('state changed', this.state, oldState);
+    return this.state;
+  }
+
+  /**
+   * Get the values bound to underlying states, up to the current state.
+   *
+   * @returns {Array[any]} An array of boxed values.
+   */
+  get value () {
+    const result = [];
+    let current = this.state;
+    while (current !== undefined) {
+      result.unshift(current.value);
+      current = current.parent;
+    }
+    return result;
+  }
+
+  /**
+   * Alias for this.value.
+   *
+   * @returns {Array[any]} An array of boxed values.
+   */
+  get boxedValue () {
+    return this.value;
+  }
+
+  /**
+   * Get the (unboxed) values bound to underlying states, up to the current state.
+   *
+   * @returns {Array[String]} An array of unboxed values.
+   */
+  get unboxedValue () {
+    const result = [];
+    let current = this.state;
+    while (current !== undefined) {
+      result.unshift(current.unboxedValue);
+      current = current.parent;
+    }
+    return result;
   }
 }
