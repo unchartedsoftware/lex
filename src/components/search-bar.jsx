@@ -18,12 +18,13 @@ export class SearchBar extends Component {
       machineTemplate: undefined,
       machines: undefined,
       active: false,
-      focused: false
+      focused: false,
+      onSubmit: () => {}
     };
   }
 
   processProps (props) {
-    const { machineTemplate, builders, value = [] } = props;
+    const { machineTemplate, builders, value = [], onSubmit } = props;
     if (machineTemplate !== this.state.machineTemplate) {
       this.setState({
         machineTemplate: machineTemplate,
@@ -38,6 +39,11 @@ export class SearchBar extends Component {
     if (value !== this.state.tokenValues) {
       this.setState({
         tokenValues: value
+      });
+    }
+    if (onSubmit !== this.state.onSubmit) {
+      this.setState({
+        onSubmit: onSubmit
       });
     }
   }
@@ -100,6 +106,7 @@ export class SearchBar extends Component {
         requestBlur={this.blur}
         requestTransition={this.transition}
         requestRewind={this.rewind}
+        requestRemoval={this.removeToken}
         onEndToken={this.onEndToken}
       />);
     }
@@ -176,14 +183,32 @@ export class SearchBar extends Component {
       tokenValues: [...this.state.tokenValues, v]
     });
     this.state.activeMachine.reset();
+    this.submit();
+  }
+
+  @bind
+  removeToken (idx) {
+    if (idx === undefined) {
+      this.setState({active: false});
+    } else {
+      this.setState({
+        tokenValues: [...this.state.tokenValues.slice(0, idx), ...this.state.tokenValues.slice(idx + 1)]
+      });
+      this.submit();
+    }
+  }
+
+  @bind
+  submit () {
+    this.state.onSubmit(this.state.tokenValues);
   }
 
   render (props, {tokenValues, builders, machineTemplate, activeMachine}) {
     return (
       <div className='lex-box form-control' onKeyDown={this.onKeyDown} onClick={this.activate} tabIndex='0'>
         {
-          tokenValues.map(v => {
-            return <Token machine={new TokenStateMachine(machineTemplate, v)} builders={builders} />;
+          tokenValues.map((v, i) => {
+            return <Token machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeToken} idx={i} />;
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }

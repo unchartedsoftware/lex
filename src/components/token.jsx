@@ -5,11 +5,12 @@ export class Token extends Component {
   constructor () {
     super(arguments);
     this.state = {
-      stateArray: [],
-      focused: false,
+      idx: undefined,
       active: false,
+      focused: false,
       machine: undefined,
       builders: undefined,
+      stateArray: [],
       requestFocus: () => {},
       requestBlur: () => {},
       requestTransition: () => {},
@@ -20,15 +21,22 @@ export class Token extends Component {
 
   processProps (props) {
     const {
+      idx,
       active,
       machine,
       builders,
+      requestRemoval = () => {},
       requestFocus = () => {},
       requestBlur = () => {},
       requestTransition = () => {},
       requestRewind = () => {},
       onEndToken = () => {}
     } = props;
+    if (idx !== this.state.idx) {
+      this.setState({
+        idx: idx
+      });
+    }
     if (active !== this.state.active) {
       this.setState({
         active: active
@@ -64,6 +72,11 @@ export class Token extends Component {
     if (requestBlur !== this.state.requestBlur) {
       this.setState({
         requestBlur: requestBlur
+      });
+    }
+    if (requestRemoval !== this.state.requestRemoval) {
+      this.setState({
+        requestRemoval: requestRemoval
       });
     }
     if (onEndToken !== this.state.onEndToken) {
@@ -171,10 +184,17 @@ export class Token extends Component {
     this.state.requestBlur();
   }
 
+  @bind
+  requestRemoval (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.state.requestRemoval(this.state.idx);
+  }
+
   render (props, {active, machine, tokens, requestFocus, requestBlur, focused}) {
     return (
       <div className='token'>
-        &nbsp;&#128269;
+        &#128269;
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);
           return (<Builder
@@ -188,6 +208,7 @@ export class Token extends Component {
             blank={this.isBlank}
             focused={active && s === machine.state && focused} />);
         })}
+        <i className='close' onClick={this.requestRemoval} >&times;</i>
       </div>
     );
   }

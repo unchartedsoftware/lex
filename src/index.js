@@ -51,7 +51,7 @@ export default class App extends Component {
     return (
       <div>
         <h1> Search Bar Test </h1>
-        <SearchBar builders={builders} machineTemplate={machineTemplate} />
+        <SearchBar builders={builders} machineTemplate={machineTemplate} onSubmit={(val) => console.log(val)} />
       </div>
     );
   }
