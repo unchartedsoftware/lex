@@ -20,8 +20,8 @@
     "serve": "NODE_ENV=development parcel test/index.html",
     "lint": "eslint ./src",
     "prepublishOnly": "npm run build",
-    "docs": "documentation build src/lex.js -f html -o docs",
-    "serve-docs": "documentation serve --watch src/lex.js"
+    "docs": "documentation build --config documentation.yml src/lex.js -f html -o docs",
+    "serve-docs": "documentation serve --config documentation.yml --watch src/lex.js"
   },
   "main": "dist/lex.js",
   "devDependencies": {

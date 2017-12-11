@@ -211,6 +211,7 @@ export class Builder extends Component {
    * @param {Object} state - Component state (`this.state`).
    * @param {boolean} state.valid - True iff the value of the underlying `State` is valid.
    * @param {boolean} state.readOnly - True iff this `Builder` is in read-only mode (generally speaking, if the user has progressed past this `State` to a later one).
+   * @param {State} state.machineState - The underlying `State`.
    * @example
    * renderInteractive (props, {valid, readOnly}) {
    *  return (
@@ -250,6 +251,14 @@ export class Builder extends Component {
    */
   get defaultValue () {
     return this.state.machineState.defaultValue;
+  }
+
+  /**
+   * @readonly
+   * @returns {State} The underlying `State`.
+   */
+  get machineState () {
+    return this.state.machineState;
   }
 
   /**

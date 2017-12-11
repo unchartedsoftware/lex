@@ -8,6 +8,7 @@ const _currentState = new WeakMap();
  * derived from a language specification in the form of a root `StateTemplate`
  * (which has a DAG of children).
  *
+ * @private
  * @param {StateTemplate} rootStateTemplate - The DAG describing the states for this state machine.
  * @param {any[] | undefined} values - A set of initial (boxed) values to apply to the machine one by one (optional).
  */

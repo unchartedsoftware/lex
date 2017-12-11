@@ -39,30 +39,30 @@ export class OptionAssistant extends Assistant {
 
   @bind
   onOptionSelected (key) {
-    this.state.machineState.unboxedValue = key;
+    this.machineState.unboxedValue = key;
     this.requestTransition();
   }
 
   processProps (props) {
     this.cleanupListeners();
     super.processProps(props);
-    if (this.state.machineState) {
-      this.state.machineState.on('options changed', this.onOptionsChange);
-      this.state.machineState.on('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
+    if (this.machineState) {
+      this.machineState.on('options changed', this.onOptionsChange);
+      this.machineState.on('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
       this.setState({
-        options: this.state.machineState.template.options,
+        options: this.machineState.template.options,
         unboxedValue: undefined,
         activeOption: -1,
-        suggestions: this.state.machineState.template.options.slice(0, 10)
+        suggestions: this.machineState.template.options.slice(0, 10)
       });
     }
     // TODO do we need to modify validation state?
   }
 
   cleanupListeners () {
-    if (this.state.machineState) {
-      this.state.machineState.removeListener('options changed', this.onOptionChange);
-      this.state.machineState.removeListener('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
+    if (this.machineState) {
+      this.machineState.removeListener('options changed', this.onOptionChange);
+      this.machineState.removeListener('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
     }
   }
 
@@ -82,7 +82,7 @@ export class OptionAssistant extends Assistant {
       case 'Tab':
         const activeOption = this.state.suggestions[this.state.activeOption];
         if (activeOption) {
-          this.state.machineState.value = activeOption;
+          this.machineState.value = activeOption;
           this.requestTransition();
         }
         break;
@@ -101,7 +101,7 @@ export class OptionAssistant extends Assistant {
     return (
       <div>
         <div className='assistant-header'>
-          {this.state.machineState.name}
+          {this.machineState.name}
           <span className='pull-right'><strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;<strong>Tab</strong> to select</span>
         </div>
         <div className='assistant-body'>

@@ -19,16 +19,16 @@ export class OptionSelector extends Builder {
 
   cleanupListeners () {
     super.cleanupListeners();
-    if (this.state.machineState) {
-      this.state.machineState.removeListener('options changed', this.onOptionsChanged);
-      this.state.machineState.removeListener('value changed', this.onValueChanged);
+    if (this.machineState) {
+      this.machineState.removeListener('options changed', this.onOptionsChanged);
+      this.machineState.removeListener('value changed', this.onValueChanged);
     }
   }
 
   connectListeners () {
     super.connectListeners();
-    this.state.machineState.on('options changed', this.onOptionsChanged);
-    this.state.machineState.on('value changed', this.onValueChanged);
+    this.machineState.on('options changed', this.onOptionsChanged);
+    this.machineState.on('value changed', this.onValueChanged);
   }
 
   @bind
@@ -61,7 +61,7 @@ export class OptionSelector extends Builder {
   @bind
   handleKeyUp (e) {
     this.unboxedValue = e.target.value;
-    this.state.machineState.template.refreshOptions(e.target.value);
+    this.machineState.template.refreshOptions(e.target.value);
   }
 
   focus () {
