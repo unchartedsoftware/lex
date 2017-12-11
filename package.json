@@ -19,10 +19,6 @@
     "watch": "NODE_ENV=develop preact watch",
     "lint": "eslint src"
   },
-  "dependencies": {
-    "wolfy87-eventemitter": "5.2.4",
-    "preact-portal": "1.1.x"
-  },
   "devDependencies": {
     "bootstrap": "3.3.7",
     "babel-eslint": "8.0.2",
@@ -44,10 +40,11 @@
     "preact-cli": "2.1.0",
     "preact": "8.x",
     "linkstate": "1.1.x",
-    "sass-loader": "6.0.6"
+    "sass-loader": "6.0.6",
+    "wolfy87-eventemitter": "5.2.4",
+    "preact-portal": "1.1.x"
   },
   "peerDependencies": {
-    "preact": "8.x",
-    "linkstate": "1.1.x"
+    "preact": "8.x"
   }
 }
