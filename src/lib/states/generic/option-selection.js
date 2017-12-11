@@ -68,6 +68,10 @@ export class OptionSelection extends StateTemplate {
     _allowUnknown.set(this, config.allowUnknown);
   }
 
+  get Option () {
+    return Option;
+  }
+
   /**
    * @returns {Array[Option]} - The list of options to select from.
    */
