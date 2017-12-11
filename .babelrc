@@ -1,4 +1,3 @@
 {
-  "presets": ["react-app"],
-  "plugins": ["transform-decorators-legacy"]
+  "presets": ["preact-app"]
 }

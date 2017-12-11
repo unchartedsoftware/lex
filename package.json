@@ -12,13 +12,12 @@
     "url": "ssh://git@stash.uncharted.software:7999/un/lex.git"
   },
   "scripts": {
-    "start": "if-env NODE_ENV=production && npm run -s serve || npm run -s dev",
-    "build": "preact build",
-    "parcel": "parcel build src/lex.js --no-minify",
-    "serve": "preact build && preact serve",
-    "dev": "npm run watch",
-    "watch": "NODE_ENV=develop preact watch",
-    "lint": "eslint src"
+    "start": "npm run serve",
+    "build": "npm run lint && npm run parcel-js && npm run parcel-css",
+    "parcel-js": "parcel build src/lex.js --no-minify",
+    "parcel-css": "parcel build src/style/index.scss --no-minify",
+    "serve": "NODE_ENV=development parcel test/index.html",
+    "lint": "eslint ./src"
   },
   "devDependencies": {
     "bootstrap": "3.3.7",
