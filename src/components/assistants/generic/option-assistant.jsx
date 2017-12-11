@@ -2,6 +2,14 @@ import { h } from 'preact';
 import { bind } from 'decko';
 import { Assistant } from '../../assistant';
 
+/**
+ * A visual interaction mechanism for supplying values
+ * to an `OptionState`. By default, this is registered as
+ * the `Assistant` for `OptionState`s.
+ *
+ * @example
+ * lex.registerBuilder(OptionState, OptionSelector)
+ */
 export class OptionAssistant extends Assistant {
   constructor () {
     super();

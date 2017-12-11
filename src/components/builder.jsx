@@ -4,6 +4,11 @@ import { h, Component } from 'preact';
 /**
  * An abstract superclass for a `Component` which can be
  * used to construct a portion of a Token.
+ *
+ * Subclasses generally implement `renderInteractive` and `focus`.
+ *
+ * @example
+ * // See OptionSelector for an example implementation.
  */
 export class Builder extends Component {
   constructor () {
@@ -18,6 +23,9 @@ export class Builder extends Component {
     };
   }
 
+  /**
+   * If overidden, must be called via `super.cleanupListeners()`.
+   */
   cleanupListeners () {
     if (this.state.machine) {
       this.state.machine.removeListener('state changed', this.onTransition);
@@ -25,6 +33,9 @@ export class Builder extends Component {
     }
   }
 
+  /**
+   * If overidden, must be called via `super.connectListeners()`.
+   */
   connectListeners () {
     if (this.state.machine) {
       this.state.machine.on('state changed', this.onTransition);
@@ -32,23 +43,42 @@ export class Builder extends Component {
     }
   }
 
+  /**
+   * If overidden, must be called via `super.componentWillUnmount()`.
+   */
   componentWillUnmount () {
     this.cleanupListeners();
   }
 
+  /**
+   * If overidden, must be called via `super.componentDidUpdate()`.
+   */
   componentDidUpdate () {
     this.connectListeners();
   }
 
+  /**
+   * If overidden, must be called via `super.componentWillMount()`.
+   */
   componentWillMount () {
     this.processProps(this.props);
   }
 
+  /**
+   * If overidden, must be called via `super.componentWillReceiveProps(nextProps)`.
+   *
+   * @param {Object} nextProps - Incoming properties.
+   */
   componentWillReceiveProps (nextProps) {
     this.cleanupListeners();
     this.processProps(nextProps);
   }
 
+  /**
+   * If overidden, must be called via `super.processProps(props)`.
+   *
+   * @param {Object} props - Incoming properties.
+   */
   processProps (props) {
     const {
       machine,
@@ -128,41 +158,86 @@ export class Builder extends Component {
     return this.state.requestRewind();
   }
 
+  /**
+   * Provide this builder with focus. Must be overriden in a subclass.
+   *
+   * @example
+   * focus () {
+   *   if (this.textInput) this.textInput.focus();
+   * }
+   */
   focus () {
     // override in subclass
   }
 
-  blur () {
-    // override in subclass
-  }
-
   @bind
+  /**
+   * Call from a subclass to inform containing components that this component has received focus.
+   * Since "focus" is not necessarily a literal concept (and could be triggered by a button press, or some
+   * other interaction), this is an artificial bubbling mechanism.
+   */
   requestFocus () {
     this.state.requestFocus();
   }
 
   @bind
+  /**
+   * Call from a subclass to inform containing components that this component has been blurred.
+   * Since "focus" is not necessarily a literal concept (and could be triggered by a button press, or some
+   * other interaction), this is an artificial bubbling mechanism.
+   *
+   * @param {Event} e - A blur event from some DOM element within this Builder's visual representation.
+   */
   requestBlur (e) {
     if (!e.relatedTarget || !e.relatedTarget.classList.contains('lex-box')) {
       this.state.requestBlur();
     }
   }
 
+  /*!
+   * @private
+   */
   renderReadOnly (props, state) {
     return (
       <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.unboxedValue}</span>
     );
   }
 
+  /**
+   * Render the interactive version of this `Builder`. Usually some form of `<input>`.
+   * Must override in subclasses.
+   *
+   * @param {Object} props - Properties.
+   * @param {Object} state - Component state (`this.state`).
+   * @param {boolean} state.valid - True iff the value of the underlying `State` is valid.
+   * @param {boolean} state.readOnly - True iff this `Builder` is in read-only mode (generally speaking, if the user has progressed past this `State` to a later one).
+   * @example
+   * renderInteractive (props, {valid, readOnly}) {
+   *  return (
+   *    <input
+   *       ref={(input) => { this.textInput = input; }}
+   *       type="text"
+   *       disabled={readOnly}
+   *       className={valid ? 'token-input' : 'token-input invalid'}
+   *    />
+   *   );
+   * }
+   */
   renderInteractive (props, state) {
     throw new Error(`${this.constructor.name} must implement renderInteractive()`);
   }
 
+  /*!
+   * @private
+   */
   render (props, state) {
     return state.readOnly ? this.renderReadOnly(props, state) : this.renderInteractive(props, state);
   }
 
   /**
+   * Getter for `this.isValid`.
+   *
+   * @readonly
    * @returns {boolean} Returns `true` iff this `State` is valid. Should throw an exception with information about validation error otherwise.
    */
   get isValid () {
@@ -170,51 +245,64 @@ export class Builder extends Component {
   }
 
   /**
-   * @returns {any} The current (boxed) value from this `State`.
+   * @readonly
+   * @returns {any} The (boxed) default value from the underlying `State`.
+   */
+  get defaultValue () {
+    return this.state.machineState.defaultValue;
+  }
+
+  /**
+   * Getter for `this.value`.
+   *
+   * @returns {any} The current (boxed) value from the underlying `State`.
    */
   get value () {
     return this.state.machineState.value;
   }
 
   /**
-   * @returns {any} The current (boxed) value from this `State`. An alias for this.value getter.
-   */
-  get boxedValue () {
-    return this.value;
-  }
-
-  /**
-   * @returns {any} The current (unboxed) value from this `State`.
-   */
-  get unboxedValue () {
-    return this.state.machineState.unboxedValue;
-  }
-
-  /**
-   * @param {any} newVal - A new (boxed) value for this `State`.
+   * Setter for `this.value`.
+   *
+   * @param {any} newVal - A new (boxed) value for the underlying `State`.
    */
   set value (newVal) {
     this.state.machineState.value = newVal;
   }
 
   /**
-   * @param {any} newBoxedVal - A new (boxed) value for this `State`. Alias for this.value setter.
+   * Getter for `this.boxedValue`.
+   *
+   * @returns {any} The current (boxed) value from the underlying `State`. An alias for this.value getter.
+   */
+  get boxedValue () {
+    return this.value;
+  }
+
+  /**
+   * Setter for `this.boxedValue`.
+   *
+   * @param {any} newBoxedVal - A new (boxed) value for the underlying `State`. Alias for this.value setter.
    */
   set boxedValue (newBoxedVal) {
     this.state.machineState.boxedValue = newBoxedVal;
   }
 
   /**
-   * @param {any} newUnboxedVal - A new (unboxed) value for this `State`.
+   * Getter for `this.unboxedValue`.
+   *
+   * @returns {any} The current (unboxed) value from the underlying `State`.
    */
-  set unboxedValue (newUnboxedVal) {
-    this.state.machineState.unboxedValue = newUnboxedVal;
+  get unboxedValue () {
+    return this.state.machineState.unboxedValue;
   }
 
   /**
-   * @returns {any} The (boxed) default value from this `State`.
+   * Setter for `this.unboxedValue`.
+   *
+   * @param {any} newUnboxedVal - A new (unboxed) value for the underlying `State`.
    */
-  get defaultValue () {
-    return this.state.machineState.defaultValue;
+  set unboxedValue (newUnboxedVal) {
+    this.state.machineState.unboxedValue = newUnboxedVal;
   }
 }

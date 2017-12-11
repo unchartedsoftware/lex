@@ -4,8 +4,12 @@ import { bind } from 'decko';
 import { Builder } from '../../builder';
 
 /**
- * The visual interaction mechanism for supplying values
- * to an `OptionState`.
+ * A visual interaction mechanism for supplying values
+ * to an `OptionState`. By default, this is registered as
+ * the `Builder` for `OptionState`s.
+ *
+ * @example
+ * lex.registerBuilder(OptionState, OptionSelector)
  */
 export class OptionSelector extends Builder {
   constructor () {

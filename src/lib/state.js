@@ -144,6 +144,10 @@ export class StateTemplate extends EventEmitter {
  * `this.value` always accepts/returns a boxed value. Where desired, the boxed and
  * unboxed versions of the value can be identical.
  *
+ * This class is an `EventEmitter` and exposes the following events:
+ * - `on('value changed', (newVal, oldVal) => {})` when the internal value changes.
+ * - `on('unbxoed value change attempted', (newUnboxedVal, oldUnboxedVal))` when a user attempts to change the unboxed value. If it cannot be boxed, it may not trigger `value changed`.
+ *
  * @param {StateTemplate} template - The template for this `State`.
  * @param {State | undefined} parent - The parent `State` (if any).
  */

@@ -38,6 +38,9 @@ const _allowUnknown = new WeakMap();
  *
  * By default, this state (and any extending classes) can be visually represented by `OptionSelector` and `OptionAssistant`.
  *
+ * This class is an `EventEmitter` and exposes the following events (in addition to `State`'s events):
+ * - `on('options changed', (newOptions, oldOptions) => {})` when the internal list of options changes.
+ *
  * @param {Object} config - A configuration object. Inherits all options from `StateTemplate`, and adds the following:
  * @param {Option[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them.
  * @param {boolean} config.allowUnknown - Allow user to enter unknown options by entering custom values.
