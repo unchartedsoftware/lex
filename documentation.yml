@@ -17,3 +17,7 @@ toc:
   - OptionSelector
   - name: Assistants
   - OptionAssistant
+  - name: Creating a Builder
+    file: src/docs/creating-a-builder.md
+  - name: Creating an Assistant
+    file: src/docs/creating-an-assistant.md

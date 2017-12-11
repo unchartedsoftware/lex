@@ -21,8 +21,13 @@ const sBuilders = Symbol('builders');
  *
  * @param {StateTemplate} language - The search language this bar will support.
  * @example
+ * // Instantiate a new instance of lex and bind it to the page.
  * const lex = new Lex(language);
  * lex.render(document.getElementById('lex-container'));
+ * @example
+ * // Override default builder/assistant associations
+ * const lex = new Lex(language);
+ * lex.registerBuilder(OptionState, MyCustomOptionSelector);
  */
 class Lex extends EventEmitter {
   constructor (language) {
