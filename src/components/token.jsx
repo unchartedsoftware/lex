@@ -1,6 +1,9 @@
 import { h, Component } from 'preact';
 import { bind } from '../../node_modules/decko/dist/decko';
 
+/**
+ * @private
+ */
 export class Token extends Component {
   constructor () {
     super(arguments);

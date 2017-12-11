@@ -11,22 +11,48 @@ const _value = new WeakMap();
 
 /**
  * Descibes a particular state in a state machine (DAG) which
- * represents the interactive build process for a token.
- * Classes extending this class must always have `parent` as the first constructor argument.
+ * represents the interactive build process for a token. The state
+ * machine implied by a chain of `StateTemplate`s will be traversed
+ * one state at a time (parent to child) by the user as they interact
+ * with its visual representation, resulting in a sequence of state
+ * values which constitute a valid "token" within your search language.
  *
- * Supports a notion of boxed/unboxed values, where the `State` will utilize an
- * internal representation of a value which is richer than the user-supplied one.
+ * This class is meant to be extended to implement new state types.
+ *
+ * `StateTemplate` supports a notion of boxed/unboxed values, where the
+ * internal representation of the value is richer than the `String` version
+ * supplied by the user. Override `boxValue` and `unboxValue` to utilize
+ * this functionality. By default, the internal representation and the
+ * user-supplied one are the same (a `string`), and no overriding is necessary.
+ *
+ * @param {object} config - Options for `StateTemplate`.
+ * @param {State | undefined} config.parent - The parent state. `undefined` if this is a root.
+ * @param {string} config.name - A useful label for this state.
+ * @param {Function | undefined} config.transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
+ * @param {Function | undefined} config.validationFunction - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
+ * @param {any} config.defaultValue - The default value for this state before it has been touched. Can be undefined.
+ *
+ * @example
+ * class MyCustomState extends StateTemplate {
+ *   constructor (config) {
+ *     super(config);
+ *     const {myCustomOption} = config;
+ *     // do something with myCustomOption
+ *   }
+ *
+ *   boxValue (userVal) {
+ *     // userVal is what a user might type to supply a value to this state
+ *     // TODO implement transform into richer internal representation
+ *   }
+ *
+ *   unboxValue (internalRepresentation) {
+ *     // TODO return a string representation of the richer internal representation.
+ *   }
+ * }
  */
 export class StateTemplate extends EventEmitter {
-  /**
-   * @param {Object} config - Options for `StateTemplate`.
-   *   @property {State|undefined} parent - The parent state. Undefined if this is a root.
-   *   @property {string} name - A useful label for this state.
-   *   @property {Function} transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
-   *   @property {Function} validationFunction - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
-   *   @property {any} defaultValue - The default value for this state before it has been touched. Can be undefined.
-   */
-  constructor ({parent, name, transitionFunction, validationFunction, defaultValue}) {
+  constructor (config) {
+    const {parent, name, transitionFunction, validationFunction, defaultValue} = config;
     super();
     _parent.set(this, parent);
     _name.set(this, name);
@@ -110,13 +136,16 @@ export class StateTemplate extends EventEmitter {
 }
 
 /**
- * Same as `StateTemplate`, but with concrete values.
+ * An extension of `StateTemplate`, but "instantiated" to support
+ * the storage of concrete values. This class is not intended to be
+ * used directly, but is instantiated from a `StateTemplate` automatically
+ * by a `TokenStateMachine`.
  *
- * Supports a notion of boxed/unboxed values, where the `State` will utilize an
- * internal representation of a value which is richer than the user-supplied one.
- *
- * `this.vaue` always accepts/returns a boxed value. Where desired, the boxed and
+ * `this.value` always accepts/returns a boxed value. Where desired, the boxed and
  * unboxed versions of the value can be identical.
+ *
+ * @param {StateTemplate} template - The template for this `State`.
+ * @param {State | undefined} parent - The parent `State` (if any).
  */
 export class State extends EventEmitter {
   constructor (template, parent) {
@@ -142,6 +171,8 @@ export class State extends EventEmitter {
   get isDefault () { return this.value === this.defaultValue; }
 
   /**
+   * Utilizes the `StateTemplate`'s `validationFunction` to check value validitiy.
+   *
    * @returns {boolean} Returns `true` iff this state is valid. Should throw an exception with information about validation error otherwise.
    */
   get isValid () {
@@ -149,6 +180,9 @@ export class State extends EventEmitter {
   }
 
   /**
+   * Called from a parent `State`, this method utilizes the `StateTemplate`'s transition function
+   * to determine whether or not a transition to this `State` is valid given the parent's value.
+   *
    * @returns {boolean} Returns `true` iff a transition to this child is possible given the parent's value.
    */
   get isValidTransition () {
@@ -160,6 +194,8 @@ export class State extends EventEmitter {
   }
 
   /**
+   * Getter for `value`.
+   *
    * @returns {any} The current (boxed) value from this `State`.
    */
   get value () {
@@ -167,21 +203,9 @@ export class State extends EventEmitter {
   }
 
   /**
-   * @returns {any} The current (boxed) value from this `State`. An alias for this.value getter.
-   */
-  get boxedValue () {
-    return this.value;
-  }
-
-  /**
-   * @returns {any} The current (unboxed) value from this `State`.
-   */
-  get unboxedValue () {
-    return this.unboxValue(this.value);
-  }
-
-  /**
-   * @param {any} newVal - A new (boxed) value for this `State`.
+   * Setter for `value`.
+   *
+   * @param {any} newVal - Set a new (boxed) value for this `State`.
    */
   set value (newVal) {
     if (newVal !== this.value) {
@@ -193,14 +217,36 @@ export class State extends EventEmitter {
   }
 
   /**
-   * @param {any} newBoxedVal - A new (boxed) value for this `State`. Alias for this.value setter.
+   * Getter for `value`. Alias for `this.value`.
+   *
+   * @returns {any} The current (boxed) value from this `State`.
+   */
+  get boxedValue () {
+    return this.value;
+  }
+
+  /**
+   * Setter for `value`. Alias for  `this.value`.
+   *
+   * @param {any} newBoxedVal - Set a new (boxed) value for this `State`. Alias for this.value setter.
    */
   set boxedValue (newBoxedVal) {
     this.value = newBoxedVal;
   }
 
   /**
-   * @param {any} newUnboxedVal - A new (unboxed) value for this `State`.
+   * Getter for `unboxedValue`.
+   *
+   * @returns {any} The current (unboxed) value from this `State`.
+   */
+  get unboxedValue () {
+    return this.unboxValue(this.value);
+  }
+
+  /**
+   * Setter for `unboxedValue`.
+   *
+   * @param {any} newUnboxedVal - Set a new (unboxed) value for this `State`.
    */
   set unboxedValue (newUnboxedVal) {
     this.emit('unboxed value change attempted', newUnboxedVal, this.unboxedValue);

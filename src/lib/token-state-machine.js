@@ -4,16 +4,15 @@ import { StateTransitionError } from './errors';
 const _rootState = new WeakMap();
 const _currentState = new WeakMap();
 /**
- * Encapsulates the state of a particular
- * variety of search token, handling transitions,
- * validation etc.
+ * Encapsulates the state and functionality of a state machine
+ * derived from a language specification in the form of a root `StateTemplate`
+ * (which has a DAG of children).
+ *
+ * @param {StateTemplate} rootStateTemplate - The DAG describing the states for this state machine.
+ * @param {any[] | undefined} values - A set of initial (boxed) values to apply to the machine one by one (optional).
  */
 export class TokenStateMachine extends EventEmitter {
-  /**
-   * @param {StateTemplate} rootStateTemplate - The DAG describing the states for this state machine.
-   * @param {Array[any] | undefined} values - A set of initial (boxed) values to apply to the machine one by one (optional).
-   */
-  constructor (rootStateTemplate, values = undefined) {
+  constructor (rootStateTemplate, values) {
     super();
     this._dispatchId = Math.random();
     const root = rootStateTemplate.getInstance();

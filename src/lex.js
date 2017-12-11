@@ -1,4 +1,4 @@
-/** @jsx h */
+// /** @jsx h */
 import { h, render } from 'preact';
 import EventEmitter from 'wolfy87-eventemitter';
 import { StateTransitionError, NoStateAssistantTypeError, NoStateBuilderTypeError } from './lib/errors';
@@ -16,8 +16,16 @@ import { OptionAssistant } from './components/assistants/generic/option-assistan
 const sLanguage = Symbol('language');
 const sBuilders = Symbol('builders');
 
+/**
+ * Lex - A micro-framework for building search bars.
+ *
+ * @param {StateTemplate} language - The search language this bar will support.
+ * @example
+ * const lex = new Lex(language);
+ * lex.render(document.getElementById('lex-container'));
+ */
 class Lex extends EventEmitter {
-  constructor (language, builders) {
+  constructor (language) {
     super();
     // TODO throw if language is not instanceof StateTemplate
     this[sLanguage] = language;
@@ -35,8 +43,8 @@ class Lex extends EventEmitter {
   /**
    * Register a new component as the "builder" for a certain `StateTemplate` type.
    *
-   * @param {*} templateClass - A class extending `StateTemplate`.
-   * @param {*} builderClass - A class extending `Component`, which can supply values to a `State` created from the `StateTemplate`.
+   * @param {StateTemplate} templateClass - A class extending `StateTemplate`.
+   * @param {Component} builderClass - A class extending `Component`, which can supply values to a `State` created from the `StateTemplate`.
    * @returns {Lex} A reference to `this` for chaining.
    */
   registerBuilder (templateClass, builderClass) {
@@ -47,8 +55,8 @@ class Lex extends EventEmitter {
   /**
    * Register a new component as the "assistant" for a certain `StateTemplate` type.
    *
-   * @param {*} templateClass - A class extending `StateTemplate`.
-   * @param {*} assistantClass - A class extending `Component`, which can supply values to a `State` created from the `StateTemplate`.
+   * @param {StateTemplate} templateClass - A class extending `StateTemplate`.
+   * @param {Component} assistantClass - A class extending `Component`, which can supply values to a `State` created from the `StateTemplate`.
    * @returns {Lex} A reference to `this` for chaining.
    */
   registerAssistant (templateClass, assistantClass) {
@@ -56,6 +64,11 @@ class Lex extends EventEmitter {
     return this;
   }
 
+  /**
+   * Renders this instance of Lex to the DOM at a particular node.
+   *
+   * @param {HTMLElement} domNode - The target node.
+   */
   render (domNode = document.body) {
     render((
       <SearchBar

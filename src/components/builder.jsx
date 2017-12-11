@@ -1,6 +1,10 @@
 import { bind } from 'decko';
 import { h, Component } from 'preact';
 
+/**
+ * An abstract superclass for a `Component` which can be
+ * used to construct a portion of a Token.
+ */
 export class Builder extends Component {
   constructor () {
     super(arguments);
