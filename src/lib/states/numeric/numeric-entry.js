@@ -2,11 +2,11 @@ import {OptionSelection} from '../generic/option-selection';
 
 /**
  * This state supports the entry of a Number value, with possible auto-complete
+ *
+ * @param {Object} config - A configuration object. Supports all of the parameters from `OptionSelection` and `StateTemplate`,
+ *                          providing defaults for `name`, `validationFunction` (valid iff `!isNaN`) and `allowUnknown` (true).
  */
 export class NumericEntry extends OptionSelection {
-  /**
-   * @param {Object} config - A configuration object.
-   */
   constructor (config) {
     if (config.name === undefined) config.name = 'Enter a value';
     if (config.validationFunction === undefined) {

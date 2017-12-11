@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@stash.uncharted.software:7999/un/lex.git"
+    "url": "https://github.com/unchartedsoftware/lex.git"
   },
   "scripts": {
     "start": "npm run serve",

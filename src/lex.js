@@ -69,7 +69,10 @@ class Lex extends EventEmitter {
    *
    * @param {HTMLElement} domNode - The target node.
    */
-  render (domNode = document.body) {
+  render (domNode) {
+    while (domNode.firstChild) {
+      domNode.removeChild(domNode.firstChild);
+    }
     render((
       <SearchBar
         builders={this[sBuilders]}

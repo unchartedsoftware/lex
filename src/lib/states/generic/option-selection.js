@@ -94,18 +94,6 @@ export class OptionSelection extends StateTemplate {
   }
 
   /**
-   * A function which refreshes the list of options based on what a user has entered so far.
-   *
-   * @param {string | undefined} hint - What the user has typed, if anything.
-   * @returns {Promise} Resolves with the new list of options.
-   */
-  refreshOptions (hint = '') {
-    if (_refreshOptions.has(this)) {
-      _refreshOptions.get(this)(hint);
-    }
-  }
-
-  /**
    * @returns {boolean} - Whether or not this option selector allows the creation of unknown options.
    */
   get allowUnknown () {
@@ -138,5 +126,18 @@ export class OptionSelection extends StateTemplate {
   unboxValue (option) {
     if (option === undefined || option === null) return null;
     return option.key;
+  }
+
+  /**
+   * Can be called by a child class to trigger a refresh of options based on a hint (what the
+   * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.options`.
+   *
+   * @param {string | undefined} hint - What the user has typed, if anything.
+   * @returns {Promise} Resolves with the new list of options.
+   */
+  refreshOptions (hint = '') {
+    if (_refreshOptions.has(this)) {
+      _refreshOptions.get(this)(hint);
+    }
   }
 }
