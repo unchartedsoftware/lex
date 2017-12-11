@@ -3,6 +3,10 @@ import linkState from 'linkstate';
 import { bind } from 'decko';
 import { Builder } from '../../builder';
 
+/**
+ * The visual interaction mechanism for supplying values
+ * to an `OptionState`.
+ */
 export class OptionSelector extends Builder {
   constructor () {
     super();

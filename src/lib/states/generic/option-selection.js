@@ -2,14 +2,14 @@ import { StateTemplate } from '../../state';
 
 const _key = new WeakMap();
 const _meta = new WeakMap();
+
 /**
  * An option within a list of options
+ *
+ * @param {string} key - A label for this option. Should be unique within the list of options.
+ * @param {any} meta - Whatever you want.
  */
 export class Option {
-  /**
-   * @param {string} key - A label for this option. Should be unique within the list of options.
-   * @param {any} meta - Whatever you want.
-   */
   constructor (key, meta) {
     _key.set(this, key);
     _meta.set(this, meta);
@@ -29,17 +29,20 @@ export class Option {
 const _options = new WeakMap();
 const _refreshOptions = new WeakMap();
 const _allowUnknown = new WeakMap();
+
 /**
- * Select an option from a list of options, such as
- * choosing "is", "is like", or "contains"
+ * A state representing the selection of an option from a list of options.
+ * Intended to facilitate both simple cases (such as selecting from a list
+ * of predefined options) and advanced ones (such as selecting from a list
+ * of dynamically updating suggestions).
+ *
+ * By default, this state (and any extending classes) can be visually represented by `OptionSelector` and `OptionAssistant`.
+ *
+ * @param {Object} config - A configuration object. Inherits all options from `StateTemplate`, and adds the following:
+ * @param {Option[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them.
+ * @param {boolean} config.allowUnknown - Allow user to enter unknown options by entering custom values.
  */
 export class OptionSelection extends StateTemplate {
-  /**
-   * @param {Object} config - A configuration object.
-   *   @property {Array[Option] | AsyncFunction} options - The list of options to select from, or an async function that generates them.
-   *   @property {boolean} allowUnknown - Allow user to enter unknown options by entering custom values.
-   *   @property See StateTemplate for other properties.
-   */
   constructor (config) {
     if (config.validationFunction === undefined) {
       config.validationFunction = (thisVal) => {
@@ -69,6 +72,8 @@ export class OptionSelection extends StateTemplate {
   }
 
   /**
+   * Getter for `options`.
+   *
    * @returns {Array[Option]} - The list of options to select from.
    */
   get options () {
@@ -76,7 +81,9 @@ export class OptionSelection extends StateTemplate {
   }
 
   /**
-   * @param {Array[Option]} newOptions - A new set of options for this selector.
+   * Setter for `options`.
+   *
+   * @param {Option[]} newOptions - A new set of options for this selector.
    */
   set options (newOptions) {
     if (this.options !== newOptions) {
@@ -89,7 +96,7 @@ export class OptionSelection extends StateTemplate {
   /**
    * A function which refreshes the list of options based on what a user has entered so far.
    *
-   * @param {String | undefined} hint - What the user has typed, if anything.
+   * @param {string | undefined} hint - What the user has typed, if anything.
    * @returns {Promise} Resolves with the new list of options.
    */
   refreshOptions (hint = '') {
