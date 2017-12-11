@@ -1,4 +1,4 @@
-import { Component } from 'preact';
+import { h, Component } from 'preact';
 import { bind } from '../../node_modules/decko/dist/decko';
 
 export class Token extends Component {

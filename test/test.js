@@ -1,3 +1,5 @@
+/** @jsx h */
+import { h } from 'preact';
 import { Lex, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, NumericEntryState } from '../src/lex';
 
 // TODO make chainable using some kind of awesome Builder class

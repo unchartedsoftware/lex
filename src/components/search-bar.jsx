@@ -1,5 +1,5 @@
 import { bind } from 'decko';
-import { Component } from 'preact';
+import { h, Component } from 'preact';
 import Portal from 'preact-portal';
 import { TokenStateMachine } from '../lib/token-state-machine';
 import { StateTransitionError } from '../lib/errors';

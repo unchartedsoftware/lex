@@ -1,5 +1,5 @@
 import { bind } from 'decko';
-import { Component } from 'preact';
+import { h, Component } from 'preact';
 
 export class Builder extends Component {
   constructor () {

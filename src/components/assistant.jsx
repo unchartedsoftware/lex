@@ -1,4 +1,4 @@
-import { Builder } from './builder';
+import { h, Builder } from './builder';
 
 /**
  * Richer interaction areas for building values.

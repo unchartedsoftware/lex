@@ -1,4 +1,5 @@
-import { render } from 'preact';
+/** @jsx h */
+import { h, render } from 'preact';
 import EventEmitter from 'wolfy87-eventemitter';
 import { StateTransitionError, NoStateAssistantTypeError, NoStateBuilderTypeError } from './lib/errors';
 import { StateTemplate } from './lib/state';

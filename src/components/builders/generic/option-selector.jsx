@@ -1,3 +1,4 @@
+import { h } from 'preact';
 import linkState from 'linkstate';
 import { bind } from 'decko';
 import { Builder } from '../../builder';

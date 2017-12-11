@@ -3,3 +3,6 @@ test/**
 .editorconfig
 jsconfig.json
 preact.config.js
+node_modules
+/*.log
+/.cache

@@ -1,3 +1,4 @@
+import { h } from 'preact';
 import { bind } from 'decko';
 import { Assistant } from '../../assistant';
 
