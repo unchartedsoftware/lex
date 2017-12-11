@@ -19,7 +19,7 @@ const sBuilders = Symbol('builders');
 /**
  * Lex - A micro-framework for building search bars.
  *
- * @param {StateTemplate} language - The search language this bar will support.
+ * @param {StateTemplate} language - The root state of the search language this bar will support.
  * @example
  * // Instantiate a new instance of lex and bind it to the page.
  * const lex = new Lex(language);
