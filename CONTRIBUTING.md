@@ -2,21 +2,23 @@
 
 > A preact framework for building token-based search bars
 
+## Requirements
+
+* Node.js version 8 or higher. Consider using [Node Version Manager](https://github.com/creationix/nvm).
+
 ## Usage
 
 ``` bash
 $ npm install
 ```
 
-Development server runs on port `8080`. If the default port is already in use on your machine it will start the development server on a random port.
-
 ## Commands
 
-- `npm start`: Runs `serve` or `dev`, depending on `NODE_ENV` value. Defaults to `dev server`
+- `npm run serve-docs`: Runs a documentation server at http://localhost:4001
 
-- `npm run watch`: Run a development, HMR server
+- `npm start`: Runs `serve` or `dev`, depending on `NODE_ENV` value. Defaults to `dev server` at http://localhost:1234.
 
-- `npm run serve`: Run a production-like server
+- `npm run serve`: Run a production-like server at http://localhost:1234
 
 - `npm run build`: Production-ready build
 
