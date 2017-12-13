@@ -14,9 +14,11 @@
   "scripts": {
     "start": "npm run serve",
     "clean": "rimraf dist/",
-    "build": "npm run clean && npm run lint && npm run parcel-js && npm run parcel-css",
-    "parcel-js": "parcel build src/lex.js --no-minify",
-    "parcel-css": "parcel build src/style/index.scss --no-minify",
+    "build": "npm-run-all clean lint webpack:*",
+    "webpack:js": "MINIFY=true webpack --config config/webpack.config.build.js",
+    "webpack:jsmin": "webpack --config config/webpack.config.build.js",
+    "webpack:css": "echo TODO IMPLEMENT CSS BUNDLING",
+    "webpack:scss": "mkdir -p dist/ && cp -R src/style/* dist/",
     "serve": "NODE_ENV=development parcel test/index.html",
     "lint": "eslint ./src",
     "prepublishOnly": "npm run build",
@@ -57,6 +59,11 @@
     "wolfy87-eventemitter": "5.2.4",
     "preact-portal": "1.1.x",
     "parcel-bundler": "1.1.0",
-    "rimraf": "2.6.2"
+    "rimraf": "2.6.2",
+    "npm-run-all": "4.1.2",
+    "webpack": "3.10.0",
+    "uglifyjs-webpack-plugin": "1.1.2",
+    "webpack-dev-server": "2.9.7",
+    "babel-loader": "7.1.2"
   }
 }

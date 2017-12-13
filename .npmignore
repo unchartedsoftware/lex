@@ -6,3 +6,4 @@ preact.config.js
 node_modules
 /*.log
 /.cache
+/config
