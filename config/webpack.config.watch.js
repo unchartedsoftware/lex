@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
@@ -48,12 +49,15 @@ module.exports = {
     new CleanWebpackPlugin(['dist']),
     new HtmlWebpackPlugin({
       template: 'test/index.template'
-    })
+    }),
+    new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin()
   ],
   resolve: {
     extensions: ['.js', '.jsx']
   },
   devServer: {
-    contentBase: './dist'
+    contentBase: './dist',
+    hot: true
   }
 };
