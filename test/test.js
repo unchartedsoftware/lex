@@ -1,6 +1,7 @@
 /** @jsx h */
 import { h } from 'preact';
 import { Lex, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, NumericEntryState } from '../src/lex';
+import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 // TODO make chainable using some kind of awesome Builder class
 const language = new OptionState({
