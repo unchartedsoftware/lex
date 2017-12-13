@@ -2,8 +2,13 @@
 <html lang="en">
   <head>
     <title>Lex testing</title>
-    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css">
-    <link rel="stylesheet" href="../src/style/index.scss">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+      body {
+        max-width: 700px;
+        margin: 0 auto;
+      }
+    </style>
   </head>
   <body>
     <h1> Search Bar Test </h1>
@@ -14,6 +19,4 @@
 
     Nullam malesuada mauris id purus hendrerit, vitae feugiat diam porttitor. Nullam sagittis, eros eu ultrices pellentesque, dolor magna lobortis quam, nec pretium sem turpis aliquam dui. Duis sed magna sed sem placerat sodales vel eu ante. Suspendisse tempor auctor lectus sed porta. Vivamus in fringilla elit. Curabitur ac elit mollis, efficitur sem vel, tempor leo. Praesent sagittis et risus eget ullamcorper. Curabitur eu mollis dui. In non eros at ligula pellentesque fermentum ac vel est. Vestibulum consectetur lacus eu molestie</p>
   </body>
-
-  <script src="./test.js"></script>
 </html>

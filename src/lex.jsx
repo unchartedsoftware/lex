@@ -1,4 +1,5 @@
 // /** @jsx h */
+import './style/lex.scss';
 import { h, render } from 'preact';
 import EventEmitter from 'wolfy87-eventemitter';
 import { StateTransitionError, NoStateAssistantTypeError, NoStateBuilderTypeError } from './lib/errors';
