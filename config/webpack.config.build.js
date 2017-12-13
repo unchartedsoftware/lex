@@ -5,13 +5,14 @@ const MINIFY = process.env.MINIFY ? [
   new webpack.optimize.UglifyJsPlugin({
     cache: true,
     parallel: true,
-    sourceMap: false
+    sourceMap: true
   })
 ] : [];
 
 const OUTFILE = process.env.MINIFY ? 'lex.min.js' : 'lex.js';
 
 module.exports = {
+  devtool: 'source-map',
   entry: './src/lex.jsx',
   output: {
     filename: OUTFILE,
