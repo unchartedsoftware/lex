@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const MINIFY = process.env.MINIFY ? [
   new webpack.optimize.UglifyJsPlugin({
@@ -18,12 +19,20 @@ module.exports = {
     filename: OUTFILE,
     path: path.resolve(__dirname, '../dist')
   },
-  plugins: [...MINIFY],
+  plugins: [new ExtractTextPlugin({filename: 'lex.css'}), ...MINIFY],
   module: {
-    loaders: [
+    rules: [
       {
         test: /.jsx?$/,
-        loader: 'babel-loader'
+        loader: 'babel-loader',
+        exclude: /node_modules/
+      },
+      {
+        test: /\.scss$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: ['css-loader', 'sass-loader']
+        })
       }
     ]
   },
