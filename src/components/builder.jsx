@@ -224,7 +224,7 @@ export class Builder extends Component {
    *   );
    * }
    */
-  renderInteractive (props, state) {
+  renderInteractive (props, state) { // eslint-disable-line no-unused-vars
     throw new Error(`${this.constructor.name} must implement renderInteractive()`);
   }
 
