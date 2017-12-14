@@ -21,8 +21,8 @@
     "serve": "webpack-dev-server --config config/webpack.config.watch.js --open",
     "lint": "eslint ./src",
     "prepublishOnly": "npm run build",
-    "docs": "documentation build --config documentation.yml src/lex.js -f html -o docs",
-    "serve-docs": "documentation serve --config documentation.yml --watch src/lex.js"
+    "docs": "documentation build --config documentation.yml src/lex.jsx -f html -o docs",
+    "serve-docs": "documentation serve --config documentation.yml --watch src/lex.jsx"
   },
   "main": "dist/lex.js",
   "style": "dist/lex.css",
