@@ -20,7 +20,14 @@ const language = Lex.from(OptionState, {
   }).to(TextEntryState),
   Lex.from(NumericRelationState, {
     transition: (parentVal) => parentVal && parentVal.meta.type === 'number'
-  }).to(NumericEntryState)
+  }).branch(
+    Lex.from(NumericEntryState, {
+      transition: (parentVal) => parentVal && parentVal.key !== 'between'
+    }),
+    Lex.from(NumericEntryState, {
+      transition: (parentVal) => parentVal && parentVal.key === 'between'
+    }).to(NumericEntryState)
+  )
 );
 
 const lex = new Lex(language);
