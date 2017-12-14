@@ -4,6 +4,7 @@ const _parent = new WeakMap();
 const _validationFunction = new WeakMap();
 const _transitionFunction = new WeakMap();
 const _name = new WeakMap();
+const _readOnly = new WeakMap();
 const _defaultValue = new WeakMap();
 const _children = new WeakMap();
 const _template = new WeakMap();
@@ -31,6 +32,7 @@ const _value = new WeakMap();
  * @param {Function | undefined} config.transition - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
  * @param {Function | undefined} config.validation - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
  * @param {any} config.defaultValue - The default value for this state before it has been touched. Can be undefined.
+ * @param {boolean} config.readOnly - This state is read only (for display purposes only) and should be skipped by the state machine. False by default.
  *
  * @example
  * class MyCustomState extends StateTemplate {
@@ -52,14 +54,19 @@ const _value = new WeakMap();
  */
 export class StateTemplate extends EventEmitter {
   constructor (config) {
-    const {parent, name, transition, validate, defaultValue} = config;
+    const {parent, name, transition, validate, defaultValue, readOnly} = config;
     super();
     _parent.set(this, parent);
     _name.set(this, name);
     _transitionFunction.set(this, transition !== undefined ? transition : () => true);
     _validationFunction.set(this, validate !== undefined ? validate : () => true);
     _defaultValue.set(this, defaultValue !== undefined ? defaultValue : null);
+    _readOnly.set(this, readOnly !== undefined ? readOnly : false);
     _children.set(this, []);
+  }
+
+  get isReadOnly () {
+    return _readOnly.get(this);
   }
 
   get parent () {
@@ -186,6 +193,7 @@ export class State extends EventEmitter {
   get defaultValue () { return this.template.defaultValue; }
   get children () { return _children.get(this); }
   get isTerminal () { return this.template.isTerminal; }
+  get isReadOnly () { return this.template.isReadOnly; }
   boxValue (...args) { return this.template.boxValue(...args); }
   unboxValue (...args) { return this.template.unboxValue(...args); }
 

@@ -9,9 +9,9 @@ import { Builder } from '../../builder';
  * the `Builder` for `OptionState`s.
  *
  * @example
- * lex.registerBuilder(OptionState, OptionSelector)
+ * lex.registerBuilder(OptionState, OptionBuilder)
  */
-export class OptionSelector extends Builder {
+export class OptionBuilder extends Builder {
   constructor () {
     super();
     this.state.options = [];

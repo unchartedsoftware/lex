@@ -8,7 +8,7 @@ import { Assistant } from '../../assistant';
  * the `Assistant` for `OptionState`s.
  *
  * @example
- * lex.registerBuilder(OptionState, OptionSelector)
+ * lex.registerBuilder(OptionState, OptionBuilder)
  */
 export class OptionAssistant extends Assistant {
   constructor () {

@@ -1,0 +1,20 @@
+import { StateTemplate } from '../../state';
+
+const _label = new WeakMap();
+
+/**
+ * A non-interactive state providing a mechanism to add a textual label between two other builders.
+ *
+ * By default, this state (and any extending classes) can be visually represented by `LabelBuilder`.
+ *
+ * @param {Object} config - A configuration object. Inherits all options from `StateTemplate`, and adds the following:
+ * @param {string} config.label - The label to display. Will also be used as the (fixed) value.
+ */
+export class LabelState extends StateTemplate {
+  constructor (config) {
+    config.readOnly = true;
+    config.defaultValue = config.label;
+    super(config);
+    _label.set(this, config.label);
+  }
+}

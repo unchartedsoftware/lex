@@ -6,12 +6,14 @@ import { StateTransitionError, NoStateAssistantTypeError, NoStateBuilderTypeErro
 import { StateTemplate } from './lib/state';
 import { StateBuilderFactory } from './lib/state-builder-factory';
 import { SearchBar } from './components/search-bar';
+import { LabelState } from './lib/states/generic/label-state';
 import { OptionStateOption, OptionState } from './lib/states/generic/option-state';
 import { TextRelationState } from './lib/states/text/text-relation-state';
 import { NumericRelationState } from './lib/states/numeric/numeric-relation-state';
 import { TextEntryState } from './lib/states/text/text-entry-state';
 import { NumericEntryState } from './lib/states/numeric/numeric-entry-state';
-import { OptionSelector } from './components/builders/generic/option-selector';
+import { LabelBuilder } from './components/builders/generic/label-builder';
+import { OptionBuilder } from './components/builders/generic/option-builder';
 import { OptionAssistant } from './components/assistants/generic/option-assistant';
 
 const sLanguage = Symbol('language');
@@ -28,7 +30,7 @@ const sBuilders = Symbol('builders');
  * @example
  * // Override default builder/assistant associations
  * const lex = new Lex(language);
- * lex.registerBuilder(OptionState, MyCustomOptionSelector);
+ * lex.registerBuilder(OptionState, MyCustomOptionBuilder);
  */
 class Lex extends EventEmitter {
   constructor (language) {
@@ -36,11 +38,12 @@ class Lex extends EventEmitter {
     // TODO throw if language is not instanceof StateTemplate
     this[sLanguage] = language.root;
     this[sBuilders] = new StateBuilderFactory();
-    this[sBuilders].registerBuilder(OptionState, OptionSelector)
-      .registerBuilder(TextRelationState, OptionSelector)
-      .registerBuilder(TextEntryState, OptionSelector)
-      .registerBuilder(NumericRelationState, OptionSelector)
-      .registerBuilder(NumericEntryState, OptionSelector)
+    this[sBuilders].registerBuilder(OptionState, OptionBuilder)
+      .registerBuilder(TextRelationState, OptionBuilder)
+      .registerBuilder(TextEntryState, OptionBuilder)
+      .registerBuilder(NumericRelationState, OptionBuilder)
+      .registerBuilder(NumericEntryState, OptionBuilder)
+      .registerBuilder(LabelState, LabelBuilder)
       .registerAssistant(OptionState, OptionAssistant)
       .registerAssistant(TextRelationState, OptionAssistant)
       .registerAssistant(NumericRelationState, OptionAssistant);
@@ -130,6 +133,7 @@ export {
   // base classes
   StateTemplate,
   // states
+  LabelState,
   OptionState,
   OptionStateOption,
   TextRelationState,
@@ -137,6 +141,6 @@ export {
   TextEntryState,
   NumericEntryState,
   // UI components
-  OptionSelector,
+  OptionBuilder,
   OptionAssistant
 };

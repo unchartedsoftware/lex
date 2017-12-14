@@ -66,11 +66,16 @@ export class TokenStateMachine extends EventEmitter {
           // execute transition to the first child whose transition function returned true
           _currentState.set(this, transitions[0]);
           this.emit('state changed', this.state, oldState);
-          return this.state;
         } else {
           const err = new StateTransitionError(`No valid transitions from current state "${this.state.name}" given current state's value: ${this.state.value}.`);
           this.emit('state change failed', err);
           throw err;
+        }
+        // If the new state is read-only, transition past it automatically.
+        if (this.state.isReadOnly) {
+          return this.transition();
+        } else {
+          return this.state;
         }
       }
     } else {
@@ -94,7 +99,12 @@ export class TokenStateMachine extends EventEmitter {
       _currentState.set(this, this.state.parent);
       this.emit('state changed', this.state, oldState);
     }
-    return this.state;
+    // If the new state is read-only, rewind past it automatically.
+    if (this.state.isReadOnly) {
+      return this.rewind();
+    } else {
+      return this.state;
+    }
   }
 
   /**
