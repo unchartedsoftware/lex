@@ -26,6 +26,7 @@
   },
   "main": "dist/lex.js",
   "style": "dist/lex.css",
+  "module": "src/lex.js",
   "devDependencies": {
     "bootstrap-sass": "3.3.7",
     "babel-eslint": "8.0.2",

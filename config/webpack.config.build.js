@@ -18,8 +18,7 @@ module.exports = {
   output: {
     filename: OUTFILE,
     library: 'lex',
-    libraryTarget: 'umd',
-    umdNamedDefine: true,
+    libraryTarget: 'commonjs2',
     path: path.resolve(__dirname, '../dist')
   },
   plugins: [new ExtractTextPlugin({filename: 'lex.css'}), ...MINIFY],
