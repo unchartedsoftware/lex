@@ -5,6 +5,7 @@ toc:
   - State
   - Builder
   - Assistant
+  - TransitionFactory
   - name: Choice States
   - OptionState
   - OptionStateOption

@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, NumericEntryState, LabelState } from '../src/lex';
+import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, NumericEntryState, LabelState } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 // TODO make chainable using some kind of awesome Builder class
@@ -15,18 +15,10 @@ const language = Lex.from(OptionState, {
     });
   }
 }).branch(
-  Lex.from(TextRelationState, {
-    transition: (parentVal) => parentVal && parentVal.meta.type === 'string'
-  }).to(TextEntryState),
-  Lex.from(NumericRelationState, {
-    transition: (parentVal) => parentVal && parentVal.meta.type === 'number'
-  }).branch(
-    Lex.from(NumericEntryState, {
-      transition: (parentVal) => parentVal && parentVal.key !== 'between'
-    }),
-    Lex.from(NumericEntryState, {
-      transition: (parentVal) => parentVal && parentVal.key === 'between'
-    }).to(LabelState, {label: 'and'}).to(NumericEntryState)
+  Lex.from(TextRelationState, TransitionFactory.optionMetaCompare({type: 'string'})).to(TextEntryState),
+  Lex.from(NumericRelationState, TransitionFactory.optionMetaCompare({type: 'number'})).branch(
+    Lex.from(NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
+    Lex.from(NumericEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to(NumericEntryState)
   )
 );
 
