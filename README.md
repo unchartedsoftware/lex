@@ -2,6 +2,9 @@
 
 > A preact framework for building token-based search bars
 
-## Basic Usage
+For current documentation, please clone the project and  run:
 
-TODO
+```bash
+npm install
+npm run serve-docs
+```
