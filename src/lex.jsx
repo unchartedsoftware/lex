@@ -34,7 +34,7 @@ class Lex extends EventEmitter {
   constructor (language) {
     super();
     // TODO throw if language is not instanceof StateTemplate
-    this[sLanguage] = language;
+    this[sLanguage] = language.root;
     this[sBuilders] = new StateBuilderFactory();
     this[sBuilders].registerBuilder(OptionState, OptionSelector)
       .registerBuilder(TextRelationState, OptionSelector)
@@ -78,15 +78,15 @@ class Lex extends EventEmitter {
    * @returns {StateTemplate} A reference to the new root `State`, for chaining purposes to `.addChild()`.
    * @example
    * import { Lex } from 'lex';
-   * Lex.language(OptionState, {
+   * Lex.from(OptionState, {
    *   name: 'Choose a field to search',
    *   options:[
    *     new OptionStateOption('Name', {type: 'string'}),
    *     new OptionStateOption('Income', {type: 'number'})
    *   ]
-   * }).addChild(...).addChild(...)
+   * }).to(...).to(...)
    */
-  static language (StateTemplateClass, config = {}) {
+  static from (StateTemplateClass, config = {}) {
     return new StateTemplateClass(config);
   }
 

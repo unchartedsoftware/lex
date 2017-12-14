@@ -28,8 +28,8 @@ const _value = new WeakMap();
  * @param {object} config - Options for `StateTemplate`.
  * @param {State | undefined} config.parent - The parent state. `undefined` if this is a root.
  * @param {string} config.name - A useful label for this state.
- * @param {Function | undefined} config.transitionFunction - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
- * @param {Function | undefined} config.validationFunction - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
+ * @param {Function | undefined} config.transition - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
+ * @param {Function | undefined} config.validation - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
  * @param {any} config.defaultValue - The default value for this state before it has been touched. Can be undefined.
  *
  * @example
@@ -52,18 +52,26 @@ const _value = new WeakMap();
  */
 export class StateTemplate extends EventEmitter {
   constructor (config) {
-    const {parent, name, transitionFunction, validationFunction, defaultValue} = config;
+    const {parent, name, transition, validate, defaultValue} = config;
     super();
     _parent.set(this, parent);
     _name.set(this, name);
-    _transitionFunction.set(this, transitionFunction !== undefined ? transitionFunction : () => true);
-    _validationFunction.set(this, validationFunction !== undefined ? validationFunction : () => true);
+    _transitionFunction.set(this, transition !== undefined ? transition : () => true);
+    _validationFunction.set(this, validate !== undefined ? validate : () => true);
     _defaultValue.set(this, defaultValue !== undefined ? defaultValue : null);
     _children.set(this, []);
   }
 
   get parent () {
     return _parent.get(this);
+  }
+
+  get root () {
+    if (this.parent === undefined) {
+      return this;
+    } else {
+      return this.parent.root;
+    }
   }
 
   get name () {
@@ -121,17 +129,30 @@ export class StateTemplate extends EventEmitter {
   }
 
   /**
-   * Add a child to this `State`.
+   * Add a child to this `StateTemplate`.
    *
    * @param {StateTemplate} StateTemplateClass - A child state - must be a class which extends `StateTemplate`.
    * @param {Object} config - Construction parameters for the child `StateTemplate` class.
    * @returns {StateTemplate} A reference to the new child `State`, for chaining purposes.
    */
-  addChild (StateTemplateClass, config = {}) {
+  to (StateTemplateClass, config = {}) {
     config.parent = this;
     const child = new StateTemplateClass(config);
     _children.get(this).push(child);
     return child;
+  }
+
+  /**
+   * Set the children of this `StateTemplate` to the provided branches.
+   *
+   * @param {...StateTemplate} branches - The new child states for this `StateTemplate`.
+   * @returns {StateTemplate} A reference to this `State`. Not intended for chaining purposes, as it would be unclear which branch to chain the next operation to.
+   */
+  branch (...branches) {
+    const roots = branches.map(t => t.root);
+    roots.forEach(t => _parent.set(t, this));
+    _children.set(this, roots);
+    return this;
   }
 }
 
