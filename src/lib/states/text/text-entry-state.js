@@ -1,4 +1,4 @@
-import {OptionState} from '../generic/option-selection';
+import {OptionState} from '../generic/option-state';
 
 /**
  * This state supports the entry of a String value, with possible auto-complete.
@@ -6,7 +6,7 @@ import {OptionState} from '../generic/option-selection';
  * @param {Object} config - A configuration object. Supports all of the parameters from `OptionState` and `StateTemplate`,
  *                          providing defaults for `name`, `validationFunction` (always valid) and `allowUnknown` (true).
  */
-export class TextEntry extends OptionState {
+export class TextEntryState extends OptionState {
   /**
    * @param {Object} config - A configuration object.
    */

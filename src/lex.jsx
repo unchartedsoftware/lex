@@ -6,11 +6,11 @@ import { StateTransitionError, NoStateAssistantTypeError, NoStateBuilderTypeErro
 import { StateTemplate } from './lib/state';
 import { StateBuilderFactory } from './lib/state-builder-factory';
 import { SearchBar } from './components/search-bar';
-import { OptionStateOption, OptionState } from './lib/states/generic/option-selection';
-import { TextRelationSelection as TextRelationState } from './lib/states/text/text-relation-selection';
-import { NumericRelationSelection as NumericRelationState } from './lib/states/numeric/numeric-relation-selection';
-import { TextEntry as TextEntryState } from './lib/states/text/text-entry';
-import { NumericEntry as NumericEntryState } from './lib/states/numeric/numeric-entry';
+import { OptionStateOption, OptionState } from './lib/states/generic/option-state';
+import { TextRelationState } from './lib/states/text/text-relation-state';
+import { NumericRelationState } from './lib/states/numeric/numeric-relation-state';
+import { TextEntryState } from './lib/states/text/text-entry-state';
+import { NumericEntryState } from './lib/states/numeric/numeric-entry-state';
 import { OptionSelector } from './components/builders/generic/option-selector';
 import { OptionAssistant } from './components/assistants/generic/option-assistant';
 

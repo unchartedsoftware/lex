@@ -8,8 +8,8 @@ toc:
   - name: Choice States
   - OptionState
   - Option
-  - TextRelationSelection
-  - NumericRelationSelection
+  - TextRelationState
+  - NumericRelationState
   - name: Value Entry States
   - TextEntry
   - NumericEntry
