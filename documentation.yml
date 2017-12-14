@@ -13,8 +13,10 @@ toc:
   - name: Value Entry States
   - TextEntryState
   - NumericEntryState
+  - name: Static States
+  - LabelState
   - name: Builders
-  - OptionSelector
+  - OptionBuilder
   - name: Assistants
   - OptionAssistant
   - name: Creating a Builder

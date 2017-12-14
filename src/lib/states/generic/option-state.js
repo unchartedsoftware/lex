@@ -36,7 +36,7 @@ const _allowUnknown = new WeakMap();
  * of predefined options) and advanced ones (such as selecting from a list
  * of dynamically updating suggestions).
  *
- * By default, this state (and any extending classes) can be visually represented by `OptionSelector` and `OptionAssistant`.
+ * By default, this state (and any extending classes) can be visually represented by `OptionBuilder` and `OptionAssistant`.
  *
  * This class is an `EventEmitter` and exposes the following events (in addition to `State`'s events):
  * - `on('options changed', (newOptions, oldOptions) => {})` when the internal list of options changes.
@@ -53,7 +53,6 @@ export class OptionState extends StateTemplate {
         return this.options.filter(o => o.key === thisVal.key).length === 1;
       };
     }
-    if (config.transitionFunction === undefined) config.transitionFunction = () => true;
     if (config.options === undefined) config.options = [];
     if (config.allowUnknown === undefined) config.allowUnknown = false;
     super(config);

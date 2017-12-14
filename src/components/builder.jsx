@@ -8,7 +8,7 @@ import { h, Component } from 'preact';
  * Subclasses generally implement `renderInteractive` and `focus`.
  *
  * @example
- * // See OptionSelector for an example implementation.
+ * // See OptionBuilder for an example implementation.
  */
 export class Builder extends Component {
   constructor () {
@@ -232,7 +232,8 @@ export class Builder extends Component {
    * @private
    */
   render (props, state) {
-    return state.readOnly ? this.renderReadOnly(props, state) : this.renderInteractive(props, state);
+    const {readOnly, machineState} = state;
+    return readOnly || machineState.isReadOnly ? this.renderReadOnly(props, state) : this.renderInteractive(props, state);
   }
 
   /**
