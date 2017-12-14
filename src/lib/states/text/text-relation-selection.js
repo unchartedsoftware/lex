@@ -1,15 +1,15 @@
-import {Option, OptionSelection} from '../generic/option-selection';
+import {OptionStateOption, OptionState} from '../generic/option-selection';
 
 /**
  * This state supports the selection of a text relation from a list of options.
  *
- * @param {Object} config - A configuration object. Supports all of the parameters from `OptionSelection` and `StateTemplate`,
+ * @param {Object} config - A configuration object. Supports all of the parameters from `OptionState` and `StateTemplate`,
  *                          providing defaults for `name` and `options`.
  */
-export class TextRelationSelection extends OptionSelection {
+export class TextRelationSelection extends OptionState {
   constructor (config) {
     if (config.name === undefined) config.name = 'Choose a text relation';
-    if (config.options === undefined) config.options = ['is', 'is like', 'contains'].map(o => new Option(o));
+    if (config.options === undefined) config.options = ['is', 'is like', 'contains'].map(o => new OptionStateOption(o));
     super(config);
   }
 }

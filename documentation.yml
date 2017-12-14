@@ -6,7 +6,7 @@ toc:
   - Builder
   - Assistant
   - name: Choice States
-  - OptionSelection
+  - OptionState
   - Option
   - TextRelationSelection
   - NumericRelationSelection

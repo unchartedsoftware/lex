@@ -6,7 +6,7 @@ import { StateTransitionError, NoStateAssistantTypeError, NoStateBuilderTypeErro
 import { StateTemplate } from './lib/state';
 import { StateBuilderFactory } from './lib/state-builder-factory';
 import { SearchBar } from './components/search-bar';
-import { Option as OptionStateOption, OptionSelection as OptionState } from './lib/states/generic/option-selection';
+import { OptionStateOption, OptionState } from './lib/states/generic/option-selection';
 import { TextRelationSelection as TextRelationState } from './lib/states/text/text-relation-selection';
 import { NumericRelationSelection as NumericRelationState } from './lib/states/numeric/numeric-relation-selection';
 import { TextEntry as TextEntryState } from './lib/states/text/text-entry';
@@ -68,6 +68,26 @@ class Lex extends EventEmitter {
   registerAssistant (templateClass, assistantClass) {
     this[sBuilders].registerAssistant(templateClass, assistantClass);
     return this;
+  }
+
+  /**
+   * Define a new search language.
+   *
+   * @param {StateTemplate} StateTemplateClass - The root state - must be a class which extends `StateTemplate`.
+   * @param {Object} config - Construction parameters for the root `StateTemplate` class.
+   * @returns {StateTemplate} A reference to the new root `State`, for chaining purposes to `.addChild()`.
+   * @example
+   * import { Lex } from 'lex';
+   * Lex.language(OptionState, {
+   *   name: 'Choose a field to search',
+   *   options:[
+   *     new OptionStateOption('Name', {type: 'string'}),
+   *     new OptionStateOption('Income', {type: 'number'})
+   *   ]
+   * }).addChild(...).addChild(...)
+   */
+  static language (StateTemplateClass, config = {}) {
+    return new StateTemplateClass(config);
   }
 
   /**

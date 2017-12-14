@@ -4,7 +4,7 @@ import { Lex, OptionState, OptionStateOption, TextRelationState, NumericRelation
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 // TODO make chainable using some kind of awesome Builder class
-const language = new OptionState({
+const language = Lex.language(OptionState, {
   name: 'Choose a field to search',
   options: function () {
     return new Promise((resolve) => {

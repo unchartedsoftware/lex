@@ -75,7 +75,7 @@ export class ValueEntry extends StateTemplate {
    * Transform a user-supplied value into an internal representation.
    *
    * @param {string} key - The user-supplied value.
-   * @returns {Option} An Option instance.
+   * @returns {OptionStateOption} An Option instance.
    */
   boxValue (key) {
     const matches = this.options.filter(o => o.key.toLowerCase() === key.toLowerCase());
@@ -91,7 +91,7 @@ export class ValueEntry extends StateTemplate {
   /**
    * Transforms an internal representation of a value into a user-supplied-style value.
    *
-   * @param {Option} option - An `Option instance.
+   * @param {OptionStateOption} option - An `Option instance.
    * @returns {string} - The string value of the `Option`'s key.
    */
   unboxValue (option) {
@@ -101,7 +101,7 @@ export class ValueEntry extends StateTemplate {
 
   /**
    *
-   * @param {Option} thisVal - The currently selected option.
+   * @param {OptionStateOption} thisVal - The currently selected option.
    */
   validationFunction (thisVal) {
     if (thisVal === null || thisVal === undefined) return false;
