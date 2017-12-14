@@ -33,3 +33,6 @@ const language = Lex.from(OptionState, {
 const lex = new Lex(language);
 
 lex.render(document.getElementById('LexContainer'));
+
+// for debugging purposes only
+require('preact/devtools');
