@@ -73,19 +73,31 @@ class Lex extends EventEmitter {
   /**
    * Renders this instance of Lex to the DOM at a particular node.
    *
-   * @param {HTMLElement} domNode - The target node.
+   * @param {HTMLElement} target - The target DOM node.
    */
-  render (domNode) {
-    while (domNode.firstChild) {
-      domNode.removeChild(domNode.firstChild);
+  render (target) {
+    this.target = target;
+    while (target.firstChild) {
+      target.removeChild(target.firstChild);
     }
-    render((
+    this.root = render((
       <SearchBar
         builders={this[sBuilders]}
         machineTemplate={this[sLanguage]}
         onSubmit={(...args) => this.emit('submit', ...args)}
       />
-    ), domNode);
+    ), target);
+  }
+
+  /**
+   * Unmounts this instance of Lex from the DOM.
+   */
+  unmount () {
+    if (this.target && this.root) {
+      render('', this.target, this.root);
+      delete this.target;
+      delete this.root;
+    }
   }
 }
 
