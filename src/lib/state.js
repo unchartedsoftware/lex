@@ -1,7 +1,7 @@
 import EventEmitter from 'wolfy87-eventemitter';
 
 const _parent = new WeakMap();
-const _validationFunction = new WeakMap();
+const _validate = new WeakMap();
 const _transitionFunction = new WeakMap();
 const _name = new WeakMap();
 const _readOnly = new WeakMap();
@@ -59,7 +59,7 @@ export class StateTemplate extends EventEmitter {
     _parent.set(this, parent);
     _name.set(this, name);
     _transitionFunction.set(this, transition !== undefined ? transition : () => true);
-    _validationFunction.set(this, validate !== undefined ? validate : () => true);
+    _validate.set(this, validate !== undefined ? validate : () => true);
     _defaultValue.set(this, defaultValue !== undefined ? defaultValue : null);
     _readOnly.set(this, readOnly !== undefined ? readOnly : false);
     _children.set(this, []);
@@ -204,12 +204,12 @@ export class State extends EventEmitter {
   get isDefault () { return this.value === this.defaultValue; }
 
   /**
-   * Utilizes the `StateTemplate`'s `validationFunction` to check value validitiy.
+   * Utilizes the `StateTemplate`'s `validate` function to check value validitiy.
    *
    * @returns {boolean} Returns `true` iff this state is valid. Should throw an exception with information about validation error otherwise.
    */
   get isValid () {
-    return _validationFunction.get(this.template)(this.value);
+    return _validate.get(this.template)(this.value);
   }
 
   /**

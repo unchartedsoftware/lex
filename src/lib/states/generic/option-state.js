@@ -47,8 +47,8 @@ const _allowUnknown = new WeakMap();
  */
 export class OptionState extends StateTemplate {
   constructor (config) {
-    if (config.validationFunction === undefined) {
-      config.validationFunction = (thisVal) => {
+    if (config.validate === undefined) {
+      config.validate = (thisVal) => {
         if (thisVal === null || thisVal === undefined) return false;
         return this.options.filter(o => o.key === thisVal.key).length === 1;
       };
