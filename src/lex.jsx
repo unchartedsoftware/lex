@@ -19,11 +19,13 @@ import { OptionAssistant } from './components/assistants/generic/option-assistan
 
 const sLanguage = Symbol('language');
 const sBuilders = Symbol('builders');
+const sProxiedEvents = Symbol('proxiedEvents');
 
 /**
  * Lex - A micro-framework for building search bars.
  *
  * @param {StateTemplate} language - The root state of the search language this bar will support.
+ * @param {string[]} proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any).
  * @example
  * // Instantiate a new instance of lex and bind it to the page.
  * const lex = new Lex(language);
@@ -34,7 +36,7 @@ const sBuilders = Symbol('builders');
  * lex.registerBuilder(OptionState, MyCustomOptionBuilder);
  */
 class Lex extends EventEmitter {
-  constructor (language) {
+  constructor (language, proxiedEvents = ['ArrowUp', 'ArrowDown', 'Tab']) {
     super();
     // TODO throw if language is not instanceof StateTemplate
     this[sLanguage] = language.root;
@@ -48,6 +50,8 @@ class Lex extends EventEmitter {
       .registerAssistant(OptionState, OptionAssistant)
       .registerAssistant(TextRelationState, OptionAssistant)
       .registerAssistant(NumericRelationState, OptionAssistant);
+    this[sProxiedEvents] = new Map();
+    proxiedEvents.forEach(e => this[sProxiedEvents].set(e, true));
   }
 
   /**
@@ -108,6 +112,7 @@ class Lex extends EventEmitter {
       <SearchBar
         builders={this[sBuilders]}
         machineTemplate={this[sLanguage]}
+        proxiedEvents={this[sProxiedEvents]}
         onSubmit={(...args) => this.emit('submit', ...args)}
       />
     ), target);
