@@ -123,7 +123,7 @@ export class StateTemplate extends EventEmitter {
   /**
    * Add a child to this `State`.
    *
-   * @param {StateTemplate} StateTemplateClass - A child state - might be a class which extends `StateTemplate`.
+   * @param {StateTemplate} StateTemplateClass - A child state - must be a class which extends `StateTemplate`.
    * @param {Object} config - Construction parameters for the child `StateTemplate` class.
    * @returns {StateTemplate} A reference to the new child `State`, for chaining purposes.
    */

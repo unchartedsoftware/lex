@@ -6,13 +6,13 @@ toc:
   - Builder
   - Assistant
   - name: Choice States
-  - OptionSelection
-  - Option
-  - TextRelationSelection
-  - NumericRelationSelection
+  - OptionState
+  - OptionStateOption
+  - TextRelationState
+  - NumericRelationState
   - name: Value Entry States
-  - TextEntry
-  - NumericEntry
+  - TextEntryState
+  - NumericEntryState
   - name: Builders
   - OptionSelector
   - name: Assistants

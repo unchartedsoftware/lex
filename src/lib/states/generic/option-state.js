@@ -9,7 +9,7 @@ const _meta = new WeakMap();
  * @param {string} key - A label for this option. Should be unique within the list of options.
  * @param {any} meta - Whatever you want.
  */
-export class Option {
+export class OptionStateOption {
   constructor (key, meta) {
     _key.set(this, key);
     _meta.set(this, meta);
@@ -45,7 +45,7 @@ const _allowUnknown = new WeakMap();
  * @param {Option[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them.
  * @param {boolean} config.allowUnknown - Allow user to enter unknown options by entering custom values.
  */
-export class OptionSelection extends StateTemplate {
+export class OptionState extends StateTemplate {
   constructor (config) {
     if (config.validationFunction === undefined) {
       config.validationFunction = (thisVal) => {
@@ -107,14 +107,14 @@ export class OptionSelection extends StateTemplate {
    * Transform a user-supplied value into an internal representation.
    *
    * @param {string} key - The user-supplied value.
-   * @returns {Option} An Option instance.
+   * @returns {OptionStateOption} An Option instance.
    */
   boxValue (key) {
     const matches = this.options.filter(o => o.key.toLowerCase() === key.toLowerCase());
     if (matches.length > 0) {
       return matches[0];
     } else if (this.allowUnknown) {
-      return new Option(key, {});
+      return new OptionStateOption(key, {});
     } else {
       return null;
     }
@@ -123,7 +123,7 @@ export class OptionSelection extends StateTemplate {
   /**
    * Transforms an internal representation of a value into a user-supplied-style value.
    *
-   * @param {Option} option - An `Option instance.
+   * @param {OptionStateOption} option - An `OptionStateOption` instance.
    * @returns {string} - The string value of the `Option`'s key.
    */
   unboxValue (option) {
