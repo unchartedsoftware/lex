@@ -7,6 +7,9 @@ export class TransitionFactory {
    *
    * @param {...string} optionKeys - The list of valid `OptionStateOption` keys.
    * @returns {Object} A config object with key `transition` and the intended transition function, to be used directly or further customized.
+   * @example
+   * // Transition to this child state if the parent option key is 'is', 'is like' or 'equals'
+   * TransitionFactory.optionKeyIs('is', 'is like', 'equals')
    */
   static optionKeyIs (...optionKeys) {
     return {
@@ -19,6 +22,9 @@ export class TransitionFactory {
    *
    * @param {...string} optionKeys - The list of invalid `OptionStateOption` keys.
    * @returns {Object} A config object with key `transition` and the intended transition function, to be used directly or further customized.
+   * @example
+   * // Transition to this child state if the parent option key is not 'between'
+   * TransitionFactory.optionKeyIsNot('between')
    */
   static optionKeyIsNot (...optionKeys) {
     return {
@@ -33,6 +39,8 @@ export class TransitionFactory {
    *
    * @param {Object} toCompare - The metadata object.
    * @returns {Object} A config object with key `transition` and the intended transition function, to be used directly or further customized.
+   * @example
+   * TransitionFactory.optionMetaCompare({type: 'string'})
    */
   static optionMetaCompare (toCompare) {
     return {
