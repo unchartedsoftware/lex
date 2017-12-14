@@ -107,7 +107,7 @@ export class OptionAssistant extends Assistant {
         <div className='assistant-body'>
           <ul>
             {
-              suggestions.map((o, idx) => <li onClick={() => this.onOptionSelected(o.key)} className={idx === activeOption ? 'active' : ''}>{o.key}</li>)
+              suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o.key)} className={idx === activeOption ? 'active' : ''}>{o.key}</li>)
             }
           </ul>
         </div>
