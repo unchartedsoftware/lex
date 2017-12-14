@@ -18,6 +18,7 @@ toc:
   - LabelState
   - name: Builders
   - OptionBuilder
+  - LabelBuilder
   - name: Assistants
   - OptionAssistant
   - name: Creating a Builder
