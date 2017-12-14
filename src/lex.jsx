@@ -5,6 +5,7 @@ import EventEmitter from 'wolfy87-eventemitter';
 import { StateTransitionError, NoStateAssistantTypeError, NoStateBuilderTypeError } from './lib/errors';
 import { StateTemplate } from './lib/state';
 import { StateBuilderFactory } from './lib/state-builder-factory';
+import { TransitionFactory } from './lib/transition-factory';
 import { SearchBar } from './components/search-bar';
 import { LabelState } from './lib/states/generic/label-state';
 import { OptionStateOption, OptionState } from './lib/states/generic/option-state';
@@ -132,6 +133,7 @@ export {
   NoStateBuilderTypeError,
   // base classes
   StateTemplate,
+  TransitionFactory,
   // states
   LabelState,
   OptionState,
