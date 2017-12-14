@@ -4,7 +4,7 @@ import { Lex, OptionState, OptionStateOption, TextRelationState, NumericRelation
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 // TODO make chainable using some kind of awesome Builder class
-const language = Lex.language(OptionState, {
+const language = Lex.from(OptionState, {
   name: 'Choose a field to search',
   options: function () {
     return new Promise((resolve) => {
@@ -14,13 +14,21 @@ const language = Lex.language(OptionState, {
       ]);
     });
   }
-});
-language.addChild(TextRelationState, {
-  transitionFunction: (parentVal) => parentVal && parentVal.meta.type === 'string'
-}).addChild(TextEntryState);
-language.addChild(NumericRelationState, {
-  transitionFunction: (parentVal) => parentVal && parentVal.meta.type === 'number'
-}).addChild(NumericEntryState);
+}).branch(
+  Lex.from(TextRelationState, {
+    transition: (parentVal) => parentVal && parentVal.meta.type === 'string'
+  }).to(TextEntryState),
+  Lex.from(NumericRelationState, {
+    transition: (parentVal) => parentVal && parentVal.meta.type === 'number'
+  }).branch(
+    Lex.from(NumericEntryState, {
+      transition: (parentVal) => parentVal && parentVal.key !== 'between'
+    }),
+    Lex.from(NumericEntryState, {
+      transition: (parentVal) => parentVal && parentVal.key === 'between'
+    }).to(NumericEntryState)
+  )
+);
 
 const lex = new Lex(language);
 
