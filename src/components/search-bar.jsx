@@ -5,11 +5,6 @@ import { TokenStateMachine } from '../lib/token-state-machine';
 import { StateTransitionError } from '../lib/errors';
 import { Token } from './token';
 
-const eventsToDelegate = new Map();
-eventsToDelegate.set('ArrowUp', true);
-eventsToDelegate.set('ArrowDown', true);
-eventsToDelegate.set('Tab', true);
-
 export class SearchBar extends Component {
   constructor () {
     super();
@@ -20,12 +15,13 @@ export class SearchBar extends Component {
       machines: undefined,
       active: false,
       focused: false,
-      onSubmit: () => {}
+      onSubmit: () => {},
+      proxiedEvents: new Map()
     };
   }
 
   processProps (props) {
-    const { machineTemplate, builders, value = [], onSubmit } = props;
+    const { machineTemplate, builders, value = [], onSubmit, proxiedEvents } = props;
     if (machineTemplate !== this.state.machineTemplate) {
       this.setState({
         machineTemplate: machineTemplate,
@@ -45,6 +41,11 @@ export class SearchBar extends Component {
     if (onSubmit !== this.state.onSubmit) {
       this.setState({
         onSubmit: onSubmit
+      });
+    }
+    if (proxiedEvents !== this.state.proxiedEvents) {
+      this.setState({
+        proxiedEvents: proxiedEvents
       });
     }
   }
@@ -181,7 +182,7 @@ export class SearchBar extends Component {
   @bind
   onKeyDown (e) {
     this.unboxedValue = e.target.value;
-    if (this.assistant && eventsToDelegate.has(e.code) && eventsToDelegate.get(e.code)) {
+    if (this.assistant && this.state.proxiedEvents.get(e.code) === true) {
       this.assistant.delegateEvent(e);
     }
   }
