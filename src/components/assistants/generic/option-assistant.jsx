@@ -97,7 +97,7 @@ export class OptionAssistant extends Assistant {
     return consumed;
   }
 
-  renderInteractive (props, {valid, readOnly, options, unboxedValue, activeOption, suggestions}) {
+  renderInteractive (props, {activeOption, suggestions}) {
     return (
       <div>
         <div className='assistant-header'>
