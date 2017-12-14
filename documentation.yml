@@ -7,12 +7,12 @@ toc:
   - Assistant
   - name: Choice States
   - OptionState
-  - Option
+  - OptionStateOption
   - TextRelationState
   - NumericRelationState
   - name: Value Entry States
-  - TextEntry
-  - NumericEntry
+  - TextEntryState
+  - NumericEntryState
   - name: Builders
   - OptionSelector
   - name: Assistants
