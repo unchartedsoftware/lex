@@ -46,6 +46,19 @@ export class TokenStateMachine extends EventEmitter {
     return _currentState.get(this);
   }
 
+  /*
+   * @private
+   */
+  getFirstLegalTransition (state) {
+    const transitions = state.children.filter(c => c.isValidTransition);
+    if (transitions.length === 0) {
+      const err = new StateTransitionError(`No valid transitions from current state "${this.state.name}" given current state's value: ${this.state.value}.`);
+      throw err;
+    } else {
+      return transitions[0];
+    }
+  }
+
   /**
    * Transition to the first viable child state, iff the current state is valid. If this is a terminal state, this will
    * trigger an 'end' event.
@@ -55,33 +68,27 @@ export class TokenStateMachine extends EventEmitter {
    */
   transition () {
     // validate current state value
-    if (this.state.isValid) {
-      if (this.state.isTerminal) {
-        this.emit('end', this.state);
-      } else {
-        // Find the first legal transition to a child, if possible
-        const transitions = this.state.children.filter(c => c.isValidTransition);
-        if (transitions.length > 0) {
-          const oldState = this.state;
-          // execute transition to the first child whose transition function returned true
-          _currentState.set(this, transitions[0]);
-          this.emit('state changed', this.state, oldState);
-        } else {
-          const err = new StateTransitionError(`No valid transitions from current state "${this.state.name}" given current state's value: ${this.state.value}.`);
-          this.emit('state change failed', err);
-          throw err;
-        }
-        // If the new state is read-only, transition past it automatically.
-        if (this.state.isReadOnly) {
-          return this.transition();
-        } else {
-          return this.state;
-        }
-      }
-    } else {
+    if (!this.state.isValid) {
       const err = new StateTransitionError(`Cannot transition from invalid current state "${this.state.name}" with value: ${this.state.value}.`);
       this.emit('state change failed', err);
       throw err;
+    } else if (this.state.isTerminal) {
+      this.emit('end', this.state);
+    } else {
+      try {
+        const oldState = this.state;
+        // Find the first legal transition to a non-read-only child, if possible
+        let next = this.getFirstLegalTransition(this.state);
+        while (next.isReadOnly) {
+          next = this.getFirstLegalTransition(next);
+        }
+        _currentState.set(this, next);
+        this.emit('state changed', this.state, oldState);
+        return this.state;
+      } catch (err) {
+        this.emit('state change failed', err);
+        throw err;
+      }
     }
   }
 
@@ -135,7 +142,7 @@ export class TokenStateMachine extends EventEmitter {
     const result = [];
     let current = this.state;
     while (current !== undefined) {
-      result.unshift(current.value);
+      if (!current.isReadOnly) result.unshift(current.value);
       current = current.parent;
     }
     return result;
