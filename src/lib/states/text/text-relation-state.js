@@ -9,7 +9,11 @@ import {OptionStateOption, OptionState} from '../generic/option-state';
 export class TextRelationState extends OptionState {
   constructor (config) {
     if (config.name === undefined) config.name = 'Choose a text relation';
-    if (config.options === undefined) config.options = ['is', 'is like', 'contains'].map(o => new OptionStateOption(o));
+    if (config.options === undefined) {
+      config.options = [
+        ['is', '='], ['is not', '≠'], ['is like', '≅'], ['contains', '⊇'], ['does not contain', '⊉']
+      ].map(o => new OptionStateOption(o[0], {}, o[1]));
+    }
     super(config);
   }
 }

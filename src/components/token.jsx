@@ -194,7 +194,7 @@ export class Token extends Component {
     this.state.requestRemoval(this.state.idx);
   }
 
-  render (props, {active, machine, tokens, requestFocus, requestBlur, focused}) {
+  render (props, {active, machine, focused}) {
     return (
       <div className={active ? 'token active' : 'token'}>
         &#128269;

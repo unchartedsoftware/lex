@@ -190,9 +190,9 @@ export class SearchBar extends Component {
   @bind
   onEndToken (v) {
     this.setState({
-      tokenValues: [...this.state.tokenValues, v]
+      tokenValues: [...this.state.tokenValues, v],
+      activeMachine: new TokenStateMachine(this.state.machineTemplate)
     });
-    this.state.activeMachine.reset();
     this.submit();
   }
 

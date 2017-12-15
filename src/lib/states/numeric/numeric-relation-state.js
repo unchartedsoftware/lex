@@ -9,7 +9,11 @@ import {OptionStateOption, OptionState} from '../generic/option-state';
 export class NumericRelationState extends OptionState {
   constructor (config) {
     if (config.name === undefined) config.name = 'Choose a numeric relation';
-    if (config.options === undefined) config.options = ['less than', 'greater than', 'equals', 'between'].map(o => new OptionStateOption(o));
+    if (config.options === undefined) {
+      config.options = [
+        ['equals', '='], ['does not equal', '≠'], ['less than', '<'], ['greater than', '>'], ['between', 'between']
+      ].map(o => new OptionStateOption(o[0], {}, o[1]));
+    }
     super(config);
   }
 }

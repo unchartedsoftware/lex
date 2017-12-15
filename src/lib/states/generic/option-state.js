@@ -1,6 +1,7 @@
 import { StateTemplate } from '../../state';
 
 const _key = new WeakMap();
+const _shortKey = new WeakMap();
 const _meta = new WeakMap();
 
 /**
@@ -10,15 +11,21 @@ const _meta = new WeakMap();
  * @param {any} meta - Whatever you want.
  */
 export class OptionStateOption {
-  constructor (key, meta) {
+  constructor (key, meta, shortKey = key) {
     _key.set(this, key);
     _meta.set(this, meta);
+    _shortKey.set(this, shortKey);
   }
 
   /**
    * @returns {string} The label for this option.
    */
   get key () { return _key.get(this); }
+
+  /**
+   * @returns {string} The abbreviated label for this option.
+   */
+  get shortKey () { return _shortKey.get(this); }
 
   /**
    * @returns {any} The metadata associated with this option.

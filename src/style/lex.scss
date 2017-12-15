@@ -19,14 +19,17 @@ div.token  {
     display: inline-block;
     background: transparent;
     transition: background-color 0.25s linear;
+    border-radius: 3px;
     border: 0;
     width: auto;
     height: 20px;
-    padding: 0 3px;
-    margin: 0;
+    padding: 0 0.2rem;
+    margin: 0.5px 0 0 0;
     box-shadow: none;
     outline: 0;
-
+    &.active {
+      background: #d1d1d1;
+    }
     &.invalid {
       background: #e2a4a4;
     }
