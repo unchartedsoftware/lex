@@ -80,6 +80,16 @@ export class OptionBuilder extends Builder {
     }
   }
 
+  renderReadOnly (props, state) {
+    if (this.machineState.value) {
+      return (
+        <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey}</span>
+      );
+    } else {
+      super.renderReadOnly(props, state);
+    }
+  }
+
   renderInteractive (props, {valid, readOnly, typedText}) {
     return (
       <input type='text'
