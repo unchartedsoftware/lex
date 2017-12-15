@@ -69,7 +69,7 @@ export class OptionBuilder extends Builder {
   }
 
   @bind
-  onOptionsChanged (newOptions, oldOptions) {
+  onOptionsChanged (newOptions) {
     this.setState({options: newOptions});
   }
 
@@ -83,7 +83,7 @@ export class OptionBuilder extends Builder {
   renderInteractive (props, {valid, readOnly, typedText}) {
     return (
       <input type='text'
-        className={valid ? 'token-input' : 'token-input invalid'}
+        className={valid ? 'token-input active' : 'token-input invalid'}
         onKeyDown={this.handleKeyDown}
         onKeyUp={this.handleKeyUp}
         value={typedText}
