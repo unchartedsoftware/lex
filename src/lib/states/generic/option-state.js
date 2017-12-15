@@ -9,6 +9,7 @@ const _meta = new WeakMap();
  *
  * @param {string} key - A label for this option. Should be unique within the list of options.
  * @param {any} meta - Whatever you want.
+ * @param {string|undefined} shortKey - A shorter representation of `key` displayed in read-only mode. Will default to `key` if not supplied.
  */
 export class OptionStateOption {
   constructor (key, meta, shortKey = key) {
