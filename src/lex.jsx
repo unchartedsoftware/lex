@@ -24,7 +24,7 @@ const sProxiedEvents = Symbol('proxiedEvents');
 /**
  * Lex - A micro-framework for building search bars.
  *
- * This component is an `EventEmitter` and exposes the following events:
+ * This class is an `EventEmitter` and exposes the following events:
  * - `on('token start', () => {})` when the user begins to create or edit a token.
  * - `on('token end', () => {})` when the user finishes creating or editing a token.
  * - `on('query changed', (newModel, oldModel) => {})` when query model changes.

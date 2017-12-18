@@ -79,6 +79,7 @@ export class OptionAssistant extends Assistant {
       case 'ArrowDown':
         this.setState({activeOption: Math.min(this.state.activeOption + 1, this.state.suggestions.length - 1)});
         break;
+      case 'Enter':
       case 'Tab':
         const activeOption = this.state.suggestions[this.state.activeOption];
         if (activeOption) {

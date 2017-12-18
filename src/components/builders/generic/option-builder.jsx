@@ -36,6 +36,7 @@ export class OptionBuilder extends Builder {
     let consumed = true;
     this.unboxedValue = e.target.value;
     switch (e.code) {
+      case 'Enter':
       case 'Tab':
         consumed = this.requestTransition(); // only consume the event if the transition succeeds
         break;
