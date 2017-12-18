@@ -20,6 +20,7 @@ import { OptionAssistant } from './components/assistants/generic/option-assistan
 const sLanguage = Symbol('language');
 const sBuilders = Symbol('builders');
 const sProxiedEvents = Symbol('proxiedEvents');
+const sDefaultValue = Symbol('defaultValue');
 
 /**
  * Lex - A micro-framework for building search bars.
@@ -30,8 +31,10 @@ const sProxiedEvents = Symbol('proxiedEvents');
  * - `on('query changed', (newModel, oldModel) => {})` when query model changes.
  * - `on('validity changed', (newValidity, oldValidity) => {})` when validity of an active builder changes.
  *
- * @param {StateTemplate} language - The root state of the search language this bar will support.
- * @param {string[]} proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any).
+ * @param {object} config - The configuration for this instance of `Lex`.
+ * @param {StateTemplate} config.language - The root state of the search language this bar will support.
+ * @param {string[]} config.proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any).
+ * @param {Array[Array[any]]} config.defaultlValue - The default search state for this search box.
  * @example
  * // Instantiate a new instance of lex and bind it to the page.
  * const lex = new Lex(language);
@@ -42,11 +45,17 @@ const sProxiedEvents = Symbol('proxiedEvents');
  * lex.registerBuilder(OptionState, MyCustomOptionBuilder);
  */
 class Lex extends EventEmitter {
-  constructor (language, proxiedEvents = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter']) {
+  constructor (config) {
+    const {
+      language,
+      proxiedEvents = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter'],
+      defaultValue = []
+    } = config;
     super();
     // TODO throw if language is not instanceof StateTemplate
     this[sLanguage] = language.root;
     this[sBuilders] = new StateBuilderFactory();
+    this[sDefaultValue] = defaultValue;
     this[sBuilders].registerBuilder(OptionState, OptionBuilder)
       .registerBuilder(TextRelationState, OptionBuilder)
       .registerBuilder(TextEntryState, OptionBuilder)
@@ -116,6 +125,7 @@ class Lex extends EventEmitter {
     }
     this.root = render((
       <SearchBar
+        value={this[sDefaultValue]}
         builders={this[sBuilders]}
         machineTemplate={this[sLanguage]}
         proxiedEvents={this[sProxiedEvents]}
@@ -123,6 +133,7 @@ class Lex extends EventEmitter {
         onValidityChanged={(...args) => this.emit('validity changed', ...args)}
         onStartToken={() => this.emit('token start')}
         onEndToken={() => this.emit('token end')}
+        ref={(a) => { this.searchBar = a; }}
       />
     ), target);
   }
@@ -135,6 +146,15 @@ class Lex extends EventEmitter {
       render('', this.target, this.root);
       delete this.target;
       delete this.root;
+    }
+  }
+
+  /**
+   * Completely reset the search state.
+   */
+  reset () {
+    if (this.searchBar) {
+      this.searchBar.value = this[sDefaultValue];
     }
   }
 }
