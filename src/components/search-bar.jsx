@@ -80,6 +80,14 @@ export class SearchBar extends Component {
     }
   }
 
+  set value (newValue) {
+    this.blur();
+    this.setState({
+      tokenValues: newValue,
+      activeMachine: new TokenStateMachine(this.state.machineTemplate)
+    });
+  }
+
   componentWillMount () {
     this.processProps(this.props);
   }

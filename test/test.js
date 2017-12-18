@@ -22,7 +22,7 @@ const language = Lex.from(OptionState, {
   )
 );
 
-const lex = new Lex(language);
+const lex = new Lex({language, defaultValue: []});
 
 lex.render(document.getElementById('LexContainer'));
 lex.on('query changed', (...args) => console.log('query changed', ...args));
@@ -30,5 +30,9 @@ lex.on('validity changed', (...args) => console.log('validity changed', ...args)
 lex.on('token start', (...args) => console.log('token start', ...args));
 lex.on('token end', (...args) => console.log('token end', ...args));
 
+// Hooks for demo buttons
+window.clearQuery = function () {
+  lex.reset();
+};
 // for debugging purposes only
 require('preact/devtools');
