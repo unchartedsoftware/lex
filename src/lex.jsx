@@ -42,7 +42,7 @@ const sProxiedEvents = Symbol('proxiedEvents');
  * lex.registerBuilder(OptionState, MyCustomOptionBuilder);
  */
 class Lex extends EventEmitter {
-  constructor (language, proxiedEvents = ['ArrowUp', 'ArrowDown', 'Tab']) {
+  constructor (language, proxiedEvents = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter']) {
     super();
     // TODO throw if language is not instanceof StateTemplate
     this[sLanguage] = language.root;

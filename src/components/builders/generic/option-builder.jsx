@@ -48,7 +48,7 @@ export class OptionBuilder extends Builder {
         }
         break;
       case 'Escape':
-        // TODO cancellation
+        this.requestCancel();
         break;
       default:
         consumed = false;

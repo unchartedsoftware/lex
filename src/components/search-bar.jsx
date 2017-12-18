@@ -137,6 +137,7 @@ export class SearchBar extends Component {
         builders={builders}
         requestFocus={this.focus}
         requestBlur={this.blur}
+        requestCancel={this.cancel}
         requestTransition={this.transition}
         requestRewind={this.rewind}
         requestRemoval={this.removeToken}
@@ -181,11 +182,20 @@ export class SearchBar extends Component {
   @bind
   blur () {
     if (this.state.activeMachine.rootState.isDefault) {
+      const {focused, active} = this.state;
       this.setState({focused: false, active: false});
-      this.state.onEndToken();
+      if (focused !== this.state.focused || active !== this.state.active) {
+        this.state.onEndToken();
+      }
     } else {
       this.setState({focused: false});
     }
+  }
+
+  @bind
+  cancel () {
+    this.setState({focused: false, active: false});
+    this.state.onEndToken();
   }
 
   @bind

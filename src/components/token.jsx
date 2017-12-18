@@ -18,6 +18,7 @@ export class Token extends Component {
       requestBlur: () => {},
       requestTransition: () => {},
       requestRewind: () => {},
+      requestCancel: () => {},
       onEndToken: () => {},
       onValidityChanged: () => {}
     };
@@ -32,6 +33,7 @@ export class Token extends Component {
       requestRemoval = () => {},
       requestFocus = () => {},
       requestBlur = () => {},
+      requestCancel = () => {},
       requestTransition = () => {},
       requestRewind = () => {},
       onEndToken = () => {},
@@ -77,6 +79,11 @@ export class Token extends Component {
     if (requestBlur !== this.state.requestBlur) {
       this.setState({
         requestBlur: requestBlur
+      });
+    }
+    if (requestCancel !== this.state.requestCancel) {
+      this.setState({
+        requestCancel: requestCancel
       });
     }
     if (requestRemoval !== this.state.requestRemoval) {
@@ -201,6 +208,12 @@ export class Token extends Component {
     this.state.requestRemoval(this.state.idx);
   }
 
+  @bind
+  requestCancel () {
+    this.state.machine.reset();
+    this.state.requestCancel();
+  }
+
   render (props, {active, machine, focused}) {
     return (
       <div className={active ? 'token active' : 'token'}>
@@ -214,6 +227,7 @@ export class Token extends Component {
             requestRewind={this.state.requestRewind}
             requestFocus={this.requestFocus}
             requestBlur={this.requestBlur}
+            requestCancel={this.requestCancel}
             validityChanged={this.state.onValidityChanged}
             readOnly={!active || s !== machine.state}
             blank={this.isBlank}
