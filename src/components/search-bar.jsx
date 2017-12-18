@@ -5,6 +5,9 @@ import { TokenStateMachine } from '../lib/token-state-machine';
 import { StateTransitionError } from '../lib/errors';
 import { Token } from './token';
 
+/**
+ * @private
+ */
 export class SearchBar extends Component {
   constructor () {
     super();
@@ -219,11 +222,12 @@ export class SearchBar extends Component {
 
   @bind
   onEndToken (v) {
+    const oldQueryValues = this.state.tokenValues;
     this.setState({
       tokenValues: [...this.state.tokenValues, v],
       activeMachine: new TokenStateMachine(this.state.machineTemplate)
     });
-    this.queryChanged();
+    this.queryChanged(oldQueryValues);
     this.state.onEndToken();
     this.state.onStartToken();
   }
@@ -233,16 +237,17 @@ export class SearchBar extends Component {
     if (idx === undefined) {
       this.setState({active: false});
     } else {
+      const oldQueryValues = this.state.tokenValues;
       this.setState({
         tokenValues: [...this.state.tokenValues.slice(0, idx), ...this.state.tokenValues.slice(idx + 1)]
       });
-      this.queryChanged();
+      this.queryChanged(oldQueryValues);
     }
   }
 
   @bind
-  queryChanged () {
-    this.state.onQueryChanged(this.state.tokenValues);
+  queryChanged (oldQueryValues = []) {
+    this.state.onQueryChanged(this.state.tokenValues, oldQueryValues);
   }
 
   render (props, {focused, tokenValues, builders, machineTemplate, activeMachine}) {

@@ -27,7 +27,7 @@ const sProxiedEvents = Symbol('proxiedEvents');
  * This component is an `EventEmitter` and exposes the following events:
  * - `on('token start', () => {})` when the user begins to create or edit a token.
  * - `on('token end', () => {})` when the user finishes creating or editing a token.
- * - `on('query changed', (newModel) => {})` when query model changes.
+ * - `on('query changed', (newModel, oldModel) => {})` when query model changes.
  * - `on('validity changed', (newValidity, oldValidity) => {})` when validity of an active builder changes.
  *
  * @param {StateTemplate} language - The root state of the search language this bar will support.
