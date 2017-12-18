@@ -22,7 +22,7 @@ const language = Lex.from(OptionState, {
   )
 );
 
-const lex = new Lex({language, defaultValue: []});
+const lex = new Lex({language: language, defaultValue: []});
 
 lex.render(document.getElementById('LexContainer'));
 lex.on('query changed', (...args) => console.log('query changed', ...args));
