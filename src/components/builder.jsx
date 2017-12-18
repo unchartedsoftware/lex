@@ -20,6 +20,7 @@ export class Builder extends Component {
       requestBlur: () => {},
       requestTransition: () => {},
       requestRewind: () => {},
+      requestCancel: () => {},
       validityChanged: () => {}
     };
   }
@@ -91,6 +92,7 @@ export class Builder extends Component {
       focused,
       requestFocus = () => {},
       requestBlur = () => {},
+      requestCancel = () => {},
       validityChanged = () => {}
     } = props;
     if (machine !== this.state.machine) {
@@ -134,6 +136,11 @@ export class Builder extends Component {
     if (requestBlur !== this.state.requestBlur) {
       this.setState({
         requestBlur: requestBlur
+      });
+    }
+    if (requestCancel !== this.state.requestCancel) {
+      this.setState({
+        requestCancel: requestCancel
       });
     }
     if (validityChanged !== this.state.validityChanged) {
@@ -193,6 +200,15 @@ export class Builder extends Component {
    */
   requestFocus () {
     this.state.requestFocus();
+  }
+
+  @bind
+  /**
+   * Call from a subclass to inform containing components that this `Builder` is cancelling
+   * input.
+   */
+  requestCancel () {
+    this.state.requestCancel();
   }
 
   @bind
