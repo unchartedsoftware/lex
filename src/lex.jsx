@@ -34,7 +34,7 @@ const sDefaultValue = Symbol('defaultValue');
  * @param {object} config - The configuration for this instance of `Lex`.
  * @param {StateTemplate} config.language - The root state of the search language this bar will support.
  * @param {string[]} config.proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any).
- * @param {Array[Array[any]]} config.defaultlValue - The default search state for this search box.
+ * @param {Array[]} config.defaultValue - The default search state for this search box.
  * @example
  * // Instantiate a new instance of lex and bind it to the page.
  * const lex = new Lex(language);
