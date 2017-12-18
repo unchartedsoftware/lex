@@ -18,7 +18,8 @@ export class Token extends Component {
       requestBlur: () => {},
       requestTransition: () => {},
       requestRewind: () => {},
-      onEndToken: () => {}
+      onEndToken: () => {},
+      onValidityChanged: () => {}
     };
   }
 
@@ -33,7 +34,8 @@ export class Token extends Component {
       requestBlur = () => {},
       requestTransition = () => {},
       requestRewind = () => {},
-      onEndToken = () => {}
+      onEndToken = () => {},
+      onValidityChanged = () => {}
     } = props;
     if (idx !== this.state.idx) {
       this.setState({
@@ -85,6 +87,11 @@ export class Token extends Component {
     if (onEndToken !== this.state.onEndToken) {
       this.setState({
         onEndToken: onEndToken
+      });
+    }
+    if (onValidityChanged !== this.state.onValidityChanged) {
+      this.setState({
+        onValidityChanged: onValidityChanged
       });
     }
   }
@@ -207,6 +214,7 @@ export class Token extends Component {
             requestRewind={this.state.requestRewind}
             requestFocus={this.requestFocus}
             requestBlur={this.requestBlur}
+            validityChanged={this.state.onValidityChanged}
             readOnly={!active || s !== machine.state}
             blank={this.isBlank}
             focused={active && s === machine.state && focused} />);

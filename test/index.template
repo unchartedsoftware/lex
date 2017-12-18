@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Lex testing</title>
+    <title>Lex Testing</title>
     <style>
       html {
         max-width: 700px;
@@ -10,7 +10,7 @@
     </style>
   </head>
   <body>
-    <h1> Search Bar Test </h1>
+    <h1> Lex </h1>
     <div id="LexContainer"></div>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus condimentum ex quam, sed tincidunt dolor maximus eu. Donec vel mi lacus. Etiam quam eros, iaculis sit amet ante a, pharetra consectetur libero. Fusce eu felis tempor, gravida dolor nec, tempor felis. Nulla lacus sapien, efficitur id blandit in, condimentum sed massa. Vestibulum et dui neque. Aliquam vulputate eget ex nec sodales. Donec dolor tortor, varius a sodales quis, ornare vel diam. Aliquam a diam ex. Maecenas ac luctus nisi. Curabitur rhoncus sapien vitae mi fermentum, a fringilla magna suscipit. Pellentesque ultrices odio vel erat posuere condimentum.
 
