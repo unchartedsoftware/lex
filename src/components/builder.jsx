@@ -19,7 +19,8 @@ export class Builder extends Component {
       requestFocus: () => {},
       requestBlur: () => {},
       requestTransition: () => {},
-      requestRewind: () => {}
+      requestRewind: () => {},
+      validityChanged: () => {}
     };
   }
 
@@ -89,7 +90,8 @@ export class Builder extends Component {
       blank,
       focused,
       requestFocus = () => {},
-      requestBlur = () => {}
+      requestBlur = () => {},
+      validityChanged = () => {}
     } = props;
     if (machine !== this.state.machine) {
       this.setState({
@@ -134,17 +136,30 @@ export class Builder extends Component {
         requestBlur: requestBlur
       });
     }
+    if (validityChanged !== this.state.validityChanged) {
+      this.setState({
+        validityChanged: validityChanged
+      });
+    }
   }
 
   @bind
   onTransition () {
+    const oldValidity = this.state.valid;
     this.setState({valid: true, errorMsg: undefined});
+    if (this.state.valid !== oldValidity) {
+      this.state.validityChanged(this.state.valid, oldValidity);
+    }
   }
 
   @bind
   onTransitionFailed (reason) {
     if (this.state.machineState === this.state.machine.state) {
+      const oldValidity = this.state.valid;
       this.setState({valid: false, errorMsg: reason.message});
+      if (this.state.valid !== oldValidity) {
+        this.state.validityChanged(this.state.valid, oldValidity);
+      }
     }
   }
 

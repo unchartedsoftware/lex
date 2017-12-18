@@ -24,6 +24,12 @@ const sProxiedEvents = Symbol('proxiedEvents');
 /**
  * Lex - A micro-framework for building search bars.
  *
+ * This component is an `EventEmitter` and exposes the following events:
+ * - `on('token start', () => {})` when the user begins to create or edit a token.
+ * - `on('token end', () => {})` when the user finishes creating or editing a token.
+ * - `on('query changed', (newModel) => {})` when query model changes.
+ * - `on('validity changed', (newValidity, oldValidity) => {})` when validity of an active builder changes.
+ *
  * @param {StateTemplate} language - The root state of the search language this bar will support.
  * @param {string[]} proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any).
  * @example
@@ -113,7 +119,10 @@ class Lex extends EventEmitter {
         builders={this[sBuilders]}
         machineTemplate={this[sLanguage]}
         proxiedEvents={this[sProxiedEvents]}
-        onSubmit={(...args) => this.emit('submit', ...args)}
+        onQueryChanged={(...args) => this.emit('query changed', ...args)}
+        onValidityChanged={(...args) => this.emit('validity changed', ...args)}
+        onStartToken={() => this.emit('token start')}
+        onEndToken={() => this.emit('token end')}
       />
     ), target);
   }

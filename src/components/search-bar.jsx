@@ -15,13 +15,25 @@ export class SearchBar extends Component {
       machines: undefined,
       active: false,
       focused: false,
-      onSubmit: () => {},
+      onQueryChanged: () => {},
+      onValidityChanged: () => {},
+      onStartToken: () => {},
+      onEndToken: () => {},
       proxiedEvents: new Map()
     };
   }
 
   processProps (props) {
-    const { machineTemplate, builders, value = [], onSubmit, proxiedEvents } = props;
+    const {
+      machineTemplate,
+      builders,
+      value = [],
+      proxiedEvents,
+      onQueryChanged = () => {},
+      onValidityChanged = () => {},
+      onStartToken = () => {},
+      onEndToken = () => {}
+    } = props;
     if (machineTemplate !== this.state.machineTemplate) {
       this.setState({
         machineTemplate: machineTemplate,
@@ -38,14 +50,29 @@ export class SearchBar extends Component {
         tokenValues: value
       });
     }
-    if (onSubmit !== this.state.onSubmit) {
+    if (onQueryChanged !== this.state.onQueryChanged) {
       this.setState({
-        onSubmit: onSubmit
+        onQueryChanged: onQueryChanged
+      });
+    }
+    if (onValidityChanged !== this.state.onValidityChanged) {
+      this.setState({
+        onValidityChanged: onValidityChanged
       });
     }
     if (proxiedEvents !== this.state.proxiedEvents) {
       this.setState({
         proxiedEvents: proxiedEvents
+      });
+    }
+    if (onStartToken !== this.state.onStartToken) {
+      this.setState({
+        onStartToken: onStartToken
+      });
+    }
+    if (onEndToken !== this.state.onEndToken) {
+      this.setState({
+        onEndToken: onEndToken
       });
     }
   }
@@ -91,6 +118,7 @@ export class SearchBar extends Component {
   @bind
   activate () {
     this.setState({active: true});
+    this.state.onStartToken();
   }
 
   get machineInstance () {
@@ -110,6 +138,7 @@ export class SearchBar extends Component {
         requestRewind={this.rewind}
         requestRemoval={this.removeToken}
         onEndToken={this.onEndToken}
+        onValidityChanged={this.state.onValidityChanged}
       />);
     }
   }
@@ -150,6 +179,7 @@ export class SearchBar extends Component {
   blur () {
     if (this.state.activeMachine.rootState.isDefault) {
       this.setState({focused: false, active: false});
+      this.state.onEndToken();
     } else {
       this.setState({focused: false});
     }
@@ -193,7 +223,9 @@ export class SearchBar extends Component {
       tokenValues: [...this.state.tokenValues, v],
       activeMachine: new TokenStateMachine(this.state.machineTemplate)
     });
-    this.submit();
+    this.queryChanged();
+    this.state.onEndToken();
+    this.state.onStartToken();
   }
 
   @bind
@@ -204,13 +236,13 @@ export class SearchBar extends Component {
       this.setState({
         tokenValues: [...this.state.tokenValues.slice(0, idx), ...this.state.tokenValues.slice(idx + 1)]
       });
-      this.submit();
+      this.queryChanged();
     }
   }
 
   @bind
-  submit () {
-    this.state.onSubmit(this.state.tokenValues);
+  queryChanged () {
+    this.state.onQueryChanged(this.state.tokenValues);
   }
 
   render (props, {focused, tokenValues, builders, machineTemplate, activeMachine}) {
