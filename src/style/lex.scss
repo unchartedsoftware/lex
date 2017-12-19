@@ -39,6 +39,11 @@ div.token  {
     width: 150px;
     min-width: 150px;
   }
+
+  .token-icon {
+    display: inline-block;
+    font-size: 12px;
+  }
 }
 
 div.lex-box.focused {

@@ -9,6 +9,7 @@ const _defaultValue = new WeakMap();
 const _children = new WeakMap();
 const _template = new WeakMap();
 const _value = new WeakMap();
+const _icon = new WeakMap();
 
 /**
  * Descibes a particular state in a state machine (DAG) which
@@ -33,6 +34,7 @@ const _value = new WeakMap();
  * @param {Function | undefined} config.validation - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
  * @param {any} config.defaultValue - The default value for this state before it has been touched. Can be undefined.
  * @param {boolean} config.readOnly - This state is read only (for display purposes only) and should be skipped by the state machine. False by default.
+ * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
  *
  * @example
  * class MyCustomState extends StateTemplate {
@@ -54,7 +56,7 @@ const _value = new WeakMap();
  */
 export class StateTemplate extends EventEmitter {
   constructor (config) {
-    const {parent, name, transition, validate, defaultValue, readOnly} = config;
+    const {parent, name, transition, validate, defaultValue, readOnly, icon} = config;
     super();
     _parent.set(this, parent);
     _name.set(this, name);
@@ -63,6 +65,7 @@ export class StateTemplate extends EventEmitter {
     _defaultValue.set(this, defaultValue !== undefined ? defaultValue : null);
     _readOnly.set(this, readOnly !== undefined ? readOnly : false);
     _children.set(this, []);
+    _icon.set(this, icon);
   }
 
   get isReadOnly () {
@@ -196,6 +199,20 @@ export class State extends EventEmitter {
   get isReadOnly () { return this.template.isReadOnly; }
   boxValue (...args) { return this.template.boxValue(...args); }
   unboxValue (...args) { return this.template.unboxValue(...args); }
+
+  /*
+   * @private
+   * @param {any} value - The internal representation of the value.
+   * @returns {string | undefined} - The user-supplied-style value.
+   */
+  suggestIcon () {
+    const iconFn = _icon.get(this.template);
+    if (iconFn === undefined || typeof iconFn === 'string') {
+      return iconFn;
+    } else {
+      return iconFn(this.value);
+    }
+  }
 
   reset () {
     this.value = this.defaultValue;
