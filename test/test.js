@@ -13,12 +13,25 @@ const language = Lex.from(OptionState, {
         new OptionStateOption('Income', {type: 'number'})
       ]);
     });
+  },
+  icon: (value) => {
+    if (!value) return '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>';
+    switch (value.key) {
+      case 'Name':
+        return '<span class="glyphicon glyphicon-user" aria-hidden="true"></span>';
+      case 'Income':
+        return '<span class="glyphicon glyphicon-usd" aria-hidden="true"></span>';
+    }
   }
 }).branch(
   Lex.from(TextRelationState, TransitionFactory.optionMetaCompare({type: 'string'})).to(TextEntryState),
   Lex.from(NumericRelationState, TransitionFactory.optionMetaCompare({type: 'number'})).branch(
     Lex.from(NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
-    Lex.from(NumericEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to(NumericEntryState)
+    // override icon in this state as an example. Last icon specified in the chain is used.
+    Lex.from(NumericEntryState, {
+      icon: () => '<span class="glyphicon glyphicon-usd" aria-hidden="true"></span><span class="glyphicon glyphicon-usd" aria-hidden="true"></span>',
+      ...TransitionFactory.optionKeyIs('between')
+    }).to(LabelState, {label: 'and'}).to(NumericEntryState)
   )
 );
 

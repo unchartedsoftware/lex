@@ -189,6 +189,23 @@ export class Token extends Component {
     return this.state.machine.unboxedValue;
   }
 
+  /*
+   * @private
+   */
+  get icon () {
+    let defaultIcon = '<span>&#128269;</span>';
+    let st = this.state.machine.state;
+    while (st !== undefined) {
+      const suggestion = st.suggestIcon();
+      if (suggestion !== undefined) {
+        defaultIcon = suggestion;
+        break;
+      }
+      st = st.parent;
+    }
+    return <span className='token-icon' dangerouslySetInnerHTML={{__html: defaultIcon}} />;
+  }
+
   @bind
   requestFocus () {
     this.setState({focused: true});
@@ -217,7 +234,7 @@ export class Token extends Component {
   render (props, {active, machine, focused}) {
     return (
       <div className={active ? 'token active' : 'token'}>
-        &#128269;
+        {this.icon}
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);
           return (<Builder
