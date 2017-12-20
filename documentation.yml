@@ -1,4 +1,11 @@
 toc:
+  - name: General Usage
+    file: src/docs/usage.md
+  - name: Styling Lex
+    file: src/docs/style-customization.md
+  - name: API Documentation
+    description: |
+      API documentation for Lex follows, divided into sections.
   - name: Core Framework
   - Lex
   - StateTemplate
