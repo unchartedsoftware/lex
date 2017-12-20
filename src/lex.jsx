@@ -167,7 +167,7 @@ class Lex extends EventEmitter {
    */
   setSuggestions (suggestions) {
     if (this.searchBar) {
-      this.searchBar.setSuggestions(suggestions);
+      this.searchBar.suggestions = suggestions;
     }
   }
 
@@ -178,7 +178,7 @@ class Lex extends EventEmitter {
    */
   setQuery (query) {
     if (this.searchBar) {
-      this.searchBar.setValue(query);
+      this.searchBar.value = query;
     }
   }
 }

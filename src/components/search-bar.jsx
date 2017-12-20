@@ -95,11 +95,19 @@ export class SearchBar extends Component {
   }
 
   set value (newValue) {
+    const oldQueryValues = this.state.tokenValues;
     this.blur();
     this.setState({
-      tokenValues: newValue,
+      tokenValues: newValue.map(v => new TokenStateMachine(this.state.machineTemplate, v).value), // box incoming values
       activeMachine: new TokenStateMachine(this.state.machineTemplate)
     });
+    this.queryChanged(oldQueryValues);
+  }
+
+  set suggestions (newSuggestions) {
+    const oldSuggestions = this.state.suggestions;
+    this.setState({suggestions: newSuggestions.map(v => new TokenStateMachine(this.state.machineTemplate, v).value)}); // box incoming values
+    this.suggestionsChanged(oldSuggestions);
   }
 
   componentWillMount () {
@@ -274,21 +282,6 @@ export class SearchBar extends Component {
       });
       this.queryChanged(oldQueryValues);
     }
-  }
-
-  setValue (newValue) {
-    const oldQueryValues = this.state.tokenValues;
-    this.setState({
-      active: false,
-      tokenValues: newValue.map(v => new TokenStateMachine(this.state.machineTemplate, v).value) // box incoming values
-    });
-    this.queryChanged(oldQueryValues);
-  }
-
-  setSuggestions (newSuggestions) {
-    const oldSuggestions = this.state.suggestions;
-    this.setState({suggestions: newSuggestions.map(v => new TokenStateMachine(this.state.machineTemplate, v).value)}); // box incoming values
-    this.suggestionsChanged(oldSuggestions);
   }
 
   @bind
