@@ -13,12 +13,14 @@ export class SearchBar extends Component {
     super();
     this.state = {
       tokenValues: [],
+      suggestions: [],
       builders: undefined,
       machineTemplate: undefined,
       machines: undefined,
       active: false,
       focused: false,
       onQueryChanged: () => {},
+      onSuggestionsChanged: () => {},
       onValidityChanged: () => {},
       onStartToken: () => {},
       onEndToken: () => {},
@@ -31,8 +33,10 @@ export class SearchBar extends Component {
       machineTemplate,
       builders,
       value = [],
+      suggestions = [],
       proxiedEvents,
       onQueryChanged = () => {},
+      onSuggestionsChanged = () => {},
       onValidityChanged = () => {},
       onStartToken = () => {},
       onEndToken = () => {}
@@ -53,9 +57,19 @@ export class SearchBar extends Component {
         tokenValues: value
       });
     }
+    if (suggestions !== this.state.suggestions) {
+      this.setState({
+        suggestions: suggestions
+      });
+    }
     if (onQueryChanged !== this.state.onQueryChanged) {
       this.setState({
         onQueryChanged: onQueryChanged
+      });
+    }
+    if (onSuggestionsChanged !== this.state.onSuggestionsChanged) {
+      this.setState({
+        onSuggestionsChanged: onSuggestionsChanged
       });
     }
     if (onValidityChanged !== this.state.onValidityChanged) {
@@ -262,17 +276,51 @@ export class SearchBar extends Component {
     }
   }
 
+  setSuggestions (newSuggestions) {
+    const oldSuggestions = this.state.suggestions;
+    this.setState({suggestions: newSuggestions});
+    this.suggestionsChanged(oldSuggestions);
+  }
+
+  @bind
+  removeSuggestion (idx) {
+    const oldSuggestions = this.state.suggestions;
+    this.setState({
+      suggestions: [...this.state.suggestions.slice(0, idx), ...this.state.suggestions.slice(idx + 1)]
+    });
+    this.suggestionsChanged(oldSuggestions);
+  }
+
+  @bind
+  addSuggestion (idx) {
+    const oldSuggestions = this.state.suggestions;
+    const suggestion = this.state.suggestions[idx];
+    this.removeSuggestion(idx);
+    this.onEndToken(suggestion);
+    this.suggestionsChanged(oldSuggestions);
+  }
+
   @bind
   queryChanged (oldQueryValues = []) {
     this.state.onQueryChanged(this.state.tokenValues, oldQueryValues);
   }
 
-  render (props, {focused, tokenValues, builders, machineTemplate, activeMachine}) {
+  @bind
+  suggestionsChanged (oldSuggestionValues = []) {
+    this.state.onSuggestionsChanged(this.state.suggestions, oldSuggestionValues);
+  }
+
+  render (props, {focused, tokenValues, suggestions, builders, machineTemplate, activeMachine}) {
     return (
       <div className={focused ? 'lex-box form-control focused' : 'lex-box form-control'} onKeyDown={this.onKeyDown} onClick={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         {
           tokenValues.map((v, i) => {
             return <Token machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeToken} idx={i} />;
+          })
+        }
+        {
+          suggestions.map((v, j) => {
+            return <Token machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeSuggestion} requestAddSuggestion={this.addSuggestion} idx={j} suggestion />;
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }

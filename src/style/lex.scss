@@ -15,6 +15,24 @@ div.token  {
   cursor: default;
   user-select: none;
 
+  &.suggestion {
+    border: 1px solid #0097a7;
+    background: rgba(0,151,167,.1);
+  }
+
+  .token-action-add-suggestion {
+    font-size: .85em;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    opacity: .4;
+    &:hover {
+      opacity: 1;
+    }
+  }
+
   .token-input {
     display: inline-block;
     background: transparent;
