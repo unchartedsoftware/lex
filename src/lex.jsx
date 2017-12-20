@@ -130,12 +130,13 @@ class Lex extends EventEmitter {
         machineTemplate={this[sLanguage]}
         proxiedEvents={this[sProxiedEvents]}
         onQueryChanged={(...args) => this.emit('query changed', ...args)}
+        onSuggestionsChanged={(...args) => this.emit('suggestions changed', ...args)}
         onValidityChanged={(...args) => this.emit('validity changed', ...args)}
         onStartToken={() => this.emit('token start')}
         onEndToken={() => this.emit('token end')}
         ref={(a) => { this.searchBar = a; }}
       />
-    ), target);
+    ), target, this.root);
   }
 
   /**
@@ -155,6 +156,12 @@ class Lex extends EventEmitter {
   reset () {
     if (this.searchBar) {
       this.searchBar.value = this[sDefaultValue];
+    }
+  }
+
+  setSuggestions (suggestions) {
+    if (this.searchBar) {
+      this.searchBar.setSuggestions(suggestions);
     }
   }
 }

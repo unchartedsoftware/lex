@@ -11,6 +11,7 @@ export class Token extends Component {
       idx: undefined,
       active: false,
       focused: false,
+      suggestion: false,
       machine: undefined,
       builders: undefined,
       stateArray: [],
@@ -19,6 +20,7 @@ export class Token extends Component {
       requestTransition: () => {},
       requestRewind: () => {},
       requestCancel: () => {},
+      requestAddSuggestion: () => {},
       onEndToken: () => {},
       onValidityChanged: () => {}
     };
@@ -28,6 +30,7 @@ export class Token extends Component {
     const {
       idx,
       active,
+      suggestion,
       machine,
       builders,
       requestRemoval = () => {},
@@ -36,6 +39,7 @@ export class Token extends Component {
       requestCancel = () => {},
       requestTransition = () => {},
       requestRewind = () => {},
+      requestAddSuggestion = () => {},
       onEndToken = () => {},
       onValidityChanged = () => {}
     } = props;
@@ -47,6 +51,11 @@ export class Token extends Component {
     if (active !== this.state.active) {
       this.setState({
         active: active
+      });
+    }
+    if (suggestion !== this.state.suggestion) {
+      this.setState({
+        suggestion: suggestion
       });
     }
     if (machine !== this.state.machine) {
@@ -89,6 +98,11 @@ export class Token extends Component {
     if (requestRemoval !== this.state.requestRemoval) {
       this.setState({
         requestRemoval: requestRemoval
+      });
+    }
+    if (requestAddSuggestion !== this.state.requestAddSuggestion) {
+      this.setState({
+        requestAddSuggestion: requestAddSuggestion
       });
     }
     if (onEndToken !== this.state.onEndToken) {
@@ -196,9 +210,9 @@ export class Token extends Component {
     let defaultIcon = '<span>&#128269;</span>';
     let st = this.state.machine.state;
     while (st !== undefined) {
-      const suggestion = st.suggestIcon();
-      if (suggestion !== undefined) {
-        defaultIcon = suggestion;
+      const iconSuggestion = st.suggestIcon();
+      if (iconSuggestion !== undefined) {
+        defaultIcon = iconSuggestion;
         break;
       }
       st = st.parent;
@@ -226,14 +240,27 @@ export class Token extends Component {
   }
 
   @bind
+  requestAddSuggestion (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.state.requestAddSuggestion(this.state.idx);
+  }
+
+  @bind
   requestCancel () {
     this.state.machine.reset();
     this.state.requestCancel();
   }
 
-  render (props, {active, machine, focused}) {
+  get addButton () {
+    if (this.state.suggestion) {
+      return <button className='token-action-add-suggestion' onClick={this.requestAddSuggestion}>ADD</button>;
+    }
+  }
+
+  render (props, {active, suggestion, machine, focused}) {
     return (
-      <div className={active ? 'token active' : 'token'}>
+      <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''}`}>
         {this.icon}
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);
@@ -250,6 +277,7 @@ export class Token extends Component {
             blank={this.isBlank}
             focused={active && s === machine.state && focused} />);
         })}
+        {this.addButton}
         <i className='close' onClick={this.requestRemoval} >&times;</i>
       </div>
     );
