@@ -54,12 +54,12 @@ export class SearchBar extends Component {
     }
     if (value !== this.state.tokenValues) {
       this.setState({
-        tokenValues: value
+        tokenValues: value.map(v => new TokenStateMachine(this.state.machineTemplate, v).value) // box incoming values
       });
     }
     if (suggestions !== this.state.suggestions) {
       this.setState({
-        suggestions: suggestions
+        suggestions: suggestions.map(v => new TokenStateMachine(this.state.machineTemplate, v).value) // box incoming values
       });
     }
     if (onQueryChanged !== this.state.onQueryChanged) {
@@ -276,9 +276,18 @@ export class SearchBar extends Component {
     }
   }
 
+  setValue (newValue) {
+    const oldQueryValues = this.state.tokenValues;
+    this.setState({
+      active: false,
+      tokenValues: newValue.map(v => new TokenStateMachine(this.state.machineTemplate, v).value) // box incoming values
+    });
+    this.queryChanged(oldQueryValues);
+  }
+
   setSuggestions (newSuggestions) {
     const oldSuggestions = this.state.suggestions;
-    this.setState({suggestions: newSuggestions});
+    this.setState({suggestions: newSuggestions.map(v => new TokenStateMachine(this.state.machineTemplate, v).value)}); // box incoming values
     this.suggestionsChanged(oldSuggestions);
   }
 
@@ -302,12 +311,16 @@ export class SearchBar extends Component {
 
   @bind
   queryChanged (oldQueryValues = []) {
-    this.state.onQueryChanged(this.state.tokenValues, oldQueryValues);
+    const newUnboxedValues = this.state.tokenValues.map(bv => new TokenStateMachine(this.state.machineTemplate, bv).unboxedValue);
+    const oldUnboxedValues = oldQueryValues.map(bv => new TokenStateMachine(this.state.machineTemplate, bv).unboxedValue);
+    this.state.onQueryChanged(this.state.tokenValues, oldQueryValues, newUnboxedValues, oldUnboxedValues);
   }
 
   @bind
   suggestionsChanged (oldSuggestionValues = []) {
-    this.state.onSuggestionsChanged(this.state.suggestions, oldSuggestionValues);
+    const newUnboxedValues = this.state.suggestions.map(bv => new TokenStateMachine(this.state.machineTemplate, bv).unboxedValue);
+    const oldUnboxedValues = oldSuggestionValues.map(bv => new TokenStateMachine(this.state.machineTemplate, bv).unboxedValue);
+    this.state.onSuggestionsChanged(this.state.suggestions, oldSuggestionValues, newUnboxedValues, oldUnboxedValues);
   }
 
   render (props, {focused, tokenValues, suggestions, builders, machineTemplate, activeMachine}) {
