@@ -21,6 +21,8 @@ toc:
   - LabelBuilder
   - name: Assistants
   - OptionAssistant
+  - name: Styling Lex
+    file: src/docs/style-customization.md
   - name: Creating a Builder
     file: src/docs/creating-a-builder.md
   - name: Creating an Assistant

@@ -1,14 +1,32 @@
+$lex-background: revert !default;
+$lex-border-color: revert !default;
+$lex-border-radius-base: 3px !default;
+$lex-highlight-color: #0097a7 !default;
+$lex-highlight-text-color: #fff !default;
+$lex-token-background: #ededed !default;
+$lex-token-color: revert !default;
+$lex-token-border-color: darken($lex-token-background, 15%) !default;
+$lex-token-active-background: darken($lex-token-background, 15%) !default; // lighten for dark theme
+$lex-token-invalid-background: #e2a4e2 !default; // lighten for dark theme
+$lex-assistant-background: #fff !default;
+$lex-assistant-border-color: $lex-token-border-color !default;
+$lex-assistant-header-background: $lex-token-background !default;
+$lex-assistant-header-color: #8d8d8d !default;
+
 div.lex-box {
   min-height: 40px;
   cursor: text;
   height: auto;
+  background: $lex-background;
+  border-color: $lex-border-color;
 }
 
 div.token  {
+  color: $lex-token-color;
   display: inline-block;
-  background: #ededed;
-  border-radius: 3px;
-  border: 1px solid #d9d9d9;
+  background: $lex-token-background;
+  border-radius: $lex-border-radius-base;
+  border: 1px solid $lex-token-border-color;
   margin: 0.2rem 0.6rem 0.2rem 0;
   padding: 0 0.3rem;
   white-space: nowrap;
@@ -16,8 +34,8 @@ div.token  {
   user-select: none;
 
   &.suggestion {
-    border: 1px solid #0097a7;
-    background: rgba(0,151,167,.1);
+    border: 1px solid $lex-highlight-color;
+    background: transparentize($lex-highlight-color, 0.85);
   }
 
   .token-action-add-suggestion {
@@ -37,7 +55,7 @@ div.token  {
     display: inline-block;
     background: transparent;
     transition: background-color 0.25s linear;
-    border-radius: 3px;
+    border-radius: $lex-border-radius-base;
     border: 0;
     width: auto;
     height: 20px;
@@ -46,10 +64,10 @@ div.token  {
     box-shadow: none;
     outline: 0;
     &.active {
-      background: #d1d1d1;
+      background: darken($lex-token-background, 15%);
     }
     &.invalid {
-      background: #e2a4a4;
+      background: $lex-token-invalid-background;
     }
   }
 
@@ -78,14 +96,14 @@ div.assistant-box {
   margin: 0 auto;
   min-width: 400px;
   min-height: 20px;
-  background-color: white;
-  border:  1px solid #d9d9d9;
+  background-color: $lex-assistant-background;
+  border:  1px solid $lex-assistant-border-color;
   position: absolute;
   box-shadow: 0px 5px 5px rgba(0,0,0,0.2);
 
   div.assistant-header {
-    color: #8d8d8d;
-    background-color: #ededed;
+    color: $lex-assistant-header-color;
+    background-color: $lex-assistant-header-background;
     display:block;
     min-height: 2.5rem;
     padding: 0.5rem 1rem;
@@ -98,8 +116,8 @@ div.assistant-box {
       margin: 0; padding: 0.5rem 1rem;
       cursor: pointer;
       &:hover, &.active {
-        color: #fff;
-        background-color: #0097a7;
+        color: $lex-highlight-text-color;
+        background-color: $lex-highlight-color;
       }
     }
   }
