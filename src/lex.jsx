@@ -35,7 +35,7 @@ const sDefaultValue = Symbol('defaultValue');
  * @param {object} config - The configuration for this instance of `Lex`.
  * @param {StateTemplate} config.language - The root state of the search language this bar will support.
  * @param {string[]} config.proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any). `['ArrowUp', 'ArrowDown', 'Tab', 'Enter']` by default.
- * @param {Array[any] | Array[string]} config.defaultQuery - The default search state for this search box. Can either be an array of boxed or unboxed (string) values.
+ * @param {Array[]} config.defaultQuery - The default search state for this search box. Can either be an array of arrays of boxed or unboxed (`string`) values.
  * @example
  * // Instantiate a new instance of lex and bind it to the page.
  * const lex = new Lex(language);
@@ -163,7 +163,7 @@ class Lex extends EventEmitter {
   /**
    * Suggestion tokens.
    *
-   * @param {Array[any] | Array[string]} suggestions - One or more token values (boxed or unboxed) to display as "suggestions" in the search bar. Will have different styling than a traditional token, and offer the user an "ADD" button they can use to lock the preview token into their query.
+   * @param {Array[]} suggestions - One or more token values (an array of arays of boxed or unboxed values) to display as "suggestions" in the search bar. Will have different styling than a traditional token, and offer the user an "ADD" button they can use to lock the preview token into their query.
    */
   setSuggestions (suggestions) {
     if (this.searchBar) {
@@ -174,7 +174,7 @@ class Lex extends EventEmitter {
   /**
    * Rewrite the query.
    *
-   * @param {Array[any] | Array[string]} query - One or more token values (boxed or unboxed) to display to overwrite the current query with.
+   * @param {Array[]} query - One or more token values (an array of arays of boxed or unboxed values) to display to overwrite the current query with.
    */
   setQuery (query) {
     if (this.searchBar) {
