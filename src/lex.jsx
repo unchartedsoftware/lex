@@ -28,14 +28,14 @@ const sDefaultValue = Symbol('defaultValue');
  * This class is an `EventEmitter` and exposes the following events:
  * - `on('token start', () => {})` when the user begins to create or edit a token.
  * - `on('token end', () => {})` when the user finishes creating or editing a token.
- * - `on('query changed', (newModel, oldModel) => {})` when query model changes.
- * - `on('suggestions changed', (newModel, oldModel) => {})` when suggestion model changes.
+ * - `on('query changed', (newModel, oldModel, newUnboxedModel, oldUnboxedModel) => {})` when query model changes.
+ * - `on('suggestions changed', (newModel, oldModel, newUnboxedModel, oldUnboxedModel) => {})` when suggestion model changes.
  * - `on('validity changed', (newValidity, oldValidity) => {})` when validity of an active builder changes.
  *
  * @param {object} config - The configuration for this instance of `Lex`.
  * @param {StateTemplate} config.language - The root state of the search language this bar will support.
  * @param {string[]} config.proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any). `['ArrowUp', 'ArrowDown', 'Tab', 'Enter']` by default.
- * @param {Array[]} config.defaultValue - The default search state for this search box.
+ * @param {Array[any] | Array[string]} config.defaultQuery - The default search state for this search box. Can either be an array of boxed or unboxed (string) values.
  * @example
  * // Instantiate a new instance of lex and bind it to the page.
  * const lex = new Lex(language);
@@ -50,13 +50,13 @@ class Lex extends EventEmitter {
     const {
       language,
       proxiedEvents = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter'],
-      defaultValue = []
+      defaultQuery = []
     } = config;
     super();
     // TODO throw if language is not instanceof StateTemplate
     this[sLanguage] = language.root;
     this[sBuilders] = new StateBuilderFactory();
-    this[sDefaultValue] = defaultValue;
+    this[sDefaultValue] = defaultQuery;
     this[sBuilders].registerBuilder(OptionState, OptionBuilder)
       .registerBuilder(TextRelationState, OptionBuilder)
       .registerBuilder(TextEntryState, OptionBuilder)
@@ -163,11 +163,22 @@ class Lex extends EventEmitter {
   /**
    * Suggestion tokens.
    *
-   * @param {Array[]} suggestions - One or more token values to display as "suggestions" in the search bar. Will have different styling than a traditional token, and offer the user an "ADD" button they can use to lock the preview token into their query.
+   * @param {Array[any] | Array[string]} suggestions - One or more token values (boxed or unboxed) to display as "suggestions" in the search bar. Will have different styling than a traditional token, and offer the user an "ADD" button they can use to lock the preview token into their query.
    */
   setSuggestions (suggestions) {
     if (this.searchBar) {
       this.searchBar.setSuggestions(suggestions);
+    }
+  }
+
+  /**
+   * Rewrite the query.
+   *
+   * @param {Array[any] | Array[string]} query - One or more token values (boxed or unboxed) to display to overwrite the current query with.
+   */
+  setQuery (query) {
+    if (this.searchBar) {
+      this.searchBar.setValue(query);
     }
   }
 }

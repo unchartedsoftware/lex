@@ -49,7 +49,7 @@ window.clearQuery = function () {
   lex.reset();
 };
 window.setSuggestions = function () {
-  lex.setSuggestions([[new OptionStateOption('Name', {type: 'string'}), new OptionStateOption('is like'), new OptionStateOption('Sean')]]);
+  lex.setSuggestions([['Name', 'is like', 'Sean']]);
 };
 // for debugging purposes only
 require('preact/devtools');

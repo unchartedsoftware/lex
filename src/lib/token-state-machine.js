@@ -22,7 +22,11 @@ export class TokenStateMachine extends EventEmitter {
     // bind to states
     if (values !== undefined) {
       for (const v of values) {
-        this.state.value = v;
+        if (typeof v === 'string') {
+          this.state.unboxedValue = v;
+        } else {
+          this.state.value = v;
+        }
         try {
           this.transition();
         } catch (err) {
