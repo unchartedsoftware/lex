@@ -29,6 +29,7 @@ const sDefaultValue = Symbol('defaultValue');
  * - `on('token start', () => {})` when the user begins to create or edit a token.
  * - `on('token end', () => {})` when the user finishes creating or editing a token.
  * - `on('query changed', (newModel, oldModel) => {})` when query model changes.
+ * - `on('suggestions changed', (newModel, oldModel) => {})` when suggestion model changes.
  * - `on('validity changed', (newValidity, oldValidity) => {})` when validity of an active builder changes.
  *
  * @param {object} config - The configuration for this instance of `Lex`.
@@ -159,6 +160,11 @@ class Lex extends EventEmitter {
     }
   }
 
+  /**
+   * Suggestion tokens.
+   *
+   * @param {Array[]} suggestions - One or more token values to display as "suggestions" in the search bar. Will have different styling than a traditional token, and offer the user an "ADD" button they can use to lock the preview token into their query.
+   */
   setSuggestions (suggestions) {
     if (this.searchBar) {
       this.searchBar.setSuggestions(suggestions);
