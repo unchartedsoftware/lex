@@ -213,7 +213,6 @@ export class SearchBar extends Component {
       return true;
     } catch (err) {
       if (err instanceof StateTransitionError) {
-        console.error(err.message);
         return false;
       } else {
         throw err;
