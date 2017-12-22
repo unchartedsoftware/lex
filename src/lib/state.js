@@ -1,9 +1,10 @@
 import EventEmitter from 'wolfy87-eventemitter';
 
 const _parent = new WeakMap();
+const _name = new WeakMap();
+const _vkey = new WeakMap();
 const _validate = new WeakMap();
 const _transitionFunction = new WeakMap();
-const _name = new WeakMap();
 const _readOnly = new WeakMap();
 const _defaultValue = new WeakMap();
 const _children = new WeakMap();
@@ -29,7 +30,8 @@ const _icon = new WeakMap();
  *
  * @param {object} config - Options for `StateTemplate`.
  * @param {State | undefined} config.parent - The parent state. `undefined` if this is a root.
- * @param {string} config.name - A useful label for this state.
+ * @param {string} config.name - A useful label for this state - used for display purposes.
+ * @param {string} config.vkey - A key used to enter the value of this state into the value object of the containing machine.
  * @param {Function | undefined} config.transition - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
  * @param {Function | undefined} config.validation - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
  * @param {any} config.defaultValue - The default value for this state before it has been touched. Can be undefined.
@@ -56,10 +58,11 @@ const _icon = new WeakMap();
  */
 export class StateTemplate extends EventEmitter {
   constructor (config) {
-    const {parent, name, transition, validate, defaultValue, readOnly, icon} = config;
+    const {parent, name, vkey, transition, validate, defaultValue, readOnly, icon} = config;
     super();
     _parent.set(this, parent);
     _name.set(this, name);
+    _vkey.set(this, vkey);
     _transitionFunction.set(this, transition !== undefined ? transition : () => true);
     _validate.set(this, validate !== undefined ? validate : () => true);
     _defaultValue.set(this, defaultValue !== undefined ? defaultValue : null);
@@ -86,6 +89,10 @@ export class StateTemplate extends EventEmitter {
 
   get name () {
     return _name.get(this);
+  }
+
+  get vkey () {
+    return _vkey.get(this);
   }
 
   get defaultValue () {
@@ -141,13 +148,23 @@ export class StateTemplate extends EventEmitter {
   /**
    * Add a child to this `StateTemplate`.
    *
+   * @param {string} vkey - The (optional) unique key used to store this state's value within a `Token` output object. If not supplied, this state won't be represented in the `Token` value.
    * @param {StateTemplate} StateTemplateClass - A child state - must be a class which extends `StateTemplate`.
    * @param {Object} config - Construction parameters for the child `StateTemplate` class.
    * @returns {StateTemplate} A reference to the new child `State`, for chaining purposes.
    */
-  to (StateTemplateClass, config = {}) {
-    config.parent = this;
-    const child = new StateTemplateClass(config);
+  to (vkey, StateTemplateClass, config = {}) {
+    // vkey is optional, so we have to jump through some hoops
+    let Klass = StateTemplateClass;
+    let confObj = config;
+    if (typeof vkey === 'string') {
+      confObj.vkey = vkey;
+    } else {
+      Klass = vkey;
+      confObj = StateTemplateClass;
+    }
+    confObj.parent = this;
+    const child = new Klass(confObj);
     _children.get(this).push(child);
     return child;
   }
@@ -193,6 +210,7 @@ export class State extends EventEmitter {
   get template () { return _template.get(this); }
   get parent () { return _parent.get(this); }
   get name () { return this.template.name; }
+  get vkey () { return this.template.vkey; }
   get defaultValue () { return this.template.defaultValue; }
   get children () { return _children.get(this); }
   get isTerminal () { return this.template.isTerminal; }

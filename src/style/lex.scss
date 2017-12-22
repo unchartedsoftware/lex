@@ -7,7 +7,7 @@ $lex-token-background: #ededed !default;
 $lex-token-color: revert !default;
 $lex-token-border-color: darken($lex-token-background, 15%) !default;
 $lex-token-active-background: darken($lex-token-background, 15%) !default; // lighten for dark theme
-$lex-token-invalid-background: #e2a4e2 !default; // lighten for dark theme
+$lex-token-invalid-background: #e2a4a4 !default; // lighten for dark theme
 $lex-assistant-background: #fff !default;
 $lex-assistant-border-color: $lex-token-border-color !default;
 $lex-assistant-header-background: $lex-token-background !default;
