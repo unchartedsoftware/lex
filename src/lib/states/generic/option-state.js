@@ -114,7 +114,7 @@ export class OptionState extends StateTemplate {
    * Transform a user-supplied value into an internal representation.
    *
    * @param {string} key - The user-supplied value.
-   * @returns {OptionStateOption} An Option instance.
+   * @returns {OptionStateOption} An `OptionStateOption` instance.
    */
   boxValue (key) {
     const matches = this.options.filter(o => o.key.toLowerCase() === key.toLowerCase());
@@ -131,7 +131,7 @@ export class OptionState extends StateTemplate {
    * Transforms an internal representation of a value into a user-supplied-style value.
    *
    * @param {OptionStateOption} option - An `OptionStateOption` instance.
-   * @returns {string} - The string value of the `Option`'s key.
+   * @returns {string} - The string value of the `OptionStateOption`'s key.
    */
   unboxValue (option) {
     if (option === undefined || option === null) return null;

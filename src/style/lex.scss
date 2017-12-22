@@ -9,6 +9,7 @@ $lex-token-border-color: darken($lex-token-background, 15%) !default;
 $lex-token-active-background: darken($lex-token-background, 15%) !default; // lighten for dark theme
 $lex-token-invalid-background: #e2a4a4 !default; // lighten for dark theme
 $lex-assistant-background: #fff !default;
+$lex-assistant-text-color: #333 !default;
 $lex-assistant-border-color: $lex-token-border-color !default;
 $lex-assistant-header-background: $lex-token-background !default;
 $lex-assistant-header-color: #8d8d8d !default;
@@ -100,6 +101,7 @@ div.assistant-box {
   border:  1px solid $lex-assistant-border-color;
   position: absolute;
   box-shadow: 0px 5px 5px rgba(0,0,0,0.2);
+  color: $lex-assistant-text-color;
 
   div.assistant-header {
     color: $lex-assistant-header-color;
@@ -118,6 +120,16 @@ div.assistant-box {
       &:hover, &.active {
         color: $lex-highlight-text-color;
         background-color: $lex-highlight-color;
+      }
+    }
+    &.entered-values {
+      border:  1px solid $lex-assistant-border-color;
+      li {
+        color: $lex-assistant-text-color;
+        &:hover, &.active {
+          color: $lex-assistant-text-color;
+          background-color: $lex-token-invalid-background;
+        }
       }
     }
   }
