@@ -11,7 +11,7 @@ export class MultiTextEntryState extends MultiOptionState {
    * @param {Object} config - A configuration object.
    */
   constructor (config) {
-    if (config.name === undefined) config.name = 'Enter values, separated by ,';
+    if (config.name === undefined) config.name = 'Enter multiple values, separated by ,';
     if (config.validate === undefined) config.validate = () => true;
     config.allowUnknown = true;
     super(config);

@@ -16,9 +16,10 @@ import { MultiTextEntryState } from './lib/states/text/multi-text-entry-state';
 import { TextEntryState } from './lib/states/text/text-entry-state';
 import { NumericEntryState } from './lib/states/numeric/numeric-entry-state';
 import { LabelBuilder } from './components/builders/generic/label-builder';
-import { MultiOptionBuilder } from './components/builders/generic/multi-option-builder';
 import { OptionBuilder } from './components/builders/generic/option-builder';
+import { MultiOptionBuilder } from './components/builders/generic/multi-option-builder';
 import { OptionAssistant } from './components/assistants/generic/option-assistant';
+import { MultiOptionAssistant } from './components/assistants/generic/multi-option-assistant';
 
 const sLanguage = Symbol('language');
 const sBuilders = Symbol('builders');
@@ -69,8 +70,10 @@ class Lex extends EventEmitter {
       .registerBuilder(NumericEntryState, OptionBuilder)
       .registerBuilder(LabelState, LabelBuilder)
       .registerAssistant(OptionState, OptionAssistant)
+      .registerBuilder(MultiOptionState, MultiOptionAssistant)
       .registerAssistant(TextRelationState, OptionAssistant)
-      .registerAssistant(NumericRelationState, OptionAssistant);
+      .registerAssistant(NumericRelationState, OptionAssistant)
+      .registerAssistant(MultiTextEntryState, MultiOptionAssistant);
     this[sProxiedEvents] = new Map();
     proxiedEvents.forEach(e => this[sProxiedEvents].set(e, true));
   }
@@ -218,5 +221,7 @@ export {
   NumericEntryState,
   // UI components
   OptionBuilder,
-  OptionAssistant
+  MultiOptionBuilder,
+  OptionAssistant,
+  MultiOptionAssistant
 };
