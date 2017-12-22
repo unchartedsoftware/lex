@@ -179,7 +179,7 @@ export class Token extends Component {
   /**
    * Get the values bound to underlying states, up to the current state.
    *
-   * @returns {Array[any]} An array of boxed values.
+   * @returns {Object} An object of boxed values.
    */
   get value () {
     return this.state.machine.value;
@@ -188,7 +188,7 @@ export class Token extends Component {
   /**
    * Alias for this.value.
    *
-   * @returns {Array[any]} An array of boxed values.
+   * @returns {Object} An object of boxed values.
    */
   get boxedValue () {
     return this.value;
@@ -197,7 +197,7 @@ export class Token extends Component {
   /**
    * Get the (unboxed) values bound to underlying states, up to the current state.
    *
-   * @returns {Array[String]} An array of unboxed values.
+   * @returns {Object} An object of unboxed values.
    */
   get unboxedValue () {
     return this.state.machine.unboxedValue;

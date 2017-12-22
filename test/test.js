@@ -3,8 +3,7 @@ import { h } from 'preact';
 import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, NumericEntryState, LabelState } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
-// TODO make chainable using some kind of awesome Builder class
-const language = Lex.from(OptionState, {
+const language = Lex.from('field', OptionState, {
   name: 'Choose a field to search',
   options: function () {
     return new Promise((resolve) => {
@@ -24,14 +23,14 @@ const language = Lex.from(OptionState, {
     }
   }
 }).branch(
-  Lex.from(TextRelationState, TransitionFactory.optionMetaCompare({type: 'string'})).to(TextEntryState),
-  Lex.from(NumericRelationState, TransitionFactory.optionMetaCompare({type: 'number'})).branch(
-    Lex.from(NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
+  Lex.from('relation', TextRelationState, TransitionFactory.optionMetaCompare({type: 'string'})).to('value', TextEntryState),
+  Lex.from('relation', NumericRelationState, TransitionFactory.optionMetaCompare({type: 'number'})).branch(
+    Lex.from('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
     // override icon in this state as an example. Last icon specified in the chain is used.
-    Lex.from(NumericEntryState, {
+    Lex.from('value', NumericEntryState, {
       icon: () => '<span class="glyphicon glyphicon-usd" aria-hidden="true"></span><span class="glyphicon glyphicon-usd" aria-hidden="true"></span>',
       ...TransitionFactory.optionKeyIs('between')
-    }).to(LabelState, {label: 'and'}).to(NumericEntryState)
+    }).to(LabelState, {label: 'and'}).to('secondaryValue', NumericEntryState)
   )
 );
 
@@ -49,7 +48,7 @@ window.clearQuery = function () {
   lex.reset();
 };
 window.setSuggestions = function () {
-  lex.setSuggestions([['Name', 'is like', 'Sean']]);
+  lex.setSuggestions([{field: 'Name', relation: 'is like', value: 'Sean'}]);
 };
 // for debugging purposes only
 require('preact/devtools');

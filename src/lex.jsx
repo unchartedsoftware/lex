@@ -35,7 +35,7 @@ const sDefaultValue = Symbol('defaultValue');
  * @param {object} config - The configuration for this instance of `Lex`.
  * @param {StateTemplate} config.language - The root state of the search language this bar will support.
  * @param {string[]} config.proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any). `['ArrowUp', 'ArrowDown', 'Tab', 'Enter']` by default.
- * @param {Array[]} config.defaultQuery - The default search state for this search box. Can either be an array of arrays of boxed or unboxed (`string`) values.
+ * @param {Object[]} config.defaultQuery - The default search state for this search box. Can either be an array of arrays of boxed or unboxed (basic type) values.
  * @example
  * // Instantiate a new instance of lex and bind it to the page.
  * const lex = new Lex(language);
@@ -97,21 +97,31 @@ class Lex extends EventEmitter {
   /**
    * Define a new search language.
    *
+   * @param {string} vkey - The (optional) unique key used to store this state's value within a `Token` output object. If not supplied, this state won't be represented in the `Token` value.
    * @param {StateTemplate} StateTemplateClass - The root state - must be a class which extends `StateTemplate`.
    * @param {Object} config - Construction parameters for the root `StateTemplate` class.
    * @returns {StateTemplate} A reference to the new root `State`, for chaining purposes to `.addChild()`.
    * @example
    * import { Lex } from 'lex';
-   * Lex.from(OptionState, {
+   * Lex.from('field', OptionState, {
    *   name: 'Choose a field to search',
    *   options:[
    *     new OptionStateOption('Name', {type: 'string'}),
    *     new OptionStateOption('Income', {type: 'number'})
    *   ]
-   * }).to(...).to(...)
+   * }).to(...).to(...) // to() has the same signature as from()
    */
-  static from (StateTemplateClass, config = {}) {
-    return new StateTemplateClass(config);
+  static from (vkey, StateTemplateClass, config = {}) {
+    // vkey is optional, so we have to jump through some hoops
+    let Klass = StateTemplateClass;
+    let confObj = config;
+    if (typeof vkey === 'string') {
+      confObj.vkey = vkey;
+    } else {
+      Klass = vkey;
+      confObj = StateTemplateClass;
+    }
+    return new Klass(confObj);
   }
 
   /**
@@ -163,7 +173,7 @@ class Lex extends EventEmitter {
   /**
    * Suggestion tokens.
    *
-   * @param {Array[]} suggestions - One or more token values (an array of arays of boxed or unboxed values) to display as "suggestions" in the search bar. Will have different styling than a traditional token, and offer the user an "ADD" button they can use to lock the preview token into their query.
+   * @param {Object[]} suggestions - One or more token values (an array of objects of boxed or unboxed values) to display as "suggestions" in the search bar. Will have different styling than a traditional token, and offer the user an "ADD" button they can use to lock the preview token into their query.
    */
   setSuggestions (suggestions) {
     if (this.searchBar) {
@@ -174,7 +184,7 @@ class Lex extends EventEmitter {
   /**
    * Rewrite the query.
    *
-   * @param {Array[]} query - One or more token values (an array of arays of boxed or unboxed values) to display to overwrite the current query with.
+   * @param {Object[]} query - One or more token values (an array of objects of boxed or unboxed values) to display to overwrite the current query with.
    */
   setQuery (query) {
     if (this.searchBar) {

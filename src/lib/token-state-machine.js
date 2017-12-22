@@ -10,7 +10,7 @@ const _currentState = new WeakMap();
  *
  * @private
  * @param {StateTemplate} rootStateTemplate - The DAG describing the states for this state machine.
- * @param {any[] | undefined} values - A set of initial (boxed) values to apply to the machine one by one (optional).
+ * @param {Object | undefined} values - A optional set of initial (boxed) values to apply to the machine's states (applied from the root state onward).
  */
 export class TokenStateMachine extends EventEmitter {
   constructor (rootStateTemplate, values) {
@@ -21,16 +21,21 @@ export class TokenStateMachine extends EventEmitter {
     _currentState.set(this, root);
     // bind to states
     if (values !== undefined) {
-      for (const v of values) {
-        if (typeof v === 'string') {
+      const copy = Object.assign(Object.create(null), values);
+      while (Object.keys(copy).length > 0) {
+        const v = copy[this.state.vkey];
+        if (v === undefined) {
+          break; // we're missing a value for the current state, so break out.
+        } else if (typeof v === 'string') {
           this.state.unboxedValue = v;
         } else {
           this.state.value = v;
         }
+        delete copy[this.state.vkey]; // we're done with this value
         try {
           this.transition();
         } catch (err) {
-          break;
+          break; // the value for this state is invalid, so break out.
         }
       }
     }
@@ -140,13 +145,13 @@ export class TokenStateMachine extends EventEmitter {
   /**
    * Get the values bound to underlying states, up to the current state.
    *
-   * @returns {Array[any]} An array of boxed values.
+   * @returns {Object} An object of boxed values.
    */
   get value () {
-    const result = [];
+    const result = Object.create(null);
     let current = this.state;
     while (current !== undefined) {
-      if (!current.isReadOnly) result.unshift(current.value);
+      if (!current.isReadOnly && current.vkey) result[current.vkey] = current.value;
       current = current.parent;
     }
     return result;
@@ -155,7 +160,7 @@ export class TokenStateMachine extends EventEmitter {
   /**
    * Alias for this.value.
    *
-   * @returns {Array[any]} An array of boxed values.
+   * @returns {Object} An object of boxed values.
    */
   get boxedValue () {
     return this.value;
@@ -164,13 +169,13 @@ export class TokenStateMachine extends EventEmitter {
   /**
    * Get the (unboxed) values bound to underlying states, up to the current state.
    *
-   * @returns {Array[String]} An array of unboxed values.
+   * @returns {Object} An object of unboxed (basic type) values.
    */
   get unboxedValue () {
-    const result = [];
+    const result = Object.create(null);
     let current = this.state;
     while (current !== undefined) {
-      result.unshift(current.unboxedValue);
+      if (!current.isReadOnly && current.vkey) result[current.vkey] = current.unboxedValue;
       current = current.parent;
     }
     return result;
