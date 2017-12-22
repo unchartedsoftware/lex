@@ -1,8 +1,10 @@
 {
   "name": "@uncharted/lex",
   "description": "A preact framework for building token-based search bars",
-  "version": "0.0.1",
-  "private": true,
+  "version": "0.1.0",
+  "publishConfig": {
+    "registry": "nexus.uncharted.software"
+  },
   "author": {
     "name": "Sean McIntyre",
     "email": "smcintyre@uncharted.software"
