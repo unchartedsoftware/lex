@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, NumericEntryState, LabelState } from '../src/lex';
+import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, MultiTextEntryState, NumericEntryState, LabelState } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 const language = Lex.from('field', OptionState, {
@@ -9,7 +9,8 @@ const language = Lex.from('field', OptionState, {
     return new Promise((resolve) => {
       resolve([
         new OptionStateOption('Name', {type: 'string'}),
-        new OptionStateOption('Income', {type: 'number'})
+        new OptionStateOption('Income', {type: 'number'}),
+        new OptionStateOption('Keywords', {type: 'multistring'})
       ]);
     });
   },
@@ -20,10 +21,13 @@ const language = Lex.from('field', OptionState, {
         return '<span class="glyphicon glyphicon-user" aria-hidden="true"></span>';
       case 'Income':
         return '<span class="glyphicon glyphicon-usd" aria-hidden="true"></span>';
+      case 'Keywords':
+        return '<span class="glyphicon glyphicon-list" aria-hidden="true"></span>';
     }
   }
 }).branch(
   Lex.from('relation', TextRelationState, TransitionFactory.optionMetaCompare({type: 'string'})).to('value', TextEntryState),
+  Lex.from('value', MultiTextEntryState, TransitionFactory.optionMetaCompare({type: 'multistring'})),
   Lex.from('relation', NumericRelationState, TransitionFactory.optionMetaCompare({type: 'number'})).branch(
     Lex.from('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
     // override icon in this state as an example. Last icon specified in the chain is used.

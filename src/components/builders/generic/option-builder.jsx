@@ -38,6 +38,10 @@ export class OptionBuilder extends Builder {
     switch (e.code) {
       case 'Enter':
       case 'Tab':
+        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
+          consumed = false;
+          break;
+        }
         consumed = this.requestTransition(); // only consume the event if the transition succeeds
         break;
       case 'Backspace':

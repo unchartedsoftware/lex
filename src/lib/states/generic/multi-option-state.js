@@ -23,6 +23,7 @@ export class MultiOptionState extends OptionState {
    * @returns {OptionStateOption[]} An array of `OptionStateOption` instances.
    */
   boxValue (keys) {
+    if (keys === null) { return keys; }
     return keys.map(k => super.boxValue(k));
   }
 
@@ -33,6 +34,7 @@ export class MultiOptionState extends OptionState {
    * @returns {string[]} - The string values of the `OptionStateOption`s' keys.
    */
   unboxValue (options) {
+    if (options === null) { return options; }
     return options.map(o => super.unboxValue(o));
   }
 }

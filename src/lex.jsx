@@ -9,11 +9,14 @@ import { TransitionFactory } from './lib/transition-factory';
 import { SearchBar } from './components/search-bar';
 import { LabelState } from './lib/states/generic/label-state';
 import { OptionStateOption, OptionState } from './lib/states/generic/option-state';
+import { MultiOptionState } from './lib/states/generic/multi-option-state';
 import { TextRelationState } from './lib/states/text/text-relation-state';
 import { NumericRelationState } from './lib/states/numeric/numeric-relation-state';
+import { MultiTextEntryState } from './lib/states/text/multi-text-entry-state';
 import { TextEntryState } from './lib/states/text/text-entry-state';
 import { NumericEntryState } from './lib/states/numeric/numeric-entry-state';
 import { LabelBuilder } from './components/builders/generic/label-builder';
+import { MultiOptionBuilder } from './components/builders/generic/multi-option-builder';
 import { OptionBuilder } from './components/builders/generic/option-builder';
 import { OptionAssistant } from './components/assistants/generic/option-assistant';
 
@@ -58,8 +61,10 @@ class Lex extends EventEmitter {
     this[sBuilders] = new StateBuilderFactory();
     this[sDefaultValue] = defaultQuery;
     this[sBuilders].registerBuilder(OptionState, OptionBuilder)
+      .registerBuilder(MultiOptionState, MultiOptionBuilder)
       .registerBuilder(TextRelationState, OptionBuilder)
       .registerBuilder(TextEntryState, OptionBuilder)
+      .registerBuilder(MultiTextEntryState, MultiOptionBuilder)
       .registerBuilder(NumericRelationState, OptionBuilder)
       .registerBuilder(NumericEntryState, OptionBuilder)
       .registerBuilder(LabelState, LabelBuilder)
@@ -209,6 +214,7 @@ export {
   TextRelationState,
   NumericRelationState,
   TextEntryState,
+  MultiTextEntryState,
   NumericEntryState,
   // UI components
   OptionBuilder,
