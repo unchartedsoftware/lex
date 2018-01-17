@@ -20,6 +20,13 @@ div.lex-box {
   height: auto;
   background: $lex-background;
   border-color: $lex-border-color;
+
+  &.focused {
+    border-color: $lex-highlight-color;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px darken($lex-highlight-color, 10%);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px darken($lex-highlight-color, 10%);
+  }
 }
 
 div.token  {

@@ -220,9 +220,13 @@ export class Token extends Component {
     return <span className='token-input token-icon' dangerouslySetInnerHTML={{__html: defaultIcon}} />;
   }
 
+  focus () {
+    this.setState({focused: true});
+  }
+
   @bind
   requestFocus () {
-    this.setState({focused: true});
+    this.focus();
     this.state.requestFocus();
   }
 

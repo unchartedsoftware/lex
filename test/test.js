@@ -54,5 +54,8 @@ window.clearQuery = function () {
 window.setSuggestions = function () {
   lex.setSuggestions([{field: 'Name', relation: 'is like', value: 'Sean'}]);
 };
+window.focusSearchBar = function () {
+  lex.focus();
+};
 // for debugging purposes only
 require('preact/devtools');
