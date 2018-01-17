@@ -274,7 +274,10 @@ export class SearchBar extends Component {
   @bind
   removeToken (idx) {
     if (idx === undefined) {
-      this.setState({active: false});
+      this.setState({
+        active: false,
+        activeMachine: new TokenStateMachine(this.state.machineTemplate)
+      });
     } else {
       const oldQueryValues = this.state.tokenValues;
       this.setState({

@@ -236,6 +236,9 @@ export class Token extends Component {
   requestRemoval (e) {
     e.preventDefault();
     e.stopPropagation();
+    if (!this.state.machine.state.isValid) {
+      this.state.onValidityChanged(true, this.state.machine.state.isValid);
+    }
     this.state.requestRemoval(this.state.idx);
   }
 
