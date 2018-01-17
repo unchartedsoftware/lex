@@ -29,10 +29,12 @@ div.token  {
   border-radius: $lex-border-radius-base;
   border: 1px solid $lex-token-border-color;
   margin: 0.2rem 0.6rem 0.2rem 0;
-  padding: 0 0.3rem;
+  padding: 0 1.5rem 0 0.3rem;
   white-space: nowrap;
   cursor: default;
   user-select: none;
+  position: relative;
+  font-size: 12px;
 
   &.suggestion {
     border: 1px solid $lex-highlight-color;
@@ -59,9 +61,8 @@ div.token  {
     border-radius: $lex-border-radius-base;
     border: 0;
     width: auto;
+    padding-right: 0.2rem;
     height: 20px;
-    padding: 0 0.2rem;
-    margin: 0.5px 0 0 0;
     box-shadow: none;
     outline: 0;
     &.active {
@@ -72,14 +73,22 @@ div.token  {
     }
   }
 
+  span.token-input {
+    line-height: 20px;
+    vertical-align: middle;
+  }
+
   input.token-input {
     width: 150px;
     min-width: 150px;
   }
 
-  .token-icon {
+  i.close {
     display: inline-block;
-    font-size: 12px;
+    vertical-align: middle;
+    position:absolute;
+    right: 0.2rem;
+    height: 20px;
   }
 }
 
