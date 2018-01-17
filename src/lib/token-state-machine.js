@@ -82,6 +82,7 @@ export class TokenStateMachine extends EventEmitter {
       this.emit('state change failed', err);
       throw err;
     } else if (this.state.isTerminal) {
+      this.emit('state changed', this.state, this.state);
       this.emit('end', this.state);
     } else {
       try {
