@@ -190,6 +190,15 @@ class Lex extends EventEmitter {
   }
 
   /**
+   * Focus the search box, and the active builder (if there is one).
+   */
+  focus () {
+    if (this.searchBar) {
+      this.searchBar.focus();
+    }
+  }
+
+  /**
    * Rewrite the query.
    *
    * @param {Object[]} query - One or more token values (an array of objects of boxed or unboxed values) to display to overwrite the current query with.

@@ -173,6 +173,7 @@ export class SearchBar extends Component {
         requestRemoval={this.removeToken}
         onEndToken={this.onEndToken}
         onValidityChanged={this.state.onValidityChanged}
+        ref={(a) => { this.tokenBuilder = a; }}
       />);
     }
   }
@@ -207,6 +208,11 @@ export class SearchBar extends Component {
   @bind
   focus () {
     this.setState({focused: true});
+    if (this.state.active) {
+      this.tokenBuilder.focus();
+    } else {
+      this.activate();
+    }
   }
 
   @bind
