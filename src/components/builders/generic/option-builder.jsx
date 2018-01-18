@@ -31,6 +31,16 @@ export class OptionBuilder extends Builder {
     this.machineState.on('value changed', this.onValueChanged);
   }
 
+  processProps (props) {
+    const { machineState } = props;
+    if (machineState !== this.state.machineState) {
+      this.setState({
+        typedText: machineState.unboxedValue
+      });
+    }
+    return super.processProps(props);
+  }
+
   @bind
   handleKeyDown (e) {
     let consumed = true;
