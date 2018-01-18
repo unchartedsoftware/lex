@@ -209,7 +209,7 @@ export class SearchBar extends Component {
   focus () {
     this.setState({focused: true});
     if (this.state.active) {
-      this.tokenBuilder.focus();
+      if (this.tokenBuilder) this.tokenBuilder.focus();
     } else {
       this.activate();
     }
