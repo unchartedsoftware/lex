@@ -15,6 +15,7 @@ export class Token extends Component {
       machine: undefined,
       builders: undefined,
       stateArray: [],
+      tokenXIcon: '&times',
       requestFocus: () => {},
       requestBlur: () => {},
       requestTransition: () => {},
@@ -33,6 +34,7 @@ export class Token extends Component {
       suggestion,
       machine,
       builders,
+      tokenXIcon = '&times',
       requestRemoval = () => {},
       requestFocus = () => {},
       requestBlur = () => {},
@@ -68,6 +70,11 @@ export class Token extends Component {
     if (builders !== this.state.builders) {
       this.setState({
         builders: builders
+      });
+    }
+    if (tokenXIcon !== this.state.tokenXIcon) {
+      this.setState({
+        tokenXIcon: tokenXIcon
       });
     }
     if (requestTransition !== this.state.requestTransition) {
@@ -220,6 +227,13 @@ export class Token extends Component {
     return <span className='token-input token-icon' dangerouslySetInnerHTML={{__html: defaultIcon}} />;
   }
 
+  /*
+   * @private
+   */
+  get xicon () {
+    return <span dangerouslySetInnerHTML={{__html: this.state.tokenXIcon}} />;
+  }
+
   focus () {
     this.setState({focused: true});
   }
@@ -285,7 +299,9 @@ export class Token extends Component {
             focused={active && s === machine.state && focused} />);
         })}
         {this.addButton}
-        <i className='close' onClick={this.requestRemoval} >&times;</i>
+        <button type='button' onClick={this.requestRemoval} className='btn btn-xs btn-link token-remove' aria-label='Close'>
+          {this.xicon}
+        </button>
       </div>
     );
   }

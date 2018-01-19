@@ -38,7 +38,11 @@ const language = Lex.from('field', OptionState, {
   )
 );
 
-const lex = new Lex({language: language, defaultValue: []});
+const lex = new Lex({
+  language: language,
+  defaultValue: [],
+  tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>'
+});
 
 lex.render(document.getElementById('LexContainer'));
 lex.on('query changed', (...args) => console.log('query changed', ...args));

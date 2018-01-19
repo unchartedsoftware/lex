@@ -25,6 +25,7 @@ const sLanguage = Symbol('language');
 const sBuilders = Symbol('builders');
 const sProxiedEvents = Symbol('proxiedEvents');
 const sDefaultValue = Symbol('defaultValue');
+const sTokenXIcon = Symbol('tokenXIcon');
 
 /**
  * Lex - A micro-framework for building search bars.
@@ -40,6 +41,7 @@ const sDefaultValue = Symbol('defaultValue');
  * @param {StateTemplate} config.language - The root state of the search language this bar will support.
  * @param {string[]} config.proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any). `['ArrowUp', 'ArrowDown', 'Tab', 'Enter']` by default.
  * @param {Object[]} config.defaultQuery - The default search state for this search box. Can either be an array of arrays of boxed or unboxed (basic type) values.
+ * @param {string} config.tokenXIcon - The default X icon for tokens (DOM string).
  * @example
  * // Instantiate a new instance of lex and bind it to the page.
  * const lex = new Lex(language);
@@ -54,7 +56,8 @@ class Lex extends EventEmitter {
     const {
       language,
       proxiedEvents = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter'],
-      defaultQuery = []
+      defaultQuery = [],
+      tokenXIcon = '&times;'
     } = config;
     super();
     // TODO throw if language is not instanceof StateTemplate
@@ -75,6 +78,7 @@ class Lex extends EventEmitter {
       .registerAssistant(NumericRelationState, OptionAssistant)
       .registerAssistant(MultiTextEntryState, MultiOptionAssistant);
     this[sProxiedEvents] = new Map();
+    this[sTokenXIcon] = tokenXIcon;
     proxiedEvents.forEach(e => this[sProxiedEvents].set(e, true));
   }
 
@@ -148,6 +152,7 @@ class Lex extends EventEmitter {
         builders={this[sBuilders]}
         machineTemplate={this[sLanguage]}
         proxiedEvents={this[sProxiedEvents]}
+        tokenXIcon={this[sTokenXIcon]}
         onQueryChanged={(...args) => this.emit('query changed', ...args)}
         onSuggestionsChanged={(...args) => this.emit('suggestions changed', ...args)}
         onValidityChanged={(...args) => this.emit('validity changed', ...args)}
