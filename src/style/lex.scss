@@ -4,7 +4,9 @@ $lex-border-radius-base: 3px !default;
 $lex-highlight-color: #0097a7 !default;
 $lex-highlight-text-color: #fff !default;
 $lex-token-background: #ededed !default;
-$lex-token-color: revert !default;
+$lex-token-color: #555;
+$lex-token-remove-button-color: lighten($lex-token-color, 45%) !default;
+$lex-token-remove-button-hover-color: darken($lex-token-remove-button-color, 15%) !default;
 $lex-token-border-color: darken($lex-token-background, 15%) !default;
 $lex-token-active-background: darken($lex-token-background, 15%) !default; // lighten for dark theme
 $lex-token-invalid-background: #e2a4a4 !default; // lighten for dark theme
@@ -36,11 +38,11 @@ div.token  {
   border-radius: $lex-border-radius-base;
   border: 1px solid $lex-token-border-color;
   margin: 0.2rem 0.6rem 0.2rem 0;
-  padding: 0 1.5rem 0 0.3rem;
+  padding: 0 1.6rem 0 0.3rem;
+  position: relative;
   white-space: nowrap;
   cursor: default;
   user-select: none;
-  position: relative;
   font-size: 12px;
 
   &.suggestion {
@@ -68,8 +70,11 @@ div.token  {
     border-radius: $lex-border-radius-base;
     border: 0;
     width: auto;
-    padding-right: 0.2rem;
-    height: 20px;
+    padding: 0 0.2rem 0 0;
+    margin: 0;
+    line-height: 20px;
+    height: 21px;
+    vertical-align: middle;
     box-shadow: none;
     outline: 0;
     &.active {
@@ -81,8 +86,7 @@ div.token  {
   }
 
   span.token-input {
-    line-height: 20px;
-    vertical-align: middle;
+    margin-top: 1px;
   }
 
   input.token-input {
@@ -90,12 +94,24 @@ div.token  {
     min-width: 150px;
   }
 
-  i.close {
+  button.token-remove {
+    color: $lex-token-remove-button-color;
+    padding: 0.2rem 0.4rem 0.2rem 0;
     display: inline-block;
-    vertical-align: middle;
-    position:absolute;
-    right: 0.2rem;
     height: 20px;
+    width: 16px;
+    position: absolute;
+    top: 1px;
+    &:hover {
+      color: $lex-token-remove-button-hover-color;
+    }
+    span {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      font-size: 12px;
+      line-height: 12px;
+    }
   }
 }
 

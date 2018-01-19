@@ -19,6 +19,7 @@ export class SearchBar extends Component {
       machines: undefined,
       active: false,
       focused: false,
+      tokenXIcon: '&times',
       onQueryChanged: () => {},
       onSuggestionsChanged: () => {},
       onValidityChanged: () => {},
@@ -35,6 +36,7 @@ export class SearchBar extends Component {
       value = [],
       suggestions = [],
       proxiedEvents,
+      tokenXIcon = '&times;',
       onQueryChanged = () => {},
       onSuggestionsChanged = () => {},
       onValidityChanged = () => {},
@@ -80,6 +82,11 @@ export class SearchBar extends Component {
     if (proxiedEvents !== this.state.proxiedEvents) {
       this.setState({
         proxiedEvents: proxiedEvents
+      });
+    }
+    if (tokenXIcon !== this.state.tokenXIcon) {
+      this.setState({
+        tokenXIcon: tokenXIcon
       });
     }
     if (onStartToken !== this.state.onStartToken) {
@@ -163,6 +170,7 @@ export class SearchBar extends Component {
     if (this.state.active) {
       return (<Token
         active
+        tokenXIcon={this.state.tokenXIcon}
         machine={activeMachine}
         builders={builders}
         requestFocus={this.focus}
@@ -325,17 +333,17 @@ export class SearchBar extends Component {
     this.state.onSuggestionsChanged(this.state.suggestions, oldSuggestionValues, newUnboxedValues, oldUnboxedValues);
   }
 
-  render (props, {focused, tokenValues, suggestions, builders, machineTemplate, activeMachine}) {
+  render (props, {focused, tokenValues, suggestions, builders, machineTemplate, activeMachine, tokenXIcon}) {
     return (
       <div className={focused ? 'lex-box form-control focused' : 'lex-box form-control'} onKeyDown={this.onKeyDown} onClick={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         {
           tokenValues.map((v, i) => {
-            return <Token machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeToken} idx={i} />;
+            return <Token tokenXIcon={tokenXIcon} machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeToken} idx={i} />;
           })
         }
         {
           suggestions.map((v, j) => {
-            return <Token machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeSuggestion} requestAddSuggestion={this.addSuggestion} idx={j} suggestion />;
+            return <Token tokenXIcon={tokenXIcon} machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeSuggestion} requestAddSuggestion={this.addSuggestion} idx={j} suggestion />;
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }

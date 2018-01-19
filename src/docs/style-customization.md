@@ -7,7 +7,8 @@ $lex-border-radius-base: 3px; // border radius for various things
 $lex-highlight-color: #0097a7;  // highlight color for various things
 $lex-highlight-text-color: #fff; // color for text shown on top of a highlight-color background
 $lex-token-background: #ededed; // background color for tokens
-$lex-token-color: revert; // text color for tokens (inherit from Bootstrap)
+$lex-token-color: #555; // text color for tokens (inherit from Bootstrap)
+$lex-token-hover-color: lighten($lex-token-color, 15%); // hover color for close button
 $lex-token-border-color: darken($lex-token-background, 15%); // border color for a token
 $lex-token-active-background: darken($lex-token-background, 15%); // background color for active region of a token. should lighten for dark theme
 $lex-token-invalid-background: #e2a4e2; // background color for invalid region of token. should lighten for dark theme
