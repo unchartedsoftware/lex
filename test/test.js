@@ -27,7 +27,15 @@ const language = Lex.from('field', OptionState, {
   }
 }).branch(
   Lex.from('relation', TextRelationState, TransitionFactory.optionMetaCompare({type: 'string'})).to('value', TextEntryState),
-  Lex.from('value', MultiTextEntryState, TransitionFactory.optionMetaCompare({type: 'multistring'})),
+  Lex.from('value', MultiTextEntryState, {
+    options: [
+      'lex',
+      'multi-value',
+      'entry',
+      'text'
+    ].map(t => new OptionStateOption(t)),
+    ...TransitionFactory.optionMetaCompare({type: 'multistring'})
+  }),
   Lex.from('relation', NumericRelationState, TransitionFactory.optionMetaCompare({type: 'number'})).branch(
     Lex.from('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
     // override icon in this state as an example. Last icon specified in the chain is used.

@@ -108,7 +108,7 @@ export class MultiOptionAssistant extends Assistant {
       <div>
         <div className='assistant-header'>
           {this.machineState.name}
-          <span className='pull-right'><strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;<strong>Tab</strong> to select</span>
+          <span className='pull-right'><strong>&#129045;&#129047;</strong> to navigate suggestions&nbsp;&nbsp;&nbsp;<strong>Tab</strong> to select</span>
         </div>
         <div className='assistant-body'>
           <ul>
@@ -116,9 +116,12 @@ export class MultiOptionAssistant extends Assistant {
               suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o.key)} className={idx === activeOption ? 'active' : ''}>{o.key}</li>)
             }
           </ul>
+          {
+            Array.isArray(this.value) && this.value.length > 0 && <div className='assistant-header'>Entered Values</div>
+          }
           <ul className='entered-values'>
             {
-              Array.isArray(this.value) && this.value.map((o, idx) => <li tabIndex='0' onClick={() => this.removeValue(idx)}>{o.key}</li>)
+              Array.isArray(this.value) && this.value.map((o, idx) => <li tabIndex='0' onClick={() => this.removeValue(idx)}>{o.key}<span className='text-muted pull-right'>(click to remove)</span></li>)
             }
           </ul>
         </div>

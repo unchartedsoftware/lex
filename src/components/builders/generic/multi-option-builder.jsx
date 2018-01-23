@@ -55,7 +55,6 @@ export class MultiOptionBuilder extends Builder {
           // reset
           this.unboxedValue = oldValue;
         }
-        console.log(this.value);
         break;
       case 'Enter':
       case 'Tab':

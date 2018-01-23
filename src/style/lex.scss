@@ -157,10 +157,13 @@ div.assistant-box {
     &.entered-values {
       border:  1px solid $lex-assistant-border-color;
       li {
+        span { display: none }
         color: $lex-assistant-text-color;
         &:hover, &.active {
+          text-decoration: line-through;
           color: $lex-assistant-text-color;
           background-color: $lex-token-invalid-background;
+          span { display: inline }
         }
       }
     }
