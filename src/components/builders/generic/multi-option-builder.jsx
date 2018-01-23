@@ -14,7 +14,6 @@ import { Builder } from '../../builder';
 export class MultiOptionBuilder extends Builder {
   constructor () {
     super();
-    this.inProgressValue = null;
     this.state.options = [];
   }
 

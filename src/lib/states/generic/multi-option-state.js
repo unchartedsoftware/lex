@@ -16,6 +16,16 @@ import { OptionState } from './option-state';
  * @param {boolean} config.allowUnknown - Allow user to enter unknown options by entering custom values.
  */
 export class MultiOptionState extends OptionState {
+  constructor (config) {
+    if (config.validate === undefined) {
+      config.validate = (thisVal) => {
+        if (!Array.isArray(thisVal)) return false;
+        return thisVal.filter(v => this.options.filter(o => o.key === v.key).length === 1).length === thisVal.length;
+      };
+    }
+    super(config);
+  }
+
   /**
    * Transform a user-supplied value into an internal representation.
    *
