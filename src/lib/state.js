@@ -7,6 +7,7 @@ const _validate = new WeakMap();
 const _transitionFunction = new WeakMap();
 const _readOnly = new WeakMap();
 const _defaultValue = new WeakMap();
+const _multivalue = new WeakMap();
 const _children = new WeakMap();
 const _template = new WeakMap();
 const _value = new WeakMap();
@@ -37,6 +38,7 @@ const _icon = new WeakMap();
  * @param {Function | undefined} config.validation - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
  * @param {any} config.defaultValue - The default value for this state before it has been touched. Can be undefined. Should not be an `Array` (but can be an `object`).
  * @param {boolean} config.readOnly - This state is read only (for display purposes only) and should be skipped by the state machine. False by default.
+ * @param {boolean} config.multivalue - Whether or not this state supports multi-value entry.
  * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
  *
  * @example
@@ -59,7 +61,7 @@ const _icon = new WeakMap();
  */
 export class StateTemplate extends EventEmitter {
   constructor (config) {
-    const {parent, name, vkey, transition, validate, defaultValue, readOnly, icon} = config;
+    const {parent, name, vkey, transition, validate, defaultValue, readOnly, multivalue, icon} = config;
     super();
     _parent.set(this, parent);
     _name.set(this, name);
@@ -67,6 +69,7 @@ export class StateTemplate extends EventEmitter {
     _transitionFunction.set(this, transition !== undefined ? transition : () => true);
     _validate.set(this, validate !== undefined ? validate : () => true);
     _defaultValue.set(this, defaultValue !== undefined ? defaultValue : null);
+    _multivalue.set(this, multivalue !== undefined ? multivalue : false);
     _readOnly.set(this, readOnly !== undefined ? readOnly : false);
     _children.set(this, []);
     _icon.set(this, icon);
@@ -102,6 +105,10 @@ export class StateTemplate extends EventEmitter {
 
   get children () {
     return _children.get(this);
+  }
+
+  get isMultivalue () {
+    return _multivalue.get(this);
   }
 
   get isRoot () {
@@ -225,6 +232,7 @@ export class State extends EventEmitter {
   get children () { return _children.get(this); }
   get isTerminal () { return this.template.isTerminal; }
   get isReadOnly () { return this.template.isReadOnly; }
+  get isMultivalue () { return this.template.isMultivalue; }
   boxValue (...args) { return this.template.boxValue(...args); }
   unboxValue (...args) { return this.template.unboxValue(...args); }
 
