@@ -10,6 +10,7 @@ const _defaultValue = new WeakMap();
 const _children = new WeakMap();
 const _template = new WeakMap();
 const _value = new WeakMap();
+const _archive = new WeakMap();
 const _icon = new WeakMap();
 
 /**
@@ -34,7 +35,7 @@ const _icon = new WeakMap();
  * @param {string} config.vkey - A key used to enter the value of this state into the value object of the containing machine.
  * @param {Function | undefined} config.transition - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
  * @param {Function | undefined} config.validation - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
- * @param {any} config.defaultValue - The default value for this state before it has been touched. Can be undefined.
+ * @param {any} config.defaultValue - The default value for this state before it has been touched. Can be undefined. Should not be an `Array` (but can be an `object`).
  * @param {boolean} config.readOnly - This state is read only (for display purposes only) and should be skipped by the state machine. False by default.
  * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
  *
@@ -185,12 +186,20 @@ export class StateTemplate extends EventEmitter {
 
 /**
  * An extension of `StateTemplate`, but "instantiated" to support
- * the storage of concrete values. This class is not intended to be
- * used directly, but is instantiated from a `StateTemplate` automatically
- * by a `TokenStateMachine`.
+ * the storage of concrete values (and multi-value entry). This class
+ * is not intended to be used directly, but is instantiated from a
+ * `StateTemplate` automatically by a `TokenStateMachine`.
+ *
+ * Values should not be `Array`s, but can be `object`s (`Array`s interfere
+ * with internal multi-value handling).
  *
  * `this.value` always accepts/returns a boxed value. Where desired, the boxed and
  * unboxed versions of the value can be identical.
+ *
+ * `State`s support an archive for values, in order to facilitate multi-
+ * value entry. Valid values may be pushed onto the archive, making room
+ * for a new value entry to take place. The top archived value may also
+ * be moved back to replace the current value.
  *
  * This class is an `EventEmitter` and exposes the following events:
  * - `on('value changed', (newVal, oldVal) => {})` when the internal value changes.
@@ -205,6 +214,7 @@ export class State extends EventEmitter {
     _parent.set(this, parent);
     _template.set(this, template);
     _value.set(this, template.defaultValue);
+    _archive.set(this, []);
   }
 
   get template () { return _template.get(this); }
@@ -232,8 +242,12 @@ export class State extends EventEmitter {
     }
   }
 
+  /*
+   * @private
+   */
   reset () {
     this.value = this.defaultValue;
+    _archive.set(this, []);
   }
 
   get isDefault () { return this.value === this.defaultValue; }
@@ -319,5 +333,53 @@ export class State extends EventEmitter {
   set unboxedValue (newUnboxedVal) {
     this.emit('unboxed value change attempted', newUnboxedVal, this.unboxedValue);
     this.value = this.boxValue(newUnboxedVal);
+  }
+
+  /**
+   * Getter for `archive`d values.
+   *
+   * @returns {any[]} The archive of valid values for this `State`.
+   */
+  get archive () {
+    return _archive.get(this);
+  }
+
+  /**
+   * Getter for `archive`d values. Alias for `this.archive`.
+   *
+   * @returns {any[]} The archive of valid values for this `State`.
+   */
+  get boxedArchive () {
+    return this.archive;
+  }
+
+  /**
+   * Getter for `unboxedArchive`.
+   *
+   * @returns {string[]} The archive of valid unboxed values for this `State`.
+   */
+  get unboxedArchive () {
+    return this.archive.map(a => this.unboxValue(a));
+  }
+
+  /**
+   * Moves the current value to the archive, and resets the current value.
+   */
+  archiveValue () {
+    const oldVal = this.value;
+    const oldUnboxedVal = this.unboxedValue;
+    this.archive.push(this.value);
+    this.value = this.defaultValue;
+    this.emit('value changed', this.value, oldVal, this.unboxedValue, oldUnboxedVal);
+  }
+
+  /**
+   * Moves the top value from the archive back to the current value, overwriting it.
+   */
+  unarchiveValue () {
+    const oldVal = this.value;
+    const oldUnboxedVal = this.unboxedValue;
+    this.value = this.archive.pop();
+    this.emit('value changed', this.value, oldVal, this.unboxedValue, oldUnboxedVal);
   }
 }

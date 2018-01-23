@@ -24,3 +24,12 @@ export class StateTransitionError extends Error {
     this.__proto__ = StateTransitionError.prototype; // eslint-disable-line no-proto
   }
 }
+
+export class ValueArchiveError extends Error {
+  constructor (...args) {
+    super(...args);
+    // a workaround to make `instanceof ValueArchiveError` work in ES5
+    this.constructor = ValueArchiveError;
+    this.__proto__ = ValueArchiveError.prototype; // eslint-disable-line no-proto
+  }
+}

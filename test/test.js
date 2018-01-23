@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, MultiTextEntryState, NumericEntryState, LabelState } from '../src/lex';
+import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, NumericEntryState, LabelState } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 const language = Lex.from('field', OptionState, {
@@ -27,7 +27,7 @@ const language = Lex.from('field', OptionState, {
   }
 }).branch(
   Lex.from('relation', TextRelationState, TransitionFactory.optionMetaCompare({type: 'string'})).to('value', TextEntryState),
-  Lex.from('value', MultiTextEntryState, {
+  Lex.from('value', TextEntryState, {
     options: [
       'lex',
       'multi-value',
