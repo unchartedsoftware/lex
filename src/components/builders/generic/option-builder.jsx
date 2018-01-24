@@ -109,18 +109,21 @@ export class OptionBuilder extends Builder {
     }
   }
 
-  renderInteractive (props, {valid, readOnly, typedText}) {
+  renderInteractive (props, {valid, readOnly, typedText, machineState}) {
     return (
-      <input type='text'
-        className={valid ? 'token-input active' : 'token-input invalid'}
-        onKeyDown={this.handleKeyDown}
-        onKeyUp={this.handleKeyUp}
-        value={typedText}
-        onInput={linkState(this, 'typedText')}
-        onFocus={this.requestFocus}
-        onBlur={this.requestBlur}
-        ref={(input) => { this.textInput = input; }}
-        disabled={readOnly} />
+      <span>
+        {machineState.isMultivalue && <span className='badge'>{machineState.archive.length}</span>}
+        <input type='text'
+          className={valid ? 'token-input active' : 'token-input invalid'}
+          onKeyDown={this.handleKeyDown}
+          onKeyUp={this.handleKeyUp}
+          value={typedText}
+          onInput={linkState(this, 'typedText')}
+          onFocus={this.requestFocus}
+          onBlur={this.requestBlur}
+          ref={(input) => { this.textInput = input; }}
+          disabled={readOnly} />
+      </span>
     );
   }
 }
