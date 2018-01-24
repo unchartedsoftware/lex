@@ -111,9 +111,15 @@ export class OptionBuilder extends Builder {
 
   renderReadOnly (props, state) {
     if (this.machineState.value) {
-      return (
-        <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey}</span>
-      );
+      if (this.machineState.isMultivalue && this.archive.length > 0) {
+        return (
+          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey} & {this.archive.length} others</span>
+        );
+      } else {
+        return (
+          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey}</span>
+        );
+      }
     } else {
       super.renderReadOnly(props, state);
     }
