@@ -46,6 +46,10 @@ export class OptionBuilder extends Builder {
     let consumed = true;
     this.unboxedValue = e.target.value;
     switch (e.code) {
+      case 'Comma':
+        consumed = this.machineState.isMultivalue;
+        if (this.machineState.isMultivalue) this.requestArchive();
+        break;
       case 'Enter':
       case 'Tab':
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
@@ -90,9 +94,9 @@ export class OptionBuilder extends Builder {
 
   @bind
   onValueChanged (newValue) {
-    if (newValue) {
-      this.setState({typedText: newValue.key});
-    }
+    this.setState({
+      typedText: newValue ? newValue.key : ''
+    });
   }
 
   renderReadOnly (props, state) {

@@ -19,6 +19,7 @@ export class Token extends Component {
       requestFocus: () => {},
       requestBlur: () => {},
       requestTransition: () => {},
+      requestArchive: () => {},
       requestRewind: () => {},
       requestCancel: () => {},
       requestAddSuggestion: () => {},
@@ -40,6 +41,7 @@ export class Token extends Component {
       requestBlur = () => {},
       requestCancel = () => {},
       requestTransition = () => {},
+      requestArchive = () => {},
       requestRewind = () => {},
       requestAddSuggestion = () => {},
       onEndToken = () => {},
@@ -80,6 +82,11 @@ export class Token extends Component {
     if (requestTransition !== this.state.requestTransition) {
       this.setState({
         requestTransition: requestTransition
+      });
+    }
+    if (requestArchive !== this.state.requestArchive) {
+      this.setState({
+        requestArchive: requestArchive
       });
     }
     if (requestRewind !== this.state.requestRewind) {
@@ -289,6 +296,7 @@ export class Token extends Component {
             machine={machine}
             machineState={s}
             requestTransition={this.state.requestTransition}
+            requestArchive={this.state.requestArchive}
             requestRewind={this.state.requestRewind}
             requestFocus={this.requestFocus}
             requestBlur={this.requestBlur}

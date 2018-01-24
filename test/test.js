@@ -28,6 +28,7 @@ const language = Lex.from('field', OptionState, {
 }).branch(
   Lex.from('relation', TextRelationState, TransitionFactory.optionMetaCompare({type: 'string'})).to('value', TextEntryState),
   Lex.from('value', TextEntryState, {
+    multivalue: true,
     options: [
       'lex',
       'multi-value',

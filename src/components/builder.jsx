@@ -19,6 +19,7 @@ export class Builder extends Component {
       requestFocus: () => {},
       requestBlur: () => {},
       requestTransition: () => {},
+      requestArchive: () => {},
       requestRewind: () => {},
       requestCancel: () => {},
       validityChanged: () => {}
@@ -86,6 +87,7 @@ export class Builder extends Component {
       machine,
       machineState,
       requestTransition = () => {},
+      requestArchive = () => {},
       requestRewind = () => {},
       readOnly,
       blank,
@@ -118,6 +120,11 @@ export class Builder extends Component {
     if (requestTransition !== this.state.requestTransition) {
       this.setState({
         requestTransition: requestTransition
+      });
+    }
+    if (requestArchive !== this.state.requestArchive) {
+      this.setState({
+        requestArchive: requestArchive
       });
     }
     if (requestRewind !== this.state.requestRewind) {
@@ -171,11 +178,25 @@ export class Builder extends Component {
   }
 
   @bind
+  /**
+   * Call from a subclass to request the state machine for the containing token to attempt transition.
+   */
   requestTransition () {
     return this.state.requestTransition();
   }
 
   @bind
+  /**
+   * Call from a subclass to request the state machine for the containing token to attempt archive a value.
+   */
+  requestArchive () {
+    return this.state.requestArchive();
+  }
+
+  @bind
+  /**
+   * Call from a subclass to request the state machine for the containing token to attempt rewind.
+   */
   requestRewind () {
     return this.state.requestRewind();
   }
