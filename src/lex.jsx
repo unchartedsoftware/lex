@@ -67,6 +67,8 @@ class Lex extends EventEmitter {
       .registerBuilder(NumericEntryState, OptionBuilder)
       .registerBuilder(LabelState, LabelBuilder)
       .registerAssistant(OptionState, OptionAssistant)
+      .registerAssistant(TextEntryState, OptionAssistant)
+      .registerAssistant(NumericEntryState, OptionAssistant)
       .registerAssistant(TextRelationState, OptionAssistant)
       .registerAssistant(NumericRelationState, OptionAssistant);
     this[sProxiedEvents] = new Map();

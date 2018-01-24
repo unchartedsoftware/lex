@@ -132,12 +132,15 @@ div.assistant-box {
   display: block;
   margin: 0 auto;
   min-width: 400px;
-  min-height: 20px;
   background-color: $lex-assistant-background;
   border:  1px solid $lex-assistant-border-color;
   position: absolute;
   box-shadow: 0px 5px 5px rgba(0,0,0,0.2);
   color: $lex-assistant-text-color;
+
+  &:empty {
+    display: none;
+  }
 
   div.assistant-header {
     color: $lex-assistant-header-color;

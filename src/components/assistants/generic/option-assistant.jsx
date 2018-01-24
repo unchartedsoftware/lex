@@ -99,20 +99,22 @@ export class OptionAssistant extends Assistant {
   }
 
   renderInteractive (props, {activeOption, suggestions}) {
-    return (
-      <div>
-        <div className='assistant-header'>
-          {this.machineState.name}
-          <span className='pull-right'><strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;<strong>Tab</strong> to select</span>
+    if (suggestions && suggestions.length > 0) {
+      return (
+        <div>
+          <div className='assistant-header'>
+            {this.machineState.name}
+            <span className='pull-right'><strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;<strong>Tab</strong> to select</span>
+          </div>
+          <div className='assistant-body'>
+            <ul>
+              {
+                suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o.key)} className={idx === activeOption ? 'active' : ''}>{o.key}</li>)
+              }
+            </ul>
+          </div>
         </div>
-        <div className='assistant-body'>
-          <ul>
-            {
-              suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o.key)} className={idx === activeOption ? 'active' : ''}>{o.key}</li>)
-            }
-          </ul>
-        </div>
-      </div>
-    );
+      );
+    }
   }
 }
