@@ -368,4 +368,31 @@ export class Builder extends Component {
   set unboxedValue (newUnboxedVal) {
     this.state.machineState.unboxedValue = newUnboxedVal;
   }
+
+  /**
+   * Getter for `archive`d values.
+   *
+   * @returns {any[]} The archive of valid values for the underlying `State`.
+   */
+  get archive () {
+    return this.state.machineState.archive;
+  }
+
+  /**
+   * Getter for `archive`d values. Alias for `this.archive`.
+   *
+   * @returns {any[]} The archive of valid values for the underlying `State`.
+   */
+  get boxedArchive () {
+    return this.state.machineState.boxedArchive;
+  }
+
+  /**
+   * Getter for `unboxedArchive`.
+   *
+   * @returns {string[]} The archive of valid unboxed values for the underlying `State`.
+   */
+  get unboxedArchive () {
+    return this.state.machineState.unboxedArchive;
+  }
 }

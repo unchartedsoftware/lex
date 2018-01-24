@@ -40,7 +40,11 @@ export class OptionAssistant extends Assistant {
   @bind
   onOptionSelected (key) {
     this.machineState.unboxedValue = key;
-    this.requestTransition();
+    if (this.machineState.isMultivalue) {
+      this.requestArchive();
+    } else {
+      this.requestTransition();
+    }
   }
 
   processProps (props) {
@@ -79,6 +83,13 @@ export class OptionAssistant extends Assistant {
       case 'ArrowDown':
         this.setState({activeOption: Math.min(this.state.activeOption + 1, this.state.suggestions.length - 1)});
         break;
+      case 'Comma':
+        if (this.machineState.isMultivalue) {
+          consumed = true;
+          this.machineState.value = this.state.suggestions[this.state.activeOption];
+          this.requestArchive();
+        }
+        break;
       case 'Enter':
       case 'Tab':
         const activeOption = this.state.suggestions[this.state.activeOption];
@@ -104,7 +115,10 @@ export class OptionAssistant extends Assistant {
         <div>
           <div className='assistant-header'>
             {this.machineState.name}
-            <span className='pull-right'><strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;<strong>Tab</strong> to select</span>
+            <span className='pull-right'>
+              {this.machineState.isMultivalue && <span><strong>,</strong> to enter another value&nbsp;&nbsp;&nbsp;</span>}
+              <strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;<strong>Tab</strong> to {this.machineState.isMultivalue ? 'progress' : 'select'}
+            </span>
           </div>
           <div className='assistant-body'>
             <ul>

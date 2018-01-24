@@ -47,14 +47,24 @@ export class OptionBuilder extends Builder {
     this.unboxedValue = e.target.value;
     switch (e.code) {
       case 'Comma':
+        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
+          consumed = false;
+          break;
+        }
         consumed = this.machineState.isMultivalue;
         if (this.machineState.isMultivalue) this.requestArchive();
         break;
       case 'Enter':
       case 'Tab':
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
-          consumed = false;
-          break;
+          // if nothing is entered, but the archive has values, we can still request a transition
+          // unarchive most recent value and request.
+          if (this.archive.length === 0) {
+            consumed = false;
+            break;
+          } else {
+            this.machineState.unarchiveValue();
+          }
         }
         consumed = this.requestTransition(); // only consume the event if the transition succeeds
         break;
