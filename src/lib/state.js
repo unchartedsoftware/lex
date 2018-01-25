@@ -304,12 +304,8 @@ export class State extends EventEmitter {
     if (newVal !== this.value) {
       const oldVal = this.value;
       const oldUnboxedVal = this.unboxedValue;
-      const oldPreviewVal = this.previewValue;
-      const oldUnboxedPreviewVal = this.unboxedPreviewValue;
       _value.set(this, newVal);
-      _previewValue.set(this, null);
       this.emit('value changed', newVal, oldVal, this.unboxedValue, oldUnboxedVal);
-      this.emit('preview value changed', null, oldPreviewVal, null, oldUnboxedPreviewVal);
     }
   }
 
