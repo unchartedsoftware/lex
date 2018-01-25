@@ -145,6 +145,7 @@ div.assistant-box {
   div.assistant-header {
     color: $lex-assistant-header-color;
     background-color: $lex-assistant-header-background;
+    border-bottom: 1px solid $lex-assistant-border-color;
     display:block;
     min-height: 2.5rem;
     padding: 0.5rem 1rem;
@@ -155,10 +156,12 @@ div.assistant-box {
     margin: 0; padding: 0;
     li {
       margin: 0; padding: 0.5rem 1rem;
-      cursor: pointer;
-      &:hover, &.active {
-        color: $lex-highlight-text-color;
-        background-color: $lex-highlight-color;
+      &.selectable {
+        cursor: pointer;
+        &:hover, &.active {
+          color: $lex-highlight-text-color;
+          background-color: $lex-highlight-color;
+        }
       }
     }
     &.entered-values {
@@ -173,6 +176,18 @@ div.assistant-box {
           span { display: inline }
         }
       }
+    }
+  }
+
+  div.assistant-body  {
+    &.assistant-left {
+      width: 50%;
+      float: left;
+      border-right: 1px solid $lex-assistant-border-color;
+    }
+    &.assistant-right {
+      width: 50%;
+      float: right;
     }
   }
 }

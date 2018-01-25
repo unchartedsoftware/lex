@@ -109,10 +109,25 @@ export class OptionAssistant extends Assistant {
     return consumed;
   }
 
-  renderInteractive (props, {activeOption, suggestions}) {
-    if (suggestions && suggestions.length > 0) {
+  renderArchive (props) {
+    if (this.machineState.isMultivalue) {
       return (
-        <div>
+        <div className='assistant-body assistant-right'>
+          <div className='assistant-header'>Entered Values</div>
+          <ul>
+            {
+              this.machineState.archive.map((o) => <li>{o.key}</li>)
+            }
+          </ul>
+        </div>
+      )
+    }
+  }
+
+  renderInteractive (props, {activeOption, suggestions}) {
+    if (this.machineState.isMultivalue || (suggestions && suggestions.length > 0)) {
+      return (
+        <div className='assistant'>
           <div className='assistant-header'>
             {this.machineState.name}
             <span className='pull-right'>
@@ -120,13 +135,16 @@ export class OptionAssistant extends Assistant {
               <strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;<strong>Tab</strong> to {this.machineState.isMultivalue ? 'progress' : 'select'}
             </span>
           </div>
-          <div className='assistant-body'>
+          <div className={this.machineState.isMultivalue ? 'assistant-body assistant-left' : 'assistant-body'}>
+            { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
             <ul>
               {
-                suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o.key)} className={idx === activeOption ? 'active' : ''}>{o.key}</li>)
+                suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o.key)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{o.key}</li>)
               }
+              { this.machineState.isMultivalue && (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
             </ul>
           </div>
+          {this.renderArchive(props)}
         </div>
       );
     }
