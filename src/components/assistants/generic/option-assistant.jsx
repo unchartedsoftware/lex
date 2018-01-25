@@ -109,7 +109,7 @@ export class OptionAssistant extends Assistant {
     return consumed;
   }
 
-  renderArchive (props) {
+  renderArchive () {
     if (this.machineState.isMultivalue) {
       return (
         <div className='assistant-body assistant-right'>
@@ -120,7 +120,7 @@ export class OptionAssistant extends Assistant {
             }
           </ul>
         </div>
-      )
+      );
     }
   }
 
