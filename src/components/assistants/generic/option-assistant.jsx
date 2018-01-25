@@ -125,28 +125,26 @@ export class OptionAssistant extends Assistant {
   }
 
   renderInteractive (props, {activeOption, suggestions}) {
-    if (this.machineState.isMultivalue || (suggestions && suggestions.length > 0)) {
-      return (
-        <div className='assistant'>
-          <div className='assistant-header'>
-            {this.machineState.name}
-            <span className='pull-right'>
-              {this.machineState.isMultivalue && <span><strong>,</strong> to enter another value&nbsp;&nbsp;&nbsp;</span>}
-              <strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;<strong>Tab</strong> to {this.machineState.isMultivalue ? 'progress' : 'select'}
-            </span>
-          </div>
-          <div className={this.machineState.isMultivalue ? 'assistant-body assistant-left' : 'assistant-body'}>
-            { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
-            <ul>
-              {
-                suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o.key)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{o.key}</li>)
-              }
-              { this.machineState.isMultivalue && (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
-            </ul>
-          </div>
-          {this.renderArchive(props)}
+    return (
+      <div className='assistant'>
+        <div className='assistant-header'>
+          {this.machineState.name}
+          <span className='pull-right'>
+            {this.machineState.isMultivalue && <span><strong>,</strong> to enter another value&nbsp;&nbsp;&nbsp;</span>}
+            <strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;<strong>Tab</strong> to {this.machineState.isMultivalue ? 'progress' : 'select'}
+          </span>
         </div>
-      );
-    }
+        <div className={this.machineState.isMultivalue ? 'assistant-body assistant-left' : 'assistant-body'}>
+          { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
+          <ul>
+            {
+              suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o.key)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{o.key}</li>)
+            }
+            { (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
+          </ul>
+        </div>
+        {this.renderArchive(props)}
+      </div>
+    );
   }
 }
