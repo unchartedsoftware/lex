@@ -7,6 +7,7 @@ const _validate = new WeakMap();
 const _transitionFunction = new WeakMap();
 const _readOnly = new WeakMap();
 const _defaultValue = new WeakMap();
+const _previewValue = new WeakMap();
 const _multivalue = new WeakMap();
 const _children = new WeakMap();
 const _template = new WeakMap();
@@ -210,6 +211,7 @@ export class StateTemplate extends EventEmitter {
  *
  * This class is an `EventEmitter` and exposes the following events:
  * - `on('value changed', (newVal, oldVal) => {})` when the internal value changes.
+ * - `on('preview value changed', (newVal, oldVal) => {})` when the internal preview value changes.
  * - `on('unboxed value change attempted', (newUnboxedVal, oldUnboxedVal))` when a user attempts to change the unboxed value. If it cannot be boxed, it may not trigger `value changed`.
  *
  * @param {StateTemplate} template - The template for this `State`.
@@ -221,6 +223,7 @@ export class State extends EventEmitter {
     _parent.set(this, parent);
     _template.set(this, template);
     _value.set(this, template.defaultValue);
+    _previewValue.set(this, null);
     _archive.set(this, []);
   }
 
@@ -293,7 +296,7 @@ export class State extends EventEmitter {
   }
 
   /**
-   * Setter for `value`.
+   * Setter for `value`. Clears any previewValue (if present).
    *
    * @param {any} newVal - Set a new (boxed) value for this `State`.
    */
@@ -301,8 +304,12 @@ export class State extends EventEmitter {
     if (newVal !== this.value) {
       const oldVal = this.value;
       const oldUnboxedVal = this.unboxedValue;
+      const oldPreviewVal = this.previewValue;
+      const oldUnboxedPreviewVal = this.unboxedPreviewValue;
       _value.set(this, newVal);
+      _previewValue.set(this, null);
       this.emit('value changed', newVal, oldVal, this.unboxedValue, oldUnboxedVal);
+      this.emit('preview value changed', null, oldPreviewVal, null, oldUnboxedPreviewVal);
     }
   }
 
@@ -316,7 +323,7 @@ export class State extends EventEmitter {
   }
 
   /**
-   * Setter for `value`. Alias for  `this.value`.
+   * Setter for `value`. Alias for  `this.value`. Clears any previewValue (if present).
    *
    * @param {any} newBoxedVal - Set a new (boxed) value for this `State`. Alias for this.value setter.
    */
@@ -334,13 +341,70 @@ export class State extends EventEmitter {
   }
 
   /**
-   * Setter for `unboxedValue`.
+   * Setter for `unboxedValue`. Clears any previewValue (if present).
    *
    * @param {any} newUnboxedVal - Set a new (unboxed) value for this `State`.
    */
   set unboxedValue (newUnboxedVal) {
     this.emit('unboxed value change attempted', newUnboxedVal, this.unboxedValue);
     this.value = this.boxValue(newUnboxedVal);
+  }
+
+  /**
+   * Getter for `previewValue` - A value which is previewed as a suggestion for the user, without overwriting the value they've entered.
+   *
+   * @returns {any} The current (boxed) previewValue from this `State`.
+   */
+  get previewValue () {
+    return _previewValue.get(this);
+  }
+
+  /**
+   * Getter for `boxedPreviewValue`. Alias for `this.previewValue`.
+   *
+   * @returns {any} The current (boxed) previewValue from this `State`.
+   */
+  get boxedPreviewValue () {
+    return this.previewValue;
+  }
+
+  /**
+   * Getter for `unboxedPreviewValue` - A value which is previewed as a suggestion for the user, without overwriting the value they've entered. Unboxed version.
+   *
+   * @returns {string} The current (boxed) previewValue from this `State`.
+   */
+  get unboxedPreviewValue () {
+    return this.unboxValue(this.previewValue);
+  }
+
+  /**
+   * Setter for `previewValue` - A value which is previewed as a suggestion for the user, without overwriting the value they've entered.
+   *
+   * @param {any} boxedValue - The new (boxed) previewValue for this `State`.
+   */
+  set previewValue (boxedValue) {
+    const oldPreviewVal = this.previewValue;
+    const oldUnboxedPreviewVal = this.unboxedPreviewValue;
+    _previewValue.set(this, boxedValue);
+    this.emit('preview value changed', boxedValue, oldPreviewVal, this.unboxedPreviewValue, oldUnboxedPreviewVal);
+  }
+
+  /**
+   * Setter for `boxedPreviewValue`. Alias for `this.previewValue`.
+   *
+   * @param {any} boxedValue - The new (boxed) previewValue for this `State`.
+   */
+  set boxedPreviewValue (boxedValue) {
+    this.previewValue = boxedValue;
+  }
+
+  /**
+   * Setter for `previewValue` - A value which is previewed as a suggestion for the user, without overwriting the value they've entered. Unboxed version.
+   *
+   * @param {string} unboxedValue - The new (unboxed) previewValue for this `State`.
+   */
+  set unboxedPreviewValue (unboxedValue) {
+    this.previewValue = this.boxValue(unboxedValue);
   }
 
   /**

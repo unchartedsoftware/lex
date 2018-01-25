@@ -22,6 +22,7 @@ export class OptionBuilder extends Builder {
     if (this.machineState) {
       this.machineState.removeListener('options changed', this.onOptionsChanged);
       this.machineState.removeListener('value changed', this.onValueChanged);
+      this.machineState.removeListener('preview value changed', this.onPreviewValueChanged);
     }
   }
 
@@ -29,6 +30,7 @@ export class OptionBuilder extends Builder {
     super.connectListeners();
     this.machineState.on('options changed', this.onOptionsChanged);
     this.machineState.on('value changed', this.onValueChanged);
+    this.machineState.on('preview value changed', this.onPreviewValueChanged);
   }
 
   processProps (props) {
@@ -44,6 +46,7 @@ export class OptionBuilder extends Builder {
   @bind
   handleKeyDown (e) {
     let consumed = true;
+    this.machineState.previewValue = undefined;
     this.unboxedValue = e.target.value;
     switch (e.code) {
       case 'Comma':
@@ -104,8 +107,17 @@ export class OptionBuilder extends Builder {
 
   @bind
   onValueChanged (newValue) {
+    if (newValue) {
+      this.setState({
+        typedText: newValue.key
+      });
+    }
+  }
+
+  @bind
+  onPreviewValueChanged (_1, _2, newUnboxedPreviewValue) {
     this.setState({
-      typedText: newValue ? newValue.key : ''
+      previewText: newUnboxedPreviewValue
     });
   }
 
@@ -125,20 +137,23 @@ export class OptionBuilder extends Builder {
     }
   }
 
-  renderInteractive (props, {valid, readOnly, typedText, machineState}) {
+  renderInteractive (props, {valid, readOnly, typedText, previewText, machineState}) {
     return (
       <span>
         {machineState.isMultivalue && <span className='badge'>{machineState.archive.length}</span>}
-        <input type='text'
-          className={valid ? 'token-input active' : 'token-input invalid'}
-          onKeyDown={this.handleKeyDown}
-          onKeyUp={this.handleKeyUp}
-          value={typedText}
-          onInput={linkState(this, 'typedText')}
-          onFocus={this.requestFocus}
-          onBlur={this.requestBlur}
-          ref={(input) => { this.textInput = input; }}
-          disabled={readOnly} />
+        <span className='text-input'>
+          <span className='text-muted preview'>{previewText}</span>
+          <input type='text'
+            className={valid ? 'token-input active' : 'token-input invalid'}
+            onKeyDown={this.handleKeyDown}
+            onKeyUp={this.handleKeyUp}
+            value={typedText}
+            onInput={linkState(this, 'typedText')}
+            onFocus={this.requestFocus}
+            onBlur={this.requestBlur}
+            ref={(input) => { this.textInput = input; }}
+            disabled={readOnly} />
+        </span>
       </span>
     );
   }

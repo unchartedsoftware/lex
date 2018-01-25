@@ -79,9 +79,11 @@ export class OptionAssistant extends Assistant {
     switch (e.code) {
       case 'ArrowUp':
         this.setState({activeOption: Math.max(this.state.activeOption - 1, 0)});
+        this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
         break;
       case 'ArrowDown':
         this.setState({activeOption: Math.min(this.state.activeOption + 1, this.state.suggestions.length - 1)});
+        this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
         break;
       case 'Comma':
         if (this.machineState.isMultivalue) {
