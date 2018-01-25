@@ -131,7 +131,8 @@ export class OptionAssistant extends Assistant {
           {this.machineState.name}
           <span className='pull-right'>
             {this.machineState.isMultivalue && <span><strong>,</strong> to enter another value&nbsp;&nbsp;&nbsp;</span>}
-            <strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;<strong>Tab</strong> to {this.machineState.isMultivalue ? 'progress' : 'select'}
+            <strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;
+            <strong>Tab</strong> to {this.machineState.isMultivalue ? 'progress' : 'select'}
           </span>
         </div>
         <div className={this.machineState.isMultivalue ? 'assistant-body assistant-left' : 'assistant-body'}>
