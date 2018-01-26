@@ -24,7 +24,7 @@ export class OptionAssistant extends Assistant {
       options: newOptions,
       unboxedValue: undefined,
       activeOption: -1,
-      suggestions: newOptions.slice(0, 10)
+      suggestions: newOptions.slice(0, this.machineState.template.suggestionLimit)
     });
   }
 
@@ -33,7 +33,7 @@ export class OptionAssistant extends Assistant {
     const val = newUnboxedValue === undefined ? newUnboxedValue = '' : newUnboxedValue.toLowerCase();
     this.setState({
       unboxedValue: newUnboxedValue,
-      suggestions: this.state.options.filter(o => o.key.toLowerCase().startsWith(val)).slice(0, 10)
+      suggestions: this.state.options.filter(o => o.key.toLowerCase().startsWith(val)).slice(0, this.machineState.template.suggestionLimit)
     });
   }
 
@@ -57,7 +57,7 @@ export class OptionAssistant extends Assistant {
         options: this.machineState.template.options,
         unboxedValue: undefined,
         activeOption: -1,
-        suggestions: this.machineState.template.options.slice(0, 10)
+        suggestions: this.machineState.template.options.slice(0, this.machineState.template.suggestionLimit)
       });
     }
     // TODO do we need to modify validation state?
