@@ -7,9 +7,12 @@ const _validate = new WeakMap();
 const _transitionFunction = new WeakMap();
 const _readOnly = new WeakMap();
 const _defaultValue = new WeakMap();
+const _previewValue = new WeakMap();
+const _multivalue = new WeakMap();
 const _children = new WeakMap();
 const _template = new WeakMap();
 const _value = new WeakMap();
+const _archive = new WeakMap();
 const _icon = new WeakMap();
 
 /**
@@ -34,8 +37,9 @@ const _icon = new WeakMap();
  * @param {string} config.vkey - A key used to enter the value of this state into the value object of the containing machine.
  * @param {Function | undefined} config.transition - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
  * @param {Function | undefined} config.validation - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
- * @param {any} config.defaultValue - The default value for this state before it has been touched. Can be undefined.
+ * @param {any} config.defaultValue - The default value for this state before it has been touched. Can be undefined. Should not be an `Array` (but can be an `object`).
  * @param {boolean} config.readOnly - This state is read only (for display purposes only) and should be skipped by the state machine. False by default.
+ * @param {boolean} config.multivalue - Whether or not this state supports multi-value entry.
  * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
  *
  * @example
@@ -58,7 +62,7 @@ const _icon = new WeakMap();
  */
 export class StateTemplate extends EventEmitter {
   constructor (config) {
-    const {parent, name, vkey, transition, validate, defaultValue, readOnly, icon} = config;
+    const {parent, name, vkey, transition, validate, defaultValue, readOnly, multivalue, icon} = config;
     super();
     _parent.set(this, parent);
     _name.set(this, name);
@@ -66,6 +70,7 @@ export class StateTemplate extends EventEmitter {
     _transitionFunction.set(this, transition !== undefined ? transition : () => true);
     _validate.set(this, validate !== undefined ? validate : () => true);
     _defaultValue.set(this, defaultValue !== undefined ? defaultValue : null);
+    _multivalue.set(this, multivalue !== undefined ? multivalue : false);
     _readOnly.set(this, readOnly !== undefined ? readOnly : false);
     _children.set(this, []);
     _icon.set(this, icon);
@@ -101,6 +106,10 @@ export class StateTemplate extends EventEmitter {
 
   get children () {
     return _children.get(this);
+  }
+
+  get isMultivalue () {
+    return _multivalue.get(this);
   }
 
   get isRoot () {
@@ -185,16 +194,25 @@ export class StateTemplate extends EventEmitter {
 
 /**
  * An extension of `StateTemplate`, but "instantiated" to support
- * the storage of concrete values. This class is not intended to be
- * used directly, but is instantiated from a `StateTemplate` automatically
- * by a `TokenStateMachine`.
+ * the storage of concrete values (and multi-value entry). This class
+ * is not intended to be used directly, but is instantiated from a
+ * `StateTemplate` automatically by a `TokenStateMachine`.
+ *
+ * Values should not be `Array`s, but can be `object`s (`Array`s interfere
+ * with internal multi-value handling).
  *
  * `this.value` always accepts/returns a boxed value. Where desired, the boxed and
  * unboxed versions of the value can be identical.
  *
+ * `State`s support an archive for values, in order to facilitate multi-
+ * value entry. Valid values may be pushed onto the archive, making room
+ * for a new value entry to take place. The top archived value may also
+ * be moved back to replace the current value.
+ *
  * This class is an `EventEmitter` and exposes the following events:
  * - `on('value changed', (newVal, oldVal) => {})` when the internal value changes.
- * - `on('unbxoed value change attempted', (newUnboxedVal, oldUnboxedVal))` when a user attempts to change the unboxed value. If it cannot be boxed, it may not trigger `value changed`.
+ * - `on('preview value changed', (newVal, oldVal) => {})` when the internal preview value changes.
+ * - `on('unboxed value change attempted', (newUnboxedVal, oldUnboxedVal))` when a user attempts to change the unboxed value. If it cannot be boxed, it may not trigger `value changed`.
  *
  * @param {StateTemplate} template - The template for this `State`.
  * @param {State | undefined} parent - The parent `State` (if any).
@@ -205,6 +223,8 @@ export class State extends EventEmitter {
     _parent.set(this, parent);
     _template.set(this, template);
     _value.set(this, template.defaultValue);
+    _previewValue.set(this, null);
+    _archive.set(this, []);
   }
 
   get template () { return _template.get(this); }
@@ -215,6 +235,7 @@ export class State extends EventEmitter {
   get children () { return _children.get(this); }
   get isTerminal () { return this.template.isTerminal; }
   get isReadOnly () { return this.template.isReadOnly; }
+  get isMultivalue () { return this.template.isMultivalue; }
   boxValue (...args) { return this.template.boxValue(...args); }
   unboxValue (...args) { return this.template.unboxValue(...args); }
 
@@ -232,8 +253,12 @@ export class State extends EventEmitter {
     }
   }
 
+  /*
+   * @private
+   */
   reset () {
     this.value = this.defaultValue;
+    _archive.set(this, []);
   }
 
   get isDefault () { return this.value === this.defaultValue; }
@@ -271,7 +296,7 @@ export class State extends EventEmitter {
   }
 
   /**
-   * Setter for `value`.
+   * Setter for `value`. Clears any previewValue (if present).
    *
    * @param {any} newVal - Set a new (boxed) value for this `State`.
    */
@@ -294,7 +319,7 @@ export class State extends EventEmitter {
   }
 
   /**
-   * Setter for `value`. Alias for  `this.value`.
+   * Setter for `value`. Alias for  `this.value`. Clears any previewValue (if present).
    *
    * @param {any} newBoxedVal - Set a new (boxed) value for this `State`. Alias for this.value setter.
    */
@@ -312,12 +337,118 @@ export class State extends EventEmitter {
   }
 
   /**
-   * Setter for `unboxedValue`.
+   * Setter for `unboxedValue`. Clears any previewValue (if present).
    *
    * @param {any} newUnboxedVal - Set a new (unboxed) value for this `State`.
    */
   set unboxedValue (newUnboxedVal) {
     this.emit('unboxed value change attempted', newUnboxedVal, this.unboxedValue);
     this.value = this.boxValue(newUnboxedVal);
+  }
+
+  /**
+   * Getter for `previewValue` - A value which is previewed as a suggestion for the user, without overwriting the value they've entered.
+   *
+   * @returns {any} The current (boxed) previewValue from this `State`.
+   */
+  get previewValue () {
+    return _previewValue.get(this);
+  }
+
+  /**
+   * Getter for `boxedPreviewValue`. Alias for `this.previewValue`.
+   *
+   * @returns {any} The current (boxed) previewValue from this `State`.
+   */
+  get boxedPreviewValue () {
+    return this.previewValue;
+  }
+
+  /**
+   * Getter for `unboxedPreviewValue` - A value which is previewed as a suggestion for the user, without overwriting the value they've entered. Unboxed version.
+   *
+   * @returns {string} The current (boxed) previewValue from this `State`.
+   */
+  get unboxedPreviewValue () {
+    return this.unboxValue(this.previewValue);
+  }
+
+  /**
+   * Setter for `previewValue` - A value which is previewed as a suggestion for the user, without overwriting the value they've entered.
+   *
+   * @param {any} boxedValue - The new (boxed) previewValue for this `State`.
+   */
+  set previewValue (boxedValue) {
+    const oldPreviewVal = this.previewValue;
+    const oldUnboxedPreviewVal = this.unboxedPreviewValue;
+    _previewValue.set(this, boxedValue);
+    this.emit('preview value changed', boxedValue, oldPreviewVal, this.unboxedPreviewValue, oldUnboxedPreviewVal);
+  }
+
+  /**
+   * Setter for `boxedPreviewValue`. Alias for `this.previewValue`.
+   *
+   * @param {any} boxedValue - The new (boxed) previewValue for this `State`.
+   */
+  set boxedPreviewValue (boxedValue) {
+    this.previewValue = boxedValue;
+  }
+
+  /**
+   * Setter for `previewValue` - A value which is previewed as a suggestion for the user, without overwriting the value they've entered. Unboxed version.
+   *
+   * @param {string} unboxedValue - The new (unboxed) previewValue for this `State`.
+   */
+  set unboxedPreviewValue (unboxedValue) {
+    this.previewValue = this.boxValue(unboxedValue);
+  }
+
+  /**
+   * Getter for `archive`d values.
+   *
+   * @returns {any[]} The archive of valid values for this `State`.
+   */
+  get archive () {
+    return _archive.get(this);
+  }
+
+  /**
+   * Getter for `archive`d values. Alias for `this.archive`.
+   *
+   * @returns {any[]} The archive of valid values for this `State`.
+   */
+  get boxedArchive () {
+    return this.archive;
+  }
+
+  /**
+   * Getter for `unboxedArchive`.
+   *
+   * @returns {string[]} The archive of valid unboxed values for this `State`.
+   */
+  get unboxedArchive () {
+    return this.archive.map(a => this.unboxValue(a));
+  }
+
+  /**
+   * Moves the current value to the archive, and resets the current value.
+   */
+  archiveValue () {
+    const oldVal = this.value;
+    const oldUnboxedVal = this.unboxedValue;
+    this.archive.push(this.value);
+    this.value = this.defaultValue;
+    this.previewValue = null;
+    this.emit('value changed', this.value, oldVal, this.unboxedValue, oldUnboxedVal);
+  }
+
+  /**
+   * Moves the top value from the archive back to the current value, overwriting it.
+   */
+  unarchiveValue () {
+    const oldVal = this.value;
+    const oldUnboxedVal = this.unboxedValue;
+    this.value = this.archive.pop();
+    this.emit('value changed', this.value, oldVal, this.unboxedValue, oldUnboxedVal);
   }
 }

@@ -1,5 +1,5 @@
 import EventEmitter from 'wolfy87-eventemitter';
-import { StateTransitionError } from './errors';
+import { StateTransitionError, ValueArchiveError } from './errors';
 
 const _rootState = new WeakMap();
 const _currentState = new WeakMap();
@@ -10,7 +10,7 @@ const _currentState = new WeakMap();
  *
  * @private
  * @param {StateTemplate} rootStateTemplate - The DAG describing the states for this state machine.
- * @param {Object | undefined} values - A optional set of initial (boxed) values to apply to the machine's states (applied from the root state onward).
+ * @param {Object | undefined} values - A optional array of initial (boxed) values to apply to the machine's states (applied from the root state onward). If any value is an array, all but the final value are added to the `State` archive.
  */
 export class TokenStateMachine extends EventEmitter {
   constructor (rootStateTemplate, values) {
@@ -26,6 +26,16 @@ export class TokenStateMachine extends EventEmitter {
         const v = copy[this.state.vkey];
         if (v === undefined) {
           break; // we're missing a value for the current state, so break out.
+        } else if (Array.isArray(v)) {
+          v.forEach(x => {
+            if (typeof v === 'string') {
+              this.state.unboxedValue = x;
+            } else {
+              this.state.value = x;
+            }
+            this.state.archiveValue();
+          });
+          this.state.unarchiveValue(); // make the last value the "active" one
         } else if (typeof v === 'string') {
           this.state.unboxedValue = v;
         } else {
@@ -103,24 +113,45 @@ export class TokenStateMachine extends EventEmitter {
   }
 
   /**
-   * Transition to the parent state from the current state, regardless of whether or not the current state
-   * is valid, or has a parent. Resets the value of the current state before rewinding.
+   * Rather than transitioning to the next state, supply a new value for this `State`
+   * and save the current one in the `State`'s archive.
+   */
+  archive () {
+    if (!this.state.isValid) {
+      const err = new ValueArchiveError(`Cannot archive invalid value for current state: ${this.state.value}`);
+      this.emit('state change failed', err);
+      throw err;
+    } else {
+      this.state.archiveValue();
+      this.emit('state changed', this.state, this.state);
+    }
+  }
+
+  /**
+   * Pops a value from the current `State`'s archive, if possible, overwriting the current value. If the
+   * archive is empty, transitions to the parent state from the current state, regardless of whether or
+   * not the current state is valid, or has a parent. Resets the value of the current state before rewinding.
    * If the current state has no parent, then this will only reset the value of the current state.
    *
    * @returns {State} The new current state.
    */
   rewind () {
-    if (this.state.parent) {
-      const oldState = this.state;
-      oldState.reset();
-      _currentState.set(this, this.state.parent);
-      this.emit('state changed', this.state, oldState);
-    }
-    // If the new state is read-only, rewind past it automatically.
-    if (this.state.isReadOnly) {
-      return this.rewind();
+    if (this.state.archive.length > 0) {
+      this.state.unarchiveValue();
+      this.emit('state changed', this.state, this.state);
     } else {
-      return this.state;
+      if (this.state.parent) {
+        const oldState = this.state;
+        oldState.reset();
+        _currentState.set(this, this.state.parent);
+        this.emit('state changed', this.state, oldState);
+      }
+      // If the new state is read-only, rewind past it automatically.
+      if (this.state.isReadOnly) {
+        return this.rewind();
+      } else {
+        return this.state;
+      }
     }
   }
 
@@ -144,15 +175,15 @@ export class TokenStateMachine extends EventEmitter {
   }
 
   /**
-   * Get the values bound to underlying states, up to the current state.
+   * Get the values (including archived values) bound to underlying states, up to the current state.
    *
-   * @returns {Object} An object of boxed values.
+   * @returns {Object} An object of arrays of boxed values.
    */
   get value () {
     const result = Object.create(null);
     let current = this.state;
     while (current !== undefined) {
-      if (!current.isReadOnly && current.vkey) result[current.vkey] = current.value;
+      if (!current.isReadOnly && current.vkey) result[current.vkey] = current.isMultivalue ? [current.value, ...current.archive] : current.value;
       current = current.parent;
     }
     return result;
@@ -168,15 +199,15 @@ export class TokenStateMachine extends EventEmitter {
   }
 
   /**
-   * Get the (unboxed) values bound to underlying states, up to the current state.
+   * Get the (unboxed) values (including archived values) bound to underlying states, up to the current state.
    *
-   * @returns {Object} An object of unboxed (basic type) values.
+   * @returns {Object} An object of arrays of unboxed (basic type) values.
    */
   get unboxedValue () {
     const result = Object.create(null);
     let current = this.state;
     while (current !== undefined) {
-      if (!current.isReadOnly && current.vkey) result[current.vkey] = current.unboxedValue;
+      if (!current.isReadOnly && current.vkey) result[current.vkey] = current.isMultivalue ? [current.unboxedValue, ...current.unboxedArchive] : current.unboxedValue;
       current = current.parent;
     }
     return result;

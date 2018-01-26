@@ -2,7 +2,7 @@ import { bind } from 'decko';
 import { h, Component } from 'preact';
 import Portal from 'preact-portal';
 import { TokenStateMachine } from '../lib/token-state-machine';
-import { StateTransitionError } from '../lib/errors';
+import { StateTransitionError, ValueArchiveError } from '../lib/errors';
 import { Token } from './token';
 
 /**
@@ -177,6 +177,7 @@ export class SearchBar extends Component {
         requestBlur={this.blur}
         requestCancel={this.cancel}
         requestTransition={this.transition}
+        requestArchive={this.archive}
         requestRewind={this.rewind}
         requestRemoval={this.removeToken}
         onEndToken={this.onEndToken}
@@ -203,6 +204,7 @@ export class SearchBar extends Component {
               machineState={activeMachine.state}
               ref={(a) => { this.assistant = a; }}
               requestTransition={this.transition}
+              requestArchive={this.archive}
               requestRewind={this.rewind}
             />
           </div>
@@ -249,6 +251,21 @@ export class SearchBar extends Component {
       return true;
     } catch (err) {
       if (err instanceof StateTransitionError) {
+        return false;
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  @bind
+  archive () {
+    try {
+      this.state.activeMachine.archive();
+      return true;
+    } catch (err) {
+      if (err instanceof ValueArchiveError) {
+        console.error(err.message);
         return false;
       } else {
         throw err;

@@ -37,6 +37,7 @@ export class OptionStateOption {
 const _options = new WeakMap();
 const _refreshOptions = new WeakMap();
 const _allowUnknown = new WeakMap();
+const _suggestionLimit = new WeakMap();
 
 /**
  * A state representing the selection of an option from a list of options.
@@ -51,7 +52,8 @@ const _allowUnknown = new WeakMap();
  *
  * @param {Object} config - A configuration object. Inherits all options from `StateTemplate`, and adds the following:
  * @param {Option[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them.
- * @param {boolean} config.allowUnknown - Allow user to enter unknown options by entering custom values.
+ * @param {boolean | undefined} config.allowUnknown - Allow user to enter unknown options by entering custom values. Defaults to false.
+ * @param {number | undefined} config.suggestionLimit - A limit on the number of options that will be shown at one time. Defaults to 10.
  */
 export class OptionState extends StateTemplate {
   constructor (config) {
@@ -63,6 +65,7 @@ export class OptionState extends StateTemplate {
     }
     if (config.options === undefined) config.options = [];
     if (config.allowUnknown === undefined) config.allowUnknown = false;
+    if (config.suggestionLimit === undefined) config.suggestionLimit = 10;
     super(config);
     if (Array.isArray(config.options)) {
       _options.set(this, config.options);
@@ -79,6 +82,7 @@ export class OptionState extends StateTemplate {
       this.refreshOptions();
     }
     _allowUnknown.set(this, config.allowUnknown);
+    _suggestionLimit.set(this, config.suggestionLimit);
   }
 
   /**
@@ -108,6 +112,13 @@ export class OptionState extends StateTemplate {
    */
   get allowUnknown () {
     return _allowUnknown.get(this);
+  }
+
+  /**
+   * @returns {number} - The limit on the number of options to display.
+   */
+  get suggestionLimit () {
+    return _suggestionLimit.get(this);
   }
 
   /**

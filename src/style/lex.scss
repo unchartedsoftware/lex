@@ -85,6 +85,10 @@ div.token  {
     }
   }
 
+  span.badge {
+    margin: 0 0.4rem 0 0.25rem;
+  }
+
   span.token-input {
     margin-top: 1px;
   }
@@ -92,6 +96,16 @@ div.token  {
   input.token-input {
     width: 150px;
     min-width: 150px;
+  }
+
+  span.text-input {
+    display: inline-block;
+    position: relative;
+    span.preview {
+      position: absolute;
+      left: 0;
+      line-height: 21px;
+    }
   }
 
   button.token-remove {
@@ -128,16 +142,20 @@ div.assistant-box {
   display: block;
   margin: 0 auto;
   min-width: 400px;
-  min-height: 20px;
   background-color: $lex-assistant-background;
   border:  1px solid $lex-assistant-border-color;
   position: absolute;
   box-shadow: 0px 5px 5px rgba(0,0,0,0.2);
   color: $lex-assistant-text-color;
 
+  &:empty {
+    display: none;
+  }
+
   div.assistant-header {
     color: $lex-assistant-header-color;
     background-color: $lex-assistant-header-background;
+    border-bottom: 1px solid $lex-assistant-border-color;
     display:block;
     min-height: 2.5rem;
     padding: 0.5rem 1rem;
@@ -148,21 +166,38 @@ div.assistant-box {
     margin: 0; padding: 0;
     li {
       margin: 0; padding: 0.5rem 1rem;
-      cursor: pointer;
-      &:hover, &.active {
-        color: $lex-highlight-text-color;
-        background-color: $lex-highlight-color;
+      &.selectable {
+        cursor: pointer;
+        &:hover, &.active {
+          color: $lex-highlight-text-color;
+          background-color: $lex-highlight-color;
+        }
       }
     }
     &.entered-values {
       border:  1px solid $lex-assistant-border-color;
       li {
+        span { display: none }
         color: $lex-assistant-text-color;
         &:hover, &.active {
+          text-decoration: line-through;
           color: $lex-assistant-text-color;
           background-color: $lex-token-invalid-background;
+          span { display: inline }
         }
       }
+    }
+  }
+
+  div.assistant-body  {
+    &.assistant-left {
+      width: 50%;
+      float: left;
+      border-right: 1px solid $lex-assistant-border-color;
+    }
+    &.assistant-right {
+      width: 50%;
+      float: right;
     }
   }
 }

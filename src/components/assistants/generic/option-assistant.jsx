@@ -24,7 +24,7 @@ export class OptionAssistant extends Assistant {
       options: newOptions,
       unboxedValue: undefined,
       activeOption: -1,
-      suggestions: newOptions.slice(0, 10)
+      suggestions: newOptions.slice(0, this.machineState.template.suggestionLimit)
     });
   }
 
@@ -33,14 +33,18 @@ export class OptionAssistant extends Assistant {
     const val = newUnboxedValue === undefined ? newUnboxedValue = '' : newUnboxedValue.toLowerCase();
     this.setState({
       unboxedValue: newUnboxedValue,
-      suggestions: this.state.options.filter(o => o.key.toLowerCase().startsWith(val)).slice(0, 10)
+      suggestions: this.state.options.filter(o => o.key.toLowerCase().startsWith(val)).slice(0, this.machineState.template.suggestionLimit)
     });
   }
 
   @bind
   onOptionSelected (key) {
     this.machineState.unboxedValue = key;
-    this.requestTransition();
+    if (this.machineState.isMultivalue) {
+      this.requestArchive();
+    } else {
+      this.requestTransition();
+    }
   }
 
   processProps (props) {
@@ -53,7 +57,7 @@ export class OptionAssistant extends Assistant {
         options: this.machineState.template.options,
         unboxedValue: undefined,
         activeOption: -1,
-        suggestions: this.machineState.template.options.slice(0, 10)
+        suggestions: this.machineState.template.options.slice(0, this.machineState.template.suggestionLimit)
       });
     }
     // TODO do we need to modify validation state?
@@ -75,9 +79,18 @@ export class OptionAssistant extends Assistant {
     switch (e.code) {
       case 'ArrowUp':
         this.setState({activeOption: Math.max(this.state.activeOption - 1, 0)});
+        this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
         break;
       case 'ArrowDown':
         this.setState({activeOption: Math.min(this.state.activeOption + 1, this.state.suggestions.length - 1)});
+        this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
+        break;
+      case 'Comma':
+        if (this.machineState.isMultivalue) {
+          consumed = true;
+          this.machineState.value = this.state.suggestions[this.state.activeOption];
+          this.requestArchive();
+        }
         break;
       case 'Enter':
       case 'Tab':
@@ -98,20 +111,42 @@ export class OptionAssistant extends Assistant {
     return consumed;
   }
 
-  renderInteractive (props, {activeOption, suggestions}) {
-    return (
-      <div>
-        <div className='assistant-header'>
-          {this.machineState.name}
-          <span className='pull-right'><strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;<strong>Tab</strong> to select</span>
-        </div>
-        <div className='assistant-body'>
+  renderArchive () {
+    if (this.machineState.isMultivalue) {
+      return (
+        <div className='assistant-body assistant-right'>
+          <div className='assistant-header'>Entered Values</div>
           <ul>
             {
-              suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o.key)} className={idx === activeOption ? 'active' : ''}>{o.key}</li>)
+              this.machineState.archive.map((o) => <li>{o.key}</li>)
             }
           </ul>
         </div>
+      );
+    }
+  }
+
+  renderInteractive (props, {activeOption, suggestions}) {
+    return (
+      <div className='assistant'>
+        <div className='assistant-header'>
+          {this.machineState.name}
+          <span className='pull-right'>
+            {this.machineState.isMultivalue && <span><strong>,</strong> to enter another value&nbsp;&nbsp;&nbsp;</span>}
+            <strong>&#129045;&#129047;</strong> to navigate&nbsp;&nbsp;&nbsp;
+            <strong>Tab</strong> to {this.machineState.isMultivalue ? 'progress' : 'select'}
+          </span>
+        </div>
+        <div className={this.machineState.isMultivalue ? 'assistant-body assistant-left' : 'assistant-body'}>
+          { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
+          <ul>
+            {
+              suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o.key)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{o.key}</li>)
+            }
+            { (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
+          </ul>
+        </div>
+        {this.renderArchive(props)}
       </div>
     );
   }

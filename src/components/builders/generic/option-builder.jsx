@@ -22,6 +22,7 @@ export class OptionBuilder extends Builder {
     if (this.machineState) {
       this.machineState.removeListener('options changed', this.onOptionsChanged);
       this.machineState.removeListener('value changed', this.onValueChanged);
+      this.machineState.removeListener('preview value changed', this.onPreviewValueChanged);
     }
   }
 
@@ -29,6 +30,7 @@ export class OptionBuilder extends Builder {
     super.connectListeners();
     this.machineState.on('options changed', this.onOptionsChanged);
     this.machineState.on('value changed', this.onValueChanged);
+    this.machineState.on('preview value changed', this.onPreviewValueChanged);
   }
 
   processProps (props) {
@@ -46,12 +48,30 @@ export class OptionBuilder extends Builder {
     let consumed = true;
     this.unboxedValue = e.target.value;
     switch (e.code) {
-      case 'Enter':
-      case 'Tab':
+      case 'Comma':
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
           consumed = false;
           break;
         }
+        consumed = this.machineState.isMultivalue;
+        if (this.machineState.isMultivalue) {
+          if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
+          this.requestArchive();
+        }
+        break;
+      case 'Enter':
+      case 'Tab':
+        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
+          // if nothing is entered, but the archive has values, we can still request a transition
+          // unarchive most recent value and request.
+          if (this.archive.length === 0) {
+            consumed = false;
+            break;
+          } else {
+            this.machineState.unarchiveValue();
+          }
+        }
+        if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
         consumed = this.requestTransition(); // only consume the event if the transition succeeds
         break;
       case 'Backspace':
@@ -70,6 +90,9 @@ export class OptionBuilder extends Builder {
     if (consumed) {
       e.stopPropagation();
       e.preventDefault();
+    } else {
+      // if we didn't consume the key, it must be text so clear the preview value
+      this.machineState.previewValue = undefined;
     }
   }
 
@@ -90,33 +113,58 @@ export class OptionBuilder extends Builder {
 
   @bind
   onValueChanged (newValue) {
-    if (newValue) {
-      this.setState({typedText: newValue.key});
+    if (this.machineState.template.allowUnknown) {
+      this.setState({
+        typedText: newValue ? newValue.key : ''
+      });
+    } else if (newValue) {
+      this.setState({
+        typedText: newValue.key
+      });
     }
+  }
+
+  @bind
+  onPreviewValueChanged (_1, _2, newUnboxedPreviewValue) {
+    this.setState({
+      previewText: newUnboxedPreviewValue
+    });
   }
 
   renderReadOnly (props, state) {
     if (this.machineState.value) {
-      return (
-        <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey}</span>
-      );
+      if (this.machineState.isMultivalue && this.archive.length > 0) {
+        return (
+          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey} & {this.archive.length} others</span>
+        );
+      } else {
+        return (
+          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey}</span>
+        );
+      }
     } else {
       super.renderReadOnly(props, state);
     }
   }
 
-  renderInteractive (props, {valid, readOnly, typedText}) {
+  renderInteractive (props, {valid, readOnly, typedText, previewText, machineState}) {
     return (
-      <input type='text'
-        className={valid ? 'token-input active' : 'token-input invalid'}
-        onKeyDown={this.handleKeyDown}
-        onKeyUp={this.handleKeyUp}
-        value={typedText}
-        onInput={linkState(this, 'typedText')}
-        onFocus={this.requestFocus}
-        onBlur={this.requestBlur}
-        ref={(input) => { this.textInput = input; }}
-        disabled={readOnly} />
+      <span>
+        {machineState.isMultivalue && <span className='badge'>{machineState.archive.length}</span>}
+        <span className='text-input'>
+          <span className='text-muted preview'>{previewText}</span>
+          <input type='text'
+            className={valid ? 'token-input active' : 'token-input invalid'}
+            onKeyDown={this.handleKeyDown}
+            onKeyUp={this.handleKeyUp}
+            value={typedText}
+            onInput={linkState(this, 'typedText')}
+            onFocus={this.requestFocus}
+            onBlur={this.requestBlur}
+            ref={(input) => { this.textInput = input; }}
+            disabled={readOnly} />
+        </span>
+      </span>
     );
   }
 }
