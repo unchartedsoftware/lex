@@ -438,6 +438,7 @@ export class State extends EventEmitter {
     const oldUnboxedVal = this.unboxedValue;
     this.archive.push(this.value);
     this.value = this.defaultValue;
+    this.previewValue = null;
     this.emit('value changed', this.value, oldVal, this.unboxedValue, oldUnboxedVal);
   }
 

@@ -46,7 +46,6 @@ export class OptionBuilder extends Builder {
   @bind
   handleKeyDown (e) {
     let consumed = true;
-    this.machineState.previewValue = undefined;
     this.unboxedValue = e.target.value;
     switch (e.code) {
       case 'Comma':
@@ -55,7 +54,10 @@ export class OptionBuilder extends Builder {
           break;
         }
         consumed = this.machineState.isMultivalue;
-        if (this.machineState.isMultivalue) this.requestArchive();
+        if (this.machineState.isMultivalue) {
+          if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
+          this.requestArchive();
+        }
         break;
       case 'Enter':
       case 'Tab':
@@ -69,6 +71,7 @@ export class OptionBuilder extends Builder {
             this.machineState.unarchiveValue();
           }
         }
+        if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
         consumed = this.requestTransition(); // only consume the event if the transition succeeds
         break;
       case 'Backspace':
@@ -87,6 +90,9 @@ export class OptionBuilder extends Builder {
     if (consumed) {
       e.stopPropagation();
       e.preventDefault();
+    } else {
+      // if we didn't consume the key, it must be text so clear the preview value
+      this.machineState.previewValue = undefined;
     }
   }
 
@@ -107,7 +113,11 @@ export class OptionBuilder extends Builder {
 
   @bind
   onValueChanged (newValue) {
-    if (newValue) {
+    if (this.machineState.template.allowUnknown) {
+      this.setState({
+        typedText: newValue ? newValue.key : ''
+      });
+    } else if (newValue) {
       this.setState({
         typedText: newValue.key
       });
