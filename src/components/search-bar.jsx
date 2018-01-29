@@ -178,6 +178,8 @@ export class SearchBar extends Component {
         requestCancel={this.cancel}
         requestTransition={this.transition}
         requestArchive={this.archive}
+        requestUnarchive={this.unarchive}
+        requestRemoveArchivedValue={this.removeArchivedValue}
         requestRewind={this.rewind}
         requestRemoval={this.removeToken}
         onEndToken={this.onEndToken}
@@ -205,6 +207,8 @@ export class SearchBar extends Component {
               ref={(a) => { this.assistant = a; }}
               requestTransition={this.transition}
               requestArchive={this.archive}
+              requestUnarchive={this.unarchive}
+              requestRemoveArchivedValue={this.removeArchivedValue}
               requestRewind={this.rewind}
             />
           </div>
@@ -262,6 +266,36 @@ export class SearchBar extends Component {
   archive () {
     try {
       this.state.activeMachine.archive();
+      return true;
+    } catch (err) {
+      if (err instanceof ValueArchiveError) {
+        console.error(err.message);
+        return false;
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  @bind
+  unarchive () {
+    try {
+      this.state.activeMachine.unarchive();
+      return true;
+    } catch (err) {
+      if (err instanceof ValueArchiveError) {
+        console.error(err.message);
+        return false;
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  @bind
+  removeArchivedValue (idx) {
+    try {
+      this.state.activeMachine.removeArchivedValue(idx);
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
