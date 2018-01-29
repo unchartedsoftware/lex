@@ -20,6 +20,8 @@ export class Builder extends Component {
       requestBlur: () => {},
       requestTransition: () => {},
       requestArchive: () => {},
+      requestUnarchive: () => {},
+      requestRemoveArchivedValue: () => {},
       requestRewind: () => {},
       requestCancel: () => {},
       validityChanged: () => {}
@@ -88,6 +90,8 @@ export class Builder extends Component {
       machineState,
       requestTransition = () => {},
       requestArchive = () => {},
+      requestUnarchive = () => {},
+      requestRemoveArchivedValue = () => {},
       requestRewind = () => {},
       readOnly,
       blank,
@@ -125,6 +129,16 @@ export class Builder extends Component {
     if (requestArchive !== this.state.requestArchive) {
       this.setState({
         requestArchive: requestArchive
+      });
+    }
+    if (requestUnarchive !== this.state.requestUnarchive) {
+      this.setState({
+        requestUnarchive: requestUnarchive
+      });
+    }
+    if (requestRemoveArchivedValue !== this.state.requestRemoveArchivedValue) {
+      this.setState({
+        requestRemoveArchivedValue: requestRemoveArchivedValue
       });
     }
     if (requestRewind !== this.state.requestRewind) {
@@ -191,6 +205,22 @@ export class Builder extends Component {
    */
   requestArchive () {
     return this.state.requestArchive();
+  }
+
+  @bind
+  /**
+   * Call from a subclass to request the state machine for the containing token to attempt unarchiving a value.
+   */
+  requestUnarchive () {
+    return this.state.requestUnarchive();
+  }
+
+  @bind
+  /**
+   * Call from a subclass to request the state machine for the containing token to attempt removal of a specific value from the archive.
+   */
+  requestRemoveArchivedValue (idx) {
+    return this.state.requestRemoveArchivedValue(idx);
   }
 
   @bind

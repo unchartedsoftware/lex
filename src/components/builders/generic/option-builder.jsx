@@ -68,7 +68,7 @@ export class OptionBuilder extends Builder {
             consumed = false;
             break;
           } else {
-            this.machineState.unarchiveValue();
+            this.requestUnarchive();
           }
         }
         if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;

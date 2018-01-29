@@ -451,4 +451,14 @@ export class State extends EventEmitter {
     this.value = this.archive.pop();
     this.emit('value changed', this.value, oldVal, this.unboxedValue, oldUnboxedVal);
   }
+
+  /**
+   * Remove a specific value from the archive, by index.
+   *
+   * @param {number} idx - The index of the archived value to remove.
+   */
+  removeArchivedValue (idx) {
+    this.archive.splice(idx, 1);
+    this.emit('value changed', this.value, this.value, this.unboxedValue, this.unboxedValue);
+  }
 }

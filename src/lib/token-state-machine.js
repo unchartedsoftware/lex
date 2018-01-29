@@ -128,6 +128,36 @@ export class TokenStateMachine extends EventEmitter {
   }
 
   /**
+   * Inverse of `archive()`, overwriting the current value with one from the archive.
+   */
+  unarchive () {
+    if (this.state.archive.length > 0) {
+      this.state.unarchiveValue();
+      this.emit('state changed', this.state, this.state);
+    } else {
+      const err = new ValueArchiveError('Cannot unarchive from an empty archive');
+      this.emit('state change failed', err);
+      throw err;
+    }
+  }
+
+  /**
+   * Request removal of a specific element from the archive.
+   *
+   * @param {number} idx - An archive index.
+   */
+  removeArchivedValue (idx) {
+    if (this.state.archive.length > idx) {
+      this.state.removeArchivedValue(idx);
+      this.emit('state changed', this.state, this.state);
+    } else {
+      const err = new ValueArchiveError(`Cannot remove value ${idx} from archive with length ${this.state.archive.length}`);
+      this.emit('state change failed', err);
+      throw err;
+    }
+  }
+
+  /**
    * Pops a value from the current `State`'s archive, if possible, overwriting the current value. If the
    * archive is empty, transitions to the parent state from the current state, regardless of whether or
    * not the current state is valid, or has a parent. Resets the value of the current state before rewinding.

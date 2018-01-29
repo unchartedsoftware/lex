@@ -47,6 +47,11 @@ export class OptionAssistant extends Assistant {
     }
   }
 
+  @bind
+  onArchivedRemoved (idx) {
+    this.requestRemoveArchivedValue(idx);
+  }
+
   processProps (props) {
     this.cleanupListeners();
     super.processProps(props);
@@ -60,7 +65,6 @@ export class OptionAssistant extends Assistant {
         suggestions: this.machineState.template.options.slice(0, this.machineState.template.suggestionLimit)
       });
     }
-    // TODO do we need to modify validation state?
   }
 
   cleanupListeners () {
@@ -118,7 +122,7 @@ export class OptionAssistant extends Assistant {
           <div className='assistant-header'>Entered Values</div>
           <ul>
             {
-              this.machineState.archive.map((o) => <li>{o.key}</li>)
+              this.machineState.archive.map((o, idx) => <li tabIndex='0' className='removable' onClick={() => this.onArchivedRemoved(idx)}>{o.key}<em className='pull-right'>(click to remove)</em></li>)
             }
           </ul>
         </div>

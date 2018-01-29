@@ -20,6 +20,8 @@ export class Token extends Component {
       requestBlur: () => {},
       requestTransition: () => {},
       requestArchive: () => {},
+      requestUnarchive: () => {},
+      requestRemoveArchivedValue: () => {},
       requestRewind: () => {},
       requestCancel: () => {},
       requestAddSuggestion: () => {},
@@ -42,6 +44,8 @@ export class Token extends Component {
       requestCancel = () => {},
       requestTransition = () => {},
       requestArchive = () => {},
+      requestUnarchive = () => {},
+      requestRemoveArchivedValue = () => {},
       requestRewind = () => {},
       requestAddSuggestion = () => {},
       onEndToken = () => {},
@@ -87,6 +91,16 @@ export class Token extends Component {
     if (requestArchive !== this.state.requestArchive) {
       this.setState({
         requestArchive: requestArchive
+      });
+    }
+    if (requestUnarchive !== this.state.requestUnarchive) {
+      this.setState({
+        requestUnarchive: requestUnarchive
+      });
+    }
+    if (requestRemoveArchivedValue !== this.state.requestRemoveArchivedValue) {
+      this.setState({
+        requestRemoveArchivedValue: requestRemoveArchivedValue
       });
     }
     if (requestRewind !== this.state.requestRewind) {
@@ -297,6 +311,8 @@ export class Token extends Component {
             machineState={s}
             requestTransition={this.state.requestTransition}
             requestArchive={this.state.requestArchive}
+            requestUnarchive={this.state.requestUnarchive}
+            requestRemoveArchivedValue={this.state.requestRemoveArchivedValue}
             requestRewind={this.state.requestRewind}
             requestFocus={this.requestFocus}
             requestBlur={this.requestBlur}

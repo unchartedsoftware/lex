@@ -3,6 +3,8 @@ $lex-border-color: revert !default;
 $lex-border-radius-base: 3px !default;
 $lex-highlight-color: #0097a7 !default;
 $lex-highlight-text-color: #fff !default;
+$lex-danger-highlight-color: #d9534f !default;
+$lex-danger-highlight-text-color: #fff !default;
 $lex-token-background: #ededed !default;
 $lex-token-color: #555;
 $lex-token-remove-button-color: lighten($lex-token-color, 45%) !default;
@@ -166,11 +168,27 @@ div.assistant-box {
     margin: 0; padding: 0;
     li {
       margin: 0; padding: 0.5rem 1rem;
+      em.pull-right {
+        color: #eee;
+        display: none;
+      }
+      &.selectable:hover,  &.removable:hover {
+        em.pull-right {
+          display: inline-block;
+        }
+      }
       &.selectable {
         cursor: pointer;
         &:hover, &.active {
           color: $lex-highlight-text-color;
           background-color: $lex-highlight-color;
+        }
+      }
+      &.removable {
+        cursor: pointer;
+        &:hover, &.active {
+          color: $lex-danger-highlight-text-color;
+          background-color: $lex-danger-highlight-color;
         }
       }
     }
