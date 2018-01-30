@@ -11,6 +11,7 @@ export class Token extends Component {
       idx: undefined,
       active: false,
       focused: false,
+      flash: false,
       suggestion: false,
       machine: undefined,
       builders: undefined,
@@ -18,6 +19,7 @@ export class Token extends Component {
       tokenXIcon: '&times',
       requestFocus: () => {},
       requestBlur: () => {},
+      requestEdit: () => {},
       requestTransition: () => {},
       requestArchive: () => {},
       requestUnarchive: () => {},
@@ -34,6 +36,7 @@ export class Token extends Component {
     const {
       idx,
       active,
+      flash,
       suggestion,
       machine,
       builders,
@@ -41,6 +44,7 @@ export class Token extends Component {
       requestRemoval = () => {},
       requestFocus = () => {},
       requestBlur = () => {},
+      requestEdit = () => {},
       requestCancel = () => {},
       requestTransition = () => {},
       requestArchive = () => {},
@@ -59,6 +63,11 @@ export class Token extends Component {
     if (active !== this.state.active) {
       this.setState({
         active: active
+      });
+    }
+    if (flash !== this.state.flash) {
+      this.setState({
+        flash: flash
       });
     }
     if (suggestion !== this.state.suggestion) {
@@ -116,6 +125,11 @@ export class Token extends Component {
     if (requestBlur !== this.state.requestBlur) {
       this.setState({
         requestBlur: requestBlur
+      });
+    }
+    if (requestEdit !== this.state.requestEdit) {
+      this.setState({
+        requestEdit: requestEdit
       });
     }
     if (requestCancel !== this.state.requestCancel) {
@@ -289,6 +303,15 @@ export class Token extends Component {
   }
 
   @bind
+  requestEdit (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!this.state.active && this.state.requestEdit) {
+      this.state.requestEdit(this.state.idx);
+    }
+  }
+
+  @bind
   requestCancel () {
     this.state.machine.reset();
     this.state.requestCancel();
@@ -300,9 +323,9 @@ export class Token extends Component {
     }
   }
 
-  render (props, {active, suggestion, machine, focused}) {
+  render (props, {active, flash, suggestion, machine, focused}) {
     return (
-      <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''}`}>
+      <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''}`} onClick={this.requestEdit}>
         {this.icon}
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);

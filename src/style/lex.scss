@@ -25,9 +25,18 @@ div.lex-box {
   background: $lex-background;
   border-color: $lex-border-color;
 
+  &.active, &.focused {
+    outline: 0;
+  }
+
+  &.active {
+    border-color: lighten(desaturate($lex-highlight-color, 50%), 20%);
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px darken($lex-highlight-color, 10%);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px darken($lex-highlight-color, 10%);
+  }
+
   &.focused {
     border-color: $lex-highlight-color;
-    outline: 0;
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px darken($lex-highlight-color, 10%);
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px darken($lex-highlight-color, 10%);
   }
@@ -218,4 +227,19 @@ div.assistant-box {
       float: right;
     }
   }
+}
+
+.anim-flash {
+	-webkit-animation: flash linear 0.25s 3;
+	animation: flash linear 0.25s 3;
+}
+@-webkit-keyframes flash {
+	0% { opacity: 1; }
+	50% { opacity: .1; }
+	100% { opacity: 1; }
+}
+@keyframes flash {
+	0% { opacity: 1; }
+	50% { opacity: .1; }
+	100% { opacity: 1; }
 }
