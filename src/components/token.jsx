@@ -18,6 +18,7 @@ export class Token extends Component {
       tokenXIcon: '&times',
       requestFocus: () => {},
       requestBlur: () => {},
+      requestEdit: () => {},
       requestTransition: () => {},
       requestArchive: () => {},
       requestUnarchive: () => {},
@@ -41,6 +42,7 @@ export class Token extends Component {
       requestRemoval = () => {},
       requestFocus = () => {},
       requestBlur = () => {},
+      requestEdit = () => {},
       requestCancel = () => {},
       requestTransition = () => {},
       requestArchive = () => {},
@@ -116,6 +118,11 @@ export class Token extends Component {
     if (requestBlur !== this.state.requestBlur) {
       this.setState({
         requestBlur: requestBlur
+      });
+    }
+    if (requestEdit !== this.state.requestEdit) {
+      this.setState({
+        requestEdit: requestEdit
       });
     }
     if (requestCancel !== this.state.requestCancel) {
@@ -289,6 +296,15 @@ export class Token extends Component {
   }
 
   @bind
+  requestEdit (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!this.state.active && this.state.requestEdit) {
+      this.state.requestEdit(this.state.idx);
+    }
+  }
+
+  @bind
   requestCancel () {
     this.state.machine.reset();
     this.state.requestCancel();
@@ -302,7 +318,7 @@ export class Token extends Component {
 
   render (props, {active, suggestion, machine, focused}) {
     return (
-      <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''}`}>
+      <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''}`} onClick={this.requestEdit}>
         {this.icon}
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);

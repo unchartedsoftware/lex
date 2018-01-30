@@ -18,6 +18,7 @@ export class SearchBar extends Component {
       machineTemplate: undefined,
       machines: undefined,
       active: false,
+      editing: false,
       focused: false,
       tokenXIcon: '&times',
       onQueryChanged: () => {},
@@ -312,7 +313,10 @@ export class SearchBar extends Component {
     const oldState = this.state.activeMachine.state;
     const newState = this.state.activeMachine.rewind();
     if (oldState === newState) {
-      this.setState({active: false});
+      if (this.state.editing) {
+        this.queryChanged(this.state.editing);
+      }
+      this.setState({active: false, editing: false});
     }
   }
 
@@ -328,6 +332,7 @@ export class SearchBar extends Component {
   onEndToken (v) {
     const oldQueryValues = this.state.tokenValues;
     this.setState({
+      editing: false,
       tokenValues: [...this.state.tokenValues, v],
       activeMachine: new TokenStateMachine(this.state.machineTemplate)
     });
@@ -341,6 +346,7 @@ export class SearchBar extends Component {
     if (idx === undefined) {
       this.setState({
         active: false,
+        editing: false,
         activeMachine: new TokenStateMachine(this.state.machineTemplate)
       });
     } else {
@@ -349,6 +355,18 @@ export class SearchBar extends Component {
         tokenValues: [...this.state.tokenValues.slice(0, idx), ...this.state.tokenValues.slice(idx + 1)]
       });
       this.queryChanged(oldQueryValues);
+    }
+  }
+
+  @bind
+  editToken (idx) {
+    if (idx >= 0) {
+      this.setState({
+        active: true,
+        editing: this.state.tokenValues,
+        activeMachine: new TokenStateMachine(this.state.machineTemplate, this.state.tokenValues[idx]),
+        tokenValues: [...this.state.tokenValues.slice(0, idx), ...this.state.tokenValues.slice(idx + 1)]
+      });
     }
   }
 
@@ -384,12 +402,12 @@ export class SearchBar extends Component {
     this.state.onSuggestionsChanged(this.state.suggestions, oldSuggestionValues, newUnboxedValues, oldUnboxedValues);
   }
 
-  render (props, {focused, tokenValues, suggestions, builders, machineTemplate, activeMachine, tokenXIcon}) {
+  render (props, {active, focused, tokenValues, suggestions, builders, machineTemplate, activeMachine, tokenXIcon}) {
     return (
-      <div className={focused ? 'lex-box form-control focused' : 'lex-box form-control'} onKeyDown={this.onKeyDown} onClick={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
+      <div className={'lex-box form-control' + (active ? ' active' : '') + (focused ? ' focused' : '')} onKeyDown={this.onKeyDown} onClick={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         {
           tokenValues.map((v, i) => {
-            return <Token tokenXIcon={tokenXIcon} machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeToken} idx={i} />;
+            return <Token tokenXIcon={tokenXIcon} machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} />;
           })
         }
         {
