@@ -318,7 +318,7 @@ export class SearchBar extends Component {
       if (this.state.editing) {
         this.queryChanged(this.state.editing);
       }
-      this.setState({active: false, editing: false});
+      this.setState({active: false, editing: false, flashActive: false});
     }
   }
 
