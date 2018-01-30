@@ -11,6 +11,7 @@ export class Token extends Component {
       idx: undefined,
       active: false,
       focused: false,
+      flash: false,
       suggestion: false,
       machine: undefined,
       builders: undefined,
@@ -35,6 +36,7 @@ export class Token extends Component {
     const {
       idx,
       active,
+      flash,
       suggestion,
       machine,
       builders,
@@ -61,6 +63,11 @@ export class Token extends Component {
     if (active !== this.state.active) {
       this.setState({
         active: active
+      });
+    }
+    if (flash !== this.state.flash) {
+      this.setState({
+        flash: flash
       });
     }
     if (suggestion !== this.state.suggestion) {
@@ -316,9 +323,9 @@ export class Token extends Component {
     }
   }
 
-  render (props, {active, suggestion, machine, focused}) {
+  render (props, {active, flash, suggestion, machine, focused}) {
     return (
-      <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''}`} onClick={this.requestEdit}>
+      <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''}`} onClick={this.requestEdit}>
         {this.icon}
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);

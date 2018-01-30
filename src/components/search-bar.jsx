@@ -20,6 +20,7 @@ export class SearchBar extends Component {
       active: false,
       editing: false,
       focused: false,
+      flashActive: false,
       tokenXIcon: '&times',
       onQueryChanged: () => {},
       onSuggestionsChanged: () => {},
@@ -171,6 +172,7 @@ export class SearchBar extends Component {
     if (this.state.active) {
       return (<Token
         active
+        flash={this.state.flashActive}
         tokenXIcon={this.state.tokenXIcon}
         machine={activeMachine}
         builders={builders}
@@ -333,6 +335,7 @@ export class SearchBar extends Component {
     const oldQueryValues = this.state.tokenValues;
     this.setState({
       editing: false,
+      flashActive: false,
       tokenValues: [...this.state.tokenValues, v],
       activeMachine: new TokenStateMachine(this.state.machineTemplate)
     });
@@ -347,6 +350,7 @@ export class SearchBar extends Component {
       this.setState({
         active: false,
         editing: false,
+        flashActive: false,
         activeMachine: new TokenStateMachine(this.state.machineTemplate)
       });
     } else {
@@ -360,12 +364,21 @@ export class SearchBar extends Component {
 
   @bind
   editToken (idx) {
-    if (idx >= 0) {
+    if (!this.state.active && idx >= 0) {
       this.setState({
         active: true,
         editing: this.state.tokenValues,
         activeMachine: new TokenStateMachine(this.state.machineTemplate, this.state.tokenValues[idx]),
         tokenValues: [...this.state.tokenValues.slice(0, idx), ...this.state.tokenValues.slice(idx + 1)]
+      });
+    } else if (this.state.active) {
+      this.setState({
+        flashActive: false
+      });
+      setTimeout(() => {
+        this.setState({
+          flashActive: true
+        });
       });
     }
   }
