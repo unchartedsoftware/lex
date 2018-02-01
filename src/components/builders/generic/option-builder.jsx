@@ -131,6 +131,20 @@ export class OptionBuilder extends Builder {
     });
   }
 
+  @bind
+  onPaste (e) {
+    if (this.machineState.isMultivalue) {
+      e.preventDefault();
+      e.stopPropagation();
+      const clipboardData = (e.clipboardData || window.clipboardData).getData('Text');
+      const values = clipboardData.split(this.state.multivaluePasteDelimiter).map(e => e.trim());
+      values.forEach(v => {
+        this.machineState.unboxedValue = v;
+        this.requestArchive();
+      });
+    }
+  }
+
   renderReadOnly (props, state) {
     if (this.machineState.value) {
       if (this.machineState.isMultivalue && this.archive.length > 0) {
@@ -161,6 +175,7 @@ export class OptionBuilder extends Builder {
             onInput={linkState(this, 'typedText')}
             onFocus={this.requestFocus}
             onBlur={this.requestBlur}
+            onPaste={this.onPaste}
             ref={(input) => { this.textInput = input; }}
             disabled={readOnly} />
         </span>

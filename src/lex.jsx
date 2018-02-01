@@ -22,7 +22,8 @@ const _builders = new WeakMap();
 const _proxiedEvents = new WeakMap();
 const _defaultValue = new WeakMap();
 const _tokenXIcon = new WeakMap();
-const _multivalueDelimiter = new WeakMap();
+const _multivalueDelimiterKey = new WeakMap();
+const _multivaluePasteDelimiter = new WeakMap();
 
 /**
  * Lex - A micro-framework for building search bars.
@@ -39,7 +40,8 @@ const _multivalueDelimiter = new WeakMap();
  * @param {string[]} config.proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any). `['ArrowUp', 'ArrowDown', 'Tab', 'Enter']` by default.
  * @param {Object[]} config.defaultQuery - The default search state for this search box. Can either be an array of arrays of boxed or unboxed (basic type) values.
  * @param {string} config.tokenXIcon - The default X icon for tokens (DOM string).
- * @param {string} config.multivalueDelimiter - The key event key name of the delimiter which will notionally 'separate' multiple values in any visual representation of a multivalue state. 'Comma' by default.
+ * @param {string} config.multivalueDelimiterKey - The key event key name of the delimiter which will notionally 'separate' multiple values in any visual representation of a multivalue state. 'Comma' by default.
+ * @param {string[]} config.multivaluePasteDelimiter - The characters which are supported as delimiters text which is pasted into a multivalue state. ',' by default.
  * @example
  * // Instantiate a new instance of lex and bind it to the page.
  * const lex = new Lex(language);
@@ -56,7 +58,8 @@ class Lex extends EventEmitter {
       proxiedEvents = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter'],
       defaultQuery = [],
       tokenXIcon = '&times;',
-      multivalueDelimiter = 'Comma'
+      multivalueDelimiterKey = ['Comma'],
+      multivaluePasteDelimiter = ','
     } = config;
     super();
     // TODO throw if language is not instanceof StateTemplate
@@ -76,10 +79,11 @@ class Lex extends EventEmitter {
       .registerAssistant(NumericRelationState, OptionAssistant);
     _proxiedEvents.set(this, new Map());
     _tokenXIcon.set(this, tokenXIcon);
-    _multivalueDelimiter.set(this, multivalueDelimiter);
+    _multivalueDelimiterKey.set(this, multivalueDelimiterKey);
+    _multivaluePasteDelimiter.set(this, multivaluePasteDelimiter);
     // ensure that the multivalueDelimiter is proxied to assistants
-    if (proxiedEvents.indexOf(multivalueDelimiter) < 0) {
-      proxiedEvents.push(multivalueDelimiter);
+    if (proxiedEvents.indexOf(multivalueDelimiterKey) < 0) {
+      proxiedEvents.push(multivalueDelimiterKey);
     }
     proxiedEvents.forEach(e => _proxiedEvents.get(this).set(e, true));
   }
@@ -155,7 +159,8 @@ class Lex extends EventEmitter {
         machineTemplate={_language.get(this)}
         proxiedEvents={_proxiedEvents.get(this)}
         tokenXIcon={_tokenXIcon.get(this)}
-        multivalueDelimiter={_multivalueDelimiter.get(this)}
+        multivalueDelimiterKey={_multivalueDelimiterKey.get(this)}
+        multivaluePasteDelimiter={_multivaluePasteDelimiter.get(this)}
         onQueryChanged={(...args) => this.emit('query changed', ...args)}
         onSuggestionsChanged={(...args) => this.emit('suggestions changed', ...args)}
         onValidityChanged={(...args) => this.emit('validity changed', ...args)}
