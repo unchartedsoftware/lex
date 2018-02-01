@@ -271,7 +271,7 @@ export class Builder extends Component {
    * @param {Event} e - A blur event from some DOM element within this Builder's visual representation.
    */
   requestBlur (e) {
-    const assistantBox = document.getElementById('assistant-box');
+    const assistantBox = document.getElementById('lex-assistant-box');
     if (!e.relatedTarget || assistantBox === null || !assistantBox.contains(e.relatedTarget)) {
       this.state.requestBlur();
     }

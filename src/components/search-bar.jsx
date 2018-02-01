@@ -204,7 +204,7 @@ export class SearchBar extends Component {
       };
       return (
         <Portal into='body'>
-          <div id='assistant-box' className='assistant-box' style={pos}>
+          <div id='lex-assistant-box' className='lex-assistant-box' style={pos}>
             <Assistant
               machineState={activeMachine.state}
               ref={(a) => { this.assistant = a; }}
