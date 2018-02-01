@@ -339,6 +339,14 @@ export class Builder extends Component {
 
   /**
    * @readonly
+   * @returns {TokenStateMachine} The containing `TokenStateMachine`.
+   */
+  get machine () {
+    return this.state.machine;
+  }
+
+  /**
+   * @readonly
    * @returns {State} The underlying `State`.
    */
   get machineState () {
