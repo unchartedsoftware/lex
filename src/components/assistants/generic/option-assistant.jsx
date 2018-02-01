@@ -33,13 +33,13 @@ export class OptionAssistant extends Assistant {
     const val = newUnboxedValue === undefined ? newUnboxedValue = '' : newUnboxedValue.toLowerCase();
     this.setState({
       unboxedValue: newUnboxedValue,
-      suggestions: this.state.options.filter(o => o.key.toLowerCase().startsWith(val)).slice(0, this.machineState.template.suggestionLimit)
+      suggestions: this.state.options.filter(o => o.displayKey.toLowerCase().startsWith(val)).slice(0, this.machineState.template.suggestionLimit)
     });
   }
 
   @bind
-  onOptionSelected (key) {
-    this.machineState.unboxedValue = key;
+  onOptionSelected (option) {
+    this.machineState.unboxedValue = option.displayKey;
     if (this.machineState.isMultivalue) {
       this.requestArchive();
     } else {
@@ -122,7 +122,7 @@ export class OptionAssistant extends Assistant {
           <div className='assistant-header'>Entered Values</div>
           <ul>
             {
-              this.machineState.archive.map((o, idx) => <li tabIndex='0' className='removable' onClick={() => this.onArchivedRemoved(idx)}>{o.key}<em className='pull-right'>(click to remove)</em></li>)
+              this.machineState.archive.map((o, idx) => <li tabIndex='0' className='removable' onClick={() => this.onArchivedRemoved(idx)}>{o.displayKey}<em className='pull-right'>(click to remove)</em></li>)
             }
           </ul>
         </div>
@@ -145,7 +145,7 @@ export class OptionAssistant extends Assistant {
           { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
           <ul>
             {
-              suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o.key)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{o.key}</li>)
+              suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{o.displayKey}</li>)
             }
             { (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
           </ul>

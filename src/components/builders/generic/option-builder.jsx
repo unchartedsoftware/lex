@@ -115,11 +115,11 @@ export class OptionBuilder extends Builder {
   onValueChanged (newValue) {
     if (this.machineState.template.allowUnknown) {
       this.setState({
-        typedText: newValue ? newValue.key : ''
+        typedText: newValue ? newValue.displayKey : ''
       });
     } else if (newValue) {
       this.setState({
-        typedText: newValue.key
+        typedText: newValue.displayKey
       });
     }
   }
