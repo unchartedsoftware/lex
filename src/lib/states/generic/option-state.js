@@ -1,6 +1,7 @@
 import { StateTemplate } from '../../state';
 
 const _key = new WeakMap();
+const _displayKey = new WeakMap();
 const _shortKey = new WeakMap();
 const _meta = new WeakMap();
 
@@ -9,19 +10,27 @@ const _meta = new WeakMap();
  *
  * @param {string} key - A label for this option. Should be unique within the list of options.
  * @param {any} meta - Whatever you want.
- * @param {string|undefined} shortKey - A shorter representation of `key` displayed in read-only mode. Will default to `key` if not supplied.
+ * @param {object} config - Additional configuration for this `OptionStateOption`.
+ * @param {string|undefined} config.displayKey - An alternative representation of `key`, utilized in its place for all visual representatations of key. Will default to `key` if not supplied.
+ * @param {string|undefined} config.shortKey - A shorter representation of `key` displayed in read-only mode. Will default to `config.displayKey` if not supplied.
  */
 export class OptionStateOption {
-  constructor (key, meta, shortKey = key) {
+  constructor (key, meta, config = {}) {
     _key.set(this, key);
     _meta.set(this, meta);
-    _shortKey.set(this, shortKey);
+    _displayKey.set(this, config.displayKey === undefined ? key : config.displayKey);
+    _shortKey.set(this, config.shortKey === undefined ? _displayKey.get(this) : config.shortKey);
   }
 
   /**
    * @returns {string} The label for this option.
    */
   get key () { return _key.get(this); }
+
+  /**
+   * @returns {string} The alternative label for this option.
+   */
+  get displayKey () { return _displayKey.get(this); }
 
   /**
    * @returns {string} The abbreviated label for this option.
@@ -61,7 +70,7 @@ export class OptionState extends StateTemplate {
       config.validate = (thisVal) => {
         if (thisVal === null || thisVal === undefined) return false;
         if (this.allowUnknown) return true;
-        return this.options.filter(o => o.key === thisVal.key).length === 1;
+        return this.options.filter(o => o.displayKey === thisVal.displayKey).length === 1;
       };
     }
     if (config.options === undefined) config.options = [];
@@ -129,7 +138,7 @@ export class OptionState extends StateTemplate {
    * @returns {OptionStateOption} An `OptionStateOption` instance.
    */
   boxValue (key) {
-    const matches = this.options.filter(o => o.key.toLowerCase() === key.toLowerCase());
+    const matches = this.options.filter(o => o.displayKey.toLowerCase() === key.toLowerCase());
     if (matches.length > 0) {
       return matches[0];
     } else if (this.allowUnknown) {
@@ -147,7 +156,7 @@ export class OptionState extends StateTemplate {
    */
   unboxValue (option) {
     if (option === undefined || option === null) return null;
-    return option.key;
+    return option.displayKey;
   }
 
   /**

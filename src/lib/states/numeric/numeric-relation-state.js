@@ -12,7 +12,7 @@ export class NumericRelationState extends OptionState {
     if (config.options === undefined) {
       config.options = [
         ['equals', '='], ['does not equal', '≠'], ['less than', '<'], ['greater than', '>'], ['between', 'between']
-      ].map(o => new OptionStateOption(o[0], {}, o[1]));
+      ].map(o => new OptionStateOption(o[0], {}, {shortKey: o[1]}));
     }
     super(config);
   }

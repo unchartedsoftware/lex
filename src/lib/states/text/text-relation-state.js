@@ -12,7 +12,7 @@ export class TextRelationState extends OptionState {
     if (config.options === undefined) {
       config.options = [
         ['is', '='], ['is not', '≠'], ['is like', '≅'], ['contains', '⊇'], ['does not contain', '⊉']
-      ].map(o => new OptionStateOption(o[0], {}, o[1]));
+      ].map(o => new OptionStateOption(o[0], {}, {shortKey: o[1]}));
     }
     super(config);
   }
