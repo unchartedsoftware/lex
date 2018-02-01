@@ -60,6 +60,7 @@ export class OptionState extends StateTemplate {
     if (config.validate === undefined) {
       config.validate = (thisVal) => {
         if (thisVal === null || thisVal === undefined) return false;
+        if (this.allowUnknown) return true;
         return this.options.filter(o => o.key === thisVal.key).length === 1;
       };
     }
