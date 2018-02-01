@@ -50,7 +50,8 @@ const language = Lex.from('field', OptionState, {
 const lex = new Lex({
   language: language,
   defaultValue: [],
-  tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>'
+  tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>',
+  multivalueDelimiter: 'Comma' // this is the default value
 });
 
 lex.render(document.getElementById('LexContainer'));

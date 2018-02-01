@@ -89,7 +89,7 @@ export class OptionAssistant extends Assistant {
         this.setState({activeOption: Math.min(this.state.activeOption + 1, this.state.suggestions.length - 1)});
         this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
         break;
-      case 'Comma':
+      case this.state.multivalueDelimiter:
         if (this.machineState.isMultivalue) {
           consumed = true;
           this.machineState.value = this.state.suggestions[this.state.activeOption];
@@ -136,7 +136,7 @@ export class OptionAssistant extends Assistant {
         <div className='assistant-header'>
           {this.machineState.name}
           <span className='pull-right'>
-            {this.machineState.isMultivalue && <span><strong>,</strong> to enter multiple values&nbsp;&nbsp;&nbsp;</span>}
+            {this.machineState.isMultivalue && <span><strong>{this.state.multivalueDelimiter}</strong> to enter multiple values&nbsp;&nbsp;&nbsp;</span>}
             <strong>&#x21c5;</strong> to navigate&nbsp;&nbsp;&nbsp;
             <strong>Tab</strong> to {this.machineState.isMultivalue ? 'progress' : 'select'}
           </span>

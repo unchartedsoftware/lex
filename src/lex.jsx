@@ -17,11 +17,12 @@ import { LabelBuilder } from './components/builders/generic/label-builder';
 import { OptionBuilder } from './components/builders/generic/option-builder';
 import { OptionAssistant } from './components/assistants/generic/option-assistant';
 
-const sLanguage = Symbol('language');
-const sBuilders = Symbol('builders');
-const sProxiedEvents = Symbol('proxiedEvents');
-const sDefaultValue = Symbol('defaultValue');
-const sTokenXIcon = Symbol('tokenXIcon');
+const _language = new WeakMap();
+const _builders = new WeakMap();
+const _proxiedEvents = new WeakMap();
+const _defaultValue = new WeakMap();
+const _tokenXIcon = new WeakMap();
+const _multivalueDelimiter = new WeakMap();
 
 /**
  * Lex - A micro-framework for building search bars.
@@ -38,6 +39,7 @@ const sTokenXIcon = Symbol('tokenXIcon');
  * @param {string[]} config.proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any). `['ArrowUp', 'ArrowDown', 'Tab', 'Enter']` by default.
  * @param {Object[]} config.defaultQuery - The default search state for this search box. Can either be an array of arrays of boxed or unboxed (basic type) values.
  * @param {string} config.tokenXIcon - The default X icon for tokens (DOM string).
+ * @param {string} config.multivalueDelimiter - The key event key name of the delimiter which will notionally 'separate' multiple values in any visual representation of a multivalue state. 'Comma' by default.
  * @example
  * // Instantiate a new instance of lex and bind it to the page.
  * const lex = new Lex(language);
@@ -51,16 +53,17 @@ class Lex extends EventEmitter {
   constructor (config) {
     const {
       language,
-      proxiedEvents = ['ArrowUp', 'ArrowDown', 'Comma', 'Tab', 'Enter'],
+      proxiedEvents = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter'],
       defaultQuery = [],
-      tokenXIcon = '&times;'
+      tokenXIcon = '&times;',
+      multivalueDelimiter = 'Comma'
     } = config;
     super();
     // TODO throw if language is not instanceof StateTemplate
-    this[sLanguage] = language.root;
-    this[sBuilders] = new StateBuilderFactory();
-    this[sDefaultValue] = defaultQuery;
-    this[sBuilders].registerBuilder(OptionState, OptionBuilder)
+    _language.set(this, language.root);
+    _builders.set(this, new StateBuilderFactory());
+    _defaultValue.set(this, defaultQuery);
+    _builders.get(this).registerBuilder(OptionState, OptionBuilder)
       .registerBuilder(TextRelationState, OptionBuilder)
       .registerBuilder(TextEntryState, OptionBuilder)
       .registerBuilder(NumericRelationState, OptionBuilder)
@@ -71,9 +74,14 @@ class Lex extends EventEmitter {
       .registerAssistant(NumericEntryState, OptionAssistant)
       .registerAssistant(TextRelationState, OptionAssistant)
       .registerAssistant(NumericRelationState, OptionAssistant);
-    this[sProxiedEvents] = new Map();
-    this[sTokenXIcon] = tokenXIcon;
-    proxiedEvents.forEach(e => this[sProxiedEvents].set(e, true));
+    _proxiedEvents.set(this, new Map());
+    _tokenXIcon.set(this, tokenXIcon);
+    _multivalueDelimiter.set(this, multivalueDelimiter);
+    // ensure that the multivalueDelimiter is proxied to assistants
+    if (proxiedEvents.indexOf(multivalueDelimiter) < 0) {
+      proxiedEvents.push(multivalueDelimiter);
+    }
+    proxiedEvents.forEach(e => _proxiedEvents.get(this).set(e, true));
   }
 
   /**
@@ -84,7 +92,7 @@ class Lex extends EventEmitter {
    * @returns {Lex} A reference to `this` for chaining.
    */
   registerBuilder (templateClass, builderClass) {
-    this[sBuilders].registerBuilder(templateClass, builderClass);
+    _builders.get(this).registerBuilder(templateClass, builderClass);
     return this;
   }
 
@@ -96,7 +104,7 @@ class Lex extends EventEmitter {
    * @returns {Lex} A reference to `this` for chaining.
    */
   registerAssistant (templateClass, assistantClass) {
-    this[sBuilders].registerAssistant(templateClass, assistantClass);
+    _builders.get(this).registerAssistant(templateClass, assistantClass);
     return this;
   }
 
@@ -142,11 +150,12 @@ class Lex extends EventEmitter {
     }
     this.root = render((
       <SearchBar
-        value={this[sDefaultValue]}
-        builders={this[sBuilders]}
-        machineTemplate={this[sLanguage]}
-        proxiedEvents={this[sProxiedEvents]}
-        tokenXIcon={this[sTokenXIcon]}
+        value={_defaultValue.get(this)}
+        builders={_builders.get(this)}
+        machineTemplate={_language.get(this)}
+        proxiedEvents={_proxiedEvents.get(this)}
+        tokenXIcon={_tokenXIcon.get(this)}
+        multivalueDelimiter={_multivalueDelimiter.get(this)}
         onQueryChanged={(...args) => this.emit('query changed', ...args)}
         onSuggestionsChanged={(...args) => this.emit('suggestions changed', ...args)}
         onValidityChanged={(...args) => this.emit('validity changed', ...args)}
@@ -173,7 +182,7 @@ class Lex extends EventEmitter {
    */
   reset () {
     if (this.searchBar) {
-      this.searchBar.value = this[sDefaultValue];
+      this.searchBar.value = _defaultValue.get(this);
     }
   }
 

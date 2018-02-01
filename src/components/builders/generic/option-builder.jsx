@@ -48,7 +48,7 @@ export class OptionBuilder extends Builder {
     let consumed = true;
     this.unboxedValue = e.target.value;
     switch (e.code) {
-      case 'Comma':
+      case this.state.multivalueDelimiter:
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
           consumed = false;
           break;

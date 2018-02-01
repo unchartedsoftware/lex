@@ -16,6 +16,7 @@ export class Builder extends Component {
     this.state = {
       valid: true,
       readOnly: false,
+      multivalueDelimiter: 'Comma',
       requestFocus: () => {},
       requestBlur: () => {},
       requestTransition: () => {},
@@ -96,6 +97,7 @@ export class Builder extends Component {
       readOnly,
       blank,
       focused,
+      multivalueDelimiter = 'Comma',
       requestFocus = () => {},
       requestBlur = () => {},
       requestCancel = () => {},
@@ -148,6 +150,11 @@ export class Builder extends Component {
     }
     if (focused) {
       setTimeout(() => { this.focus(); });
+    }
+    if (multivalueDelimiter !== this.state.multivalueDelimiter) {
+      this.setState({
+        multivalueDelimiter: multivalueDelimiter
+      });
     }
     if (requestFocus !== this.state.requestFocus) {
       this.setState({
