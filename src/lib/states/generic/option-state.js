@@ -72,9 +72,9 @@ export class OptionState extends StateTemplate {
       _options.set(this, config.options);
     } else {
       _options.set(this, []);
-      _refreshOptions.set(this, async (hint = '') => {
+      _refreshOptions.set(this, async (hint = '', context = []) => {
         try {
-          this.options = await config.options(hint);
+          this.options = await config.options(hint, context);
         } catch (err) {
           console.error('Could not refresh list of options.');
           throw err;
@@ -155,11 +155,12 @@ export class OptionState extends StateTemplate {
    * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.options`.
    *
    * @param {string | undefined} hint - What the user has typed, if anything.
+   * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    * @returns {Promise} Resolves with the new list of options.
    */
-  refreshOptions (hint = '') {
+  refreshOptions (hint = '', context = []) {
     if (_refreshOptions.has(this)) {
-      _refreshOptions.get(this)(hint);
+      _refreshOptions.get(this)(hint, context);
     }
   }
 }

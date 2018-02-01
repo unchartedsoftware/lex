@@ -99,7 +99,7 @@ export class OptionBuilder extends Builder {
   @bind
   handleKeyUp (e) {
     this.unboxedValue = e.target.value;
-    this.machineState.template.refreshOptions(e.target.value);
+    this.machineState.template.refreshOptions(e.target.value, this.machine.boxedValue);
   }
 
   focus () {

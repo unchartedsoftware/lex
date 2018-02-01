@@ -5,7 +5,7 @@ import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 const language = Lex.from('field', OptionState, {
   name: 'Choose a field to search',
-  options: function () {
+  options: function (hint, context) { // eslint-disable-line no-unused-vars
     return new Promise((resolve) => {
       resolve([
         new OptionStateOption('Name', {type: 'string'}),
