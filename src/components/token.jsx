@@ -18,6 +18,7 @@ export class Token extends Component {
       stateArray: [],
       tokenXIcon: '&times',
       multivalueDelimiter: 'Comma',
+      multivaluePasteDelimiter: ',',
       requestFocus: () => {},
       requestBlur: () => {},
       requestEdit: () => {},
@@ -43,6 +44,7 @@ export class Token extends Component {
       builders,
       tokenXIcon = '&times',
       multivalueDelimiter = 'Comma',
+      multivaluePasteDelimiter = ',',
       requestRemoval = () => {},
       requestFocus = () => {},
       requestBlur = () => {},
@@ -97,6 +99,11 @@ export class Token extends Component {
     if (multivalueDelimiter !== this.state.multivalueDelimiter) {
       this.setState({
         multivalueDelimiter: multivalueDelimiter
+      });
+    }
+    if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {
+      this.setState({
+        multivaluePasteDelimiter: multivaluePasteDelimiter
       });
     }
     if (requestTransition !== this.state.requestTransition) {
@@ -330,7 +337,7 @@ export class Token extends Component {
     }
   }
 
-  render (props, {active, flash, suggestion, machine, focused, multivalueDelimiter}) {
+  render (props, {active, flash, suggestion, machine, focused, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
       <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''}`} onClick={this.requestEdit}>
         {this.icon}
@@ -352,6 +359,7 @@ export class Token extends Component {
             blank={this.isBlank}
             focused={active && s === machine.state && focused}
             multivalueDelimiter={multivalueDelimiter}
+            multivaluePasteDelimiter={multivaluePasteDelimiter}
           />);
         })}
         {this.addButton}

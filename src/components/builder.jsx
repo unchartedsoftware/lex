@@ -17,6 +17,7 @@ export class Builder extends Component {
       valid: true,
       readOnly: false,
       multivalueDelimiter: 'Comma',
+      multivaluePasteDelimiter: ',',
       requestFocus: () => {},
       requestBlur: () => {},
       requestTransition: () => {},
@@ -98,6 +99,7 @@ export class Builder extends Component {
       blank,
       focused,
       multivalueDelimiter = 'Comma',
+      multivaluePasteDelimiter = ',',
       requestFocus = () => {},
       requestBlur = () => {},
       requestCancel = () => {},
@@ -154,6 +156,11 @@ export class Builder extends Component {
     if (multivalueDelimiter !== this.state.multivalueDelimiter) {
       this.setState({
         multivalueDelimiter: multivalueDelimiter
+      });
+    }
+    if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {
+      this.setState({
+        multivaluePasteDelimiter: multivaluePasteDelimiter
       });
     }
     if (requestFocus !== this.state.requestFocus) {

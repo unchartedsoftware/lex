@@ -51,7 +51,8 @@ const lex = new Lex({
   language: language,
   defaultValue: [],
   tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>',
-  multivalueDelimiter: 'Comma' // this is the default value
+  multivalueDelimiter: 'Comma', // this is the default value
+  multivaluePasteDelimiter: ',' // this is the default value
 });
 
 lex.render(document.getElementById('LexContainer'));

@@ -23,6 +23,7 @@ export class SearchBar extends Component {
       flashActive: false,
       tokenXIcon: '&times',
       multivalueDelimiter: 'Comma',
+      multivaluePasteDelimiter: ',',
       onQueryChanged: () => {},
       onSuggestionsChanged: () => {},
       onValidityChanged: () => {},
@@ -41,6 +42,7 @@ export class SearchBar extends Component {
       proxiedEvents,
       tokenXIcon = '&times;',
       multivalueDelimiter = 'Comma',
+      multivaluePasteDelimiter = ',',
       onQueryChanged = () => {},
       onSuggestionsChanged = () => {},
       onValidityChanged = () => {},
@@ -96,6 +98,11 @@ export class SearchBar extends Component {
     if (multivalueDelimiter !== this.state.multivalueDelimiter) {
       this.setState({
         multivalueDelimiter: multivalueDelimiter
+      });
+    }
+    if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {
+      this.setState({
+        multivaluePasteDelimiter: multivaluePasteDelimiter
       });
     }
     if (onStartToken !== this.state.onStartToken) {
@@ -182,6 +189,7 @@ export class SearchBar extends Component {
         flash={this.state.flashActive}
         tokenXIcon={this.state.tokenXIcon}
         multivalueDelimiter={this.state.multivalueDelimiter}
+        multivaluePasteDelimiter={this.state.multivaluePasteDelimiter}
         machine={activeMachine}
         builders={builders}
         requestFocus={this.focus}
@@ -217,6 +225,7 @@ export class SearchBar extends Component {
               machineState={activeMachine.state}
               ref={(a) => { this.assistant = a; }}
               multivalueDelimiter={this.state.multivalueDelimiter}
+              multivaluePasteDelimiter={this.searchBox.multivaluePasteDelimiter}
               requestTransition={this.transition}
               requestArchive={this.archive}
               requestUnarchive={this.unarchive}
@@ -424,17 +433,17 @@ export class SearchBar extends Component {
     this.state.onSuggestionsChanged(this.state.suggestions, oldSuggestionValues, newUnboxedValues, oldUnboxedValues);
   }
 
-  render (props, {active, focused, tokenValues, suggestions, builders, machineTemplate, activeMachine, tokenXIcon, multivalueDelimiter}) {
+  render (props, {active, focused, tokenValues, suggestions, builders, machineTemplate, activeMachine, tokenXIcon, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
       <div className={'lex-box form-control' + (active ? ' active' : '') + (focused ? ' focused' : '')} onKeyDown={this.onKeyDown} onClick={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         {
           tokenValues.map((v, i) => {
-            return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} />;
+            return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} />;
           })
         }
         {
           suggestions.map((v, j) => {
-            return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeSuggestion} requestAddSuggestion={this.addSuggestion} idx={j} suggestion />;
+            return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeSuggestion} requestAddSuggestion={this.addSuggestion} idx={j} suggestion />;
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }
