@@ -17,6 +17,7 @@ export class Token extends Component {
       builders: undefined,
       stateArray: [],
       tokenXIcon: '&times',
+      multivalueDelimiter: 'Comma',
       requestFocus: () => {},
       requestBlur: () => {},
       requestEdit: () => {},
@@ -41,6 +42,7 @@ export class Token extends Component {
       machine,
       builders,
       tokenXIcon = '&times',
+      multivalueDelimiter = 'Comma',
       requestRemoval = () => {},
       requestFocus = () => {},
       requestBlur = () => {},
@@ -90,6 +92,11 @@ export class Token extends Component {
     if (tokenXIcon !== this.state.tokenXIcon) {
       this.setState({
         tokenXIcon: tokenXIcon
+      });
+    }
+    if (multivalueDelimiter !== this.state.multivalueDelimiter) {
+      this.setState({
+        multivalueDelimiter: multivalueDelimiter
       });
     }
     if (requestTransition !== this.state.requestTransition) {
@@ -323,7 +330,7 @@ export class Token extends Component {
     }
   }
 
-  render (props, {active, flash, suggestion, machine, focused}) {
+  render (props, {active, flash, suggestion, machine, focused, multivalueDelimiter}) {
     return (
       <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''}`} onClick={this.requestEdit}>
         {this.icon}
@@ -343,7 +350,9 @@ export class Token extends Component {
             validityChanged={this.state.onValidityChanged}
             readOnly={!active || s !== machine.state}
             blank={this.isBlank}
-            focused={active && s === machine.state && focused} />);
+            focused={active && s === machine.state && focused}
+            multivalueDelimiter={multivalueDelimiter}
+          />);
         })}
         {this.addButton}
         <button type='button' onClick={this.requestRemoval} className='btn btn-xs btn-link token-remove' aria-label='Close'>
