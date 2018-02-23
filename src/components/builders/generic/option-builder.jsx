@@ -126,10 +126,6 @@ export class OptionBuilder extends Builder {
       this.setState({
         typedText: newValue.displayKey
       });
-    } else {
-      this.setState({
-        typedText: ''
-      });
     }
   }
 
