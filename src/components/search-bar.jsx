@@ -119,19 +119,30 @@ export class SearchBar extends Component {
     }
   }
 
-  set value (newValue) {
+  async setValue (newValue) {
     const oldQueryValues = this.state.tokenValues;
     this.blur();
+    const tokens = await Promise.all(newValue.map(v => {
+      const machine = new TokenStateMachine(this.state.machineTemplate);
+      return machine.bindValues(v, true).then(() => machine.value);
+    }));
     this.setState({
-      tokenValues: newValue.map(v => new TokenStateMachine(this.state.machineTemplate, v).value) // box incoming values
+      tokenValues: tokens
     });
     this.state.activeMachine.reset();
     this.queryChanged(oldQueryValues);
   }
 
-  set suggestions (newSuggestions) {
+  async setSuggestions (newSuggestions) {
     const oldSuggestions = this.state.suggestions;
-    this.setState({suggestions: newSuggestions.map(v => new TokenStateMachine(this.state.machineTemplate, v).value)}); // box incoming values
+    this.blur();
+    const suggestions = await Promise.all(newSuggestions.map((v) => {
+      const machine = new TokenStateMachine(this.state.machineTemplate);
+      return machine.bindValues(v, true).then(() => machine.value);
+    }));
+    this.setState({
+      suggestions: suggestions
+    });
     this.suggestionsChanged(oldSuggestions);
   }
 

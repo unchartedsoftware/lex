@@ -137,7 +137,7 @@ export class OptionState extends StateTemplate {
    * @returns {OptionStateOption} An `OptionStateOption` instance.
    */
   boxValue (key) {
-    const matches = this.options.filter(o => o.displayKey.toLowerCase() === key.toLowerCase());
+    const matches = this.options.filter(o => o.displayKey.toLowerCase() === String(key).toLowerCase());
     if (matches.length > 0) {
       return matches[0];
     } else if (this.allowUnknown) {
@@ -166,6 +166,17 @@ export class OptionState extends StateTemplate {
   }
 
   /**
+   * Perform any asynchronuos operations required to initialize this `State`.
+   *
+   * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
+   * @returns {Promise} A `Promise` which resolves when initialize completes successfully, rejecting otherwise.
+   */
+  async initialize (context = []) {
+    await super.initialize();
+    await this.refreshOptions('', context);
+  }
+
+  /**
    * Can be called by a child class to trigger a refresh of options based on a hint (what the
    * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.options`.
    *
@@ -175,7 +186,7 @@ export class OptionState extends StateTemplate {
    */
   refreshOptions (hint = '', context = []) {
     if (_refreshOptions.has(this)) {
-      _refreshOptions.get(this)(hint, context);
+      return _refreshOptions.get(this)(hint, context);
     }
   }
 }

@@ -121,6 +121,17 @@ export class StateTemplate extends EventEmitter {
   }
 
   /**
+   * Perform any asynchronuos operations required to initialize this `State`.
+   * Override in subclasses to add asynchronous functionality to a `State`.
+   *
+   * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
+   * @returns {Promise} A `Promise` which resolves when initialize completes successfully, rejecting otherwise.
+   */
+  async initialize (context = []) { // eslint-disable-line no-unused-vars
+    // override
+  }
+
+  /**
    * Transform a user-supplied value into an internal representation. A no-op by default.
    *
    * @param {string} userVal - The user-supplied value.
@@ -238,6 +249,7 @@ export class State {
   get isTerminal () { return this.template.isTerminal; }
   get isReadOnly () { return this.template.isReadOnly; }
   get isMultivalue () { return this.template.isMultivalue; }
+  initialize (...args) { return this.template.initialize(...args); }
   boxValue (...args) { return this.template.boxValue(...args); }
   unboxValue (...args) { return this.template.unboxValue(...args); }
 

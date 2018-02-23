@@ -10,7 +10,7 @@ const _currentState = new WeakMap();
  *
  * @private
  * @param {StateTemplate} rootStateTemplate - The DAG describing the states for this state machine.
- * @param {Object | undefined} values - A optional array of initial (boxed) values to apply to the machine's states (applied from the root state onward). If any value is an array, all but the final value are added to the `State` archive.
+ * @param {Object | undefined} values - A optional array of (boxed) values to apply to the machine's states (applied from the root state onward). If any value is an array, all but the final value are added to the `State` archive.
  */
 export class TokenStateMachine extends EventEmitter {
   constructor (rootStateTemplate, values) {
@@ -19,7 +19,7 @@ export class TokenStateMachine extends EventEmitter {
     const root = rootStateTemplate.getInstance();
     _rootState.set(this, root);
     _currentState.set(this, root);
-    this.bindValues(values);
+    this.bindValues(values, true);
   }
 
   /**
@@ -36,35 +36,46 @@ export class TokenStateMachine extends EventEmitter {
     return _currentState.get(this);
   }
 
-  bindValues (values) {
+  /**
+   * Overwrite this machine with the given values, in sequence. If `values` is `undefined`, this is equivalent to `this.reset()`.
+   *
+   * @param {Object | undefined} values - A optional array of (boxed) values to apply to the machine's states (applied from the root state onward). If any value is an array, all but the final value are added to the `State` archive.
+   * @param {boolean} finalTransition - Whether or not to apply the final transition.
+   */
+  async bindValues (values, finalTransition = false) {
     this.reset();
     // bind to states
     if (values !== undefined) {
       const copy = Object.assign(Object.create(null), values);
       while (Object.keys(copy).length > 0) {
+        await this.state.initialize(this.boxedValue);
         const v = copy[this.state.vkey];
         if (v === undefined) {
           break; // we're missing a value for the current state, so break out.
         } else if (Array.isArray(v)) {
           v.forEach(x => {
-            if (typeof x === 'string') {
-              this.state.unboxedValue = x;
-            } else {
+            if (typeof x === 'object') {
               this.state.value = x;
+            } else {
+              this.state.unboxedValue = x;
             }
             this.state.archiveValue();
           });
           this.state.unarchiveValue(); // make the last value the "active" one
-        } else if (typeof v === 'string') {
-          this.state.unboxedValue = v;
-        } else {
+        } else if (typeof v === 'object') {
           this.state.value = v;
+        } else {
+          this.state.unboxedValue = v;
         }
         delete copy[this.state.vkey]; // we're done with this value
-        try {
-          this.transition();
-        } catch (err) {
-          break; // the value for this state is invalid, so break out.
+        // if there's more values, transition
+        if (Object.keys(copy).length > 0 || finalTransition) {
+          try {
+            this.transition();
+          } catch (err) {
+            console.error(err);
+            throw err; // the value for this state is invalid, so break out.
+          }
         }
       }
     }
