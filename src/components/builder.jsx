@@ -58,17 +58,11 @@ export class Builder extends Component {
   }
 
   /**
-   * If overidden, must be called via `super.componentDidUpdate()`.
-   */
-  componentDidUpdate () {
-    this.connectListeners();
-  }
-
-  /**
    * If overidden, must be called via `super.componentWillMount()`.
    */
   componentWillMount () {
     this.processProps(this.props);
+    this.connectListeners();
   }
 
   /**

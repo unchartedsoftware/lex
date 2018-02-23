@@ -60,7 +60,7 @@ const _suggestionLimit = new WeakMap();
  * - `on('options changed', (newOptions, oldOptions) => {})` when the internal list of options changes.
  *
  * @param {Object} config - A configuration object. Inherits all options from `StateTemplate`, and adds the following:
- * @param {Option[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them.
+ * @param {Option[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If an async function is supplied, be sure to call refreshOptions() from the associated builder before it mounts to ensure proper presentation/validation.
  * @param {boolean | undefined} config.allowUnknown - Allow user to enter unknown options by entering custom values. Defaults to false.
  * @param {number | undefined} config.suggestionLimit - A limit on the number of options that will be shown at one time. Defaults to 10.
  */
@@ -89,7 +89,6 @@ export class OptionState extends StateTemplate {
           throw err;
         }
       });
-      this.refreshOptions();
     }
     _allowUnknown.set(this, config.allowUnknown);
     _suggestionLimit.set(this, config.suggestionLimit);
@@ -157,6 +156,13 @@ export class OptionState extends StateTemplate {
   unboxValue (option) {
     if (option === undefined || option === null) return null;
     return option.displayKey;
+  }
+
+  /**
+   * @returns {boolean} - Returns true if this `OptionState` retrieves options asynchronously. False otherwise.
+   */
+  get hasAsyncOptions () {
+    _refreshOptions.has(this);
   }
 
   /**

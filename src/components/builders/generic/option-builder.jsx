@@ -33,13 +33,16 @@ export class OptionBuilder extends Builder {
     this.machineState.on('preview value changed', this.onPreviewValueChanged);
   }
 
+  componentWillMount () {
+    super.componentWillMount();
+    this.machineState.template.refreshOptions('', this.machine.boxedValue);
+  }
+
   processProps (props) {
     const { machineState } = props;
-    if (machineState !== this.state.machineState) {
-      this.setState({
-        typedText: machineState.unboxedValue
-      });
-    }
+    this.setState({
+      typedText: machineState.unboxedValue ? machineState.unboxedValue : ''
+    });
     return super.processProps(props);
   }
 
@@ -99,7 +102,7 @@ export class OptionBuilder extends Builder {
   @bind
   handleKeyUp (e) {
     this.unboxedValue = e.target.value;
-    this.machineState.template.refreshOptions(e.target.value, this.machine.boxedValue);
+    if (this.machineState.template.hasAsyncOptions) this.machineState.template.refreshOptions(e.target.value, this.machine.boxedValue);
   }
 
   focus () {
