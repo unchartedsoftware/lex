@@ -126,13 +126,13 @@ export class SearchBar extends Component {
       const machine = new TokenStateMachine(this.state.machineTemplate);
       return machine.bindValues(v, false).then(() => machine.value);
     }));
+    this.state.activeMachine.reset();
     this.setState({
       tokenValues: tokens,
       focused: false,
       active: false,
       editing: false
     });
-    this.state.activeMachine.reset();
     this.queryChanged(oldQueryValues);
   }
 
