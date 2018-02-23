@@ -162,7 +162,7 @@ export class OptionState extends StateTemplate {
    * @returns {boolean} - Returns true if this `OptionState` retrieves options asynchronously. False otherwise.
    */
   get hasAsyncOptions () {
-    _refreshOptions.has(this);
+    return _refreshOptions.has(this);
   }
 
   /**
