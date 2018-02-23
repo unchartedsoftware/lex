@@ -104,7 +104,9 @@ export class OptionBuilder extends Builder {
   @bind
   handleKeyUp (e) {
     this.unboxedValue = e.target.value;
-    if (this.machineState.template.hasAsyncOptions) this.machineState.template.refreshOptions(e.target.value, this.machine.boxedValue);
+    if (this.machineState.template.hasAsyncOptions) {
+      this.machineState.template.refreshOptions(e.target.value, this.machine.boxedValue);
+    }
   }
 
   focus () {
