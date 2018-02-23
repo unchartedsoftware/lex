@@ -220,7 +220,7 @@ export class StateTemplate extends EventEmitter {
  * for a new value entry to take place. The top archived value may also
  * be moved back to replace the current value.
  *
- * This class provides consume-only access to its `StateTemplate`'s  `EventEmitter`, exposing the following events:
+ * This class is an `EventEmitter`, exposing the following events:
  * - `on('value changed', (newVal, oldVal) => {})` when the internal value changes.
  * - `on('preview value changed', (newVal, oldVal) => {})` when the internal preview value changes.
  * - `on('unboxed value change attempted', (newUnboxedVal, oldUnboxedVal))` when a user attempts to change the unboxed value. If it cannot be boxed, it may not trigger `value changed`.
@@ -228,8 +228,9 @@ export class StateTemplate extends EventEmitter {
  * @param {StateTemplate} template - The template for this `State`.
  * @param {State | undefined} parent - The parent `State` (if any).
  */
-export class State {
+export class State extends EventEmitter {
   constructor (template, parent) {
+    super();
     _parent.set(this, parent);
     _template.set(this, template);
     _value.set(this, template.defaultValue);
@@ -238,9 +239,6 @@ export class State {
   }
 
   get template () { return _template.get(this); }
-  on () { return this.template.on(...arguments); }
-  once () { return this.template.once(...arguments); }
-  removeListener () { return this.template.removeListener(...arguments); }
   get parent () { return _parent.get(this); }
   get name () { return this.template.name; }
   get vkey () { return this.template.vkey; }
@@ -319,7 +317,7 @@ export class State {
       const oldVal = this.value;
       const oldUnboxedVal = this.unboxedValue;
       _value.set(this, newVal);
-      this.template.emit('value changed', newVal, oldVal, this.unboxedValue, oldUnboxedVal);
+      this.emit('value changed', newVal, oldVal, this.unboxedValue, oldUnboxedVal);
     }
   }
 
@@ -356,7 +354,7 @@ export class State {
    * @param {any} newUnboxedVal - Set a new (unboxed) value for this `State`.
    */
   set unboxedValue (newUnboxedVal) {
-    this.template.emit('unboxed value change attempted', newUnboxedVal, this.unboxedValue);
+    this.emit('unboxed value change attempted', newUnboxedVal, this.unboxedValue);
     this.value = this.boxValue(newUnboxedVal);
   }
 
@@ -396,7 +394,7 @@ export class State {
     const oldPreviewVal = this.previewValue;
     const oldUnboxedPreviewVal = this.unboxedPreviewValue;
     _previewValue.set(this, boxedValue);
-    this.template.emit('preview value changed', boxedValue, oldPreviewVal, this.unboxedPreviewValue, oldUnboxedPreviewVal);
+    this.emit('preview value changed', boxedValue, oldPreviewVal, this.unboxedPreviewValue, oldUnboxedPreviewVal);
   }
 
   /**
@@ -453,7 +451,7 @@ export class State {
     this.archive.push(this.value);
     this.value = this.defaultValue;
     this.previewValue = null;
-    this.template.emit('value changed', this.value, oldVal, this.unboxedValue, oldUnboxedVal);
+    this.emit('value changed', this.value, oldVal, this.unboxedValue, oldUnboxedVal);
   }
 
   /**
@@ -463,7 +461,7 @@ export class State {
     const oldVal = this.value;
     const oldUnboxedVal = this.unboxedValue;
     this.value = this.archive.pop();
-    this.template.emit('value changed', this.value, oldVal, this.unboxedValue, oldUnboxedVal);
+    this.emit('value changed', this.value, oldVal, this.unboxedValue, oldUnboxedVal);
   }
 
   /**
@@ -473,6 +471,6 @@ export class State {
    */
   removeArchivedValue (idx) {
     this.archive.splice(idx, 1);
-    this.template.emit('value changed', this.value, this.value, this.unboxedValue, this.unboxedValue);
+    this.emit('value changed', this.value, this.value, this.unboxedValue, this.unboxedValue);
   }
 }

@@ -68,7 +68,7 @@ export class OptionAssistant extends Assistant {
   connectListeners () {
     super.connectListeners();
     if (this.machineState) {
-      this.machineState.on('options changed', this.onOptionsChanged);
+      this.machineState.template.on('options changed', this.onOptionsChanged);
       this.machineState.on('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
     }
   }
@@ -76,7 +76,7 @@ export class OptionAssistant extends Assistant {
   cleanupListeners () {
     super.cleanupListeners();
     if (this.machineState) {
-      this.machineState.removeListener('options changed', this.onOptionChanged);
+      this.machineState.template.removeListener('options changed', this.onOptionChanged);
       this.machineState.removeListener('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
     }
   }

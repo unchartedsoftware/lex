@@ -20,7 +20,7 @@ export class OptionBuilder extends Builder {
   cleanupListeners () {
     super.cleanupListeners();
     if (this.machineState) {
-      this.machineState.removeListener('options changed', this.onOptionsChanged);
+      this.machineState.template.removeListener('options changed', this.onOptionsChanged);
       this.machineState.removeListener('value changed', this.onValueChanged);
       this.machineState.removeListener('preview value changed', this.onPreviewValueChanged);
     }
@@ -29,7 +29,7 @@ export class OptionBuilder extends Builder {
   connectListeners () {
     super.connectListeners();
     if (this.machineState) {
-      this.machineState.on('options changed', this.onOptionsChanged);
+      this.machineState.template.on('options changed', this.onOptionsChanged);
       this.machineState.on('value changed', this.onValueChanged);
       this.machineState.on('preview value changed', this.onPreviewValueChanged);
     }
@@ -125,6 +125,10 @@ export class OptionBuilder extends Builder {
     } else if (newValue) {
       this.setState({
         typedText: newValue.displayKey
+      });
+    } else {
+      this.setState({
+        typedText: ''
       });
     }
   }
