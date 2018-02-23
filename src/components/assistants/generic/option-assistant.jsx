@@ -54,6 +54,7 @@ export class OptionAssistant extends Assistant {
 
   processProps (props) {
     const oldMachineState = this.machineState;
+    if (oldMachineState) oldMachineState.template.removeListener('options changed', this.onOptionsChanged);
     super.processProps(props);
     if (this.machineState !== oldMachineState) {
       this.setState({
@@ -63,12 +64,13 @@ export class OptionAssistant extends Assistant {
         suggestions: this.machineState.template.options.slice(0, this.machineState.template.suggestionLimit)
       });
     }
+    if (this.machineState) this.machineState.template.on('options changed', this.onOptionsChanged);
   }
 
   connectListeners () {
     super.connectListeners();
     if (this.machineState) {
-      this.machineState.template.on('options changed', this.onOptionsChanged);
+      // this.machineState.template.on('options changed', this.onOptionsChanged); // TODO not sure why this doesn't work here
       this.machineState.on('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
     }
   }
@@ -76,7 +78,7 @@ export class OptionAssistant extends Assistant {
   cleanupListeners () {
     super.cleanupListeners();
     if (this.machineState) {
-      this.machineState.template.removeListener('options changed', this.onOptionChanged);
+      // this.machineState.template.removeListener('options changed', this.onOptionChanged); // TODO not sure why this doesn't work here
       this.machineState.removeListener('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
     }
   }
