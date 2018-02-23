@@ -32,6 +32,7 @@ export class Builder extends Component {
 
   /**
    * If overidden, must be called via `super.cleanupListeners()`.
+   * Fires whenever the underlying machine or machine state changes.
    */
   cleanupListeners () {
     if (this.state.machine) {
@@ -42,6 +43,7 @@ export class Builder extends Component {
 
   /**
    * If overidden, must be called via `super.connectListeners()`.
+   * Fires whenever the underlying machine or machine state changes.
    */
   connectListeners () {
     if (this.state.machine) {
@@ -58,17 +60,11 @@ export class Builder extends Component {
   }
 
   /**
-   * If overidden, must be called via `super.componentDidUpdate()`.
-   */
-  componentDidUpdate () {
-    this.connectListeners();
-  }
-
-  /**
    * If overidden, must be called via `super.componentWillMount()`.
    */
   componentWillMount () {
     this.processProps(this.props);
+    this.connectListeners();
   }
 
   /**
@@ -77,7 +73,6 @@ export class Builder extends Component {
    * @param {Object} nextProps - Incoming properties.
    */
   componentWillReceiveProps (nextProps) {
-    this.cleanupListeners();
     this.processProps(nextProps);
   }
 
@@ -106,14 +101,18 @@ export class Builder extends Component {
       validityChanged = () => {}
     } = props;
     if (machine !== this.state.machine) {
+      this.cleanupListeners();
       this.setState({
         machine: machine
       });
+      this.connectListeners();
     }
     if (machineState !== this.state.machineState) {
+      this.cleanupListeners();
       this.setState({
         machineState: machineState
       });
+      this.connectListeners();
     }
     if (readOnly !== this.state.readOnly) {
       this.setState({

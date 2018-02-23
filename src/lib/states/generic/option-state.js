@@ -60,7 +60,7 @@ const _suggestionLimit = new WeakMap();
  * - `on('options changed', (newOptions, oldOptions) => {})` when the internal list of options changes.
  *
  * @param {Object} config - A configuration object. Inherits all options from `StateTemplate`, and adds the following:
- * @param {Option[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them.
+ * @param {Option[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If an async function is supplied, be sure to call refreshOptions() from the associated builder before it mounts to ensure proper presentation/validation.
  * @param {boolean | undefined} config.allowUnknown - Allow user to enter unknown options by entering custom values. Defaults to false.
  * @param {number | undefined} config.suggestionLimit - A limit on the number of options that will be shown at one time. Defaults to 10.
  */
@@ -89,7 +89,6 @@ export class OptionState extends StateTemplate {
           throw err;
         }
       });
-      this.refreshOptions();
     }
     _allowUnknown.set(this, config.allowUnknown);
     _suggestionLimit.set(this, config.suggestionLimit);
@@ -138,7 +137,7 @@ export class OptionState extends StateTemplate {
    * @returns {OptionStateOption} An `OptionStateOption` instance.
    */
   boxValue (key) {
-    const matches = this.options.filter(o => o.displayKey.toLowerCase() === key.toLowerCase());
+    const matches = this.options.filter(o => o.displayKey.toLowerCase() === String(key).toLowerCase());
     if (matches.length > 0) {
       return matches[0];
     } else if (this.allowUnknown) {
@@ -160,6 +159,24 @@ export class OptionState extends StateTemplate {
   }
 
   /**
+   * @returns {boolean} - Returns true if this `OptionState` retrieves options asynchronously. False otherwise.
+   */
+  get hasAsyncOptions () {
+    _refreshOptions.has(this);
+  }
+
+  /**
+   * Perform any asynchronuos operations required to initialize this `State`.
+   *
+   * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
+   * @returns {Promise} A `Promise` which resolves when initialize completes successfully, rejecting otherwise.
+   */
+  async initialize (context = []) {
+    await super.initialize();
+    await this.refreshOptions('', context);
+  }
+
+  /**
    * Can be called by a child class to trigger a refresh of options based on a hint (what the
    * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.options`.
    *
@@ -169,7 +186,7 @@ export class OptionState extends StateTemplate {
    */
   refreshOptions (hint = '', context = []) {
     if (_refreshOptions.has(this)) {
-      _refreshOptions.get(this)(hint, context);
+      return _refreshOptions.get(this)(hint, context);
     }
   }
 }

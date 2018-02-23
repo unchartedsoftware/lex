@@ -191,21 +191,18 @@ export class Token extends Component {
     this.cleanupListeners();
   }
 
-  componentDidUpdate () {
-    this.connectListeners();
-  }
-
   componentWillMount () {
     this.processProps(this.props);
-  }
-
-  componentDidMount () {
     this.connectListeners();
   }
 
   componentWillReceiveProps (nextProps) {
-    this.cleanupListeners();
+    const oldMachine = this.state.machine;
     this.processProps(nextProps);
+    if (this.state.machine !== oldMachine) {
+      this.cleanupListeners();
+      this.connectListeners();
+    }
   }
 
   @bind

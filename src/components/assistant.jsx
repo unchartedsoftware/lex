@@ -15,7 +15,7 @@ export class Assistant extends Builder {
   /*!
    * @private
    */
-  renderReadOnly (props, state) {
+  renderReadOnly (props, state) { // eslint-disable-line no-unused-vars
     // do nothing
   }
 
@@ -27,7 +27,7 @@ export class Assistant extends Builder {
    * @param {Event} e - The incoming event.
    * @returns {boolean} - Returns `true` iff the event was consumed by this `Assistant`.
    */
-  delegateEvent (e) {
+  delegateEvent (e) { // eslint-disable-line no-unused-vars
     // override in subclass - keyDown events coming from search-box. Return true if the event was consumed.
   }
 }
