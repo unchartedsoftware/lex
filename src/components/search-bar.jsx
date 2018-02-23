@@ -124,7 +124,7 @@ export class SearchBar extends Component {
     this.blur();
     const tokens = await Promise.all(newValue.map(v => {
       const machine = new TokenStateMachine(this.state.machineTemplate);
-      return machine.bindValues(v, true).then(() => machine.value);
+      return machine.bindValues(v, false).then(() => machine.value);
     }));
     this.setState({
       tokenValues: tokens
@@ -138,7 +138,7 @@ export class SearchBar extends Component {
     this.blur();
     const suggestions = await Promise.all(newSuggestions.map((v) => {
       const machine = new TokenStateMachine(this.state.machineTemplate);
-      return machine.bindValues(v, true).then(() => machine.value);
+      return machine.bindValues(v, false).then(() => machine.value);
     }));
     this.setState({
       suggestions: suggestions
