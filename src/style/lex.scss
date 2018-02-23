@@ -6,7 +6,7 @@ $lex-highlight-text-color: #fff !default;
 $lex-danger-highlight-color: #d9534f !default;
 $lex-danger-highlight-text-color: #fff !default;
 $lex-token-background: #ededed !default;
-$lex-token-color: #555;
+$lex-token-color: #555 !default;
 $lex-token-remove-button-color: lighten($lex-token-color, 45%) !default;
 $lex-token-remove-button-hover-color: darken($lex-token-remove-button-color, 15%) !default;
 $lex-token-border-color: darken($lex-token-background, 15%) !default;
