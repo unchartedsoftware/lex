@@ -19,7 +19,7 @@ export class TokenStateMachine extends EventEmitter {
     const root = rootStateTemplate.getInstance();
     _rootState.set(this, root);
     _currentState.set(this, root);
-    this.bindValues(values, true);
+    this.bindValues(values, false);
   }
 
   /**

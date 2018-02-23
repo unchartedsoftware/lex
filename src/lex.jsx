@@ -187,7 +187,7 @@ class Lex extends EventEmitter {
    */
   reset () {
     if (this.searchBar) {
-      this.searchBar.value = _defaultValue.get(this);
+      this.searchBar.setValue(_defaultValue.get(this));
     }
   }
 
