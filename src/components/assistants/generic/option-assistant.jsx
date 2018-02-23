@@ -54,7 +54,6 @@ export class OptionAssistant extends Assistant {
 
   processProps (props) {
     const oldMachineState = this.machineState;
-    this.cleanupListeners();
     super.processProps(props);
     if (this.machineState !== oldMachineState) {
       this.setState({
@@ -68,8 +67,10 @@ export class OptionAssistant extends Assistant {
 
   connectListeners () {
     super.connectListeners();
-    this.machineState.on('options changed', this.onOptionsChanged);
-    this.machineState.on('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
+    if (this.machineState) {
+      this.machineState.on('options changed', this.onOptionsChanged);
+      this.machineState.on('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
+    }
   }
 
   cleanupListeners () {
@@ -78,10 +79,6 @@ export class OptionAssistant extends Assistant {
       this.machineState.removeListener('options changed', this.onOptionChanged);
       this.machineState.removeListener('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
     }
-  }
-
-  componentWillUnmount () {
-    this.cleanupListeners();
   }
 
   delegateEvent (e) {

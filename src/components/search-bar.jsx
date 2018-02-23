@@ -212,6 +212,7 @@ export class SearchBar extends Component {
         <Portal into='body'>
           <div id='lex-assistant-box' className='lex-assistant-box' style={pos}>
             <Assistant
+              machine={activeMachine}
               machineState={activeMachine.state}
               ref={(a) => { this.assistant = a; }}
               multivalueDelimiter={this.state.multivalueDelimiter}

@@ -32,6 +32,7 @@ export class Builder extends Component {
 
   /**
    * If overidden, must be called via `super.cleanupListeners()`.
+   * Fires whenever the underlying machine or machine state changes.
    */
   cleanupListeners () {
     if (this.state.machine) {
@@ -42,6 +43,7 @@ export class Builder extends Component {
 
   /**
    * If overidden, must be called via `super.connectListeners()`.
+   * Fires whenever the underlying machine or machine state changes.
    */
   connectListeners () {
     if (this.state.machine) {
@@ -106,9 +108,11 @@ export class Builder extends Component {
       this.connectListeners();
     }
     if (machineState !== this.state.machineState) {
+      this.cleanupListeners();
       this.setState({
         machineState: machineState
       });
+      this.connectListeners();
     }
     if (readOnly !== this.state.readOnly) {
       this.setState({
