@@ -28,9 +28,11 @@ export class OptionBuilder extends Builder {
 
   connectListeners () {
     super.connectListeners();
-    this.machineState.on('options changed', this.onOptionsChanged);
-    this.machineState.on('value changed', this.onValueChanged);
-    this.machineState.on('preview value changed', this.onPreviewValueChanged);
+    if (this.machineState) {
+      this.machineState.on('options changed', this.onOptionsChanged);
+      this.machineState.on('value changed', this.onValueChanged);
+      this.machineState.on('preview value changed', this.onPreviewValueChanged);
+    }
   }
 
   componentWillMount () {

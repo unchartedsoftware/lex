@@ -50,10 +50,12 @@ export class SearchBar extends Component {
       onEndToken = () => {}
     } = props;
     if (machineTemplate !== this.state.machineTemplate) {
+      this.cleanupListeners();
       this.setState({
         machineTemplate: machineTemplate,
-        activeMachine: new TokenStateMachine(machineTemplate) // TODO how do we edit tokens?
+        activeMachine: new TokenStateMachine(machineTemplate)
       });
+      this.connectListeners();
     }
     if (builders !== this.state.builders) {
       this.setState({
@@ -121,9 +123,9 @@ export class SearchBar extends Component {
     const oldQueryValues = this.state.tokenValues;
     this.blur();
     this.setState({
-      tokenValues: newValue.map(v => new TokenStateMachine(this.state.machineTemplate, v).value), // box incoming values
-      activeMachine: new TokenStateMachine(this.state.machineTemplate)
+      tokenValues: newValue.map(v => new TokenStateMachine(this.state.machineTemplate, v).value) // box incoming values
     });
+    this.state.activeMachine.reset();
     this.queryChanged(oldQueryValues);
   }
 
@@ -139,18 +141,6 @@ export class SearchBar extends Component {
 
   componentWillReceiveProps (nextProps) {
     this.processProps(nextProps);
-  }
-
-  componentWillUnmount () {
-    this.cleanupListeners();
-  }
-
-  componentDidUpdate () {
-    this.connectListeners();
-  }
-
-  componentDidMount () {
-    this.connectListeners();
   }
 
   connectListeners () {
@@ -354,9 +344,9 @@ export class SearchBar extends Component {
     this.setState({
       editing: false,
       flashActive: false,
-      tokenValues: [...this.state.tokenValues, v],
-      activeMachine: new TokenStateMachine(this.state.machineTemplate)
+      tokenValues: [...this.state.tokenValues, v]
     });
+    this.state.activeMachine.reset();
     this.queryChanged(oldQueryValues);
     this.state.onEndToken();
     this.state.onStartToken();
@@ -368,9 +358,9 @@ export class SearchBar extends Component {
       this.setState({
         active: false,
         editing: false,
-        flashActive: false,
-        activeMachine: new TokenStateMachine(this.state.machineTemplate)
+        flashActive: false
       });
+      this.state.activeMachine.reset();
     } else {
       const oldQueryValues = this.state.tokenValues;
       this.setState({
@@ -383,12 +373,13 @@ export class SearchBar extends Component {
   @bind
   editToken (idx) {
     if (!this.state.active && idx >= 0) {
+      const toEdit = this.state.tokenValues[idx];
       this.setState({
         active: true,
         editing: this.state.tokenValues,
-        activeMachine: new TokenStateMachine(this.state.machineTemplate, this.state.tokenValues[idx]),
         tokenValues: [...this.state.tokenValues.slice(0, idx), ...this.state.tokenValues.slice(idx + 1)]
       });
+      this.state.activeMachine.bindValues(toEdit);
     } else if (this.state.active) {
       this.setState({
         flashActive: false

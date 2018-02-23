@@ -71,7 +71,6 @@ export class Builder extends Component {
    * @param {Object} nextProps - Incoming properties.
    */
   componentWillReceiveProps (nextProps) {
-    this.cleanupListeners();
     this.processProps(nextProps);
   }
 
@@ -100,9 +99,11 @@ export class Builder extends Component {
       validityChanged = () => {}
     } = props;
     if (machine !== this.state.machine) {
+      this.cleanupListeners();
       this.setState({
         machine: machine
       });
+      this.connectListeners();
     }
     if (machineState !== this.state.machineState) {
       this.setState({

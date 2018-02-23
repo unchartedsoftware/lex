@@ -19,6 +19,25 @@ export class TokenStateMachine extends EventEmitter {
     const root = rootStateTemplate.getInstance();
     _rootState.set(this, root);
     _currentState.set(this, root);
+    this.bindValues(values);
+  }
+
+  /**
+   * @returns {State} The root state of this `TokenStateMachine`.
+   */
+  get rootState () {
+    return _rootState.get(this);
+  }
+
+  /**
+   * @returns {State} The current state of this `TokenStateMachine`.
+   */
+  get state () {
+    return _currentState.get(this);
+  }
+
+  bindValues (values) {
+    this.reset();
     // bind to states
     if (values !== undefined) {
       const copy = Object.assign(Object.create(null), values);
@@ -51,20 +70,6 @@ export class TokenStateMachine extends EventEmitter {
     }
   }
 
-  /**
-   * @returns {State} The root state of this `TokenStateMachine`.
-   */
-  get rootState () {
-    return _rootState.get(this);
-  }
-
-  /**
-   * @returns {State} The current state of this `TokenStateMachine`.
-   */
-  get state () {
-    return _currentState.get(this);
-  }
-
   /*
    * @private
    */
@@ -88,7 +93,7 @@ export class TokenStateMachine extends EventEmitter {
   transition () {
     // validate current state value
     if (!this.state.isValid) {
-      const err = new StateTransitionError(`Cannot transition from invalid current state "${this.state.name}" with value: ${this.state.value}.`);
+      const err = new StateTransitionError(`Cannot transition from invalid current state "${this.state.name}" with value: ${this.state.unboxedValue}.`);
       this.emit('state change failed', err);
       throw err;
     } else if (this.state.isTerminal) {
