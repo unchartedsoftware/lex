@@ -66,6 +66,13 @@ lex.on('token end', (...args) => console.log('token end', ...args));
 window.clearQuery = function () {
   lex.reset();
 };
+window.setQuery = function () {
+  lex.setQuery([
+    {field: 'Name', relation: 'is like', value: 'Sean'},
+    {field: 'Income', relation: 'equals', value: 12},
+    {field: 'Keywords', value: ['Rob', 'Phil']}
+  ]);
+};
 window.setSuggestions = function () {
   lex.setSuggestions([{field: 'Name', relation: 'is like', value: 'Sean'}]);
 };
