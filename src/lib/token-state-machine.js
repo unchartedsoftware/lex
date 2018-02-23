@@ -28,7 +28,7 @@ export class TokenStateMachine extends EventEmitter {
           break; // we're missing a value for the current state, so break out.
         } else if (Array.isArray(v)) {
           v.forEach(x => {
-            if (typeof v === 'string') {
+            if (typeof x === 'string') {
               this.state.unboxedValue = x;
             } else {
               this.state.value = x;
