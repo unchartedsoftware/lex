@@ -47,6 +47,7 @@ const _options = new WeakMap();
 const _refreshOptions = new WeakMap();
 const _allowUnknown = new WeakMap();
 const _suggestionLimit = new WeakMap();
+const _suggestionCache = new WeakMap();
 
 /**
  * A state representing the selection of an option from a list of options.
@@ -189,9 +190,12 @@ export class OptionState extends StateTemplate {
    * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    * @returns {Promise} Resolves with the new list of options.
    */
-  refreshOptions (hint = '', context = []) {
+  async refreshOptions (hint = '', context = []) {
     if (_refreshOptions.has(this)) {
-      return _refreshOptions.get(this)(hint, context);
+      if (!_suggestionCache.has(this)) {
+        _suggestionCache.set(this, await _refreshOptions.get(this)(hint, context));
+      }
+      return _suggestionCache.get(this);
     }
   }
 }
