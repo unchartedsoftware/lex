@@ -29,10 +29,10 @@ export class OptionAssistant extends Assistant {
   }
 
   @bind
-  onUnboxedValueChangeAttempted (newUnboxedValue) {
-    const val = newUnboxedValue === undefined ? newUnboxedValue = '' : newUnboxedValue.toLowerCase();
+  onUnboxedValueChangeAttempted (newUnboxedValue = '') {
+    const val = newUnboxedValue === null ? newUnboxedValue = '' : newUnboxedValue.toLowerCase();
     this.setState({
-      unboxedValue: newUnboxedValue,
+      unboxedValue: newUnboxedValue.toLowerCase(),
       suggestions: this.state.options.filter(o => o.displayKey.toLowerCase().startsWith(val)).slice(0, this.machineState.template.suggestionLimit)
     });
   }
@@ -41,7 +41,10 @@ export class OptionAssistant extends Assistant {
   onOptionSelected (option) {
     this.machineState.unboxedValue = option.displayKey;
     if (this.machineState.isMultivalue) {
-      this.requestArchive();
+      const result = this.requestArchive();
+      if (result) {
+        this.machineState.unboxedValue = null;
+      }
     } else {
       this.requestTransition();
     }

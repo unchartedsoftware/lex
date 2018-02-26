@@ -64,12 +64,12 @@ export class SearchBar extends Component {
     }
     if (value !== this.state.tokenValues) {
       this.setState({
-        tokenValues: value.map(v => new TokenStateMachine(this.state.machineTemplate, v).value) // box incoming values
+        tokenValues: value.map(v => new TokenStateMachine(this.state.machineTemplate, v)) // box incoming values
       });
     }
     if (suggestions !== this.state.suggestions) {
       this.setState({
-        suggestions: suggestions.map(v => new TokenStateMachine(this.state.machineTemplate, v).value) // box incoming values
+        suggestions: suggestions.map(v => new TokenStateMachine(this.state.machineTemplate, v)) // box incoming values
       });
     }
     if (onQueryChanged !== this.state.onQueryChanged) {
@@ -123,8 +123,7 @@ export class SearchBar extends Component {
     const oldQueryValues = this.state.tokenValues;
     this.blur();
     const tokens = await Promise.all(newValue.map(v => {
-      const machine = new TokenStateMachine(this.state.machineTemplate);
-      return machine.bindValues(v, false).then(() => machine.value);
+      return new TokenStateMachine(this.state.machineTemplate, v);
     }));
     this.state.activeMachine.reset();
     this.setState({
@@ -140,8 +139,7 @@ export class SearchBar extends Component {
     const oldSuggestions = this.state.suggestions;
     this.blur();
     const suggestions = await Promise.all(newSuggestions.map((v) => {
-      const machine = new TokenStateMachine(this.state.machineTemplate);
-      return machine.bindValues(v, false).then(() => machine.value);
+      return new TokenStateMachine(this.state.machineTemplate, v);
     }));
     this.setState({
       suggestions: suggestions
@@ -270,8 +268,15 @@ export class SearchBar extends Component {
 
   @bind
   cancel () {
-    this.setState({focused: false, active: false});
-    this.state.onEndToken();
+    const wasEditing = this.state.editing;
+    this.state.activeMachine.reset();
+    if (wasEditing) {
+      this.setState({focused: false, active: false, editing: false, tokenValues: wasEditing});
+      setTimeout(() => this.blur()); // TODO this is a cheat. DO IT PROPERLY.
+    } else {
+      this.setState({focused: false, active: false, editing: false});
+      this.state.onEndToken();
+    }
   }
 
   @bind
@@ -359,7 +364,7 @@ export class SearchBar extends Component {
     this.setState({
       editing: false,
       flashActive: false,
-      tokenValues: [...this.state.tokenValues, v]
+      tokenValues: [...this.state.tokenValues, new TokenStateMachine(this.state.machineTemplate, v)]
     });
     this.state.activeMachine.reset();
     this.queryChanged(oldQueryValues);
@@ -394,7 +399,7 @@ export class SearchBar extends Component {
         editing: this.state.tokenValues,
         tokenValues: [...this.state.tokenValues.slice(0, idx), ...this.state.tokenValues.slice(idx + 1)]
       });
-      this.state.activeMachine.bindValues(toEdit);
+      this.state.activeMachine.bindValues(toEdit.value);
     } else if (this.state.active) {
       this.setState({
         flashActive: false
@@ -427,9 +432,9 @@ export class SearchBar extends Component {
 
   @bind
   queryChanged (oldQueryValues = []) {
-    const newUnboxedValues = this.state.tokenValues.map(bv => new TokenStateMachine(this.state.machineTemplate, bv).unboxedValue);
-    const oldUnboxedValues = oldQueryValues.map(bv => new TokenStateMachine(this.state.machineTemplate, bv).unboxedValue);
-    this.state.onQueryChanged(this.state.tokenValues, oldQueryValues, newUnboxedValues, oldUnboxedValues);
+    const newUnboxedValues = this.state.tokenValues.map(bv => bv.unboxedValue);
+    const oldUnboxedValues = oldQueryValues.map(bv => bv.unboxedValue);
+    this.state.onQueryChanged(this.state.tokenValues.map(t => t.value), oldQueryValues, newUnboxedValues, oldUnboxedValues);
   }
 
   @bind
@@ -439,17 +444,17 @@ export class SearchBar extends Component {
     this.state.onSuggestionsChanged(this.state.suggestions, oldSuggestionValues, newUnboxedValues, oldUnboxedValues);
   }
 
-  render (props, {active, focused, tokenValues, suggestions, builders, machineTemplate, activeMachine, tokenXIcon, multivalueDelimiter, multivaluePasteDelimiter}) {
+  render (props, {active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
       <div className={'lex-box form-control' + (active ? ' active' : '') + (focused ? ' focused' : '')} onKeyDown={this.onKeyDown} onClick={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         {
           tokenValues.map((v, i) => {
-            return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} />;
+            return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} focused={false} />;
           })
         }
         {
           suggestions.map((v, j) => {
-            return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={new TokenStateMachine(machineTemplate, v)} builders={builders} requestRemoval={this.removeSuggestion} requestAddSuggestion={this.addSuggestion} idx={j} suggestion />;
+            return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeSuggestion} requestAddSuggestion={this.addSuggestion} idx={j} suggestion />;
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }
