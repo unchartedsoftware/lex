@@ -6,13 +6,16 @@ import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 const language = Lex.from('field', OptionState, {
   name: 'Choose a field to search',
   options: function (hint, context) { // eslint-disable-line no-unused-vars
+    // This simulates a network call for options (your API should filter based on the hint/context)
     return new Promise((resolve) => {
-      resolve([
-        new OptionStateOption('Name', {type: 'string'}),
-        new OptionStateOption('Income', {type: 'number'}),
-        new OptionStateOption('Keywords', {type: 'multistring'}),
-        new OptionStateOption('Date', {type: 'datetime'})
-      ]);
+      setTimeout(() => {
+        resolve([
+          new OptionStateOption('Name', {type: 'string'}),
+          new OptionStateOption('Income', {type: 'number'}),
+          new OptionStateOption('Keywords', {type: 'multistring'}),
+          new OptionStateOption('Date', {type: 'datetime'})
+        ].filter(o => o.displayKey.startsWith(hint)));
+      }, 25);
     });
   },
   icon: (value) => {
@@ -72,6 +75,13 @@ lex.on('token end', (...args) => console.log('token end', ...args));
 // Hooks for demo buttons
 window.clearQuery = function () {
   lex.reset();
+};
+window.setQuery = function () {
+  lex.setQuery([
+    {field: 'Name', relation: 'is like', value: 'Sean'},
+    {field: 'Income', relation: 'equals', value: 12},
+    {field: 'Keywords', value: ['Rob', 'Phil']}
+  ]);
 };
 window.setSuggestions = function () {
   lex.setSuggestions([{field: 'Name', relation: 'is like', value: 'Sean'}]);

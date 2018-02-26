@@ -19,7 +19,7 @@ export class OptionAssistant extends Assistant {
   }
 
   @bind
-  onOptionsChange (newOptions) {
+  onOptionsChanged (newOptions) {
     this.setState({
       options: newOptions,
       unboxedValue: undefined,
@@ -53,11 +53,10 @@ export class OptionAssistant extends Assistant {
   }
 
   processProps (props) {
-    this.cleanupListeners();
+    const oldMachineState = this.machineState;
+    if (oldMachineState) oldMachineState.template.removeListener('options changed', this.onOptionsChanged);
     super.processProps(props);
-    if (this.machineState) {
-      this.machineState.on('options changed', this.onOptionsChange);
-      this.machineState.on('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
+    if (this.machineState !== oldMachineState) {
       this.setState({
         options: this.machineState.template.options,
         unboxedValue: undefined,
@@ -65,17 +64,23 @@ export class OptionAssistant extends Assistant {
         suggestions: this.machineState.template.options.slice(0, this.machineState.template.suggestionLimit)
       });
     }
+    if (this.machineState) this.machineState.template.on('options changed', this.onOptionsChanged);
   }
 
-  cleanupListeners () {
+  connectListeners () {
+    super.connectListeners();
     if (this.machineState) {
-      this.machineState.removeListener('options changed', this.onOptionChange);
-      this.machineState.removeListener('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
+      // this.machineState.template.on('options changed', this.onOptionsChanged); // TODO not sure why this doesn't work here
+      this.machineState.on('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
     }
   }
 
-  componentWillUnmount () {
-    this.cleanupListeners();
+  cleanupListeners () {
+    super.cleanupListeners();
+    if (this.machineState) {
+      // this.machineState.template.removeListener('options changed', this.onOptionChanged); // TODO not sure why this doesn't work here
+      this.machineState.removeListener('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
+    }
   }
 
   delegateEvent (e) {

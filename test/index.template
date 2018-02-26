@@ -14,6 +14,7 @@
     <div id="LexContainer"></div>
     <br/>
     <button class="btn btn-warning" onClick="clearQuery()">Clear Query</button>
+    <button class="btn btn-info" onClick="setQuery()">Set Query</button>
     <button class="btn btn-info" onClick="setSuggestions()">Set Suggestions</button>
     <button class="btn btn-info" onClick="focusSearchBar()">Focus</button>
   </body>
