@@ -271,9 +271,10 @@ export class SearchBar extends Component {
   @bind
   cancel () {
     const wasEditing = this.state.editing;
+    this.state.activeMachine.reset();
     if (wasEditing) {
-      this.state.activeMachine.reset();
       this.setState({focused: false, active: false, editing: false, tokenValues: wasEditing});
+      setTimeout(() => this.blur()); // TODO this is a cheat. DO IT PROPERLY.
     } else {
       this.setState({focused: false, active: false, editing: false});
       this.state.onEndToken();
