@@ -5,7 +5,7 @@ import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 const language = Lex.from('field', OptionState, {
   name: 'Choose a field to search',
-  options: function (hint, context) { // eslint-disable-line no-unused-vars
+  options: function (hint = '', context) { // eslint-disable-line no-unused-vars
     // This simulates a network call for options (your API should filter based on the hint/context)
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -13,7 +13,7 @@ const language = Lex.from('field', OptionState, {
           new OptionStateOption('Name', {type: 'string'}),
           new OptionStateOption('Income', {type: 'number'}),
           new OptionStateOption('Keywords', {type: 'multistring'})
-        ].filter(o => o.displayKey.startsWith(hint)));
+        ].filter(o => o.displayKey.toLowerCase().startsWith(hint.toLowerCase())));
       }, 25);
     });
   },
