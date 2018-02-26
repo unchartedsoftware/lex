@@ -322,12 +322,6 @@ export class Token extends Component {
     }
   }
 
-  @bind
-  requestCancel () {
-    this.state.machine.reset();
-    this.state.requestCancel();
-  }
-
   get addButton () {
     if (this.state.suggestion) {
       return <button className='token-action-add-suggestion' onClick={this.requestAddSuggestion}>ADD</button>;
@@ -350,7 +344,7 @@ export class Token extends Component {
             requestRewind={this.state.requestRewind}
             requestFocus={this.requestFocus}
             requestBlur={this.requestBlur}
-            requestCancel={this.requestCancel}
+            requestCancel={this.state.requestCancel}
             validityChanged={this.state.onValidityChanged}
             readOnly={!active || s !== machine.state}
             blank={this.isBlank}

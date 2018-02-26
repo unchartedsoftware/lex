@@ -394,7 +394,7 @@ export class SearchBar extends Component {
         editing: this.state.tokenValues,
         tokenValues: [...this.state.tokenValues.slice(0, idx), ...this.state.tokenValues.slice(idx + 1)]
       });
-      this.state.activeMachine.bindValues(toEdit);
+      this.state.activeMachine.bindValues(toEdit.value);
     } else if (this.state.active) {
       this.setState({
         flashActive: false
