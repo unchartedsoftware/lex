@@ -270,8 +270,14 @@ export class SearchBar extends Component {
 
   @bind
   cancel () {
-    this.setState({focused: false, active: false});
-    this.state.onEndToken();
+    const wasEditing = this.state.editing;
+    if (wasEditing) {
+      this.state.activeMachine.reset();
+      this.setState({focused: false, active: false, editing: false, tokenValues: wasEditing});
+    } else {
+      this.setState({focused: false, active: false, editing: false});
+      this.state.onEndToken();
+    }
   }
 
   @bind
