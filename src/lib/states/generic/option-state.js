@@ -112,7 +112,12 @@ export class OptionState extends StateTemplate {
     if (this.options !== newOptions) {
       const oldOptions = this.options;
       _options.set(this, newOptions);
-      this.emit('options changed', newOptions, oldOptions);
+      // only emit change event if the options actually changed
+      let changed = oldOptions.length !== newOptions.length;
+      for (let i = 0; !changed && i < oldOptions.length; i++) {
+        changed = oldOptions[i].key !== newOptions[i].key;
+      }
+      if (changed) this.emit('options changed', newOptions, oldOptions);
     }
   }
 
