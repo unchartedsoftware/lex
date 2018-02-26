@@ -39,8 +39,8 @@ export class DateTimeEntryState extends StateTemplate {
    * @returns {Date} A `Date` instance, or `null` if the `datestring` does not respect `this.format`.
    */
   boxValue (datestring) {
-    const result = moment(datestring, this.format, true).valueOf();
-    return isNaN(result) ? null : result;
+    const result = moment(datestring, this.format, true);
+    return isNaN(result.valueOf()) ? null : result.toDate();
   }
 
   /**

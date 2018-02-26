@@ -27,8 +27,10 @@ export class DateTimeEntryBuilder extends Builder {
 
   connectListeners () {
     super.connectListeners();
-    this.machineState.on('value changed', this.onValueChanged);
-    this.machineState.on('preview value changed', this.onPreviewValueChanged);
+    if (this.machineState) {
+      this.machineState.on('value changed', this.onValueChanged);
+      this.machineState.on('preview value changed', this.onPreviewValueChanged);
+    }
   }
 
   processProps (props) {
