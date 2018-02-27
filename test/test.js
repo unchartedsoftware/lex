@@ -1,7 +1,8 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, NumericEntryState, LabelState } from '../src/lex';
+import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, NumericEntryState, LabelState, DateTimeRelationState, DateTimeEntryState } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
+import '../node_modules/tiny-date-picker/tiny-date-picker.css';
 
 const language = Lex.from('field', OptionState, {
   name: 'Choose a field to search',
@@ -12,7 +13,8 @@ const language = Lex.from('field', OptionState, {
         resolve([
           new OptionStateOption('Name', {type: 'string'}),
           new OptionStateOption('Income', {type: 'number'}),
-          new OptionStateOption('Keywords', {type: 'multistring'})
+          new OptionStateOption('Keywords', {type: 'multistring'}),
+          new OptionStateOption('Date', {type: 'datetime'})
         ].filter(o => o.displayKey.toLowerCase().startsWith(hint.toLowerCase())));
       }, 25);
     });
@@ -26,6 +28,8 @@ const language = Lex.from('field', OptionState, {
         return '<span class="glyphicon glyphicon-usd" aria-hidden="true"></span>';
       case 'Keywords':
         return '<span class="glyphicon glyphicon-list" aria-hidden="true"></span>';
+      case 'Date':
+        return '<span class="glyphicon glyphicon-time" aria-hidden="true"></span>';
     }
   }
 }).branch(
@@ -47,6 +51,10 @@ const language = Lex.from('field', OptionState, {
       icon: () => '<span class="glyphicon glyphicon-usd" aria-hidden="true"></span><span class="glyphicon glyphicon-usd" aria-hidden="true"></span>',
       ...TransitionFactory.optionKeyIs('between')
     }).to(LabelState, {label: 'and'}).to('secondaryValue', NumericEntryState)
+  ),
+  Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime'})).branch(
+    Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIsNot('between')),
+    Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
   )
 );
 
