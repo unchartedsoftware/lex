@@ -2,6 +2,7 @@
 import { h } from 'preact';
 import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, NumericEntryState, LabelState, DateTimeRelationState, DateTimeEntryState } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
+import '../node_modules/tiny-date-picker/tiny-date-picker.css';
 
 const language = Lex.from('field', OptionState, {
   name: 'Choose a field to search',

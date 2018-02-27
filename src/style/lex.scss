@@ -217,10 +217,21 @@ div.lex-assistant-box {
   }
 
   div.assistant-body  {
+    .lex-dp-container {
+      background-color: #f5f5f5;
+    }
+    .dp-permanent {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
     &.assistant-left {
       width: 50%;
       float: left;
       border-right: 1px solid $lex-assistant-border-color;
+      .dp-permanent {
+        max-width: 100%;
+      }
     }
     &.assistant-right {
       width: 50%;

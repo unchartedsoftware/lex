@@ -19,6 +19,7 @@ import { LabelBuilder } from './components/builders/generic/label-builder';
 import { OptionBuilder } from './components/builders/generic/option-builder';
 import { OptionAssistant } from './components/assistants/generic/option-assistant';
 import { DateTimeEntryBuilder } from './components/builders/temporal/datetime-entry-builder';
+import { DateTimeEntryAssistant } from './components/assistants/temporal/datetime-entry-assistant';
 
 const _language = new WeakMap();
 const _builders = new WeakMap();
@@ -79,6 +80,7 @@ class Lex extends EventEmitter {
       .registerBuilder(LabelState, LabelBuilder)
       .registerAssistant(OptionState, OptionAssistant)
       .registerAssistant(TextEntryState, OptionAssistant)
+      .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant)
       .registerAssistant(NumericEntryState, OptionAssistant)
       .registerAssistant(TextRelationState, OptionAssistant)
       .registerAssistant(NumericRelationState, OptionAssistant)

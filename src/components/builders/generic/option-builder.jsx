@@ -110,7 +110,11 @@ export class OptionBuilder extends Builder {
   }
 
   focus () {
-    if (this.textInput) this.textInput.focus();
+    if (this.textInput) {
+      this.textInput.focus();
+      // move cursor to end of input
+      this.textInput.selectionStart = this.textInput.selectionEnd = this.textInput.value.length;
+    }
   }
 
   @bind

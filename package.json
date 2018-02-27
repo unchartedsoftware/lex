@@ -57,6 +57,7 @@
     "if-env": "1.0.0",
     "preact": "8.2.7",
     "moment": "2.20.1",
+    "tiny-date-picker": "3.1.8",
     "linkstate": "1.1.x",
     "wolfy87-eventemitter": "5.2.4",
     "preact-portal": "1.1.x",
@@ -78,6 +79,7 @@
   },
   "peerDependencies": {
     "preact": "8.x",
-    "moment": "2.x"
+    "moment": "2.x",
+    "tiny-date-picker": "3.x"
   }
 }

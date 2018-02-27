@@ -102,16 +102,18 @@ export class DateTimeEntryBuilder extends Builder {
   }
 
   focus () {
-    if (this.textInput) this.textInput.focus();
+    if (this.textInput) {
+      this.textInput.focus();
+      // move cursor to end of input
+      this.textInput.selectionStart = this.textInput.selectionEnd = this.textInput.value.length;
+    }
   }
 
   @bind
   onValueChanged (_1, _2, newUnboxedValue) {
-    if (newUnboxedValue) {
-      this.setState({
-        typedText: newUnboxedValue
-      });
-    }
+    this.setState({
+      typedText: newUnboxedValue !== null && newUnboxedValue !== undefined ? newUnboxedValue : ''
+    });
   }
 
   @bind
