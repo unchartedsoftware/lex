@@ -368,15 +368,18 @@ export class SearchBar extends Component {
   @bind
   onEndToken (v) {
     const oldQueryValues = this.state.tokenValues;
-    this.setState({
-      editing: false,
-      flashActive: false,
-      tokenValues: [...this.state.tokenValues, new TokenStateMachine(this.state.machineTemplate, v)]
+    const newMachine = new TokenStateMachine(this.state.machineTemplate);
+    newMachine.bindValues(v).then(() => {
+      this.setState({
+        editing: false,
+        flashActive: false,
+        tokenValues: [...this.state.tokenValues, newMachine]
+      });
+      this.state.activeMachine.reset();
+      this.queryChanged(oldQueryValues);
+      this.state.onEndToken();
+      this.state.onStartToken();
     });
-    this.state.activeMachine.reset();
-    this.queryChanged(oldQueryValues);
-    this.state.onEndToken();
-    this.state.onStartToken();
   }
 
   @bind
