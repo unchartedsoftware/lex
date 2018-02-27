@@ -139,6 +139,7 @@ export class OptionAssistant extends Assistant {
   }
 
   renderInteractive (props, {activeOption, suggestions}) {
+    if (!this.machineState.template.hasAsyncOptions && this.machineState.template.options.length === 0) return;
     return (
       <div className='assistant'>
         <div className='assistant-header'>
