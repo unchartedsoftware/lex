@@ -261,14 +261,16 @@ export class Token extends Component {
    */
   get icon () {
     let defaultIcon = '<span>&#128269;</span>';
-    let st = this.state.machine.state;
-    while (st !== undefined) {
-      const iconSuggestion = st.suggestIcon();
-      if (iconSuggestion !== undefined) {
-        defaultIcon = iconSuggestion;
-        break;
+    if (this.state.machine) {
+      let st = this.state.machine.state;
+      while (st !== undefined) {
+        const iconSuggestion = st.suggestIcon();
+        if (iconSuggestion !== undefined) {
+          defaultIcon = iconSuggestion;
+          break;
+        }
+        st = st.parent;
       }
-      st = st.parent;
     }
     return <span className='token-input token-icon' dangerouslySetInnerHTML={{__html: defaultIcon}} />;
   }

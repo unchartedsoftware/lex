@@ -79,6 +79,7 @@ export class TokenStateMachine extends EventEmitter {
         }
       }
     }
+    return this;
   }
 
   /*
