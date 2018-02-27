@@ -254,5 +254,7 @@ export {
   DateTimeEntryState,
   // UI components
   OptionBuilder,
-  OptionAssistant
+  OptionAssistant,
+  DateTimeEntryBuilder,
+  DateTimeEntryAssistant
 };
