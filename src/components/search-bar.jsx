@@ -218,7 +218,8 @@ export class SearchBar extends Component {
       const pos = {
         left: rect.left,
         top: rect.top + rect.height,
-        'min-width': rect.width
+        'min-width': rect.width,
+        'max-width': rect.width
       };
       return (
         <Portal into='body'>
@@ -229,11 +230,17 @@ export class SearchBar extends Component {
               ref={(a) => { this.assistant = a; }}
               multivalueDelimiter={this.state.multivalueDelimiter}
               multivaluePasteDelimiter={this.searchBox.multivaluePasteDelimiter}
+              requestFocus={this.focus}
+              requestBlur={this.blur}
+              requestCancel={this.cancel}
               requestTransition={this.transition}
               requestArchive={this.archive}
               requestUnarchive={this.unarchive}
               requestRemoveArchivedValue={this.removeArchivedValue}
               requestRewind={this.rewind}
+              requestRemoval={this.removeToken}
+              onEndToken={this.onEndToken}
+              onValidityChanged={this.state.onValidityChanged}
             />
           </div>
         </Portal>

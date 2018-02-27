@@ -43,6 +43,7 @@ module.exports = {
   },
   externals: {
     'preact': 'preact',
+    'moment': 'moment',
     'h': 'h'
   }
 };

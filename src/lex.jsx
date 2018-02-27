@@ -11,11 +11,15 @@ import { LabelState } from './lib/states/generic/label-state';
 import { OptionStateOption, OptionState } from './lib/states/generic/option-state';
 import { TextRelationState } from './lib/states/text/text-relation-state';
 import { NumericRelationState } from './lib/states/numeric/numeric-relation-state';
+import { DateTimeRelationState } from './lib/states/temporal/datetime-relation-state';
 import { TextEntryState } from './lib/states/text/text-entry-state';
 import { NumericEntryState } from './lib/states/numeric/numeric-entry-state';
+import { DateTimeEntryState } from './lib/states/temporal/datetime-entry-state';
 import { LabelBuilder } from './components/builders/generic/label-builder';
 import { OptionBuilder } from './components/builders/generic/option-builder';
 import { OptionAssistant } from './components/assistants/generic/option-assistant';
+import { DateTimeEntryBuilder } from './components/builders/temporal/datetime-entry-builder';
+import { DateTimeEntryAssistant } from './components/assistants/temporal/datetime-entry-assistant';
 
 const _language = new WeakMap();
 const _builders = new WeakMap();
@@ -71,12 +75,16 @@ class Lex extends EventEmitter {
       .registerBuilder(TextEntryState, OptionBuilder)
       .registerBuilder(NumericRelationState, OptionBuilder)
       .registerBuilder(NumericEntryState, OptionBuilder)
+      .registerBuilder(DateTimeRelationState, OptionBuilder)
+      .registerBuilder(DateTimeEntryState, DateTimeEntryBuilder)
       .registerBuilder(LabelState, LabelBuilder)
       .registerAssistant(OptionState, OptionAssistant)
       .registerAssistant(TextEntryState, OptionAssistant)
+      .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant)
       .registerAssistant(NumericEntryState, OptionAssistant)
       .registerAssistant(TextRelationState, OptionAssistant)
-      .registerAssistant(NumericRelationState, OptionAssistant);
+      .registerAssistant(NumericRelationState, OptionAssistant)
+      .registerAssistant(DateTimeRelationState, OptionAssistant);
     _proxiedEvents.set(this, new Map());
     _tokenXIcon.set(this, tokenXIcon);
     _multivalueDelimiterKey.set(this, multivalueDelimiterKey);
@@ -240,9 +248,13 @@ export {
   OptionStateOption,
   TextRelationState,
   NumericRelationState,
+  DateTimeRelationState,
   TextEntryState,
   NumericEntryState,
+  DateTimeEntryState,
   // UI components
   OptionBuilder,
-  OptionAssistant
+  OptionAssistant,
+  DateTimeEntryBuilder,
+  DateTimeEntryAssistant
 };

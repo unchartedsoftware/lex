@@ -5,13 +5,13 @@ import { Builder } from '../../builder';
 
 /**
  * A visual interaction mechanism for supplying values
- * to an `OptionState`. By default, this is registered as
- * the `Builder` for `OptionState`s.
+ * to an `DateTimeEntryState`. By default, this is registered as
+ * the `Builder` for `DateTimeEntryState`s.
  *
  * @example
- * lex.registerBuilder(OptionState, OptionBuilder)
+ * lex.registerBuilder(DateTimeEntryState, DateTimeEntryBuilder)
  */
-export class OptionBuilder extends Builder {
+export class DateTimeEntryBuilder extends Builder {
   constructor () {
     super();
     this.state.options = [];
@@ -20,7 +20,6 @@ export class OptionBuilder extends Builder {
   cleanupListeners () {
     super.cleanupListeners();
     if (this.machineState) {
-      this.machineState.template.removeListener('options changed', this.onOptionsChanged);
       this.machineState.removeListener('value changed', this.onValueChanged);
       this.machineState.removeListener('preview value changed', this.onPreviewValueChanged);
     }
@@ -29,22 +28,18 @@ export class OptionBuilder extends Builder {
   connectListeners () {
     super.connectListeners();
     if (this.machineState) {
-      this.machineState.template.on('options changed', this.onOptionsChanged);
       this.machineState.on('value changed', this.onValueChanged);
       this.machineState.on('preview value changed', this.onPreviewValueChanged);
     }
   }
 
-  componentWillMount () {
-    super.componentWillMount();
-    this.machineState.template.refreshOptions('', this.machine.boxedValue);
-  }
-
   processProps (props) {
     const { machineState } = props;
-    this.setState({
-      typedText: machineState.unboxedValue ? machineState.unboxedValue : ''
-    });
+    if (machineState !== this.state.machineState) {
+      this.setState({
+        typedText: machineState.unboxedValue
+      });
+    }
     return super.processProps(props);
   }
 
@@ -104,9 +99,6 @@ export class OptionBuilder extends Builder {
   @bind
   handleKeyUp (e) {
     this.unboxedValue = e.target.value;
-    if (this.machineState.template.hasAsyncOptions) {
-      this.machineState.template.refreshOptions(e.target.value, this.machine.boxedValue);
-    }
   }
 
   focus () {
@@ -118,21 +110,10 @@ export class OptionBuilder extends Builder {
   }
 
   @bind
-  onOptionsChanged (newOptions) {
-    this.setState({options: newOptions});
-  }
-
-  @bind
-  onValueChanged (newValue) {
-    if (this.machineState.template.allowUnknown) {
-      this.setState({
-        typedText: newValue ? newValue.displayKey : ''
-      });
-    } else if (newValue) {
-      this.setState({
-        typedText: newValue.displayKey
-      });
-    }
+  onValueChanged (_1, _2, newUnboxedValue) {
+    this.setState({
+      typedText: newUnboxedValue !== null && newUnboxedValue !== undefined ? newUnboxedValue : ''
+    });
   }
 
   @bind
@@ -142,29 +123,15 @@ export class OptionBuilder extends Builder {
     });
   }
 
-  @bind
-  onPaste (e) {
-    if (this.machineState.isMultivalue) {
-      e.preventDefault();
-      e.stopPropagation();
-      const clipboardData = (e.clipboardData || window.clipboardData).getData('Text');
-      const values = clipboardData.split(this.state.multivaluePasteDelimiter).map(e => e.trim());
-      values.forEach(v => {
-        this.machineState.unboxedValue = v;
-        this.requestArchive();
-      });
-    }
-  }
-
   renderReadOnly (props, state) {
     if (this.machineState.value) {
       if (this.machineState.isMultivalue && this.archive.length > 0) {
         return (
-          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey} & {this.archive.length} others</span>
+          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.unboxedValue} & {this.archive.length} others</span>
         );
       } else {
         return (
-          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey}</span>
+          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.unboxedValue}</span>
         );
       }
     } else {
@@ -183,6 +150,7 @@ export class OptionBuilder extends Builder {
             onKeyDown={this.handleKeyDown}
             onKeyUp={this.handleKeyUp}
             value={typedText}
+            placeholder={machineState.template.format}
             onInput={linkState(this, 'typedText')}
             onFocus={this.requestFocus}
             onBlur={this.requestBlur}
