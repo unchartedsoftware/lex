@@ -2,12 +2,23 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const fs = require('fs');
+
+const testFolder = path.resolve(__dirname, '../test');
 
 module.exports = {
   devtool: 'inline-source-map',
-  entry: './test/test.js',
+  entry: fs.readdirSync(testFolder)
+    .reduce((result, current) => {
+      if (current.indexOf('.js') < 0) {
+        return result;
+      }
+      const moduleName = current.replace('.js', '');
+      result[moduleName] = path.resolve(testFolder, current);
+      return result;
+    }, {}),
   output: {
-    filename: 'bundle.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, '../dist')
   },
   module: {
@@ -47,9 +58,6 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(['dist']),
-    new HtmlWebpackPlugin({
-      template: 'test/index.template'
-    }),
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin()
   ],
@@ -57,7 +65,7 @@ module.exports = {
     extensions: ['.js', '.jsx']
   },
   devServer: {
-    contentBase: './dist',
+    contentBase: [path.resolve(__dirname, '../test/public')],
     hot: true
   }
 };
