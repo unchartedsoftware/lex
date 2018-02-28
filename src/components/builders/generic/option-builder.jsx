@@ -157,14 +157,15 @@ export class OptionBuilder extends Builder {
   }
 
   renderReadOnly (props, state) {
+    const units = this.machineState.template.units !== undefined ? <span className='text-muted'> { this.machineState.template.units }</span> : '';
     if (this.machineState.value) {
       if (this.machineState.isMultivalue && this.archive.length > 0) {
         return (
-          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey} & {this.archive.length} others</span>
+          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey}{units} & {this.archive.length} others</span>
         );
       } else {
         return (
-          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey}</span>
+          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey}{units}</span>
         );
       }
     } else {
@@ -189,6 +190,7 @@ export class OptionBuilder extends Builder {
             onPaste={this.onPaste}
             ref={(input) => { this.textInput = input; }}
             disabled={readOnly} />
+          { machineState.template.units !== undefined ? <span className='token-input token-input-units text-muted'>{ machineState.template.units }</span> : '' }
         </span>
       </span>
     );
