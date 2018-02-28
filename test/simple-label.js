@@ -35,11 +35,11 @@ const language = Lex
     // to combine 2 number entry states with a label state between them
     Lex
       .from('heightFeet', NumericEntryState, {
-        name: 'feet'
+        units: "'"
       })
-      .to(LabelState, {label: "'"})
+      .to(LabelState, {label: 'and'})
       .to('heightInches', NumericEntryState, {
-        name: 'inches'
+        units: '"'
       })
   );
 
