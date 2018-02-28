@@ -71,20 +71,10 @@ class Lex extends EventEmitter {
     _builders.set(this, new StateBuilderFactory());
     _defaultValue.set(this, defaultQuery);
     _builders.get(this).registerBuilder(OptionState, OptionBuilder)
-      .registerBuilder(TextRelationState, OptionBuilder)
-      .registerBuilder(TextEntryState, OptionBuilder)
-      .registerBuilder(NumericRelationState, OptionBuilder)
-      .registerBuilder(NumericEntryState, OptionBuilder)
-      .registerBuilder(DateTimeRelationState, OptionBuilder)
       .registerBuilder(DateTimeEntryState, DateTimeEntryBuilder)
       .registerBuilder(LabelState, LabelBuilder)
       .registerAssistant(OptionState, OptionAssistant)
-      .registerAssistant(TextEntryState, OptionAssistant)
-      .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant)
-      .registerAssistant(NumericEntryState, OptionAssistant)
-      .registerAssistant(TextRelationState, OptionAssistant)
-      .registerAssistant(NumericRelationState, OptionAssistant)
-      .registerAssistant(DateTimeRelationState, OptionAssistant);
+      .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant);
     _proxiedEvents.set(this, new Map());
     _tokenXIcon.set(this, tokenXIcon);
     _multivalueDelimiterKey.set(this, multivalueDelimiterKey);
