@@ -46,6 +46,7 @@ export class OptionStateOption {
 const _options = new WeakMap();
 const _refreshOptions = new WeakMap();
 const _allowUnknown = new WeakMap();
+const _units = new WeakMap();
 const _suggestionLimit = new WeakMap();
 const _suggestionCache = new WeakMap();
 
@@ -64,6 +65,7 @@ const _suggestionCache = new WeakMap();
  * @param {Option[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If an async function is supplied, be sure to call refreshOptions() from the associated builder before it mounts to ensure proper presentation/validation.
  * @param {boolean | undefined} config.allowUnknown - Allow user to enter unknown options by entering custom values. Defaults to false.
  * @param {number | undefined} config.suggestionLimit - A limit on the number of options that will be shown at one time. Defaults to 10.
+ * @param {string} config.units - A textual label which represents "units" for the option state (will display to the right of the builder)
  */
 export class OptionState extends StateTemplate {
   constructor (config) {
@@ -91,6 +93,7 @@ export class OptionState extends StateTemplate {
         }
       });
     }
+    _units.set(this, config.units);
     _allowUnknown.set(this, config.allowUnknown);
     _suggestionLimit.set(this, config.suggestionLimit);
   }
@@ -134,6 +137,13 @@ export class OptionState extends StateTemplate {
    */
   get suggestionLimit () {
     return _suggestionLimit.get(this);
+  }
+
+  /**
+   * @returns {string | undefined} - Any specified label for "units" for this state.
+   */
+  get units () {
+    return _units.get(this);
   }
 
   /**

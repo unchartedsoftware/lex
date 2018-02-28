@@ -264,7 +264,9 @@ export class SearchBar extends Component {
 
   @bind
   blur () {
-    if (this.state.activeMachine.rootState.isDefault) {
+    if (this.state.editing) {
+      this.cancel();
+    } else if (this.state.activeMachine.rootState.isDefault) {
       const {focused, active} = this.state;
       this.setState({focused: false, active: false});
       if (focused !== this.state.focused || active !== this.state.active) {
@@ -458,7 +460,7 @@ export class SearchBar extends Component {
 
   render (props, {active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
-      <div className={'lex-box form-control' + (active ? ' active' : '') + (focused ? ' focused' : '')} onKeyDown={this.onKeyDown} onClick={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
+      <div className={'lex-box form-control' + (active ? ' active' : '') + (focused ? ' focused' : '')} onKeyDown={this.onKeyDown} onClick={this.activate} onFocus={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         {
           tokenValues.map((v, i) => {
             return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} focused={false} />;
