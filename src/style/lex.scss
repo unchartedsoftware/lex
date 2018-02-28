@@ -17,6 +17,7 @@ $lex-assistant-text-color: #333 !default;
 $lex-assistant-border-color: $lex-token-border-color !default;
 $lex-assistant-header-background: $lex-token-background !default;
 $lex-assistant-header-color: #8d8d8d !default;
+$lex-assistant-list-height: 200px !default;
 
 div.lex-box {
   min-height: 40px;
@@ -175,6 +176,9 @@ div.lex-assistant-box {
   ul {
     list-style-type: none;
     margin: 0; padding: 0;
+    max-height: $lex-assistant-list-height;
+    overflow: auto;
+
     li {
       margin: 0; padding: 0.5rem 1rem;
       em.pull-right {
@@ -217,6 +221,27 @@ div.lex-assistant-box {
   }
 
   div.assistant-body  {
+    position: relative;
+
+    .assistant-left, .assistant-right {
+      display: inline-block;
+      vertical-align: top;
+      width: 50%;
+
+      .dp-permanent {
+        max-width: 100%;
+      }
+    }
+
+    .assistant-left:after {
+      content: "";
+      border-right: 1px solid $lex-assistant-border-color;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+    }
+    
     .lex-dp-container {
       background-color: #f5f5f5;
     }
@@ -224,18 +249,6 @@ div.lex-assistant-box {
       width: 100%;
       max-width: 500px;
       margin: 0 auto;
-    }
-    &.assistant-left {
-      width: 50%;
-      float: left;
-      border-right: 1px solid $lex-assistant-border-color;
-      .dp-permanent {
-        max-width: 100%;
-      }
-    }
-    &.assistant-right {
-      width: 50%;
-      float: right;
     }
   }
 }

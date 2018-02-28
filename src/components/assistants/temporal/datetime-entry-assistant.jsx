@@ -91,7 +91,7 @@ export class DateTimeEntryAssistant extends Assistant {
   renderArchive () {
     if (this.machineState.isMultivalue) {
       return (
-        <div className='assistant-body assistant-right'>
+        <div className='assistant-right'>
           <div className='assistant-header'>Entered Values</div>
           <ul>
             {
@@ -113,11 +113,13 @@ export class DateTimeEntryAssistant extends Assistant {
             <strong>Tab</strong> to {this.machineState.isMultivalue ? 'progress' : 'select'}
           </span>
         </div>
-        <div className={this.machineState.isMultivalue ? 'assistant-body assistant-left' : 'assistant-body'}>
-          { this.machineState.isMultivalue && <div className='assistant-header'>Calendar</div>}
-          <div className='lex-dp-container' ref={(input) => { this.dateContainer = input; }} />
+        <div className='assistant-body'>
+          <div className={this.machineState.isMultivalue ? 'assistant-left' : ''}>
+            { this.machineState.isMultivalue && <div className='assistant-header'>Calendar</div>}
+            <div className='lex-dp-container' ref={(input) => { this.dateContainer = input; }} />
+          </div>
+          {this.renderArchive(props)}
         </div>
-        {this.renderArchive(props)}
       </div>
     );
   }
