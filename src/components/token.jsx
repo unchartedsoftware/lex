@@ -317,9 +317,9 @@ export class Token extends Component {
 
   @bind
   requestEdit (e) {
-    e.preventDefault();
-    e.stopPropagation();
     if (!this.state.active && this.state.requestEdit) {
+      e.preventDefault();
+      e.stopPropagation();
       this.state.requestEdit(this.state.idx);
     }
   }
@@ -332,7 +332,7 @@ export class Token extends Component {
 
   render (props, {active, flash, suggestion, machine, focused, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
-      <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''}`} onClick={this.requestEdit}>
+      <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''}`} onMouseDown={this.requestEdit}>
         {this.icon}
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.template.constructor);
