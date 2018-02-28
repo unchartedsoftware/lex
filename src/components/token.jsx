@@ -356,7 +356,7 @@ export class Token extends Component {
           />);
         })}
         {this.addButton}
-        <button type='button' onClick={this.requestRemoval} className='btn btn-xs btn-link token-remove' aria-label='Close'>
+        <button type='button' onMouseDown={this.requestRemoval} className='btn btn-xs btn-link token-remove' aria-label='Close'>
           {this.xicon}
         </button>
       </div>
