@@ -22,7 +22,8 @@ const language = Lex
         new OptionStateOption('First Name'),
         new OptionStateOption('Last Name')
       ].filter(optionMatchesHint);
-    }
+    },
+    icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
   })
   // Now that we have selected an option from the available list we need to provide target
   // states that we can transition to
@@ -34,7 +35,8 @@ const language = Lex
 
 // Now that we have a language defined we can initialize our lex instance
 const lex = new Lex({
-  language: language
+  language: language,
+  tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>',
 });
 
 // Render our search bar into our desired element
