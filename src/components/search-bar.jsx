@@ -264,7 +264,9 @@ export class SearchBar extends Component {
 
   @bind
   blur () {
-    if (this.state.activeMachine.rootState.isDefault) {
+    if (this.state.editing) {
+      this.cancel();
+    } else if (this.state.activeMachine.rootState.isDefault) {
       const {focused, active} = this.state;
       this.setState({focused: false, active: false});
       if (focused !== this.state.focused || active !== this.state.active) {
