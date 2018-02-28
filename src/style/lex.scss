@@ -17,7 +17,7 @@ $lex-assistant-text-color: #333 !default;
 $lex-assistant-border-color: $lex-token-border-color !default;
 $lex-assistant-header-background: $lex-token-background !default;
 $lex-assistant-header-color: #8d8d8d !default;
-$lex-assistant-list-height: 200px !default;
+$lex-assistant-list-height: 290px !default; // Approximately 10 items which is the default limit for option assistant
 
 div.lex-box {
   min-height: 40px;
