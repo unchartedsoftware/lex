@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { bind } from 'decko';
 import { Assistant } from '../../assistant';
 import TinyDatePicker from 'tiny-date-picker';
-import { toChar } from '../../../lib/keys';
+import { toChar } from '../../../lib/string-util';
 
 /**
  * A visual interaction mechanism for supplying values

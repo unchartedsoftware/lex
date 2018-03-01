@@ -96,9 +96,9 @@ export class Token extends Component {
         tokenXIcon: tokenXIcon
       });
     }
-    if (multivalueDelimiter !== this.state.multivalueDelimiter) {
+    if (parseInt(multivalueDelimiter) !== this.state.multivalueDelimiter) {
       this.setState({
-        multivalueDelimiter: multivalueDelimiter
+        multivalueDelimiter: parseInt(multivalueDelimiter)
       });
     }
     if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {

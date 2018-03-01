@@ -1,7 +1,8 @@
 import { h } from 'preact';
 import { bind } from 'decko';
 import { Assistant } from '../../assistant';
-import { UP_ARROW, DOWN_ARROW, TAB, ENTER, toChar } from '../../../lib/keys';
+import { UP_ARROW, DOWN_ARROW, TAB, ENTER } from '../../../lib/keys';
+import { toChar } from '../../../lib/string-util';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -101,7 +102,7 @@ export class OptionAssistant extends Assistant {
         this.setState({activeOption: Math.min(this.state.activeOption + 1, this.state.suggestions.length - 1)});
         this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
         break;
-      case parseInt(this.state.multivalueDelimiter):
+      case this.state.multivalueDelimiter:
         if (this.machineState.isMultivalue) {
           consumed = true;
           this.machineState.value = this.state.suggestions[this.state.activeOption];

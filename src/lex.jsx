@@ -247,5 +247,7 @@ export {
   OptionBuilder,
   OptionAssistant,
   DateTimeEntryBuilder,
-  DateTimeEntryAssistant
+  DateTimeEntryAssistant,
+  // Constants
+  KEYS
 };
