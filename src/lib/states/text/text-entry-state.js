@@ -14,7 +14,7 @@ export class TextEntryState extends OptionState {
     if (config.name === undefined) config.name = 'Enter a value';
     if (config.validate === undefined) {
       config.validate = (val) => {
-        return typeof val.key === 'string' && val.key.length > 0;
+        return val && typeof val.key === 'string' && val.key.length > 0;
       };
     }
     config.allowUnknown = true;
