@@ -88,7 +88,13 @@ export class OptionAssistant extends Assistant {
   }
 
   delegateEvent (e) {
-    let consumed = true;
+    const isMultiValueDelimiter = this.state.multivalueDelimiterKeys.indexOf(e.code) > -1;
+
+    if (this.machineState.isMultivalue && isMultiValueDelimiter) {
+      this.machineState.value = this.state.suggestions[this.state.activeOption];
+      this.requestArchive();
+    }
+
     switch (e.code) {
       case 'ArrowUp':
         this.setState({activeOption: Math.max(this.state.activeOption - 1, 0)});
@@ -98,13 +104,7 @@ export class OptionAssistant extends Assistant {
         this.setState({activeOption: Math.min(this.state.activeOption + 1, this.state.suggestions.length - 1)});
         this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
         break;
-      case this.state.multivalueDelimiter:
-        if (this.machineState.isMultivalue) {
-          consumed = true;
-          this.machineState.value = this.state.suggestions[this.state.activeOption];
-          this.requestArchive();
-        }
-        break;
+
       case 'Enter':
       case 'Tab':
         const activeOption = this.state.suggestions[this.state.activeOption];
@@ -113,15 +113,12 @@ export class OptionAssistant extends Assistant {
           this.requestTransition();
         }
         break;
-      default:
-        consumed = true;
-        break;
     }
-    if (consumed) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-    return consumed;
+
+    e.stopPropagation();
+    e.preventDefault();
+
+    return true;
   }
 
   renderArchive () {
@@ -139,6 +136,16 @@ export class OptionAssistant extends Assistant {
     }
   }
 
+  renderMultiValueDelimiters () {
+    return this.state.multivalueDelimiterKeys
+      .map(key => {
+        // TODO need a way to filter out effective duplicates
+        return (
+          <strong key={key}>{key}&nbsp;</strong>
+        );
+      });
+  }
+
   renderInteractive (props, {activeOption, suggestions}) {
     if (!this.machineStateTemplate.hasAsyncOptions && this.machineStateTemplate.options.length === 0) return;
     return (
@@ -146,7 +153,12 @@ export class OptionAssistant extends Assistant {
         <div className='assistant-header'>
           {this.machineState.name}
           <span className='pull-right'>
-            {this.machineState.isMultivalue && <span><strong>{this.state.multivalueDelimiter}</strong> to enter multiple values&nbsp;&nbsp;&nbsp;</span>}
+            {this.machineState.isMultivalue && (
+              <span>
+                {this.renderMultiValueDelimiters()}
+                to enter multiple values&nbsp;&nbsp;&nbsp;
+              </span>
+            )}
             <strong>&#x21c5;</strong> to navigate&nbsp;&nbsp;&nbsp;
             <strong>Tab</strong> to {this.machineState.isMultivalue ? 'progress' : 'select'}
           </span>

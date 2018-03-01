@@ -47,18 +47,22 @@ export class DateTimeEntryBuilder extends Builder {
   handleKeyDown (e) {
     let consumed = true;
     this.unboxedValue = e.target.value;
-    switch (e.code) {
-      case this.state.multivalueDelimiter:
-        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
-          consumed = false;
-          break;
-        }
+
+    const isMultiValueDelimiter = this.state.multivalueDelimiterKeys.indexOf(e.code) > -1;
+
+    if (this.machineState.isMultivalue && isMultiValueDelimiter) {
+      if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
+        consumed = false;
+      } else {
         consumed = this.machineState.isMultivalue;
         if (this.machineState.isMultivalue) {
           if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
           this.requestArchive();
         }
-        break;
+      }
+    }
+
+    switch (e.code) {
       case 'Enter':
       case 'Tab':
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {

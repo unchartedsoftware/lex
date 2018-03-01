@@ -103,13 +103,28 @@ export class DateTimeEntryAssistant extends Assistant {
     }
   }
 
+  renderMultiValueDelimiters () {
+    return this.state.multivalueDelimiterKeys
+      .map(key => {
+        // TODO need a way to filter out effective duplicates
+        return (
+          <strong key={key}>{key}&nbsp;</strong>
+        );
+      });
+  }
+
   renderInteractive (props) {
     return (
       <div className='assistant'>
         <div className='assistant-header'>
           {this.machineState.name}
           <span className='pull-right'>
-            {this.machineState.isMultivalue && <span><strong>{this.state.multivalueDelimiter}</strong> to enter multiple values&nbsp;&nbsp;&nbsp;</span>}
+            {this.machineState.isMultivalue && (
+              <span>
+                {this.renderMultiValueDelimiters()}
+                to enter multiple values&nbsp;&nbsp;&nbsp;
+              </span>
+            )}
             <strong>Tab</strong> to {this.machineState.isMultivalue ? 'progress' : 'select'}
           </span>
         </div>
