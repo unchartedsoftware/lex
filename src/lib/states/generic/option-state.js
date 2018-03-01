@@ -192,6 +192,11 @@ export class OptionState extends StateTemplate {
     await this.refreshOptions('', context);
   }
 
+  reset () {
+    super.reset();
+    _suggestionCache.delete(this);
+  }
+
   /**
    * Can be called by a child class to trigger a refresh of options based on a hint (what the
    * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.options`.
@@ -202,8 +207,12 @@ export class OptionState extends StateTemplate {
    */
   async refreshOptions (hint = '', context = []) {
     if (_refreshOptions.has(this)) {
-      if (!_suggestionCache.has(this)) {
-        _suggestionCache.set(this, await _refreshOptions.get(this)(hint, context));
+      if (!_suggestionCache.has(this) || _suggestionCache.get(this).hint !== hint || _suggestionCache.get(this).contextLength !== context.length) {
+        _suggestionCache.set(this, {
+          hint: hint,
+          contextLength: context.length,
+          options: await _refreshOptions.get(this)(hint, context)
+        });
       }
       return _suggestionCache.get(this);
     }

@@ -24,22 +24,23 @@ export class OptionAssistant extends Assistant {
       options: newOptions,
       unboxedValue: undefined,
       activeOption: -1,
-      suggestions: newOptions.slice(0, this.machineState.template.suggestionLimit)
+      suggestions: newOptions.slice(0, this.machineStateTemplate.suggestionLimit)
     });
   }
 
   @bind
   onUnboxedValueChangeAttempted (newUnboxedValue = '') {
     const val = newUnboxedValue === null ? newUnboxedValue = '' : newUnboxedValue.toLowerCase();
+    const filteredOptions = !this.machineStateTemplate.hasAsyncOptions ? this.machineStateTemplate.options.filter(o => o.displayKey.toLowerCase().startsWith(val)) : this.state.options;
     this.setState({
       unboxedValue: newUnboxedValue.toLowerCase(),
-      suggestions: this.state.options.filter(o => o.displayKey.toLowerCase().startsWith(val)).slice(0, this.machineState.template.suggestionLimit)
+      suggestions: filteredOptions.slice(0, this.machineStateTemplate.suggestionLimit)
     });
   }
 
   @bind
   onOptionSelected (option) {
-    this.machineState.unboxedValue = option.displayKey;
+    this.machineState.unboxedValue = option.key;
     if (this.machineState.isMultivalue) {
       const result = this.requestArchive();
       if (result) {
@@ -61,19 +62,19 @@ export class OptionAssistant extends Assistant {
     super.processProps(props);
     if (this.machineState !== oldMachineState) {
       this.setState({
-        options: this.machineState.template.options,
+        options: this.machineStateTemplate.options,
         unboxedValue: undefined,
         activeOption: -1,
-        suggestions: this.machineState.template.options.slice(0, this.machineState.template.suggestionLimit)
+        suggestions: this.machineStateTemplate.options.slice(0, this.machineStateTemplate.suggestionLimit)
       });
     }
-    if (this.machineState) this.machineState.template.on('options changed', this.onOptionsChanged);
+    if (this.machineState) this.machineStateTemplate.on('options changed', this.onOptionsChanged);
   }
 
   connectListeners () {
     super.connectListeners();
     if (this.machineState) {
-      // this.machineState.template.on('options changed', this.onOptionsChanged); // TODO not sure why this doesn't work here
+      // this.machineStateTemplate.on('options changed', this.onOptionsChanged); // TODO not sure why this doesn't work here
       this.machineState.on('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
     }
   }
@@ -81,7 +82,7 @@ export class OptionAssistant extends Assistant {
   cleanupListeners () {
     super.cleanupListeners();
     if (this.machineState) {
-      // this.machineState.template.removeListener('options changed', this.onOptionChanged); // TODO not sure why this doesn't work here
+      // this.machineStateTemplate.removeListener('options changed', this.onOptionChanged); // TODO not sure why this doesn't work here
       this.machineState.removeListener('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
     }
   }
@@ -139,7 +140,7 @@ export class OptionAssistant extends Assistant {
   }
 
   renderInteractive (props, {activeOption, suggestions}) {
-    if (!this.machineState.template.hasAsyncOptions && this.machineState.template.options.length === 0) return;
+    if (!this.machineStateTemplate.hasAsyncOptions && this.machineStateTemplate.options.length === 0) return;
     return (
       <div className='assistant'>
         <div className='assistant-header'>
