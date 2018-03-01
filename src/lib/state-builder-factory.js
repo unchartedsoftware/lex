@@ -1,7 +1,25 @@
 import { NoStateBuilderTypeError, NoStateAssistantTypeError } from './errors';
+import { StateTemplate } from './state';
 
 const _builderMap = new WeakMap();
 const _assistantMap = new WeakMap();
+
+// Recursively search the given map for the given key (clazz)
+// if we don't have a value for clazz, check if its prototype
+// is an instance of StateTemplate and then retry the check
+function recursiveClassGet (map, clazz) {
+  if (map.has(clazz)) {
+    return map.get(clazz);
+  }
+
+  const prototype = Object.getPrototypeOf(clazz);
+
+  if (!StateTemplate.isPrototypeOf(prototype)) {
+    return null;
+  } else {
+    return recursiveClassGet(map, prototype);
+  }
+}
 
 /**
  * Capable of mapping `StateTemplate`s to an interactable builder
@@ -29,14 +47,14 @@ export class StateBuilderFactory {
   /**
    * @param {*} templateClass - A class extending `StateTemplate`.
    * @returns {*} A class extending `Component`, which can supply values to a `State` created from templateClass.
-   * @throws {NoStateBuilderTypeError} If no builder `Component` is registered for the given `StateTemplate` class.
+   * @throws {NoStateBuilderTypeError} If no builder `Component` is registered for the given `StateTemplate` class or its super classes.
    */
   getBuilder (templateClass) {
-    if (!_builderMap.get(this).has(templateClass)) {
+    const builder = recursiveClassGet(_builderMap.get(this), templateClass);
+    if (builder == null) {
       throw new NoStateBuilderTypeError(templateClass);
-    } else {
-      return _builderMap.get(this).get(templateClass);
     }
+    return builder;
   }
 
   /**
@@ -54,13 +72,13 @@ export class StateBuilderFactory {
   /**
    * @param {*} templateClass - A class extending `StateTemplate`.
    * @returns {*} A class extending `Component`, which can supply values to a `State` created from templateClass.
-   * @throws {NoStateBuilderTypeError} If no assistant `Component` is registered for the given `StateTemplate` class.
+   * @throws {NoStateAssistantTypeError} If no assistant `Component` is registered for the given `StateTemplate` class or its super classes.
    */
   getAssistant (templateClass) {
-    if (!_assistantMap.get(this).has(templateClass)) {
+    const assistant = recursiveClassGet(_assistantMap.get(this), templateClass);
+    if (assistant == null) {
       throw new NoStateAssistantTypeError(templateClass);
-    } else {
-      return _assistantMap.get(this).get(templateClass);
     }
+    return assistant;
   }
 }
