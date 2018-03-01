@@ -1,5 +1,6 @@
 import { bind } from 'decko';
 import { h, Component } from 'preact';
+import { COMMA } from '../lib/keys';
 
 /**
  * An abstract superclass for a `Component` which can be
@@ -16,7 +17,7 @@ export class Builder extends Component {
     this.state = {
       valid: true,
       readOnly: false,
-      multivalueDelimiter: 'Comma',
+      multivalueDelimiter: COMMA,
       multivaluePasteDelimiter: ',',
       requestFocus: () => {},
       requestBlur: () => {},
@@ -93,7 +94,7 @@ export class Builder extends Component {
       readOnly,
       blank,
       focused,
-      multivalueDelimiter = 'Comma',
+      multivalueDelimiter = COMMA,
       multivaluePasteDelimiter = ',',
       requestFocus = () => {},
       requestBlur = () => {},
@@ -152,9 +153,9 @@ export class Builder extends Component {
     if (focused) {
       setTimeout(() => { this.focus(); });
     }
-    if (multivalueDelimiter !== this.state.multivalueDelimiter) {
+    if (parseInt(multivalueDelimiter) !== this.state.multivalueDelimiter) {
       this.setState({
-        multivalueDelimiter: multivalueDelimiter
+        multivalueDelimiter: parseInt(multivalueDelimiter)
       });
     }
     if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {

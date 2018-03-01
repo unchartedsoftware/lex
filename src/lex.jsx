@@ -20,6 +20,7 @@ import { OptionBuilder } from './components/builders/generic/option-builder';
 import { OptionAssistant } from './components/assistants/generic/option-assistant';
 import { DateTimeEntryBuilder } from './components/builders/temporal/datetime-entry-builder';
 import { DateTimeEntryAssistant } from './components/assistants/temporal/datetime-entry-assistant';
+import * as KEYS from './lib/keys';
 
 const _language = new WeakMap();
 const _builders = new WeakMap();
@@ -44,7 +45,7 @@ const _multivaluePasteDelimiter = new WeakMap();
  * @param {string[]} config.proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any). `['ArrowUp', 'ArrowDown', 'Tab', 'Enter']` by default.
  * @param {Object[]} config.defaultQuery - The default search state for this search box. Can either be an array of arrays of boxed or unboxed (basic type) values.
  * @param {string} config.tokenXIcon - The default X icon for tokens (DOM string).
- * @param {string} config.multivalueDelimiterKey - The key event key name of the delimiter which will notionally 'separate' multiple values in any visual representation of a multivalue state. 'Comma' by default.
+ * @param {number} config.multivalueDelimiterKey - The JS key code of the delimiter which will notionally 'separate' multiple values in any visual representation of a multivalue state. 188 (Comma) by default.
  * @param {string[]} config.multivaluePasteDelimiter - The characters which are supported as delimiters text which is pasted into a multivalue state. ',' by default.
  * @example
  * // Instantiate a new instance of lex and bind it to the page.
@@ -59,10 +60,10 @@ class Lex extends EventEmitter {
   constructor (config) {
     const {
       language,
-      proxiedEvents = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter'],
+      proxiedEvents = [KEYS.UP_ARROW, KEYS.DOWN_ARROW, KEYS.TAB, KEYS.ENTER],
       defaultQuery = [],
       tokenXIcon = '&times;',
-      multivalueDelimiterKey = ['Comma'],
+      multivalueDelimiterKey = KEYS.COMMA,
       multivaluePasteDelimiter = ','
     } = config;
     super();
@@ -157,7 +158,7 @@ class Lex extends EventEmitter {
         machineTemplate={_language.get(this)}
         proxiedEvents={_proxiedEvents.get(this)}
         tokenXIcon={_tokenXIcon.get(this)}
-        multivalueDelimiterKey={_multivalueDelimiterKey.get(this)}
+        multivalueDelimiter={_multivalueDelimiterKey.get(this)}
         multivaluePasteDelimiter={_multivaluePasteDelimiter.get(this)}
         onQueryChanged={(...args) => this.emit('query changed', ...args)}
         onSuggestionsChanged={(...args) => this.emit('suggestions changed', ...args)}
@@ -246,5 +247,7 @@ export {
   OptionBuilder,
   OptionAssistant,
   DateTimeEntryBuilder,
-  DateTimeEntryAssistant
+  DateTimeEntryAssistant,
+  // Constants
+  KEYS
 };

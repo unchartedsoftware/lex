@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 import { bind } from '../../node_modules/decko/dist/decko';
-
+import { COMMA } from '../lib/keys';
 /**
  * @private
  */
@@ -17,7 +17,7 @@ export class Token extends Component {
       builders: undefined,
       stateArray: [],
       tokenXIcon: '&times',
-      multivalueDelimiter: 'Comma',
+      multivalueDelimiter: COMMA,
       multivaluePasteDelimiter: ',',
       requestFocus: () => {},
       requestBlur: () => {},
@@ -43,7 +43,7 @@ export class Token extends Component {
       machine,
       builders,
       tokenXIcon = '&times',
-      multivalueDelimiter = 'Comma',
+      multivalueDelimiter = COMMA,
       multivaluePasteDelimiter = ',',
       requestRemoval = () => {},
       requestFocus = () => {},
@@ -96,9 +96,9 @@ export class Token extends Component {
         tokenXIcon: tokenXIcon
       });
     }
-    if (multivalueDelimiter !== this.state.multivalueDelimiter) {
+    if (parseInt(multivalueDelimiter) !== this.state.multivalueDelimiter) {
       this.setState({
-        multivalueDelimiter: multivalueDelimiter
+        multivalueDelimiter: parseInt(multivalueDelimiter)
       });
     }
     if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {

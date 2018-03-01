@@ -15,7 +15,7 @@ const language = Lex.from('field', OptionState, {
           new OptionStateOption('Income', {type: 'number'}),
           new OptionStateOption('Keywords', {type: 'multistring'}),
           new OptionStateOption('Date', {type: 'datetime'})
-        ].filter(o => o.displayKey.toLowerCase().startsWith(hint.toLowerCase())));
+        ].filter(o => o.displayKey.toLowerCase().indexOf(hint.toLowerCase()) > -1));
       }, 25);
     });
   },
@@ -62,9 +62,7 @@ const language = Lex.from('field', OptionState, {
 const lex = new Lex({
   language: language,
   defaultValue: [],
-  tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>',
-  multivalueDelimiter: 'Comma', // this is the default value
-  multivaluePasteDelimiter: ',' // this is the default value
+  tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>'
 });
 
 lex.render(document.getElementById('LexContainer'));

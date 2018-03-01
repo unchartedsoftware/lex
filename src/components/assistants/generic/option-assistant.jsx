@@ -1,6 +1,8 @@
 import { h } from 'preact';
 import { bind } from 'decko';
 import { Assistant } from '../../assistant';
+import { UP_ARROW, DOWN_ARROW, TAB, ENTER } from '../../../lib/keys';
+import { toChar } from '../../../lib/string-util';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -31,7 +33,7 @@ export class OptionAssistant extends Assistant {
   @bind
   onUnboxedValueChangeAttempted (newUnboxedValue = '') {
     const val = newUnboxedValue === null ? newUnboxedValue = '' : newUnboxedValue.toLowerCase();
-    const filteredOptions = !this.machineStateTemplate.hasAsyncOptions ? this.machineStateTemplate.options.filter(o => o.displayKey.toLowerCase().startsWith(val)) : this.state.options;
+    const filteredOptions = !this.machineStateTemplate.hasAsyncOptions ? this.machineStateTemplate.options.filter(o => o.displayKey.toLowerCase().indexOf(val) === 0) : this.state.options;
     this.setState({
       unboxedValue: newUnboxedValue.toLowerCase(),
       suggestions: filteredOptions.slice(0, this.machineStateTemplate.suggestionLimit)
@@ -89,12 +91,14 @@ export class OptionAssistant extends Assistant {
 
   delegateEvent (e) {
     let consumed = true;
-    switch (e.code) {
-      case 'ArrowUp':
+    switch (e.keyCode) {
+      // Fallthrough case to handle IE
+      case UP_ARROW:
         this.setState({activeOption: Math.max(this.state.activeOption - 1, 0)});
         this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
         break;
-      case 'ArrowDown':
+      // Fallthrough case to handle IE
+      case DOWN_ARROW:
         this.setState({activeOption: Math.min(this.state.activeOption + 1, this.state.suggestions.length - 1)});
         this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
         break;
@@ -105,8 +109,8 @@ export class OptionAssistant extends Assistant {
           this.requestArchive();
         }
         break;
-      case 'Enter':
-      case 'Tab':
+      case ENTER:
+      case TAB:
         const activeOption = this.state.suggestions[this.state.activeOption];
         if (activeOption) {
           this.machineState.value = activeOption;
@@ -146,7 +150,7 @@ export class OptionAssistant extends Assistant {
         <div className='assistant-header'>
           {this.machineState.name}
           <span className='pull-right'>
-            {this.machineState.isMultivalue && <span><strong>{this.state.multivalueDelimiter}</strong> to enter multiple values&nbsp;&nbsp;&nbsp;</span>}
+            {this.machineState.isMultivalue && <span><strong>{toChar(this.state.multivalueDelimiter)}</strong> to enter multiple values&nbsp;&nbsp;&nbsp;</span>}
             <strong>&#x21c5;</strong> to navigate&nbsp;&nbsp;&nbsp;
             <strong>Tab</strong> to {this.machineState.isMultivalue ? 'progress' : 'select'}
           </span>
