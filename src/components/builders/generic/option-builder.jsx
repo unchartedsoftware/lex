@@ -2,6 +2,7 @@ import { h } from 'preact';
 import linkState from 'linkstate';
 import { bind } from 'decko';
 import { Builder } from '../../builder';
+import { ENTER, TAB, BACKSPACE, ESCAPE } from '../../../lib/keys';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -52,9 +53,8 @@ export class OptionBuilder extends Builder {
   handleKeyDown (e) {
     let consumed = true;
     this.unboxedValue = e.target.value;
-    const code = e.code || e.key;
-    switch (code) {
-      case this.state.multivalueDelimiter:
+    switch (e.keyCode) {
+      case parseInt(this.state.multivalueDelimiter):
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
           consumed = false;
           break;
@@ -65,8 +65,8 @@ export class OptionBuilder extends Builder {
           this.requestArchive();
         }
         break;
-      case 'Enter':
-      case 'Tab':
+      case ENTER:
+      case TAB:
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
           // if nothing is entered, but the archive has values, we can still request a transition
           // unarchive most recent value and request.
@@ -80,16 +80,14 @@ export class OptionBuilder extends Builder {
         if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
         consumed = this.requestTransition(); // only consume the event if the transition succeeds
         break;
-      case 'Backspace':
+      case BACKSPACE:
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
           this.requestRewind();
         } else {
           consumed = false;
         }
         break;
-      // Fallthrough case to handle IE
-      case 'Escape':
-      case 'Esc':
+      case ESCAPE:
         this.requestCancel();
         break;
       default:

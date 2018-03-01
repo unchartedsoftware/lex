@@ -4,6 +4,7 @@ import Portal from 'preact-portal';
 import { TokenStateMachine } from '../lib/token-state-machine';
 import { StateTransitionError, ValueArchiveError } from '../lib/errors';
 import { Token } from './token';
+import { COMMA } from '../lib/keys';
 
 /**
  * @private
@@ -22,7 +23,7 @@ export class SearchBar extends Component {
       focused: false,
       flashActive: false,
       tokenXIcon: '&times',
-      multivalueDelimiter: 'Comma',
+      multivalueDelimiter: COMMA,
       multivaluePasteDelimiter: ',',
       onQueryChanged: () => {},
       onSuggestionsChanged: () => {},
@@ -41,7 +42,7 @@ export class SearchBar extends Component {
       suggestions = [],
       proxiedEvents,
       tokenXIcon = '&times;',
-      multivalueDelimiter = 'Comma',
+      multivalueDelimiter = COMMA,
       multivaluePasteDelimiter = ',',
       onQueryChanged = () => {},
       onSuggestionsChanged = () => {},
@@ -366,7 +367,7 @@ export class SearchBar extends Component {
   @bind
   onKeyDown (e) {
     this.unboxedValue = e.target.value;
-    const code = e.code || e.key;
+    const code = e.keyCode;
     if (this.assistant && this.state.proxiedEvents.get(code) === true) {
       this.assistant.delegateEvent(e);
     }
