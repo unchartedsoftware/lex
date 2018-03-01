@@ -367,6 +367,14 @@ export class Builder extends Component {
   }
 
   /**
+   * @readonly
+   * @returns {StateTemplate} The underlying `StateTemplate`.
+   */
+  get machineStateTemplate () {
+    return this.state.machineState.template;
+  }
+
+  /**
    * Getter for `this.value`.
    *
    * @returns {any} The current (boxed) value from the underlying `State`.
