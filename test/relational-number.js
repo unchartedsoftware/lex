@@ -41,7 +41,7 @@ const language = Lex
 // Now that we have a language defined we can initialize our lex instance
 const lex = new Lex({
   language: language,
-  tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>',
+  tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>'
 });
 
 // Render our search bar into our desired element
