@@ -22,7 +22,7 @@ export class SearchBar extends Component {
       focused: false,
       flashActive: false,
       tokenXIcon: '&times',
-      multivalueDelimiter: 'Comma',
+      multivalueDelimiterKeys: ['Comma'],
       multivaluePasteDelimiter: ',',
       onQueryChanged: () => {},
       onSuggestionsChanged: () => {},
@@ -41,7 +41,7 @@ export class SearchBar extends Component {
       suggestions = [],
       proxiedEvents,
       tokenXIcon = '&times;',
-      multivalueDelimiter = 'Comma',
+      multivalueDelimiterKeys = ['Comma'],
       multivaluePasteDelimiter = ',',
       onQueryChanged = () => {},
       onSuggestionsChanged = () => {},
@@ -97,9 +97,9 @@ export class SearchBar extends Component {
         tokenXIcon: tokenXIcon
       });
     }
-    if (multivalueDelimiter !== this.state.multivalueDelimiter) {
+    if (multivalueDelimiterKeys !== this.state.multivalueDelimiterKeys) {
       this.setState({
-        multivalueDelimiter: multivalueDelimiter
+        multivalueDelimiterKeys: multivalueDelimiterKeys
       });
     }
     if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {
@@ -192,7 +192,7 @@ export class SearchBar extends Component {
         active
         flash={this.state.flashActive}
         tokenXIcon={this.state.tokenXIcon}
-        multivalueDelimiter={this.state.multivalueDelimiter}
+        multivalueDelimiterKeys={this.state.multivalueDelimiterKeys}
         multivaluePasteDelimiter={this.state.multivaluePasteDelimiter}
         machine={activeMachine}
         builders={builders}
@@ -230,7 +230,7 @@ export class SearchBar extends Component {
               machine={activeMachine}
               machineState={activeMachine.state}
               ref={(a) => { this.assistant = a; }}
-              multivalueDelimiter={this.state.multivalueDelimiter}
+              multivalueDelimiterKeys={this.state.multivalueDelimiterKeys}
               multivaluePasteDelimiter={this.searchBox.multivaluePasteDelimiter}
               requestFocus={this.focus}
               requestBlur={this.blur}
@@ -458,17 +458,17 @@ export class SearchBar extends Component {
     this.state.onSuggestionsChanged(this.state.suggestions, oldSuggestionValues, newUnboxedValues, oldUnboxedValues);
   }
 
-  render (props, {active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, multivalueDelimiter, multivaluePasteDelimiter}) {
+  render (props, {active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, multivalueDelimiterKeys, multivaluePasteDelimiter}) {
     return (
       <div className={'lex-box form-control' + (active ? ' active' : '') + (focused ? ' focused' : '')} onKeyDown={this.onKeyDown} onClick={this.activate} onFocus={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         {
           tokenValues.map((v, i) => {
-            return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} focused={false} />;
+            return <Token tokenXIcon={tokenXIcon} multivalueDelimiterKeys={multivalueDelimiterKeys} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} focused={false} />;
           })
         }
         {
           suggestions.map((v, j) => {
-            return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeSuggestion} requestAddSuggestion={this.addSuggestion} idx={j} suggestion />;
+            return <Token tokenXIcon={tokenXIcon} multivalueDelimiterKeys={multivalueDelimiterKeys} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeSuggestion} requestAddSuggestion={this.addSuggestion} idx={j} suggestion />;
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }
