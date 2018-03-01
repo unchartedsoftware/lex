@@ -59,7 +59,12 @@ class Lex extends EventEmitter {
   constructor (config) {
     const {
       language,
-      proxiedEvents = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter'],
+      proxiedEvents = [
+        // Standard key codes
+        'ArrowUp', 'ArrowDown', 'Tab', 'Enter',
+        // IE key codes
+        'Up', 'Down'
+      ],
       defaultQuery = [],
       tokenXIcon = '&times;',
       multivalueDelimiterKey = ['Comma'],

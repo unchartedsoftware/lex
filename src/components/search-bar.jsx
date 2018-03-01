@@ -223,9 +223,11 @@ export class SearchBar extends Component {
         'min-width': rect.width,
         'max-width': rect.width
       };
+      // See portal bug workaround for why we have a ref that we dont use
+      // https://github.com/developit/preact-portal/issues/2
       return (
-        <Portal into='body'>
-          <div id='lex-assistant-box' className='lex-assistant-box' style={pos}>
+        <Portal into='body' ref={(r) => { this._portal = r; }}>
+          <div id='lex-assistant-box' className='lex-assistant-box' style={pos} ref={(r) => { this._portalAssistant = r; }}>
             <Assistant
               machine={activeMachine}
               machineState={activeMachine.state}
@@ -364,7 +366,8 @@ export class SearchBar extends Component {
   @bind
   onKeyDown (e) {
     this.unboxedValue = e.target.value;
-    if (this.assistant && this.state.proxiedEvents.get(e.code) === true) {
+    const code = e.code || e.key;
+    if (this.assistant && this.state.proxiedEvents.get(code) === true) {
       this.assistant.delegateEvent(e);
     }
   }
@@ -389,12 +392,9 @@ export class SearchBar extends Component {
   @bind
   removeToken (idx) {
     if (idx === undefined) {
-      this.setState({
-        active: false,
-        editing: false,
-        flashActive: false
-      });
-      this.state.activeMachine.reset();
+      // We were editing a token when we decided to remove it
+      // this is actually a cancel action
+      this.cancel();
     } else {
       const oldQueryValues = this.state.tokenValues;
       this.setState({
@@ -440,7 +440,7 @@ export class SearchBar extends Component {
     const oldSuggestions = this.state.suggestions;
     const suggestion = this.state.suggestions[idx];
     this.removeSuggestion(idx);
-    this.onEndToken(suggestion);
+    this.onEndToken(suggestion && suggestion.value);
     this.suggestionsChanged(oldSuggestions);
   }
 

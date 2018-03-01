@@ -52,7 +52,8 @@ export class OptionBuilder extends Builder {
   handleKeyDown (e) {
     let consumed = true;
     this.unboxedValue = e.target.value;
-    switch (e.code) {
+    const code = e.code || e.key;
+    switch (code) {
       case this.state.multivalueDelimiter:
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
           consumed = false;
@@ -86,7 +87,9 @@ export class OptionBuilder extends Builder {
           consumed = false;
         }
         break;
+      // Fallthrough case to handle IE
       case 'Escape':
+      case 'Esc':
         this.requestCancel();
         break;
       default:
@@ -186,7 +189,7 @@ export class OptionBuilder extends Builder {
             value={typedText}
             onInput={linkState(this, 'typedText')}
             onFocus={this.requestFocus}
-            onBlur={this.requestBlur}
+            onFocusOut={this.requestBlur}
             onPaste={this.onPaste}
             ref={(input) => { this.textInput = input; }}
             disabled={readOnly} />

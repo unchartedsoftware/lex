@@ -31,7 +31,7 @@ export class OptionAssistant extends Assistant {
   @bind
   onUnboxedValueChangeAttempted (newUnboxedValue = '') {
     const val = newUnboxedValue === null ? newUnboxedValue = '' : newUnboxedValue.toLowerCase();
-    const filteredOptions = !this.machineStateTemplate.hasAsyncOptions ? this.machineStateTemplate.options.filter(o => o.displayKey.toLowerCase().startsWith(val)) : this.state.options;
+    const filteredOptions = !this.machineStateTemplate.hasAsyncOptions ? this.machineStateTemplate.options.filter(o => o.displayKey.toLowerCase().indexOf(val) === 0) : this.state.options;
     this.setState({
       unboxedValue: newUnboxedValue.toLowerCase(),
       suggestions: filteredOptions.slice(0, this.machineStateTemplate.suggestionLimit)
@@ -89,12 +89,17 @@ export class OptionAssistant extends Assistant {
 
   delegateEvent (e) {
     let consumed = true;
-    switch (e.code) {
+    const code = e.code || e.key;
+    switch (code) {
+      // Fallthrough case to handle IE
       case 'ArrowUp':
+      case 'Up':
         this.setState({activeOption: Math.max(this.state.activeOption - 1, 0)});
         this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
         break;
+      // Fallthrough case to handle IE
       case 'ArrowDown':
+      case 'Down':
         this.setState({activeOption: Math.min(this.state.activeOption + 1, this.state.suggestions.length - 1)});
         this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
         break;
