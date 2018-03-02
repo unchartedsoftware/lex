@@ -281,7 +281,14 @@ export class State extends EventEmitter {
    * @returns {boolean} Returns `true` iff this state is valid. Should throw an exception with information about validation error otherwise.
    */
   get isValid () {
-    return _validate.get(this.template)(this.value);
+    let isValid = true;
+    try {
+      isValid = _validate.get(this.template)(this.value);
+    } catch(err) {
+      console.error('Error thrown during validation', err);
+      isValid = false;
+    }
+    return isValid;
   }
 
   /**
