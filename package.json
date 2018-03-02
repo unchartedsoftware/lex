@@ -74,7 +74,8 @@
     "url-loader": "0.6.2",
     "file-loader": "1.1.5",
     "node-sass": "4.7.2",
-    "babel-loader": "7.1.2"
+    "babel-loader": "7.1.2",
+    "eslint-loader": "2.0.0"
   },
   "peerDependencies": {
     "preact": "8.x",
