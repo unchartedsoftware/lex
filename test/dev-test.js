@@ -45,7 +45,7 @@ const language = Lex.from('field', OptionState, {
     ...TransitionFactory.optionMetaCompare({type: 'multistring'})
   }),
   Lex.from('relation', NumericRelationState, TransitionFactory.optionMetaCompare({type: 'number'})).branch(
-    Lex.from('value', NumericEntryState, { units: 'CAD', ... TransitionFactory.optionKeyIsNot('between') }),
+    Lex.from('value', NumericEntryState, { units: 'CAD', ...TransitionFactory.optionKeyIsNot('between') }),
     // override icon in this state as an example. Last icon specified in the chain is used.
     Lex.from('value', NumericEntryState, {
       icon: () => '<span class="glyphicon glyphicon-usd" aria-hidden="true"></span><span class="glyphicon glyphicon-usd" aria-hidden="true"></span>',
