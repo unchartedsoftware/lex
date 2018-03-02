@@ -3,6 +3,7 @@ import { bind } from 'decko';
 import { Assistant } from '../../assistant';
 import TinyDatePicker from 'tiny-date-picker';
 import { toChar } from '../../../lib/string-util';
+import { ENTER, TAB } from '../../../lib/keys';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -43,13 +44,13 @@ export class DateTimeEntryAssistant extends Assistant {
       if (this.dateInput) {
         this.dateInput.setState({
           selectedDate: newDate,
-          highlightedDate: newDate
+          hilightedDate: newDate
         });
       }
     } else if (this.dateInput) {
       this.dateInput.setState({
         selectedDate: null,
-        highlightedDate: new Date()
+        hilightedDate: new Date()
       });
     }
   }
@@ -87,6 +88,28 @@ export class DateTimeEntryAssistant extends Assistant {
   @bind
   onArchivedRemoved (idx) {
     this.requestRemoveArchivedValue(idx);
+  }
+
+  delegateEvent (e) {
+    let consumed = false;
+    switch (e.keyCode) {
+      case ENTER:
+      case TAB:
+        // Use the currently "focused" date if we dont have a value
+        if (this.boxedValue == null && this.dateInput && this.dateInput.state.hilightedDate) {
+          this.boxedValue = this.dateInput.state.hilightedDate;
+        }
+
+        this.requestTransition();
+
+        consumed = true;
+        break;
+    }
+    if (consumed) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    return consumed;
   }
 
   renderArchive () {
