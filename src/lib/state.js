@@ -278,10 +278,20 @@ export class State extends EventEmitter {
   /**
    * Utilizes the `StateTemplate`'s `validate` function to check value validitiy.
    *
-   * @returns {boolean} Returns `true` iff this state is valid. Should throw an exception with information about validation error otherwise.
+   * @returns {boolean} Returns `true` if this state is valid. Should throw an exception with information about validation error otherwise.
    */
   get isValid () {
-    return _validate.get(this.template)(this.value);
+    let isValid = false;
+    try {
+      isValid = _validate.get(this.template)(this.value);
+    } catch (err) {
+      let message = 'Error thrown during validation';
+      if (this.name) {
+        message += ` of state named: ${this.name}`;
+      }
+      console.error(message, err);
+    }
+    return isValid;
   }
 
   /**
