@@ -17,7 +17,7 @@ const _meta = new WeakMap();
 export class OptionStateOption {
   constructor (key, meta, config = {}) {
     _key.set(this, key);
-    _meta.set(this, meta);
+    _meta.set(this, meta === undefined ? {} : meta);
     _displayKey.set(this, config.displayKey === undefined ? key : config.displayKey);
     _shortKey.set(this, config.shortKey === undefined ? _displayKey.get(this) : config.shortKey);
   }
