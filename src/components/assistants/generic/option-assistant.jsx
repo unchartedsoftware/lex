@@ -162,7 +162,9 @@ export class OptionAssistant extends Assistant {
             { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
             <ul>
               {
-                suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{o.displayKey}</li>)
+                suggestions
+                  .filter(s => s.meta.readOnly !== true)
+                  .map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{o.displayKey}</li>)
               }
               { (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
             </ul>

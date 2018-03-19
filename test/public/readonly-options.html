@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Lex Read Only Options</title>
+    <style>
+      html {
+        max-width: 700px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Lex Read Only Options</h1>
+    <p>The goal of this example is to provide a basic example of how you can setup Lex to accept options that the user cannot select via the UI</p>
+    <div id="LexContainer"></div>
+    <br />
+    <button class="btn btn-warning" onClick="clearQuery()">Clear Query</button>
+    <button class="btn btn-info" onClick="setQuery()">Set Query</button>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>
+    <script type="application/javascript" src="readonly-options.js"></script>
+  </body>
+</html>
