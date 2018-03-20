@@ -41,7 +41,7 @@ export class OptionAssistant extends Assistant {
   }
 
   @bind
-  onOptionSelected (option) {
+  async onOptionSelected (option) {
     this.machineState.unboxedValue = option.key;
     if (this.machineState.isMultivalue) {
       const result = this.requestArchive();
@@ -49,7 +49,7 @@ export class OptionAssistant extends Assistant {
         this.machineState.unboxedValue = null;
       }
     } else {
-      this.requestTransition();
+      await this.requestTransition();
     }
   }
 
@@ -89,7 +89,7 @@ export class OptionAssistant extends Assistant {
     }
   }
 
-  delegateEvent (e) {
+  async delegateEvent (e) {
     let consumed = true;
     switch (e.keyCode) {
       // Fallthrough case to handle IE
@@ -114,7 +114,7 @@ export class OptionAssistant extends Assistant {
         const activeOption = this.state.suggestions[this.state.activeOption];
         if (activeOption) {
           this.machineState.value = activeOption;
-          this.requestTransition();
+          await this.requestTransition();
         }
         break;
       default:
