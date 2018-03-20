@@ -90,7 +90,7 @@ export class DateTimeEntryAssistant extends Assistant {
     this.requestRemoveArchivedValue(idx);
   }
 
-  delegateEvent (e) {
+  async delegateEvent (e) {
     let consumed = false;
     switch (e.keyCode) {
       case ENTER:
@@ -100,7 +100,7 @@ export class DateTimeEntryAssistant extends Assistant {
           this.boxedValue = this.dateInput.state.hilightedDate;
         }
 
-        this.requestTransition();
+        await this.requestTransition();
 
         consumed = true;
         break;

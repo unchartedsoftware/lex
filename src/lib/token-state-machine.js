@@ -71,7 +71,7 @@ export class TokenStateMachine extends EventEmitter {
         // if there's more values, transition
         if (Object.keys(copy).length > 0 || finalTransition) {
           try {
-            this.transition();
+            await this.transition();
           } catch (err) {
             console.error(err);
             throw err; // the value for this state is invalid, so break out.
@@ -102,7 +102,7 @@ export class TokenStateMachine extends EventEmitter {
    * @throws {StateTransitionError} If this state is invalid, or if there is no valid child transition given the current state's value.
    * @returns {State} The new current state.
    */
-  transition () {
+  async transition () {
     // validate current state value
     if (!this.state.isValid) {
       const err = new StateTransitionError(`Cannot transition from invalid current state "${this.state.name}" with value: ${this.state.unboxedValue}.`);
@@ -121,6 +121,7 @@ export class TokenStateMachine extends EventEmitter {
         }
         _currentState.set(this, next);
         this.emit('state changed', this.state, oldState);
+        await this.state.initialize(this.boxedValue);
         return this.state;
       } catch (err) {
         this.emit('state change failed', err);

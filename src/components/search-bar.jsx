@@ -294,9 +294,9 @@ export class SearchBar extends Component {
   }
 
   @bind
-  transition () {
+  async transition () {
     try {
-      this.state.activeMachine.transition();
+      await this.state.activeMachine.transition();
       return true;
     } catch (err) {
       if (err instanceof StateTransitionError) {

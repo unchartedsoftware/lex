@@ -50,7 +50,7 @@ export class OptionBuilder extends Builder {
   }
 
   @bind
-  handleKeyDown (e) {
+  async handleKeyDown (e) {
     let consumed = true;
     this.unboxedValue = e.target.value;
     switch (e.keyCode) {
@@ -78,7 +78,7 @@ export class OptionBuilder extends Builder {
           }
         }
         if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
-        consumed = this.requestTransition(); // only consume the event if the transition succeeds
+        consumed = await this.requestTransition(); // only consume the event if the transition succeeds
         break;
       case BACKSPACE:
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
