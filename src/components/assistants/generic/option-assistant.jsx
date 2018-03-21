@@ -42,7 +42,7 @@ export class OptionAssistant extends Assistant {
 
   @bind
   onOptionSelected (option) {
-    this.machineState.unboxedValue = option.key;
+    this.machineState.unboxedValue = option.displayKey;
     if (this.machineState.isMultivalue) {
       const result = this.requestArchive();
       if (result) {
