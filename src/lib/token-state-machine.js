@@ -37,6 +37,18 @@ export class TokenStateMachine extends EventEmitter {
   }
 
   /**
+   * @returns {boolean} Whether or not the current state of this `TokenStateMachine` or any of its parents are `bindOnly`.
+   */
+  get isBindOnly () {
+    let s = this.state;
+    do {
+      if (s.isBindOnly) return true;
+      s = s.parent;
+    } while (s);
+    return false;
+  }
+
+  /**
    * Overwrite this machine with the given values, in sequence. If `values` is `undefined`, this is equivalent to `this.reset()`.
    *
    * @param {Object | undefined} values - A optional array of (boxed) values to apply to the machine's states (applied from the root state onward). If any value is an array, all but the final value are added to the `State` archive.

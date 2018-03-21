@@ -15,7 +15,7 @@ const language = Lex.from('field', OptionState, {
           new OptionStateOption('Income', {type: 'number'}),
           new OptionStateOption('Keywords', {type: 'multistring'}),
           new OptionStateOption('Date', {type: 'datetime'}),
-          new OptionStateOption('GeoHash', {type: 'geohash'})
+          new OptionStateOption('GeoHash', {type: 'geohash'}, {hidden: true})
         ].filter(o => o.displayKey.toLowerCase().indexOf(hint.toLowerCase()) > -1));
       }, 25);
     });

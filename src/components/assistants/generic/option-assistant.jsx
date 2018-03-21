@@ -26,14 +26,14 @@ export class OptionAssistant extends Assistant {
       options: newOptions,
       unboxedValue: undefined,
       activeOption: -1,
-      suggestions: newOptions.slice(0, this.machineStateTemplate.suggestionLimit)
+      suggestions: newOptions.filter(o => !o.hidden).slice(0, this.machineStateTemplate.suggestionLimit)
     });
   }
 
   @bind
   onUnboxedValueChangeAttempted (newUnboxedValue = '') {
     const val = newUnboxedValue === null ? newUnboxedValue = '' : newUnboxedValue.toLowerCase();
-    const filteredOptions = !this.machineStateTemplate.hasAsyncOptions ? this.machineStateTemplate.options.filter(o => o.displayKey.toLowerCase().indexOf(val) === 0) : this.state.options;
+    const filteredOptions = !this.machineStateTemplate.hasAsyncOptions ? this.machineStateTemplate.options.filter(o => o.displayKey.toLowerCase().indexOf(val) === 0).filter(o => !o.hidden) : this.state.options;
     this.setState({
       unboxedValue: newUnboxedValue.toLowerCase(),
       suggestions: filteredOptions.slice(0, this.machineStateTemplate.suggestionLimit)
@@ -67,7 +67,7 @@ export class OptionAssistant extends Assistant {
         options: this.machineStateTemplate.options,
         unboxedValue: undefined,
         activeOption: -1,
-        suggestions: this.machineStateTemplate.options.slice(0, this.machineStateTemplate.suggestionLimit)
+        suggestions: this.machineStateTemplate.options.filter(o => !o.hidden).slice(0, this.machineStateTemplate.suggestionLimit)
       });
     }
     if (this.machineState) this.machineStateTemplate.on('options changed', this.onOptionsChanged);

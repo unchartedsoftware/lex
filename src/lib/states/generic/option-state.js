@@ -4,6 +4,7 @@ const _key = new WeakMap();
 const _displayKey = new WeakMap();
 const _shortKey = new WeakMap();
 const _meta = new WeakMap();
+const _hidden = new WeakMap();
 
 /**
  * An option within a list of options
@@ -11,6 +12,7 @@ const _meta = new WeakMap();
  * @param {string} key - A label for this option. Should be unique within the list of options.
  * @param {any} meta - Whatever you want.
  * @param {object} config - Additional configuration for this `OptionStateOption`.
+ * @param {boolean} config.hidden - If true, this `OptionStateOption` will never be suggested to the user.
  * @param {string|undefined} config.displayKey - An alternative representation of `key`, utilized in its place for all visual representatations of key. Will default to `key` if not supplied.
  * @param {string|undefined} config.shortKey - A shorter representation of `key` displayed in read-only mode. Will default to `config.displayKey` if not supplied.
  */
@@ -20,6 +22,7 @@ export class OptionStateOption {
     _meta.set(this, meta);
     _displayKey.set(this, config.displayKey === undefined ? key : config.displayKey);
     _shortKey.set(this, config.shortKey === undefined ? _displayKey.get(this) : config.shortKey);
+    _hidden.set(this, config.hidden && true);
   }
 
   /**
@@ -36,6 +39,11 @@ export class OptionStateOption {
    * @returns {string} The abbreviated label for this option.
    */
   get shortKey () { return _shortKey.get(this); }
+
+  /**
+   * @returns {boolean} Whether or not this option should be hidden from suggestions.
+   */
+  get hidden () { return _hidden.get(this); }
 
   /**
    * @returns {any} The metadata associated with this option.
