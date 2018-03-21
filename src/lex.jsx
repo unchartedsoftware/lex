@@ -68,6 +68,7 @@ class Lex extends EventEmitter {
     } = config;
     super();
     // TODO throw if language is not instanceof StateTemplate
+    if (language.root.isBindOnly) throw new Error('Root StateTemplate of language cannot be bind-only.');
     _language.set(this, language.root);
     _builders.set(this, new StateBuilderFactory());
     _defaultValue.set(this, defaultQuery);

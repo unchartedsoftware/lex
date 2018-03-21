@@ -37,6 +37,18 @@ export class TokenStateMachine extends EventEmitter {
   }
 
   /**
+   * @returns {boolean} Whether or not the current state of this `TokenStateMachine` or any of its parents are `bindOnly`.
+   */
+  get isBindOnly () {
+    let s = this.state;
+    do {
+      if (s.isBindOnly) return true;
+      s = s.parent;
+    } while (s);
+    return false;
+  }
+
+  /**
    * Overwrite this machine with the given values, in sequence. If `values` is `undefined`, this is equivalent to `this.reset()`.
    *
    * @param {Object | undefined} values - A optional array of (boxed) values to apply to the machine's states (applied from the root state onward). If any value is an array, all but the final value are added to the `State` archive.
@@ -71,7 +83,7 @@ export class TokenStateMachine extends EventEmitter {
         // if there's more values, transition
         if (Object.keys(copy).length > 0 || finalTransition) {
           try {
-            this.transition();
+            this.transition(true); // ignore bind-only states
           } catch (err) {
             console.error(err);
             throw err; // the value for this state is invalid, so break out.
@@ -84,9 +96,10 @@ export class TokenStateMachine extends EventEmitter {
 
   /*
    * @private
+   * @param {boolean} ignoreBindOnly - All bind-only states are illegal transitions unless `ignoreBindOnly` is true.
    */
-  getFirstLegalTransition (state) {
-    const transitions = state.children.filter(c => c.isValidTransition);
+  getFirstLegalTransition (state, ignoreBindOnly = false) {
+    const transitions = state.children.filter(c => c.isValidTransition(ignoreBindOnly));
     if (transitions.length === 0) {
       const err = new StateTransitionError(`No valid transitions from current state "${this.state.name}" given current state's value: ${this.state.value}.`);
       throw err;
@@ -99,10 +112,11 @@ export class TokenStateMachine extends EventEmitter {
    * Transition to the first viable child state, iff the current state is valid. If this is a terminal state, this will
    * trigger an 'end' event.
    *
+   * @param {boolean} ignoreBindOnly - All bind-only states are illegal transitions unless `ignoreBindOnly` is true.
    * @throws {StateTransitionError} If this state is invalid, or if there is no valid child transition given the current state's value.
    * @returns {State} The new current state.
    */
-  transition () {
+  transition (ignoreBindOnly = false) {
     // validate current state value
     if (!this.state.isValid) {
       const err = new StateTransitionError(`Cannot transition from invalid current state "${this.state.name}" with value: ${this.state.unboxedValue}.`);
@@ -114,10 +128,10 @@ export class TokenStateMachine extends EventEmitter {
     } else {
       try {
         const oldState = this.state;
-        // Find the first legal transition to a non-read-only child, if possible
-        let next = this.getFirstLegalTransition(this.state);
+        // Find the first legal transition to a non-read-only, non-bind-only child, if possible
+        let next = this.getFirstLegalTransition(this.state, ignoreBindOnly);
         while (next.isReadOnly) {
-          next = this.getFirstLegalTransition(next);
+          next = this.getFirstLegalTransition(next, ignoreBindOnly);
         }
         _currentState.set(this, next);
         this.emit('state changed', this.state, oldState);

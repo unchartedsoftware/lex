@@ -6,6 +6,7 @@ const _vkey = new WeakMap();
 const _validate = new WeakMap();
 const _transitionFunction = new WeakMap();
 const _readOnly = new WeakMap();
+const _bindOnly = new WeakMap();
 const _defaultValue = new WeakMap();
 const _previewValue = new WeakMap();
 const _multivalue = new WeakMap();
@@ -39,6 +40,7 @@ const _icon = new WeakMap();
  * @param {Function | undefined} config.validation - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
  * @param {any} config.defaultValue - The default value for this state before it has been touched. Can be undefined. Should not be an `Array` (but can be an `object`).
  * @param {boolean} config.readOnly - This state is read only (for display purposes only) and should be skipped by the state machine. False by default.
+ * @param {boolean} config.bindOnly - This state is bind only (can be created programatically, but not by a user). False by default.
  * @param {boolean} config.multivalue - Whether or not this state supports multi-value entry.
  * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
  *
@@ -62,7 +64,7 @@ const _icon = new WeakMap();
  */
 export class StateTemplate extends EventEmitter {
   constructor (config) {
-    const {parent, name, vkey, transition, validate, defaultValue, readOnly, multivalue, icon} = config;
+    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, icon} = config;
     super();
     _parent.set(this, parent);
     _name.set(this, name);
@@ -72,12 +74,17 @@ export class StateTemplate extends EventEmitter {
     _defaultValue.set(this, defaultValue !== undefined ? defaultValue : null);
     _multivalue.set(this, multivalue !== undefined ? multivalue : false);
     _readOnly.set(this, readOnly !== undefined ? readOnly : false);
+    _bindOnly.set(this, bindOnly !== undefined ? bindOnly : false);
     _children.set(this, []);
     _icon.set(this, icon);
   }
 
   get isReadOnly () {
     return _readOnly.get(this);
+  }
+
+  get isBindOnly () {
+    return _bindOnly.get(this);
   }
 
   get parent () {
@@ -246,6 +253,7 @@ export class State extends EventEmitter {
   get children () { return _children.get(this); }
   get isTerminal () { return this.template.isTerminal; }
   get isReadOnly () { return this.template.isReadOnly; }
+  get isBindOnly () { return this.template.isBindOnly; }
   get isMultivalue () { return this.template.isMultivalue; }
   initialize (...args) { return this.template.initialize(...args); }
   boxValue (...args) { return this.template.boxValue(...args); }
@@ -298,13 +306,16 @@ export class State extends EventEmitter {
    * Called from a parent `State`, this method utilizes the `StateTemplate`'s transition function
    * to determine whether or not a transition to this `State` is valid given the parent's value.
    *
-   * @returns {boolean} Returns `true` iff a transition to this child is possible given the parent's value.
+   * @param {boolean} ignoreBindOnly - All bind-only states are illegal transitions unless `ignoreBindOnly` is true.
+   * @returns {boolean} Returns `true` iff a transition to this child is possible given the parent's value (and whether or not this `State` is `bindOnly`).
    */
-  get isValidTransition () {
+  isValidTransition (ignoreBindOnly = false) {
     if (this.parent === undefined) {
-      return true;
-    } else {
+      return !ignoreBindOnly || this.isBindOnly;
+    } else if (ignoreBindOnly || !this.isBindOnly) {
       return _transitionFunction.get(this.template)(this.parent.value);
+    } else {
+      return false;
     }
   }
 
