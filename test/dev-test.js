@@ -61,7 +61,7 @@ const language = Lex.from('field', OptionState, {
     Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
   ),
   Lex.from('value', TextEntryState, {
-    bindOnly: true,
+    bindOnly: true, // this state can only be transitioned to programmatically, not interactively
     ...TransitionFactory.optionMetaCompare({type: 'geohash'})
   })
 );
@@ -87,7 +87,8 @@ window.setQuery = function () {
   lex.setQuery([
     {field: 'Name', relation: 'is like', value: 'Sean'},
     {field: 'Income', relation: 'equals', value: 12},
-    {field: 'Keywords', value: ['Rob', 'Phil']}
+    {field: 'Keywords', value: ['Rob', 'Phil']},
+    {field: 'GeoHash', value: 'geohash things'}
   ]);
 };
 window.setSuggestions = function () {
