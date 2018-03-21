@@ -414,7 +414,10 @@ export class SearchBar extends Component {
         editing: this.state.tokenValues,
         tokenValues: [...this.state.tokenValues.slice(0, idx), ...this.state.tokenValues.slice(idx + 1)]
       });
-      this.state.activeMachine.bindValues(toEdit.value);
+      this.state.activeMachine.bindValues(toEdit.value).then(() => {
+        // hack to push the current value back into the archive when editing starts in the multivalue case
+        if (this.state.activeMachine.state.isMultivalue) this.state.activeMachine.archive();
+      });
     } else if (this.state.active) {
       this.setState({
         flashActive: false
