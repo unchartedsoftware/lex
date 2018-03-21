@@ -14,7 +14,8 @@ const language = Lex.from('field', OptionState, {
           new OptionStateOption('Name', {type: 'string'}),
           new OptionStateOption('Income', {type: 'number'}),
           new OptionStateOption('Keywords', {type: 'multistring'}),
-          new OptionStateOption('Date', {type: 'datetime'})
+          new OptionStateOption('Date', {type: 'datetime'}),
+          new OptionStateOption('GeoHash', {type: 'geohash'})
         ].filter(o => o.displayKey.toLowerCase().indexOf(hint.toLowerCase()) > -1));
       }, 25);
     });
@@ -30,6 +31,8 @@ const language = Lex.from('field', OptionState, {
         return '<span class="glyphicon glyphicon-list" aria-hidden="true"></span>';
       case 'Date':
         return '<span class="glyphicon glyphicon-time" aria-hidden="true"></span>';
+      case 'GeoHash':
+        return '<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>';
     }
   }
 }).branch(
@@ -56,7 +59,11 @@ const language = Lex.from('field', OptionState, {
   Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime'})).branch(
     Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIsNot('between')),
     Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
-  )
+  ),
+  Lex.from('value', TextEntryState, {
+    bindOnly: true,
+    ...TransitionFactory.optionMetaCompare({type: 'geohash'})
+  })
 );
 
 const lex = new Lex({
