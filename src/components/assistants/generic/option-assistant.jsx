@@ -115,6 +115,9 @@ export class OptionAssistant extends Assistant {
         if (activeOption) {
           this.machineState.value = activeOption;
           this.requestTransition();
+        } else if (this.state.suggestions.length === 1 && !this.machineState.allowUnknown) {
+          this.machineState.value = this.state.suggestions[0];
+          this.requestTransition();
         }
         break;
       default:
