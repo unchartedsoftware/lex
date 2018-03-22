@@ -24,8 +24,11 @@ export class CurrencyEntryState extends OptionState {
   }
 
   formatUnboxedValue (key) {
-    if (key === undefined && key === null) return null;
+    // don't format things that don't make sense
+    if (key === undefined || key === null) return null;
     if (key.length === 0) return '';
+    if (isNaN(key)) return key;
+    // otherwise format with commas and dollar sign
     const chars = key.split('').reverse();
     let commaKey = [];
     while (chars.length > 0) {

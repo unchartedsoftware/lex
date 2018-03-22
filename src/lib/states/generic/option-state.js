@@ -166,6 +166,7 @@ export class OptionState extends StateTemplate {
    * Transform a `key` of an `OptionStateOption` within this `State` into a
    * `displayKey` - what a user would actually see or type. Override in a subclass if the
    * `displayKey`s should be different from `key`s.
+   * TIP: Don't format values that don't "make sense". Pass them through as-is and allow validation to catch them.
    *
    * @param {string} key - The key of an `OptionStateOption` within this `State`.
    * @returns {string} What the user actually types/sees.
