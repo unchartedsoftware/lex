@@ -43,6 +43,12 @@ div.lex-box {
   }
 }
 
+div.lex-box div.lex-placeholder {
+  line-height: 20px;
+  user-select: none;
+  margin: 0.2rem;
+}
+
 div.lex-box div.token  {
   color: $lex-token-color;
   display: inline-block;
@@ -250,7 +256,7 @@ div.lex-assistant-box {
       bottom: 0;
       left: 50%;
     }
-    
+
     .lex-dp-container {
       background-color: #f5f5f5;
     }

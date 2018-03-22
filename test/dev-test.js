@@ -68,6 +68,7 @@ const language = Lex.from('field', OptionState, {
 
 const lex = new Lex({
   language: language,
+  placeholder: 'Start typing to search...',
   defaultValue: [],
   tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>'
 });
