@@ -271,6 +271,7 @@ export class State extends EventEmitter {
   get isBindOnly () { return this.template.isBindOnly; }
   get isMultivalue () { return this.template.isMultivalue; }
   initialize (...args) { return this.template.initialize(...args); }
+  doInitialize (...args) { return this.template.doInitialize(...args); }
   boxValue (...args) { return this.template.boxValue(...args); }
   unboxValue (...args) { return this.template.unboxValue(...args); }
 
