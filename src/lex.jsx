@@ -23,6 +23,7 @@ import { DateTimeEntryAssistant } from './components/assistants/temporal/datetim
 import * as KEYS from './lib/keys';
 
 const _language = new WeakMap();
+const _placeholder = new WeakMap();
 const _builders = new WeakMap();
 const _proxiedEvents = new WeakMap();
 const _defaultValue = new WeakMap();
@@ -42,6 +43,7 @@ const _multivaluePasteDelimiter = new WeakMap();
  *
  * @param {object} config - The configuration for this instance of `Lex`.
  * @param {StateTemplate} config.language - The root state of the search language this bar will support.
+ * @param {string|undefined} config.placeholder - Placeholder text for the search bar (optional).
  * @param {string[]} config.proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any). `['ArrowUp', 'ArrowDown', 'Tab', 'Enter']` by default.
  * @param {Object[]} config.defaultQuery - The default search state for this search box. Can either be an array of arrays of boxed or unboxed (basic type) values.
  * @param {string} config.tokenXIcon - The default X icon for tokens (DOM string).
@@ -60,6 +62,7 @@ class Lex extends EventEmitter {
   constructor (config) {
     const {
       language,
+      placeholder,
       proxiedEvents = [KEYS.UP_ARROW, KEYS.DOWN_ARROW, KEYS.TAB, KEYS.ENTER],
       defaultQuery = [],
       tokenXIcon = '&times;',
@@ -70,6 +73,7 @@ class Lex extends EventEmitter {
     // TODO throw if language is not instanceof StateTemplate
     if (language.root.isBindOnly) throw new Error('Root StateTemplate of language cannot be bind-only.');
     _language.set(this, language.root);
+    _placeholder.set(this, placeholder);
     _builders.set(this, new StateBuilderFactory());
     _defaultValue.set(this, defaultQuery);
     _builders.get(this).registerBuilder(OptionState, OptionBuilder)
@@ -154,6 +158,7 @@ class Lex extends EventEmitter {
     }
     this.root = render((
       <SearchBar
+        placeholder={_placeholder.get(this)}
         value={_defaultValue.get(this)}
         builders={_builders.get(this)}
         machineTemplate={_language.get(this)}

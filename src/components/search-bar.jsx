@@ -13,6 +13,7 @@ export class SearchBar extends Component {
   constructor () {
     super();
     this.state = {
+      placeholder: undefined,
       tokenValues: [],
       suggestions: [],
       builders: undefined,
@@ -36,6 +37,7 @@ export class SearchBar extends Component {
 
   processProps (props) {
     const {
+      placeholder,
       machineTemplate,
       builders,
       value = [],
@@ -50,6 +52,11 @@ export class SearchBar extends Component {
       onStartToken = () => {},
       onEndToken = () => {}
     } = props;
+    if (placeholder !== this.state.placeholder) {
+      this.setState({
+        placeholder: placeholder
+      });
+    }
     if (machineTemplate !== this.state.machineTemplate) {
       this.cleanupListeners();
       this.setState({
@@ -462,9 +469,10 @@ export class SearchBar extends Component {
     this.state.onSuggestionsChanged(this.state.suggestions, oldSuggestionValues, newUnboxedValues, oldUnboxedValues);
   }
 
-  render (props, {active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, multivalueDelimiter, multivaluePasteDelimiter}) {
+  render (props, {placeholder, active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
       <div className={'lex-box form-control' + (active ? ' active' : '') + (focused ? ' focused' : '')} onKeyDown={this.onKeyDown} onMouseDown={this.activate} onFocus={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
+        { !active && placeholder !== undefined && tokenValues.length === 0 && suggestions.length === 0 ? <div className='text-muted lex-placeholder'>{ placeholder }</div> : '' }
         {
           tokenValues.map((v, i) => {
             return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} focused={false} />;
