@@ -30,15 +30,6 @@ export class OptionAssistant extends Assistant {
   }
 
   @bind
-  onUnboxedValueChangeAttempted (newUnboxedValue = '') {
-    const val = newUnboxedValue === null ? newUnboxedValue = '' : newUnboxedValue.toLowerCase();
-    const filteredOptions = !this.machineStateTemplate.hasAsyncOptions ? this.machineStateTemplate.options.filter(o => this.machineStateTemplate.formatUnboxedValue(o.key).toLowerCase().indexOf(val) === 0) : this.state.options;
-    this.setState({
-      suggestions: filteredOptions.filter(o => !o.hidden).slice(0, this.machineStateTemplate.suggestionLimit)
-    });
-  }
-
-  @bind
   onOptionSelected (option) {
     this.machineState.unboxedValue = option.key;
     if (this.machineState.isMultivalue) {
@@ -73,22 +64,6 @@ export class OptionAssistant extends Assistant {
       });
     }
     if (this.machineState) this.machineStateTemplate.on('options changed', this.onOptionsChanged);
-  }
-
-  connectListeners () {
-    super.connectListeners();
-    if (this.machineState) {
-      // this.machineStateTemplate.on('options changed', this.onOptionsChanged); // TODO not sure why this doesn't work here
-      this.machineState.on('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
-    }
-  }
-
-  cleanupListeners () {
-    super.cleanupListeners();
-    if (this.machineState) {
-      // this.machineStateTemplate.removeListener('options changed', this.onOptionChanged); // TODO not sure why this doesn't work here
-      this.machineState.removeListener('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
-    }
   }
 
   delegateEvent (e) {
@@ -149,7 +124,7 @@ export class OptionAssistant extends Assistant {
   }
 
   renderInteractive (props, {activeOption, suggestions}) {
-    if (!this.machineState.isMultivalue && !this.machineStateTemplate.hasAsyncOptions && this.machineStateTemplate.options.length === 0) {
+    if (!this.machineState.isMultivalue && this.machineStateTemplate.options.length === 0) {
       return;
     }
     return (

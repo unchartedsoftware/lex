@@ -43,6 +43,7 @@ export class OptionStateOption {
   get meta () { return _meta.get(this); }
 }
 
+const _initialOptions = new WeakMap();
 const _options = new WeakMap();
 const _refreshOptions = new WeakMap();
 const _allowUnknown = new WeakMap();
@@ -80,10 +81,14 @@ export class OptionState extends StateTemplate {
     if (config.allowUnknown === undefined) config.allowUnknown = false;
     if (config.suggestionLimit === undefined) config.suggestionLimit = 10;
     super(config);
+
+    _options.set(this, []);
     if (Array.isArray(config.options)) {
-      _options.set(this, config.options);
+      _initialOptions.set(this, config.options);
+      _refreshOptions.set(this, (hint = '') => {
+        this.options = _initialOptions.get(this).filter(o => o.key.toLowerCase().indexOf(hint) === 0);
+      });
     } else {
-      _options.set(this, []);
       _refreshOptions.set(this, async (hint = '', context = []) => {
         try {
           this.options = await config.options.call(this, hint, context);
@@ -196,13 +201,6 @@ export class OptionState extends StateTemplate {
   unboxValue (option) {
     if (option === undefined || option === null) return null;
     return option.key;
-  }
-
-  /**
-   * @returns {boolean} - Returns true if this `OptionState` retrieves options asynchronously. False otherwise.
-   */
-  get hasAsyncOptions () {
-    return _refreshOptions.has(this);
   }
 
   /**

@@ -52,7 +52,6 @@ export class OptionBuilder extends Builder {
   @bind
   handleKeyDown (e) {
     let consumed = true;
-    this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(e.target.value);
     const nothingEntered = e.target.value === undefined || e.target.value === null || e.target.value.length === 0;
     switch (e.keyCode) {
       case this.state.multivalueDelimiter:
@@ -78,7 +77,11 @@ export class OptionBuilder extends Builder {
             this.requestUnarchive();
           }
         }
-        if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
+        if (this.machineState.previewValue) {
+          this.value = this.machineState.previewValue;
+        } else {
+          this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(e.target.value);
+        }
         consumed = this.requestTransition(); // only consume the event if the transition succeeds
         break;
       case BACKSPACE:
@@ -105,10 +108,7 @@ export class OptionBuilder extends Builder {
 
   @bind
   handleKeyUp (e) {
-    this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(e.target.value);
-    if (this.machineStateTemplate.hasAsyncOptions) {
-      this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue(e.target.value), this.machine.boxedValue);
-    }
+    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue(e.target.value), this.machine.boxedValue);
   }
 
   focus () {
