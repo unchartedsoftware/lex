@@ -38,13 +38,13 @@ export class OptionBuilder extends Builder {
 
   componentWillMount () {
     super.componentWillMount();
-    this.machineStateTemplate.refreshOptions('', this.machine.boxedValue);
+    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue(''), this.machine.boxedValue);
   }
 
   processProps (props) {
     const { machineState } = props;
     this.setState({
-      typedText: machineState.unboxedValue ? machineState.unboxedValue : ''
+      typedText: machineState.unboxedValue ? machineState.template.formatUnboxedValue(machineState.unboxedValue) : ''
     });
     return super.processProps(props);
   }
@@ -52,10 +52,10 @@ export class OptionBuilder extends Builder {
   @bind
   handleKeyDown (e) {
     let consumed = true;
-    this.unboxedValue = e.target.value;
+    const nothingEntered = e.target.value === undefined || e.target.value === null || e.target.value.length === 0;
     switch (e.keyCode) {
       case this.state.multivalueDelimiter:
-        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
+        if (nothingEntered) {
           consumed = false;
           break;
         }
@@ -67,7 +67,7 @@ export class OptionBuilder extends Builder {
         break;
       case ENTER:
       case TAB:
-        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
+        if (nothingEntered) {
           // if nothing is entered, but the archive has values, we can still request a transition
           // unarchive most recent value and request.
           if (this.archive.length === 0) {
@@ -77,11 +77,15 @@ export class OptionBuilder extends Builder {
             this.requestUnarchive();
           }
         }
-        if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
+        if (this.machineState.previewValue) {
+          this.value = this.machineState.previewValue;
+        } else {
+          this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(e.target.value);
+        }
         consumed = this.requestTransition(); // only consume the event if the transition succeeds
         break;
       case BACKSPACE:
-        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
+        if (nothingEntered) {
           this.requestRewind();
         } else {
           consumed = false;
@@ -104,10 +108,7 @@ export class OptionBuilder extends Builder {
 
   @bind
   handleKeyUp (e) {
-    this.unboxedValue = e.target.value;
-    if (this.machineStateTemplate.hasAsyncOptions) {
-      this.machineStateTemplate.refreshOptions(e.target.value, this.machine.boxedValue);
-    }
+    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue(e.target.value), this.machine.boxedValue);
   }
 
   focus () {
@@ -127,11 +128,11 @@ export class OptionBuilder extends Builder {
   onValueChanged (newValue) {
     if (this.machineStateTemplate.allowUnknown) {
       this.setState({
-        typedText: newValue ? newValue.displayKey : ''
+        typedText: newValue ? this.machineStateTemplate.formatUnboxedValue(newValue.key) : ''
       });
     } else if (newValue) {
       this.setState({
-        typedText: newValue.displayKey
+        typedText: this.machineStateTemplate.formatUnboxedValue(newValue.key)
       });
     }
   }
@@ -151,7 +152,7 @@ export class OptionBuilder extends Builder {
       const clipboardData = (e.clipboardData || window.clipboardData).getData('Text');
       const values = clipboardData.split(this.state.multivaluePasteDelimiter).map(e => e.trim());
       values.forEach(v => {
-        this.machineState.unboxedValue = v;
+        this.machineState.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(v);
         this.requestArchive();
       });
     }
@@ -160,13 +161,14 @@ export class OptionBuilder extends Builder {
   renderReadOnly (props, state) {
     const units = this.machineStateTemplate.units !== undefined ? <span className='text-muted'> { this.machineStateTemplate.units }</span> : '';
     if (this.machineState.value) {
+      const shortKey = this.machineState.value.shortKey !== undefined ? this.machineState.value.shortKey : this.machineStateTemplate.formatUnboxedValue(this.machineState.value.key);
       if (this.machineState.isMultivalue && this.archive.length > 0) {
         return (
-          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey}{units} & {this.archive.length} others</span>
+          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{shortKey}{units} & {this.archive.length} others</span>
         );
       } else {
         return (
-          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.value.shortKey}{units}</span>
+          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{shortKey}{units}</span>
         );
       }
     } else {

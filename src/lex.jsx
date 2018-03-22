@@ -14,6 +14,7 @@ import { NumericRelationState } from './lib/states/numeric/numeric-relation-stat
 import { DateTimeRelationState } from './lib/states/temporal/datetime-relation-state';
 import { TextEntryState } from './lib/states/text/text-entry-state';
 import { NumericEntryState } from './lib/states/numeric/numeric-entry-state';
+import { CurrencyEntryState } from './lib/states/numeric/currency-entry-state';
 import { DateTimeEntryState } from './lib/states/temporal/datetime-entry-state';
 import { LabelBuilder } from './components/builders/generic/label-builder';
 import { OptionBuilder } from './components/builders/generic/option-builder';
@@ -247,6 +248,7 @@ export {
   NumericRelationState,
   DateTimeRelationState,
   TextEntryState,
+  CurrencyEntryState,
   NumericEntryState,
   DateTimeEntryState,
   // UI components

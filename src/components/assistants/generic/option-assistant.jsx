@@ -24,25 +24,14 @@ export class OptionAssistant extends Assistant {
   onOptionsChanged (newOptions) {
     this.setState({
       options: newOptions,
-      unboxedValue: undefined,
       activeOption: -1,
       suggestions: newOptions.filter(o => !o.hidden).slice(0, this.machineStateTemplate.suggestionLimit)
     });
   }
 
   @bind
-  onUnboxedValueChangeAttempted (newUnboxedValue = '') {
-    const val = newUnboxedValue === null ? newUnboxedValue = '' : newUnboxedValue.toLowerCase();
-    const filteredOptions = !this.machineStateTemplate.hasAsyncOptions ? this.machineStateTemplate.options.filter(o => o.displayKey.toLowerCase().indexOf(val) === 0).filter(o => !o.hidden) : this.state.options.filter(o => !o.hidden);
-    this.setState({
-      unboxedValue: newUnboxedValue.toLowerCase(),
-      suggestions: filteredOptions.slice(0, this.machineStateTemplate.suggestionLimit)
-    });
-  }
-
-  @bind
   onOptionSelected (option) {
-    this.machineState.unboxedValue = option.displayKey;
+    this.machineState.unboxedValue = option.key;
     if (this.machineState.isMultivalue) {
       const result = this.requestArchive();
       if (result) {
@@ -70,28 +59,11 @@ export class OptionAssistant extends Assistant {
     if (this.machineState !== oldMachineState) {
       this.setState({
         options: this.machineStateTemplate.options,
-        unboxedValue: undefined,
         activeOption: -1,
         suggestions: this.machineStateTemplate.options.filter(o => !o.hidden).slice(0, this.machineStateTemplate.suggestionLimit)
       });
     }
     if (this.machineState) this.machineStateTemplate.on('options changed', this.onOptionsChanged);
-  }
-
-  connectListeners () {
-    super.connectListeners();
-    if (this.machineState) {
-      // this.machineStateTemplate.on('options changed', this.onOptionsChanged); // TODO not sure why this doesn't work here
-      this.machineState.on('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
-    }
-  }
-
-  cleanupListeners () {
-    super.cleanupListeners();
-    if (this.machineState) {
-      // this.machineStateTemplate.removeListener('options changed', this.onOptionChanged); // TODO not sure why this doesn't work here
-      this.machineState.removeListener('unboxed value change attempted', this.onUnboxedValueChangeAttempted);
-    }
   }
 
   delegateEvent (e) {
@@ -143,7 +115,7 @@ export class OptionAssistant extends Assistant {
           <div className='assistant-header'>Entered Values</div>
           <ul>
             {
-              this.machineState.archive.map((o, idx) => <li tabIndex='0' className='removable' onClick={() => this.onArchivedRemoved(idx)}>{o.displayKey}<em className='pull-right'>(click to remove)</em></li>)
+              this.machineState.archive.map((o, idx) => <li tabIndex='0' className='removable' onClick={() => this.onArchivedRemoved(idx)}>{this.machineStateTemplate.formatUnboxedValue(o.key)}<em className='pull-right'>(click to remove)</em></li>)
             }
           </ul>
         </div>
@@ -152,7 +124,7 @@ export class OptionAssistant extends Assistant {
   }
 
   renderInteractive (props, {activeOption, suggestions}) {
-    if (!this.machineState.isMultivalue && !this.machineStateTemplate.hasAsyncOptions && this.machineStateTemplate.options.length === 0) {
+    if (!this.machineState.isMultivalue && this.machineStateTemplate.options.length === 0) {
       return;
     }
     return (
@@ -170,7 +142,7 @@ export class OptionAssistant extends Assistant {
             { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
             <ul>
               {
-                suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} onMouseOver={() => this.onOptionHover(idx)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{o.displayKey}</li>)
+                suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} onMouseOver={() => this.onOptionHover(idx)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{this.machineStateTemplate.formatUnboxedValue(o.key)}</li>)
               }
               { (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
             </ul>

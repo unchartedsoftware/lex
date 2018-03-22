@@ -1,7 +1,6 @@
 import { StateTemplate } from '../../state';
 
 const _key = new WeakMap();
-const _displayKey = new WeakMap();
 const _shortKey = new WeakMap();
 const _meta = new WeakMap();
 const _hidden = new WeakMap();
@@ -13,15 +12,13 @@ const _hidden = new WeakMap();
  * @param {any} meta - Whatever you want.
  * @param {object} config - Additional configuration for this `OptionStateOption`.
  * @param {boolean} config.hidden - If true, this `OptionStateOption` will never be suggested to the user.
- * @param {string|undefined} config.displayKey - An alternative representation of `key`, utilized in its place for all visual representatations of key. Will default to `key` if not supplied.
- * @param {string|undefined} config.shortKey - A shorter representation of `key` displayed in read-only mode. Will default to `config.displayKey` if not supplied.
+ * @param {string|undefined} config.shortKey - A shorter representation of `key` displayed in read-only mode. Optional.
  */
 export class OptionStateOption {
   constructor (key, meta, config = {}) {
     _key.set(this, key);
     _meta.set(this, meta);
-    _displayKey.set(this, config.displayKey === undefined ? key : config.displayKey);
-    _shortKey.set(this, config.shortKey === undefined ? _displayKey.get(this) : config.shortKey);
+    _shortKey.set(this, config.shortKey);
     _hidden.set(this, config.hidden && true);
   }
 
@@ -29,11 +26,6 @@ export class OptionStateOption {
    * @returns {string} The label for this option.
    */
   get key () { return _key.get(this); }
-
-  /**
-   * @returns {string} The alternative label for this option.
-   */
-  get displayKey () { return _displayKey.get(this); }
 
   /**
    * @returns {string} The abbreviated label for this option.
@@ -51,6 +43,7 @@ export class OptionStateOption {
   get meta () { return _meta.get(this); }
 }
 
+const _initialOptions = new WeakMap();
 const _options = new WeakMap();
 const _refreshOptions = new WeakMap();
 const _allowUnknown = new WeakMap();
@@ -70,7 +63,7 @@ const _suggestionCache = new WeakMap();
  * - `on('options changed', (newOptions, oldOptions) => {})` when the internal list of options changes.
  *
  * @param {Object} config - A configuration object. Inherits all options from `StateTemplate`, and adds the following:
- * @param {Option[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If an async function is supplied, be sure to call refreshOptions() from the associated builder before it mounts to ensure proper presentation/validation.
+ * @param {Option[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If a function is supplied, it will execute in the scope of this `OptionState`, allowing access to its instance methods.
  * @param {boolean | undefined} config.allowUnknown - Allow user to enter unknown options by entering custom values. Defaults to false.
  * @param {number | undefined} config.suggestionLimit - A limit on the number of options that will be shown at one time. Defaults to 10.
  * @param {string} config.units - A textual label which represents "units" for the option state (will display to the right of the builder)
@@ -81,20 +74,24 @@ export class OptionState extends StateTemplate {
       config.validate = (thisVal) => {
         if (thisVal === null || thisVal === undefined) return false;
         if (this.allowUnknown) return true;
-        return this.options.filter(o => o.displayKey === thisVal.displayKey).length === 1;
+        return this.options.filter(o => o.key === thisVal.key).length === 1;
       };
     }
     if (config.options === undefined) config.options = [];
     if (config.allowUnknown === undefined) config.allowUnknown = false;
     if (config.suggestionLimit === undefined) config.suggestionLimit = 10;
     super(config);
+
+    _options.set(this, []);
     if (Array.isArray(config.options)) {
-      _options.set(this, config.options);
+      _initialOptions.set(this, config.options);
+      _refreshOptions.set(this, (hint = '') => {
+        this.options = _initialOptions.get(this).filter(o => o.key.toLowerCase().indexOf(hint) === 0);
+      });
     } else {
-      _options.set(this, []);
       _refreshOptions.set(this, async (hint = '', context = []) => {
         try {
-          this.options = await config.options(hint, context);
+          this.options = await config.options.call(this, hint, context);
         } catch (err) {
           console.error('Could not refresh list of options.');
           throw err;
@@ -155,13 +152,38 @@ export class OptionState extends StateTemplate {
   }
 
   /**
-   * Transform a user-supplied value into an internal representation.
+   * Transform a user-supplied value into a `key`. Override in a subclass if the
+   * `displayKey`s should be different from `key`s.
+   *
+   * @param {string} displayKey - What the user actually types/sees.
+   * @returns {string} The key of an `OptionStateOption` within this `State`.
+   */
+  unformatUnboxedValue (displayKey) {
+    return displayKey;
+  }
+
+  /**
+   * Transform a `key` of an `OptionStateOption` within this `State` into a
+   * `displayKey` - what a user would actually see or type. Override in a subclass if the
+   * `displayKey`s should be different from `key`s.
+   * TIP: Don't format values that don't "make sense". Pass them through as-is and allow validation to catch them.
+   *
+   * @param {string} key - The key of an `OptionStateOption` within this `State`.
+   * @returns {string} What the user actually types/sees.
+   */
+  formatUnboxedValue (key) {
+    return key;
+  }
+
+  /**
+   * Transform a key into an internal representation, where a key is the transformation of a user-supplied
+   * value by unformatUnboxedValue.
    *
    * @param {string} key - The user-supplied value.
    * @returns {OptionStateOption} An `OptionStateOption` instance.
    */
   boxValue (key) {
-    const matches = this.options.filter(o => o.displayKey.toLowerCase() === String(key).toLowerCase());
+    const matches = this.options.filter(o => o.key.toLowerCase() === String(key).toLowerCase());
     if (matches.length > 0) {
       return matches[0];
     } else if (this.allowUnknown) {
@@ -179,25 +201,18 @@ export class OptionState extends StateTemplate {
    */
   unboxValue (option) {
     if (option === undefined || option === null) return null;
-    return option.displayKey;
+    return option.key;
   }
 
   /**
-   * @returns {boolean} - Returns true if this `OptionState` retrieves options asynchronously. False otherwise.
-   */
-  get hasAsyncOptions () {
-    return _refreshOptions.has(this);
-  }
-
-  /**
-   * Perform any asynchronuos operations required to initialize this `State`.
+   * Perform any asynchronous operations required to initialize this `State`.
    *
    * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    * @returns {Promise} A `Promise` which resolves when initialize completes successfully, rejecting otherwise.
    */
   async initialize (context = []) {
     await super.initialize();
-    await this.refreshOptions('', context);
+    await this.refreshOptions(this.unformatUnboxedValue(''), context);
   }
 
   reset () {
@@ -209,7 +224,7 @@ export class OptionState extends StateTemplate {
    * Can be called by a child class to trigger a refresh of options based on a hint (what the
    * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.options`.
    *
-   * @param {string | undefined} hint - What the user has typed, if anything.
+   * @param {string | undefined} hint - What the user has typed, if anything, converted to a key by unformatUnboxedValue.
    * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    * @returns {Promise} Resolves with the new list of options.
    */

@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, NumericEntryState, LabelState, DateTimeRelationState, DateTimeEntryState } from '../src/lex';
+import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import '../node_modules/tiny-date-picker/tiny-date-picker.css';
 
@@ -12,11 +12,11 @@ const language = Lex.from('field', OptionState, {
       setTimeout(() => {
         resolve([
           new OptionStateOption('Name', {type: 'string'}),
-          new OptionStateOption('Income', {type: 'number'}),
+          new OptionStateOption('Income', {type: 'currency'}),
           new OptionStateOption('Keywords', {type: 'multistring'}),
           new OptionStateOption('Date', {type: 'datetime'}),
           new OptionStateOption('GeoHash', {type: 'geohash'}, {hidden: true})
-        ].filter(o => o.displayKey.toLowerCase().indexOf(hint.toLowerCase()) > -1));
+        ].filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
       }, 25);
     });
   },
@@ -47,14 +47,14 @@ const language = Lex.from('field', OptionState, {
     ].map(t => new OptionStateOption(t)),
     ...TransitionFactory.optionMetaCompare({type: 'multistring'})
   }),
-  Lex.from('relation', NumericRelationState, TransitionFactory.optionMetaCompare({type: 'number'})).branch(
-    Lex.from('value', NumericEntryState, { units: 'CAD', ...TransitionFactory.optionKeyIsNot('between') }),
+  Lex.from('relation', NumericRelationState, TransitionFactory.optionMetaCompare({type: 'currency'})).branch(
+    Lex.from('value', CurrencyEntryState, { units: 'CAD', ...TransitionFactory.optionKeyIsNot('between') }),
     // override icon in this state as an example. Last icon specified in the chain is used.
-    Lex.from('value', NumericEntryState, {
+    Lex.from('value', CurrencyEntryState, {
       icon: () => '<span class="glyphicon glyphicon-usd" aria-hidden="true"></span><span class="glyphicon glyphicon-usd" aria-hidden="true"></span>',
       units: 'CAD',
       ...TransitionFactory.optionKeyIs('between')
-    }).to(LabelState, {label: 'and'}).to('secondaryValue', NumericEntryState, { units: 'CAD' })
+    }).to(LabelState, {label: 'and'}).to('secondaryValue', CurrencyEntryState, { units: 'CAD' })
   ),
   Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime'})).branch(
     Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIsNot('between')),
