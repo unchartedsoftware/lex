@@ -1,5 +1,6 @@
 import EventEmitter from 'wolfy87-eventemitter';
 
+const _initialized = new WeakMap();
 const _parent = new WeakMap();
 const _name = new WeakMap();
 const _vkey = new WeakMap();
@@ -127,8 +128,22 @@ export class StateTemplate extends EventEmitter {
     return this.children.length === 0;
   }
 
+  get initialized () {
+    return _initialized.get(this) || true;
+  }
+
+  /*
+   * @private
+   */
+  async doInitialize (context = []) {
+    if (_initialized.has(this)) return;
+    const result = await this.initialize(context);
+    _initialized.set(this, true);
+    return result;
+  }
+
   /**
-   * Perform any asynchronuos operations required to initialize this `State`.
+   * Perform any asynchronous operations required to initialize this `State`.
    * Override in subclasses to add asynchronous functionality to a `State`.
    *
    * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
