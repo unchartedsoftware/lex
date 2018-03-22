@@ -60,7 +60,7 @@ export class TokenStateMachine extends EventEmitter {
     if (values !== undefined) {
       const copy = Object.assign(Object.create(null), values);
       while (Object.keys(copy).length > 0) {
-        await this.state.initialize(this.boxedValue);
+        await this.state.doInitialize(this.boxedValue);
         const v = copy[this.state.vkey];
         if (v === undefined) {
           break; // we're missing a value for the current state, so break out.
@@ -133,6 +133,7 @@ export class TokenStateMachine extends EventEmitter {
         while (next.isReadOnly) {
           next = this.getFirstLegalTransition(next, ignoreBindOnly);
         }
+        next.doInitialize(this.boxedValue);
         _currentState.set(this, next);
         this.emit('state changed', this.state, oldState);
         return this.state;
