@@ -18,7 +18,7 @@ const language = Lex
       // It is up to us to filter our options based on the provided hint, we are using
       // a simple check for if our option label contains the current hint
       function optionMatchesHint (option) {
-        return option.displayKey.toLowerCase().indexOf(hint.toLowerCase()) > -1;
+        return option.key.toLowerCase().indexOf(hint.toLowerCase()) > -1;
       }
 
       // Return a list of options for the user to pick from

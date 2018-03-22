@@ -8,7 +8,7 @@ const _dateFormat = new WeakMap();
  *
  * @param {Object} config - A configuration object. Supports all of the parameters from `StateTemplate`,
  *                          providing defaults for `name` and `validate`.
- * @param {string|undefined} config.format - The acceptable format for a typed date. Defaults to `'YYYY/MM/DDbecause'`.
+ * @param {string|undefined} config.format - The acceptable format for a typed date. Defaults to `'YYYY/MM/DD'`.
  */
 export class DateTimeEntryState extends StateTemplate {
   constructor (config) {
