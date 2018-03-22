@@ -6,7 +6,8 @@ For current documentation, please clone the project and run:
 
 ```bash
 npm install
-npm run serve-docs
+npm run serve-docs # read the docs
+npm run demo # view the demos
 ```
 
 The following co-requisites must be part of your JS build in order to use Lex:

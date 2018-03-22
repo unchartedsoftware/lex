@@ -4,18 +4,21 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const fs = require('fs');
 
 const testFolder = path.resolve(__dirname, '../test');
+console.log(process.env.DEV_ONLY);
+const entry = fs.readdirSync(testFolder)
+  .filter(c => process.env.DEV_ONLY === undefined || c === 'dev-test.js')
+  .reduce((result, current) => {
+    if (current.indexOf('.js') < 0) {
+      return result;
+    }
+    const moduleName = current.replace('.js', '');
+    result[moduleName] = path.resolve(testFolder, current);
+    return result;
+  }, {});
 
 module.exports = {
   devtool: 'inline-source-map',
-  entry: fs.readdirSync(testFolder)
-    .reduce((result, current) => {
-      if (current.indexOf('.js') < 0) {
-        return result;
-      }
-      const moduleName = current.replace('.js', '');
-      result[moduleName] = path.resolve(testFolder, current);
-      return result;
-    }, {}),
+  entry: entry,
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, '../dist')
