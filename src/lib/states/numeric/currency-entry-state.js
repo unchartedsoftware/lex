@@ -25,6 +25,7 @@ export class CurrencyEntryState extends OptionState {
 
   formatUnboxedValue (key) {
     if (key === undefined && key === null) return null;
+    if (key.length === 0) return '';
     const chars = key.split('').reverse();
     let commaKey = [];
     while (chars.length > 0) {
