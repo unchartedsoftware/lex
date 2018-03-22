@@ -47,6 +47,7 @@ export class OptionAssistant extends Assistant {
       const result = this.requestArchive();
       if (result) {
         this.machineState.unboxedValue = null;
+        this.machineStateTemplate.refreshOptions('', this.machine.boxedValue);
       }
     } else {
       this.requestTransition();
