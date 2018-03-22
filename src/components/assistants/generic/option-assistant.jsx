@@ -33,7 +33,7 @@ export class OptionAssistant extends Assistant {
   @bind
   onUnboxedValueChangeAttempted (newUnboxedValue = '') {
     const val = newUnboxedValue === null ? newUnboxedValue = '' : newUnboxedValue.toLowerCase();
-    const filteredOptions = !this.machineStateTemplate.hasAsyncOptions ? this.machineStateTemplate.options.filter(o => o.displayKey.toLowerCase().indexOf(val) === 0).filter(o => !o.hidden) : this.state.options;
+    const filteredOptions = !this.machineStateTemplate.hasAsyncOptions ? this.machineStateTemplate.options.filter(o => o.displayKey.toLowerCase().indexOf(val) === 0).filter(o => !o.hidden) : this.state.options.filter(o => !o.hidden);
     this.setState({
       unboxedValue: newUnboxedValue.toLowerCase(),
       suggestions: filteredOptions.slice(0, this.machineStateTemplate.suggestionLimit)
@@ -51,6 +51,11 @@ export class OptionAssistant extends Assistant {
     } else {
       this.requestTransition();
     }
+  }
+
+  @bind
+  onOptionHover (idx) {
+    this.setState({activeOption: idx});
   }
 
   @bind
@@ -165,7 +170,7 @@ export class OptionAssistant extends Assistant {
             { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
             <ul>
               {
-                suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{o.displayKey}</li>)
+                suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} onMouseOver={() => this.onOptionHover(idx)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{o.displayKey}</li>)
               }
               { (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
             </ul>

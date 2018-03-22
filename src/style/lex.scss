@@ -207,7 +207,7 @@ div.lex-assistant-box {
       }
       &.selectable {
         cursor: pointer;
-        &:hover, &.active {
+        &.active {
           color: $lex-highlight-text-color;
           background-color: $lex-highlight-color;
         }
