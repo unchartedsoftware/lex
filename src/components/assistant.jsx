@@ -31,7 +31,7 @@ export class Assistant extends Builder {
       <div className='assistant'>
         <div className='assistant-header'>
           {instructions}
-          <span className='pull-right'>
+          <span className='pull-right assistant-menu'>
             {menu}
           </span>
         </div>
@@ -68,7 +68,11 @@ export class Assistant extends Builder {
    */
   renderAssistantMenu (props, state) { // eslint-disable-line no-unused-vars
     return (
-      <button className='btn btn-xs btn-default' onClick={this.requestCancel}>Cancel</button>
+      <span className='btn-group'>
+        <button className='btn btn-xs btn-default' onMouseDown={this.requestRewind} disabled={this.state.machine.state === this.state.machine.rootState}>&lt;&nbsp;Back</button>
+        <button className='btn btn-xs btn-default' onMouseDown={this.requestCancel}>Cancel</button>
+        <button className='btn btn-xs btn-default' onMouseDown={this.requestTransition}>{this.state.machine.state.isTerminal ? 'Finish' : 'Next'}&nbsp;&gt;</button>
+      </span>
     );
   }
 
