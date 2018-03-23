@@ -74,11 +74,13 @@ export class OptionAssistant extends Assistant {
       case UP_ARROW:
         this.setState({activeOption: Math.max(this.state.activeOption - 1, 0)});
         this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
+        setTimeout(() => this.fixListScrollPosition());
         break;
       // Fallthrough case to handle IE
       case DOWN_ARROW:
         this.setState({activeOption: Math.min(this.state.activeOption + 1, this.state.suggestions.length - 1)});
         this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
+        setTimeout(() => this.fixListScrollPosition());
         break;
       case this.state.multivalueDelimiter:
         if (this.machineState.isMultivalue) {
@@ -109,6 +111,17 @@ export class OptionAssistant extends Assistant {
     return consumed;
   }
 
+  fixListScrollPosition () {
+    if (this.suggestionContainer) {
+      const activeNode = this.suggestionContainer.querySelector('li.active');
+      if (activeNode && activeNode.offsetTop > this.suggestionContainer.offsetTop + this.suggestionContainer.offsetHeight - 10) {
+        this.suggestionContainer.scrollTop = activeNode.offsetTop - this.suggestionContainer.offsetTop;
+      } else if (activeNode && activeNode.offsetTop + activeNode.offsetHeight < this.suggestionContainer.scrollTop + 10) {
+        this.suggestionContainer.scrollTop = activeNode.offsetTop - this.suggestionContainer.offsetTop;
+      }
+    }
+  }
+
   renderArchive () {
     if (this.machineState.isMultivalue) {
       return (
@@ -130,7 +143,7 @@ export class OptionAssistant extends Assistant {
         <div className='assistant-body'>
           <div className={this.machineState.isMultivalue ? 'assistant-left' : ''}>
             { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
-            <ul>
+            <ul ref={(n) => { this.suggestionContainer = n; }}>
               {
                 suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} onMouseOver={() => this.onOptionHover(idx)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{this.machineStateTemplate.formatUnboxedValue(o.key)}</li>)
               }
