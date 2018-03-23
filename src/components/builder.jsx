@@ -37,6 +37,7 @@ export class Builder extends Component {
    */
   cleanupListeners () {
     if (this.state.machine) {
+      this.state.machine.removeListener('before state change', this.beforeTransition);
       this.state.machine.removeListener('state changed', this.onTransition);
       this.state.machine.removeListener('state change failed', this.onTransitionFailed);
     }
@@ -48,6 +49,7 @@ export class Builder extends Component {
    */
   connectListeners () {
     if (this.state.machine) {
+      this.state.machine.on('before state change', this.beforeTransition);
       this.state.machine.on('state changed', this.onTransition);
       this.state.machine.on('state change failed', this.onTransitionFailed);
     }
@@ -183,6 +185,16 @@ export class Builder extends Component {
         validityChanged: validityChanged
       });
     }
+  }
+
+  @bind
+  /**
+   * Called just before a component, such as this `Builder` or an `Assistant`, requests a transition.
+   * This is useful, for example, when an `Assistant` wants to trigger a transition but needs its
+   * associated `Builder` to commit a typed value to `state.unboxedValue` first.
+   */
+  beforeTransition () {
+    // Override in subclass if necessary.
   }
 
   @bind

@@ -127,23 +127,14 @@ export class DateTimeEntryAssistant extends Assistant {
     }
   }
 
-  renderInteractive (props) {
+  renderAssistantBody (props) {
     return (
-      <div className='assistant'>
-        <div className='assistant-header'>
-          {this.machineState.name}
-          <span className='pull-right'>
-            {this.machineState.isMultivalue && <span><strong>{toChar(this.state.multivalueDelimiter)}</strong> to enter multiple values&nbsp;&nbsp;&nbsp;</span>}
-            <strong>Tab</strong> to {this.machineState.isMultivalue ? 'progress' : 'select'}
-          </span>
+      <div className='assistant-body'>
+        <div className={this.machineState.isMultivalue ? 'assistant-left' : ''}>
+          { this.machineState.isMultivalue && <div className='assistant-header'>Calendar</div>}
+          <div className='lex-dp-container' ref={(input) => { this.dateContainer = input; }} />
         </div>
-        <div className='assistant-body'>
-          <div className={this.machineState.isMultivalue ? 'assistant-left' : ''}>
-            { this.machineState.isMultivalue && <div className='assistant-header'>Calendar</div>}
-            <div className='lex-dp-container' ref={(input) => { this.dateContainer = input; }} />
-          </div>
-          {this.renderArchive(props)}
-        </div>
+        {this.renderArchive(props)}
       </div>
     );
   }

@@ -120,6 +120,11 @@ export class OptionBuilder extends Builder {
   }
 
   @bind
+  beforeTransition () {
+    this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(this.state.typedText);
+  }
+
+  @bind
   onOptionsChanged (newOptions) {
     this.setState({options: newOptions});
   }

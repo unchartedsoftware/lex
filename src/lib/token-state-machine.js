@@ -117,6 +117,7 @@ export class TokenStateMachine extends EventEmitter {
    * @returns {State} The new current state.
    */
   transition (ignoreBindOnly = false) {
+    this.emit('before state change', this.state);
     // validate current state value
     if (!this.state.isValid) {
       const err = new StateTransitionError(`Cannot transition from invalid current state "${this.state.name}" with value: ${this.state.unboxedValue}.`);

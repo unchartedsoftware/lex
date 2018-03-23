@@ -186,6 +186,9 @@ div.lex-assistant-box {
     display:block;
     min-height: 2.5rem;
     padding: 0.5rem 1rem;
+    .assistant-menu {
+      margin-top: -1px;
+    }
   }
 
   ul {
