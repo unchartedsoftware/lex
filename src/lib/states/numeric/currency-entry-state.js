@@ -28,13 +28,16 @@ export class CurrencyEntryState extends OptionState {
     if (key === undefined || key === null) return null;
     if (key.length === 0) return '';
     if (isNaN(key)) return key;
+    const decimalSplit = key.split('.');
+    const dollarPart = decimalSplit[0];
+    const centsPart = decimalSplit.length > 1 ? `.${decimalSplit[1]}` : '';
     // otherwise format with commas and dollar sign
-    const chars = key.split('').reverse();
+    const chars = dollarPart.split('').reverse();
     let commaKey = [];
     while (chars.length > 0) {
       commaKey.push(chars.splice(0, 3).reverse().join(''));
     }
     commaKey = commaKey.reverse().join(',');
-    return `$${commaKey}`;
+    return `$${commaKey}${centsPart}`;
   }
 }
