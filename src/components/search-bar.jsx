@@ -198,6 +198,7 @@ export class SearchBar extends Component {
     if (this.state.active) {
       return (<Token
         active
+        editing={this.state.editing}
         flash={this.state.flashActive}
         tokenXIcon={this.state.tokenXIcon}
         multivalueDelimiter={this.state.multivalueDelimiter}
@@ -222,7 +223,7 @@ export class SearchBar extends Component {
 
   renderAssistant (activeMachine) {
     try {
-      if (!this.state.active || !this.state.focused) return;
+      if (!this.state.editing && (!this.state.active || !this.state.focused)) return;
       const Assistant = this.state.builders.getAssistant(activeMachine.state.template.constructor);
       const rect = this.searchBox.getBoundingClientRect();
       const pos = {
@@ -237,6 +238,7 @@ export class SearchBar extends Component {
         <Portal into='body' ref={(r) => { this._portal = r; }}>
           <div id='lex-assistant-box' className='lex-assistant-box' style={pos} ref={(r) => { this._portalAssistant = r; }}>
             <Assistant
+              editing={this.state.editing}
               machine={activeMachine}
               machineState={activeMachine.state}
               ref={(a) => { this.assistant = a; }}
@@ -274,9 +276,7 @@ export class SearchBar extends Component {
 
   @bind
   blur () {
-    if (this.state.editing) {
-      this.cancel();
-    } else if (this.state.activeMachine.rootState.isDefault) {
+    if (this.state.activeMachine.rootState.isDefault) {
       const {focused, active} = this.state;
       this.setState({focused: false, active: false});
       if (focused !== this.state.focused || active !== this.state.active) {

@@ -16,6 +16,7 @@ export class Builder extends Component {
     super(arguments);
     this.state = {
       valid: true,
+      editing: false,
       readOnly: false,
       multivalueDelimiter: COMMA,
       multivaluePasteDelimiter: ',',
@@ -86,6 +87,7 @@ export class Builder extends Component {
    */
   processProps (props) {
     const {
+      editing,
       machine,
       machineState,
       requestTransition = () => {},
@@ -103,6 +105,11 @@ export class Builder extends Component {
       requestCancel = () => {},
       validityChanged = () => {}
     } = props;
+    if (editing !== this.state.editing) {
+      this.setState({
+        editing: editing
+      });
+    }
     if (machine !== this.state.machine) {
       this.cleanupListeners();
       this.setState({
