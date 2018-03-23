@@ -86,12 +86,12 @@ export class OptionState extends StateTemplate {
     if (Array.isArray(config.options)) {
       _initialOptions.set(this, config.options);
       _refreshOptions.set(this, (hint = '') => {
-        this.options = _initialOptions.get(this).filter(o => o.key.toLowerCase().indexOf(hint) === 0);
+        return _initialOptions.get(this).filter(o => o.key.toLowerCase().indexOf(hint) === 0);
       });
     } else {
       _refreshOptions.set(this, async (hint = '', context = []) => {
         try {
-          this.options = await config.options.call(this, hint, context);
+          return config.options.call(this, hint, context);
         } catch (err) {
           console.error('Could not refresh list of options.');
           throw err;
@@ -231,12 +231,22 @@ export class OptionState extends StateTemplate {
   async refreshOptions (hint = '', context = []) {
     if (_refreshOptions.has(this)) {
       if (!_suggestionCache.has(this) || _suggestionCache.get(this).hint !== hint || _suggestionCache.get(this).contextLength !== context.length) {
+        const newOptions = await _refreshOptions.get(this)(hint, context);
+        // If user-created values are allowed, and this is a multi-value state,
+        // then add in an option for what the user has typed as long as what
+        // they've typed isn't identical to an existing option.
+        if (Array.isArray(newOptions) && this.allowUnknown && this.isMultivalue && hint.length > 0) {
+          if (!newOptions.map(o => o.key === hint).reduce((l, r) => l || r, false)) {
+            newOptions.unshift(this.boxValue(hint));
+          }
+        }
         _suggestionCache.set(this, {
           hint: hint,
           contextLength: context.length,
-          options: await _refreshOptions.get(this)(hint, context)
+          options: newOptions
         });
       }
+      this.options = _suggestionCache.get(this).options;
       return _suggestionCache.get(this);
     }
   }
