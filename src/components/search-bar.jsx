@@ -170,12 +170,14 @@ export class SearchBar extends Component {
       // TODO emit search change event because we just wiped out the search?
       this.state.activeMachine.on('state changed', this.forceDraw);
     }
+    window.addEventListener('resize', this.forceDraw);
   }
 
   cleanupListeners () {
     if (this.state.activeMachine) {
       this.state.activeMachine.removeListener('state changed', this.forceDraw);
     }
+    window.removeEventListener('resize', this.forceDraw);
   }
 
   @bind
