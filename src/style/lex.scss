@@ -134,6 +134,9 @@ div.lex-box div.token  {
       line-height: 21px;
       pointer-events: none;
       user-select: none;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
