@@ -94,10 +94,10 @@ export class OptionAssistant extends Assistant {
         const activeOption = this.state.suggestions[this.state.activeOption];
         if (activeOption) {
           this.machineState.value = activeOption;
-          this.requestTransition();
+          this.requestTransition({nextToken: e.keyCode === TAB});
         } else if (this.state.suggestions.length === 1 && !this.machineState.allowUnknown) {
           this.machineState.value = this.state.suggestions[0];
-          this.requestTransition();
+          this.requestTransition({nextToken: e.keyCode === TAB});
         }
         break;
       default:

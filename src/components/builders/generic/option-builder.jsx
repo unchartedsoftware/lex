@@ -82,7 +82,7 @@ export class OptionBuilder extends Builder {
         } else {
           this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(e.target.value);
         }
-        consumed = this.requestTransition(); // only consume the event if the transition succeeds
+        consumed = this.requestTransition({nextToken: e.keyCode === TAB}); // only consume the event if the transition succeeds
         break;
       case BACKSPACE:
         if (nothingEntered) {

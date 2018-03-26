@@ -100,7 +100,7 @@ export class DateTimeEntryAssistant extends Assistant {
           this.boxedValue = this.dateInput.state.hilightedDate;
         }
 
-        this.requestTransition();
+        this.requestTransition({nextToken: e.keyCode === TAB});
 
         consumed = true;
         break;

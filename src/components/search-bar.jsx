@@ -144,7 +144,7 @@ export class SearchBar extends Component {
       active: false,
       editing: false
     });
-    this.queryChanged(oldQueryValues);
+    this.queryChanged(oldQueryValues, false);
   }
 
   async setSuggestions (newSuggestions) {
@@ -315,9 +315,9 @@ export class SearchBar extends Component {
   }
 
   @bind
-  transition () {
+  transition (options) {
     try {
-      this.state.activeMachine.transition();
+      this.state.activeMachine.transition(options);
       return true;
     } catch (err) {
       if (err instanceof StateTransitionError) {
@@ -379,7 +379,7 @@ export class SearchBar extends Component {
     const newState = this.state.activeMachine.rewind();
     if (oldState === newState) {
       if (this.state.editing) {
-        this.queryChanged(this.state.editing);
+        this.queryChanged(this.state.editing, false);
       }
       this.setState({active: false, editing: false, flashActive: false});
     }
@@ -395,7 +395,7 @@ export class SearchBar extends Component {
   }
 
   @bind
-  onEndToken (v) {
+  onEndToken (v, nextToken) {
     const oldQueryValues = this.state.tokenValues;
     const newMachine = new TokenStateMachine(this.state.machineTemplate);
     newMachine.bindValues(v).then(() => {
@@ -405,9 +405,13 @@ export class SearchBar extends Component {
         tokenValues: [...this.state.tokenValues, newMachine]
       });
       this.state.activeMachine.reset();
-      this.queryChanged(oldQueryValues);
+      this.queryChanged(oldQueryValues, nextToken);
       this.state.onEndToken();
-      this.state.onStartToken();
+      if (nextToken) {
+        this.state.onStartToken();
+      } else {
+        this.blur();
+      }
     });
   }
 
@@ -422,7 +426,7 @@ export class SearchBar extends Component {
       this.setState({
         tokenValues: [...this.state.tokenValues.slice(0, idx), ...this.state.tokenValues.slice(idx + 1)]
       });
-      this.queryChanged(oldQueryValues);
+      this.queryChanged(oldQueryValues, false);
     }
   }
 
@@ -470,10 +474,10 @@ export class SearchBar extends Component {
   }
 
   @bind
-  queryChanged (oldQueryValues = []) {
+  queryChanged (oldQueryValues = [], nextToken = false) {
     const newUnboxedValues = this.state.tokenValues.map(bv => bv.unboxedValue);
     const oldUnboxedValues = oldQueryValues.map(bv => bv.unboxedValue);
-    this.state.onQueryChanged(this.state.tokenValues.map(t => t.value), oldQueryValues, newUnboxedValues, oldUnboxedValues);
+    this.state.onQueryChanged(this.state.tokenValues.map(t => t.value), oldQueryValues, newUnboxedValues, oldUnboxedValues, nextToken);
   }
 
   @bind

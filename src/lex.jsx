@@ -38,7 +38,7 @@ const _multivaluePasteDelimiter = new WeakMap();
  * This class is an `EventEmitter` and exposes the following events:
  * - `on('token start', () => {})` when the user begins to create or edit a token.
  * - `on('token end', () => {})` when the user finishes creating or editing a token.
- * - `on('query changed', (newModel, oldModel, newUnboxedModel, oldUnboxedModel) => {})` when query model changes.
+ * - `on('query changed', (newModel, oldModel, newUnboxedModel, oldUnboxedModel, nextTokenStarted) => {})` when query model changes.
  * - `on('suggestions changed', (newModel, oldModel, newUnboxedModel, oldUnboxedModel) => {})` when suggestion model changes.
  * - `on('validity changed', (newValidity, oldValidity) => {})` when validity of an active builder changes.
  *

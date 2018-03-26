@@ -2,7 +2,7 @@ import { h } from 'preact';
 import linkState from 'linkstate';
 import { bind } from 'decko';
 import { Builder } from '../../builder';
-import { ENTER, BACKSPACE, ESCAPE } from '../../../lib/keys';
+import { TAB, ENTER, BACKSPACE, ESCAPE } from '../../../lib/keys';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -61,6 +61,7 @@ export class DateTimeEntryBuilder extends Builder {
         }
         break;
       case ENTER:
+      case TAB:
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
           // if nothing is entered, but the archive has values, we can still request a transition
           // unarchive most recent value and request.
@@ -72,7 +73,7 @@ export class DateTimeEntryBuilder extends Builder {
           }
         }
         if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
-        consumed = this.requestTransition(); // only consume the event if the transition succeeds
+        consumed = this.requestTransition({nextToken: e.keyCode === TAB}); // only consume the event if the transition succeeds
         break;
       case BACKSPACE:
         if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
