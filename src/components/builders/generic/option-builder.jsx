@@ -120,6 +120,13 @@ export class OptionBuilder extends Builder {
   }
 
   @bind
+  clearPreview () {
+    this.setState({
+      previewText: ''
+    });
+  }
+
+  @bind
   beforeTransition () {
     this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(this.state.typedText);
   }
@@ -182,15 +189,17 @@ export class OptionBuilder extends Builder {
   }
 
   renderInteractive (props, {valid, readOnly, typedText, previewText, machineState}) {
+    const inputClass = `token-input ${valid ? 'active' : 'invalid'}`;
     return (
       <span>
         {machineState.isMultivalue && <span className='badge'>{machineState.archive.length}</span>}
         <span className='text-input'>
           <span className='text-muted preview'>{previewText}</span>
           <input type='text'
-            className={valid ? 'token-input active' : 'token-input invalid'}
+            className={inputClass}
             onKeyDown={this.handleKeyDown}
             onKeyUp={this.handleKeyUp}
+            onMouseDown={this.clearPreview}
             value={typedText}
             onInput={linkState(this, 'typedText')}
             onFocus={this.requestFocus}

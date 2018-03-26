@@ -130,6 +130,7 @@ div.lex-box div.token  {
     position: relative;
     span.preview {
       position: absolute;
+      background: darken($lex-token-background, 15%);
       left: 2px;
       line-height: 21px;
       pointer-events: none;
