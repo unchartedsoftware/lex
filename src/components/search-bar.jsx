@@ -5,6 +5,9 @@ import { TokenStateMachine } from '../lib/token-state-machine';
 import { StateTransitionError, ValueArchiveError } from '../lib/errors';
 import { Token } from './token';
 import { COMMA } from '../lib/keys';
+import ElementResizeDetector from 'element-resize-detector';
+
+const _erd = new WeakMap();
 
 /**
  * @private
@@ -161,6 +164,17 @@ export class SearchBar extends Component {
     this.processProps(this.props);
   }
 
+  componentDidMount () {
+    if (!_erd.has(this)) _erd.set(this, ElementResizeDetector({ strategy: 'scroll' }));
+    _erd.get(this).listenTo(this.searchBox, this.forceDraw);
+    window.addEventListener('resize', this.forceDraw);
+  }
+
+  componentWillUnmount () {
+    if (_erd.has(this)) _erd.get(this).removeAllListeners(this.searchBox);
+    window.removeEventListener('resize', this.forceDraw);
+  }
+
   componentWillReceiveProps (nextProps) {
     this.processProps(nextProps);
   }
@@ -170,14 +184,12 @@ export class SearchBar extends Component {
       // TODO emit search change event because we just wiped out the search?
       this.state.activeMachine.on('state changed', this.forceDraw);
     }
-    window.addEventListener('resize', this.forceDraw);
   }
 
   cleanupListeners () {
     if (this.state.activeMachine) {
       this.state.activeMachine.removeListener('state changed', this.forceDraw);
     }
-    window.removeEventListener('resize', this.forceDraw);
   }
 
   @bind
