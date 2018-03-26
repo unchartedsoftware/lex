@@ -206,8 +206,8 @@ export class Token extends Component {
   }
 
   @bind
-  endToken () {
-    this.state.onEndToken(this.value);
+  endToken (state, nextToken) {
+    this.state.onEndToken(this.value, nextToken);
   }
 
   @bind

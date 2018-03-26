@@ -227,9 +227,11 @@ export class Builder extends Component {
   @bind
   /**
    * Call from a subclass to request the state machine for the containing token to attempt transition.
+   * @param {object} options - Options for transition
+   * @param {boolean} options.nextToken - If true, and this transition ends a token, this will trigger the start of a new one.
    */
-  requestTransition () {
-    return this.state.requestTransition();
+  requestTransition (options) {
+    return this.state.requestTransition(options);
   }
 
   @bind

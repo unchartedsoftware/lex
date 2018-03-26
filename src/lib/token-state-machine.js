@@ -83,7 +83,7 @@ export class TokenStateMachine extends EventEmitter {
         // if there's more values, transition
         if (Object.keys(copy).length > 0 || finalTransition) {
           try {
-            this.transition(true); // ignore bind-only states
+            this.transition({ignoreBindOnly: true}); // ignore bind-only states
           } catch (err) {
             console.error(err);
             throw err; // the value for this state is invalid, so break out.
@@ -116,7 +116,7 @@ export class TokenStateMachine extends EventEmitter {
    * @throws {StateTransitionError} If this state is invalid, or if there is no valid child transition given the current state's value.
    * @returns {State} The new current state.
    */
-  transition (ignoreBindOnly = false) {
+  transition ({ignoreBindOnly, nextToken} = {ignoreBindOnly: false, nextToken: true}) {
     this.emit('before state change', this.state);
     // validate current state value
     if (!this.state.isValid) {
@@ -125,7 +125,7 @@ export class TokenStateMachine extends EventEmitter {
       throw err;
     } else if (this.state.isTerminal) {
       this.emit('state changed', this.state, this.state);
-      this.emit('end', this.state);
+      this.emit('end', this.state, nextToken);
     } else {
       try {
         const oldState = this.state;
