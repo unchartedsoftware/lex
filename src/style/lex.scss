@@ -132,6 +132,8 @@ div.lex-box div.token  {
       position: absolute;
       left: 2px;
       line-height: 21px;
+      pointer-events: none;
+      user-select: none;
     }
   }
 
