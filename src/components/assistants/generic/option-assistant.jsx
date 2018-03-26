@@ -129,7 +129,7 @@ export class OptionAssistant extends Assistant {
           <div className='assistant-header'>Entered Values</div>
           <ul>
             {
-              this.machineState.archive.map((o, idx) => <li tabIndex='0' className='removable' onClick={() => this.onArchivedRemoved(idx)}>{this.machineStateTemplate.formatUnboxedValue(o.key)}<em className='pull-right'>(click to remove)</em></li>)
+              this.machineState.archive.map((o, idx) => <li tabIndex='0' className='removable clearfix' onClick={() => this.onArchivedRemoved(idx)}><span className='pull-left'>{this.machineStateTemplate.formatUnboxedValue(o.key)}</span><em className='pull-right'>(click to remove)</em></li>)
             }
           </ul>
         </div>
