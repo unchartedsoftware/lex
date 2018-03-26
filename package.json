@@ -45,6 +45,7 @@
     "babel-plugin-transform-runtime": "6.23.0",
     "decko": "1.2.0",
     "documentation": "5.3.3",
+    "element-resize-detector": "1.1.14",
     "eslint": "4.10.0",
     "eslint-config-semistandard-react": "4.2.0",
     "eslint-plugin-semistandard-react": "4.1.0",
@@ -80,6 +81,7 @@
     "eslint-loader": "2.0.0"
   },
   "peerDependencies": {
+    "element-resize-detector": "1.1.x",
     "preact": "8.x",
     "moment": "2.x",
     "tiny-date-picker": "3.x"
