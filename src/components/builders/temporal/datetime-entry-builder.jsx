@@ -2,7 +2,7 @@ import { h } from 'preact';
 import linkState from 'linkstate';
 import { bind } from 'decko';
 import { Builder } from '../../builder';
-import { TAB, ENTER, BACKSPACE, ESCAPE } from '../../../lib/keys';
+import { normalizeKey } from '../../../lib/keys';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -48,46 +48,50 @@ export class DateTimeEntryBuilder extends Builder {
   handleKeyDown (e) {
     let consumed = true;
     this.unboxedValue = e.target.value;
-    switch (e.keyCode) {
-      case this.state.multivalueDelimiter:
-        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
-          consumed = false;
-          break;
-        }
+    const key = normalizeKey(e.key);
+
+    if (this.state.multivalueDelimiter.indexOf(e.key) > -1) {
+      if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
+        consumed = false;
+      } else {
         consumed = this.machineState.isMultivalue;
         if (this.machineState.isMultivalue) {
           if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
           this.requestArchive();
         }
-        break;
-      case ENTER:
-      case TAB:
-        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
-          // if nothing is entered, but the archive has values, we can still request a transition
-          // unarchive most recent value and request.
-          if (this.archive.length === 0) {
-            consumed = false;
-            break;
-          } else {
-            this.requestUnarchive();
+      }
+    } else {
+      switch (key) {
+        case 'enter':
+        case 'tab':
+          if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
+            // if nothing is entered, but the archive has values, we can still request a transition
+            // unarchive most recent value and request.
+            if (this.archive.length === 0) {
+              consumed = false;
+              break;
+            } else {
+              this.requestUnarchive();
+            }
           }
-        }
-        if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
-        consumed = this.requestTransition({nextToken: e.keyCode === TAB}); // only consume the event if the transition succeeds
-        break;
-      case BACKSPACE:
-        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
-          this.requestRewind();
-        } else {
+          if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
+          consumed = this.requestTransition({nextToken: key === 'tab'}); // only consume the event if the transition succeeds
+          break;
+        case 'backspace':
+          if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
+            this.requestRewind();
+          } else {
+            consumed = false;
+          }
+          break;
+        case 'escape':
+          this.requestCancel();
+          break;
+        default:
           consumed = false;
-        }
-        break;
-      case ESCAPE:
-        this.requestCancel();
-        break;
-      default:
-        consumed = false;
+      }
     }
+
     if (consumed) {
       e.stopPropagation();
       e.preventDefault();

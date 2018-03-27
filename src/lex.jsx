@@ -64,7 +64,7 @@ class Lex extends EventEmitter {
     const {
       language,
       placeholder,
-      proxiedEvents = [KEYS.UP_ARROW, KEYS.DOWN_ARROW, KEYS.TAB, KEYS.ENTER],
+      proxiedEvents = [...KEYS.UP_ARROW, ...KEYS.DOWN_ARROW, ...KEYS.TAB, ...KEYS.ENTER],
       defaultQuery = [],
       tokenXIcon = '&times;',
       multivalueDelimiterKey = KEYS.COMMA,
@@ -87,9 +87,12 @@ class Lex extends EventEmitter {
     _multivalueDelimiterKey.set(this, multivalueDelimiterKey);
     _multivaluePasteDelimiter.set(this, multivaluePasteDelimiter);
     // ensure that the multivalueDelimiter is proxied to assistants
-    if (proxiedEvents.indexOf(multivalueDelimiterKey) < 0) {
-      proxiedEvents.push(multivalueDelimiterKey);
+    for (const key of multivalueDelimiterKey) {
+      if (proxiedEvents.indexOf(key) < 0) {
+        proxiedEvents.push(key);
+      }
     }
+
     proxiedEvents.forEach(e => _proxiedEvents.get(this).set(e, true));
   }
 

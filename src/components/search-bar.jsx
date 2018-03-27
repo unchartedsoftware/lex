@@ -108,9 +108,9 @@ export class SearchBar extends Component {
         tokenXIcon: tokenXIcon
       });
     }
-    if (parseInt(multivalueDelimiter) !== this.state.multivalueDelimiter) {
+    if (multivalueDelimiter !== this.state.multivalueDelimiter) {
       this.setState({
-        multivalueDelimiter: parseInt(multivalueDelimiter)
+        multivalueDelimiter: multivalueDelimiter
       });
     }
     if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {
@@ -388,8 +388,8 @@ export class SearchBar extends Component {
   @bind
   onKeyDown (e) {
     this.unboxedValue = e.target.value;
-    const code = e.keyCode;
-    if (this.assistant && this.state.proxiedEvents.get(code) === true) {
+    const key = e.key;
+    if (this.assistant && this.state.proxiedEvents.get(key) === true) {
       this.assistant.delegateEvent(e);
     }
   }
