@@ -87,7 +87,7 @@ window.clearQuery = function () {
 window.setQuery = function () {
   lex.setQuery([
     {field: 'Name', relation: 'is like', value: 'Sean'},
-    {field: 'Income', relation: 'equals', value: 12},
+    {field: 'Income', relation: 'equals', value: '12'},
     {field: 'Keywords', value: ['Rob', 'Phil']},
     {field: 'GeoHash', value: 'geohash things'}
   ]);
