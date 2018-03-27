@@ -2,8 +2,7 @@ import { h } from 'preact';
 import { bind } from 'decko';
 import { Assistant } from '../../assistant';
 import TinyDatePicker from 'tiny-date-picker';
-import { toChar } from '../../../lib/string-util';
-import { ENTER, TAB } from '../../../lib/keys';
+import { normalizeKey } from '../../../lib/keys';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -92,15 +91,17 @@ export class DateTimeEntryAssistant extends Assistant {
 
   delegateEvent (e) {
     let consumed = false;
-    switch (e.keyCode) {
-      case ENTER:
-      case TAB:
+    const key = normalizeKey(e.key);
+
+    switch (key) {
+      case 'enter':
+      case 'tab':
         // Use the currently "focused" date if we dont have a value
         if (this.boxedValue == null && this.dateInput && this.dateInput.state.hilightedDate) {
           this.boxedValue = this.dateInput.state.hilightedDate;
         }
 
-        this.requestTransition({nextToken: e.keyCode === TAB});
+        this.requestTransition({nextToken: key === 'tab'});
 
         consumed = true;
         break;

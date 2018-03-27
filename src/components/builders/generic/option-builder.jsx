@@ -2,7 +2,7 @@ import { h } from 'preact';
 import linkState from 'linkstate';
 import { bind } from 'decko';
 import { Builder } from '../../builder';
-import { ENTER, TAB, BACKSPACE, ESCAPE } from '../../../lib/keys';
+import { normalizeKey } from '../../../lib/keys';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -53,50 +53,54 @@ export class OptionBuilder extends Builder {
   handleKeyDown (e) {
     let consumed = true;
     const nothingEntered = e.target.value === undefined || e.target.value === null || e.target.value.length === 0;
-    switch (e.keyCode) {
-      case this.state.multivalueDelimiter:
-        if (nothingEntered) {
-          consumed = false;
-          break;
-        }
+    const key = normalizeKey(e.key);
+
+    if (this.state.multivalueDelimiter.indexOf(e.key) > -1) {
+      if (nothingEntered) {
+        consumed = false;
+      } else {
         consumed = this.machineState.isMultivalue;
         if (this.machineState.isMultivalue) {
           if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
           this.requestArchive();
         }
-        break;
-      case ENTER:
-      case TAB:
-        if (nothingEntered) {
-          // if nothing is entered, but the archive has values, we can still request a transition
-          // unarchive most recent value and request.
-          if (this.archive.length === 0) {
-            consumed = false;
-            break;
-          } else {
-            this.requestUnarchive();
+      }
+    } else {
+      switch (key) {
+        case 'enter':
+        case 'tab':
+          if (nothingEntered) {
+            // if nothing is entered, but the archive has values, we can still request a transition
+            // unarchive most recent value and request.
+            if (this.archive.length === 0) {
+              consumed = false;
+              break;
+            } else {
+              this.requestUnarchive();
+            }
           }
-        }
-        if (this.machineState.previewValue) {
-          this.value = this.machineState.previewValue;
-        } else {
-          this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(e.target.value);
-        }
-        consumed = this.requestTransition({nextToken: e.keyCode === TAB}); // only consume the event if the transition succeeds
-        break;
-      case BACKSPACE:
-        if (nothingEntered) {
-          this.requestRewind();
-        } else {
+          if (this.machineState.previewValue) {
+            this.value = this.machineState.previewValue;
+          } else {
+            this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(e.target.value);
+          }
+          consumed = this.requestTransition({nextToken: key === 'tab'}); // only consume the event if the transition succeeds
+          break;
+        case 'backspace':
+          if (nothingEntered) {
+            this.requestRewind();
+          } else {
+            consumed = false;
+          }
+          break;
+        case 'escape':
+          this.requestCancel();
+          break;
+        default:
           consumed = false;
-        }
-        break;
-      case ESCAPE:
-        this.requestCancel();
-        break;
-      default:
-        consumed = false;
+      }
     }
+
     if (consumed) {
       e.stopPropagation();
       e.preventDefault();

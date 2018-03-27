@@ -1,8 +1,7 @@
 import { h } from 'preact';
 import { bind } from 'decko';
 import { Assistant } from '../../assistant';
-import { UP_ARROW, DOWN_ARROW, TAB, ENTER } from '../../../lib/keys';
-import { toChar } from '../../../lib/string-util';
+import { normalizeKey } from '../../../lib/keys';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -69,41 +68,44 @@ export class OptionAssistant extends Assistant {
 
   delegateEvent (e) {
     let consumed = true;
-    switch (e.keyCode) {
-      // Fallthrough case to handle IE
-      case UP_ARROW:
-        this.setState({activeOption: Math.max(this.state.activeOption - 1, 0)});
-        this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
-        setTimeout(() => this.fixListScrollPosition());
-        break;
-      // Fallthrough case to handle IE
-      case DOWN_ARROW:
-        this.setState({activeOption: Math.min(this.state.activeOption + 1, this.state.suggestions.length - 1)});
-        this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
-        setTimeout(() => this.fixListScrollPosition());
-        break;
-      case this.state.multivalueDelimiter:
-        if (this.machineState.isMultivalue) {
-          consumed = true;
-          this.machineState.value = this.state.suggestions[this.state.activeOption];
-          this.requestArchive();
-        }
-        break;
-      case ENTER:
-      case TAB:
-        const activeOption = this.state.suggestions[this.state.activeOption];
-        if (activeOption) {
-          this.machineState.value = activeOption;
-          this.requestTransition({nextToken: e.keyCode === TAB});
-        } else if (this.state.suggestions.length === 1 && !this.machineState.allowUnknown) {
-          this.machineState.value = this.state.suggestions[0];
-          this.requestTransition({nextToken: e.keyCode === TAB});
-        }
-        break;
-      default:
+    const key = normalizeKey(e.key);
+
+    if (this.state.multivalueDelimiter.indexOf(e.key) > -1) {
+      if (this.machineState.isMultivalue) {
         consumed = true;
-        break;
+        this.machineState.value = this.state.suggestions[this.state.activeOption];
+        this.requestArchive();
+      }
+    } else {
+      switch (key) {
+        case 'up':
+          this.setState({activeOption: Math.max(this.state.activeOption - 1, 0)});
+          this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
+          setTimeout(() => this.fixListScrollPosition());
+          break;
+        case 'down':
+          this.setState({activeOption: Math.min(this.state.activeOption + 1, this.state.suggestions.length - 1)});
+          this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
+          setTimeout(() => this.fixListScrollPosition());
+          break;
+        case 'enter':
+        case 'tab':
+          const activeOption = this.state.suggestions[this.state.activeOption];
+          const wasTab = key === 'tab';
+          if (activeOption) {
+            this.machineState.value = activeOption;
+            this.requestTransition({nextToken: wasTab});
+          } else if (this.state.suggestions.length === 1 && !this.machineState.allowUnknown) {
+            this.machineState.value = this.state.suggestions[0];
+            this.requestTransition({nextToken: wasTab});
+          }
+          break;
+        default:
+          consumed = true;
+          break;
+      }
     }
+
     if (consumed) {
       e.stopPropagation();
       e.preventDefault();

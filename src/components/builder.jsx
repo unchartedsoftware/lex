@@ -162,9 +162,9 @@ export class Builder extends Component {
     if (focused) {
       setTimeout(() => { this.focus(); });
     }
-    if (parseInt(multivalueDelimiter) !== this.state.multivalueDelimiter) {
+    if (multivalueDelimiter !== this.state.multivalueDelimiter) {
       this.setState({
-        multivalueDelimiter: parseInt(multivalueDelimiter)
+        multivalueDelimiter: multivalueDelimiter
       });
     }
     if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {
