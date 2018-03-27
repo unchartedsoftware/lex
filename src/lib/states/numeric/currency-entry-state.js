@@ -1,7 +1,7 @@
 import {OptionState} from '../generic/option-state';
 
 /**
- * This state supports the entry of a Number value, with possible auto-complete
+ * This state supports the entry of a (stringified) Number value, with possible auto-complete
  *
  * @param {Object} config - A configuration object. Supports all of the parameters from `OptionState` and `StateTemplate`,
  *                          providing defaults for `name`, `validate` (valid iff `!isNaN`) and `allowUnknown` (true).
@@ -28,7 +28,7 @@ export class CurrencyEntryState extends OptionState {
     if (key === undefined || key === null) return null;
     if (key.length === 0) return '';
     if (isNaN(key)) return key;
-    const decimalSplit = key.split('.');
+    const decimalSplit = String(key).split('.');
     const dollarPart = decimalSplit[0];
     const centsPart = decimalSplit.length > 1 ? `.${decimalSplit[1]}` : '';
     // otherwise format with commas and dollar sign
