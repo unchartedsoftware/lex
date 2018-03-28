@@ -2,7 +2,7 @@ import { h } from 'preact';
 import linkState from 'linkstate';
 import { bind } from 'decko';
 import { Builder } from '../../builder';
-import { ENTER, TAB, BACKSPACE, ESCAPE } from '../../../lib/keys';
+import { ENTER, TAB, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -61,7 +61,8 @@ export class OptionBuilder extends Builder {
   handleKeyDown (e) {
     let consumed = true;
     const nothingEntered = e.target.value === undefined || e.target.value === null || e.target.value.length === 0;
-    switch (e.keyCode) {
+    const normalizedKey = normalizeKey(e);
+    switch (normalizedKey) {
       case this.state.multivalueDelimiter:
         if (nothingEntered) {
           consumed = false;
@@ -86,7 +87,7 @@ export class OptionBuilder extends Builder {
           }
         }
         this.commitTypedValue();
-        consumed = this.requestTransition({nextToken: e.keyCode === TAB}); // only consume the event if the transition succeeds
+        consumed = this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
         break;
       case BACKSPACE:
         if (nothingEntered) {

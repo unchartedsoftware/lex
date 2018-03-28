@@ -4,7 +4,7 @@ import Portal from 'preact-portal';
 import { TokenStateMachine } from '../lib/token-state-machine';
 import { StateTransitionError, ValueArchiveError } from '../lib/errors';
 import { Token } from './token';
-import { COMMA } from '../lib/keys';
+import { normalizeKey, COMMA } from '../lib/keys';
 import ElementResizeDetector from 'element-resize-detector';
 
 const _erd = new WeakMap();
@@ -108,9 +108,9 @@ export class SearchBar extends Component {
         tokenXIcon: tokenXIcon
       });
     }
-    if (parseInt(multivalueDelimiter) !== this.state.multivalueDelimiter) {
+    if (multivalueDelimiter !== this.state.multivalueDelimiter) {
       this.setState({
-        multivalueDelimiter: parseInt(multivalueDelimiter)
+        multivalueDelimiter: multivalueDelimiter
       });
     }
     if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {
@@ -388,7 +388,7 @@ export class SearchBar extends Component {
   @bind
   onKeyDown (e) {
     this.unboxedValue = e.target.value;
-    const code = e.keyCode;
+    const code = normalizeKey(e);
     if (this.assistant && this.state.proxiedEvents.get(code) === true) {
       this.assistant.delegateEvent(e);
     }

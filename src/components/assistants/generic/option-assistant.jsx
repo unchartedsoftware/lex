@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { bind } from 'decko';
 import { Assistant } from '../../assistant';
-import { UP_ARROW, DOWN_ARROW, TAB, ENTER } from '../../../lib/keys';
+import { UP_ARROW, DOWN_ARROW, TAB, ENTER, normalizeKey } from '../../../lib/keys';
 import { toChar } from '../../../lib/string-util';
 
 /**
@@ -69,7 +69,8 @@ export class OptionAssistant extends Assistant {
 
   delegateEvent (e) {
     let consumed = true;
-    switch (e.keyCode) {
+    const normalizedKey = normalizeKey(e);
+    switch (normalizedKey) {
       // Fallthrough case to handle IE
       case UP_ARROW:
         this.setState({activeOption: Math.max(this.state.activeOption - 1, 0)});
@@ -94,10 +95,10 @@ export class OptionAssistant extends Assistant {
         const activeOption = this.state.suggestions[this.state.activeOption];
         if (activeOption) {
           this.machineState.value = activeOption;
-          this.requestTransition({nextToken: e.keyCode === TAB});
+          this.requestTransition({nextToken: normalizedKey === TAB});
         } else if (this.state.suggestions.length === 1 && !this.machineState.allowUnknown) {
           this.machineState.value = this.state.suggestions[0];
-          this.requestTransition({nextToken: e.keyCode === TAB});
+          this.requestTransition({nextToken: normalizedKey === TAB});
         }
         break;
       default:
