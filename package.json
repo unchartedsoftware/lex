@@ -61,7 +61,6 @@
     "preact": "8.2.7",
     "moment": "2.20.1",
     "tiny-date-picker": "3.1.8",
-    "linkstate": "1.1.x",
     "wolfy87-eventemitter": "5.2.4",
     "preact-portal": "1.1.x",
     "rimraf": "2.6.2",

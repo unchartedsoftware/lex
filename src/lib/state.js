@@ -132,6 +132,10 @@ export class StateTemplate extends EventEmitter {
     return _initialized.get(this) || true;
   }
 
+  reset () {
+    _initialized.delete(this);
+  }
+
   /*
    * @private
    */
@@ -293,6 +297,7 @@ export class State extends EventEmitter {
    * @private
    */
   reset () {
+    this.template.reset();
     this.value = this.defaultValue;
     _archive.set(this, []);
   }

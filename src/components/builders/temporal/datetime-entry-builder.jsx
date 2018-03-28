@@ -1,5 +1,4 @@
 import { h } from 'preact';
-import linkState from 'linkstate';
 import { bind } from 'decko';
 import { Builder } from '../../builder';
 import { TAB, ENTER, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
@@ -103,6 +102,12 @@ export class DateTimeEntryBuilder extends Builder {
     this.unboxedValue = e.target.value;
   }
 
+  @bind
+  handleInput (e) {
+    // assign typedText without re-rendering
+    this.state.typedText = e.target.value;
+  }
+
   focus () {
     if (this.textInput) {
       this.textInput.focus();
@@ -120,9 +125,11 @@ export class DateTimeEntryBuilder extends Builder {
 
   @bind
   onPreviewValueChanged (_1, _2, newUnboxedPreviewValue) {
-    this.setState({
-      previewText: newUnboxedPreviewValue
-    });
+    if (newUnboxedPreviewValue !== this.state.previewText) {
+      this.setState({
+        previewText: newUnboxedPreviewValue
+      });
+    }
   }
 
   renderReadOnly (props, state) {
@@ -153,7 +160,7 @@ export class DateTimeEntryBuilder extends Builder {
             onKeyUp={this.handleKeyUp}
             value={typedText}
             placeholder={machineState.template.format}
-            onInput={linkState(this, 'typedText')}
+            onInput={this.handleInput}
             onFocus={this.requestFocus}
             onFocusOut={this.requestBlur}
             onPaste={this.onPaste}

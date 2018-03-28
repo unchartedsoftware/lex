@@ -1,5 +1,4 @@
 import { h } from 'preact';
-import linkState from 'linkstate';
 import { bind } from 'decko';
 import { Builder } from '../../builder';
 import { ENTER, TAB, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
@@ -156,15 +155,23 @@ export class OptionBuilder extends Builder {
 
   @bind
   onPreviewValueChanged (_1, _2, newUnboxedPreviewValue) {
-    this.setState({
-      previewText: newUnboxedPreviewValue
-    });
+    if (newUnboxedPreviewValue !== this.state.previewText) {
+      this.setState({
+        previewText: newUnboxedPreviewValue
+      });
+    }
   }
 
   @bind
   onBlur (e) {
     this.commitTypedValue();
     this.requestBlur(e);
+  }
+
+  @bind
+  handleInput (e) {
+    // assign typedText without re-rendering
+    this.state.typedText = e.target.value;
   }
 
   @bind
@@ -212,7 +219,7 @@ export class OptionBuilder extends Builder {
             onKeyUp={this.handleKeyUp}
             onMouseDown={this.clearPreview}
             value={typedText}
-            onInput={linkState(this, 'typedText')}
+            onInput={this.handleInput}
             onFocus={this.requestFocus}
             onFocusOut={this.onBlur}
             onPaste={this.onPaste}

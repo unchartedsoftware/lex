@@ -65,14 +65,14 @@ export class TokenStateMachine extends EventEmitter {
         if (v === undefined) {
           break; // we're missing a value for the current state, so break out.
         } else if (Array.isArray(v)) {
-          v.forEach(x => {
+          for (const x of v) {
             if (typeof x === 'object') {
               this.state.value = x;
             } else {
               this.state.unboxedValue = x;
             }
             this.state.archiveValue();
-          });
+          }
           this.state.unarchiveValue(); // make the last value the "active" one
         } else if (typeof v === 'object') {
           this.state.value = v;
