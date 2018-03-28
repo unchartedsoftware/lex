@@ -49,6 +49,14 @@ export class OptionBuilder extends Builder {
     return super.processProps(props);
   }
 
+  commitTypedValue () {
+    if (this.machineState.previewValue) {
+      this.machineState.value = this.machineState.previewValue;
+    } else {
+      this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(this.state.typedText);
+    }
+  }
+
   @bind
   handleKeyDown (e) {
     let consumed = true;
@@ -61,11 +69,7 @@ export class OptionBuilder extends Builder {
         }
         consumed = this.machineState.isMultivalue;
         if (this.machineState.isMultivalue) {
-          if (this.machineState.previewValue) {
-            this.machineState.value = this.machineState.previewValue;
-          } else {
-            this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(e.target.value);
-          }
+          this.commitTypedValue();
           this.requestArchive();
         }
         break;
@@ -81,11 +85,7 @@ export class OptionBuilder extends Builder {
             this.requestUnarchive();
           }
         }
-        if (this.machineState.previewValue) {
-          this.value = this.machineState.previewValue;
-        } else {
-          this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(e.target.value);
-        }
+        this.commitTypedValue();
         consumed = this.requestTransition({nextToken: e.keyCode === TAB}); // only consume the event if the transition succeeds
         break;
       case BACKSPACE:
@@ -132,7 +132,7 @@ export class OptionBuilder extends Builder {
 
   @bind
   beforeTransition () {
-    this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(this.state.typedText);
+    this.commitTypedValue();
   }
 
   @bind
@@ -158,6 +158,12 @@ export class OptionBuilder extends Builder {
     this.setState({
       previewText: newUnboxedPreviewValue
     });
+  }
+
+  @bind
+  onBlur (e) {
+    this.commitTypedValue();
+    this.requestBlur(e);
   }
 
   @bind
@@ -207,7 +213,7 @@ export class OptionBuilder extends Builder {
             value={typedText}
             onInput={linkState(this, 'typedText')}
             onFocus={this.requestFocus}
-            onFocusOut={this.requestBlur}
+            onFocusOut={this.onBlur}
             onPaste={this.onPaste}
             ref={(input) => { this.textInput = input; }}
             disabled={readOnly} />
