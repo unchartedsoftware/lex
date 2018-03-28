@@ -61,7 +61,11 @@ export class OptionBuilder extends Builder {
         }
         consumed = this.machineState.isMultivalue;
         if (this.machineState.isMultivalue) {
-          if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
+          if (this.machineState.previewValue) {
+            this.machineState.value = this.machineState.previewValue;
+          } else {
+            this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(e.target.value);
+          }
           this.requestArchive();
         }
         break;
