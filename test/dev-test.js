@@ -4,6 +4,23 @@ import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationSta
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import '../node_modules/tiny-date-picker/tiny-date-picker.css';
 
+class BrokenEntryState extends TextEntryState {
+  initialize (context) {
+    super.initialize(context);
+
+    this.context = context;
+  }
+
+  formatUnboxedValue (key) {
+    // the relation key will be the same for both tokens
+    // even though in setQuery we set them differently
+    // Check the console, it should say `is like Sean`
+    // and `is like Bob` when Bob's relation should be `is`
+    console.log(this.context.relation.key, key);
+    return key;
+  }
+}
+
 const language = Lex.from('field', OptionState, {
   name: 'Choose a field to search',
   options: function (hint = '', context) { // eslint-disable-line no-unused-vars
@@ -36,7 +53,7 @@ const language = Lex.from('field', OptionState, {
     }
   }
 }).branch(
-  Lex.from('relation', TextRelationState, TransitionFactory.optionMetaCompare({type: 'string'})).to('value', TextEntryState),
+  Lex.from('relation', TextRelationState, TransitionFactory.optionMetaCompare({type: 'string'})).to('value', BrokenEntryState),
   Lex.from('value', TextEntryState, {
     multivalue: true,
     options: [
@@ -79,6 +96,12 @@ lex.on('suggestions changed', (...args) => console.log('suggestions changed', ..
 lex.on('validity changed', (...args) => console.log('validity changed', ...args));
 lex.on('token start', (...args) => console.log('token start', ...args));
 lex.on('token end', (...args) => console.log('token end', ...args));
+
+// Only happens with setQuery I think
+lex.setQuery([
+  {field: 'Name', relation: 'is like', value: 'Sean'},
+  {field: 'Name', relation: 'is', value: 'Bob'}
+]);
 
 // Hooks for demo buttons
 window.clearQuery = function () {
