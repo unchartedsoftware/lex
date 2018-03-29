@@ -14,7 +14,7 @@ class BrokenEntryState extends TextEntryState {
   formatUnboxedValue (key) {
     // the relation key will be the same for both tokens
     // even though in setQuery we set them differently
-    // Check the console, it should say `is like Sean`
+    // Check the console, it is currently saying `is like Sean`
     // and `is like Bob` when Bob's relation should be `is`
     console.log(this.context.relation.key, key);
     return key;
