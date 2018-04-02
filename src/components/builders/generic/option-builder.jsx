@@ -75,16 +75,6 @@ export class OptionBuilder extends Builder {
         break;
       case ENTER:
       case TAB:
-        if (nothingEntered) {
-          // if nothing is entered, but the archive has values, we can still request a transition
-          // unarchive most recent value and request.
-          if (this.archive.length === 0) {
-            consumed = false;
-            break;
-          } else {
-            this.requestUnarchive();
-          }
-        }
         this.commitTypedValue();
         consumed = this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
         break;
@@ -133,6 +123,11 @@ export class OptionBuilder extends Builder {
   @bind
   beforeTransition () {
     this.commitTypedValue();
+    if (this.state.typedText === undefined || this.state.typedText === null || this.state.typedText.length === 0) {
+      if (this.archive.length > 0) {
+        this.requestUnarchive();
+      }
+    }
   }
 
   @bind
