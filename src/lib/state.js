@@ -266,6 +266,13 @@ export class State extends EventEmitter {
 
   get template () { return _template.get(this); }
   get parent () { return _parent.get(this); }
+  get root () {
+    if (this.parent === undefined) {
+      return this;
+    } else {
+      return this.parent.root;
+    }
+  }
   get name () { return this.template.name; }
   get vkey () { return this.template.vkey; }
   get defaultValue () { return this.template.defaultValue; }
