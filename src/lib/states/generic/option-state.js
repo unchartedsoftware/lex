@@ -46,6 +46,7 @@ export class OptionStateOption {
 const _initialOptions = new WeakMap();
 const _options = new WeakMap();
 const _refreshOptions = new WeakMap();
+const _lastRefresh = new WeakMap();
 const _allowUnknown = new WeakMap();
 const _units = new WeakMap();
 const _suggestionLimit = new WeakMap();
@@ -231,7 +232,9 @@ export class OptionState extends StateTemplate {
   async refreshOptions (hint = '', context = []) {
     if (_refreshOptions.has(this)) {
       if (!_suggestionCache.has(this) || _suggestionCache.get(this).hint !== hint || _suggestionCache.get(this).contextLength !== context.length) {
+        _lastRefresh.set(this, hint);
         const newOptions = await _refreshOptions.get(this)(hint, context);
+        if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
         // If user-created values are allowed, and this is a multi-value state,
         // then add in an option for what the user has typed as long as what
         // they've typed isn't identical to an existing option.
