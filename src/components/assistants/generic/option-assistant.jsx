@@ -130,7 +130,7 @@ export class OptionAssistant extends Assistant {
           <div className='assistant-header'>Entered Values</div>
           <ul>
             {
-              this.machineState.archive.map((o, idx) => <li tabIndex='0' className='removable clearfix' onClick={() => this.onArchivedRemoved(idx)}><span className='pull-left'>{this.machineStateTemplate.formatUnboxedValue(o.key)}</span><em className='pull-right'>(click to remove)</em></li>)
+              this.machineState.archive.map((o, idx) => <li tabIndex='0' className='removable clearfix' onClick={() => this.onArchivedRemoved(idx)}><span className='pull-left'>{this.machineStateTemplate.formatUnboxedValue(o.key, this.machine.boxedValue)}</span><em className='pull-right'>(click to remove)</em></li>)
             }
           </ul>
         </div>
@@ -146,7 +146,7 @@ export class OptionAssistant extends Assistant {
             { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
             <ul ref={(n) => { this.suggestionContainer = n; }}>
               {
-                suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} onMouseOver={() => this.onOptionHover(idx)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{this.machineStateTemplate.formatUnboxedValue(o.key)}</li>)
+                suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} onMouseOver={() => this.onOptionHover(idx)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{this.machineStateTemplate.formatUnboxedValue(o.key, this.machine.boxedValue)}</li>)
               }
               { (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
             </ul>

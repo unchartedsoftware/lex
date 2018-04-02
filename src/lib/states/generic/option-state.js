@@ -157,9 +157,10 @@ export class OptionState extends StateTemplate {
    * `displayKey`s should be different from `key`s.
    *
    * @param {string} displayKey - What the user actually types/sees.
+   * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    * @returns {string} The key of an `OptionStateOption` within this `State`.
    */
-  unformatUnboxedValue (displayKey) {
+  unformatUnboxedValue (displayKey, context = []) { // eslint-disable-line no-unused-vars
     return displayKey;
   }
 
@@ -170,9 +171,10 @@ export class OptionState extends StateTemplate {
    * TIP: Don't format values that don't "make sense". Pass them through as-is and allow validation to catch them.
    *
    * @param {string} key - The key of an `OptionStateOption` within this `State`.
+   * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    * @returns {string} What the user actually types/sees.
    */
-  formatUnboxedValue (key) {
+  formatUnboxedValue (key, context = []) { // eslint-disable-line no-unused-vars
     return key;
   }
 
