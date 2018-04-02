@@ -37,13 +37,14 @@ export class OptionBuilder extends Builder {
 
   componentWillMount () {
     super.componentWillMount();
-    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue(''), this.machine.boxedValue);
+    const boxed = this.machine.boxedValue;
+    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue('', boxed), boxed);
   }
 
   processProps (props) {
-    const { machineState } = props;
+    const { machine, machineState } = props;
     this.setState({
-      typedText: machineState.unboxedValue ? machineState.template.formatUnboxedValue(machineState.unboxedValue) : ''
+      typedText: machineState.unboxedValue ? machineState.template.formatUnboxedValue(machineState.unboxedValue, machine.boxedValue) : ''
     });
     return super.processProps(props);
   }
@@ -52,7 +53,7 @@ export class OptionBuilder extends Builder {
     if (this.machineState.previewValue) {
       this.machineState.value = this.machineState.previewValue;
     } else {
-      this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(this.state.typedText);
+      this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(this.state.typedText, this.machine.boxedValue);
     }
   }
 
@@ -102,7 +103,8 @@ export class OptionBuilder extends Builder {
 
   @bind
   handleKeyUp (e) {
-    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue(e.target.value), this.machine.boxedValue);
+    const boxed = this.machine.boxedValue;
+    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue(e.target.value, boxed), boxed);
   }
 
   focus () {
@@ -139,11 +141,11 @@ export class OptionBuilder extends Builder {
   onValueChanged (newValue) {
     if (this.machineStateTemplate.allowUnknown) {
       this.setState({
-        typedText: newValue ? this.machineStateTemplate.formatUnboxedValue(newValue.key) : ''
+        typedText: newValue ? this.machineStateTemplate.formatUnboxedValue(newValue.key, this.machine.boxedValue) : ''
       });
     } else if (newValue) {
       this.setState({
-        typedText: this.machineStateTemplate.formatUnboxedValue(newValue.key)
+        typedText: this.machineStateTemplate.formatUnboxedValue(newValue.key, this.machine.boxedValue)
       });
     }
   }
@@ -177,7 +179,7 @@ export class OptionBuilder extends Builder {
       const clipboardData = (e.clipboardData || window.clipboardData).getData('Text');
       const values = clipboardData.split(this.state.multivaluePasteDelimiter).map(e => e.trim());
       values.forEach(v => {
-        this.machineState.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(v);
+        this.machineState.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(v, this.machine.boxedValue);
         this.requestArchive();
       });
     }
@@ -186,7 +188,7 @@ export class OptionBuilder extends Builder {
   renderReadOnly (props, state) {
     const units = this.machineStateTemplate.units !== undefined ? <span className='text-muted'> { this.machineStateTemplate.units }</span> : '';
     if (this.machineState.value) {
-      const shortKey = this.machineState.value.shortKey !== undefined ? this.machineState.value.shortKey : this.machineStateTemplate.formatUnboxedValue(this.machineState.value.key);
+      const shortKey = this.machineState.value.shortKey !== undefined ? this.machineState.value.shortKey : this.machineStateTemplate.formatUnboxedValue(this.machineState.value.key, this.machine.boxedValue);
       if (this.machineState.isMultivalue && this.archive.length > 0) {
         return (
           <span className={state.valid ? 'token-input' : 'token-input invalid'}>{shortKey}{units} & {this.archive.length} others</span>
