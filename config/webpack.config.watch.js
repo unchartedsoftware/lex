@@ -4,9 +4,8 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const fs = require('fs');
 
 const testFolder = path.resolve(__dirname, '../test');
-console.log(process.env.DEV_ONLY);
 const entry = fs.readdirSync(testFolder)
-  .filter(c => process.env.DEV_ONLY === undefined || c === 'dev-test.js')
+  .filter(c => process.env.DEV_ONLY === undefined || process.env.DEV_ONLY === 'false' || c === 'dev-test.js')
   .reduce((result, current) => {
     if (current.indexOf('.js') < 0) {
       return result;
