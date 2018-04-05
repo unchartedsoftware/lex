@@ -158,7 +158,7 @@ export class OptionState extends StateTemplate {
    *
    * @param {string} displayKey - What the user actually types/sees.
    * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
-   * @returns {string} The key of an `OptionStateOption` within this `State`.
+   * @returns {string} The key of an `OptionStateOption` within this `State`. Must not return null.
    */
   unformatUnboxedValue (displayKey, context = []) { // eslint-disable-line no-unused-vars
     return displayKey;
@@ -232,6 +232,7 @@ export class OptionState extends StateTemplate {
    * @returns {Promise} Resolves with the new list of options.
    */
   async refreshOptions (hint = '', context = []) {
+    if (hint === null) console.error('hint cannot be null in refreshOptions - perhaps unformatUnboxedValue returned null?');
     if (_refreshOptions.has(this)) {
       if (!_suggestionCache.has(this) || _suggestionCache.get(this).hint !== hint || _suggestionCache.get(this).contextLength !== context.length) {
         _lastRefresh.set(this, hint);
