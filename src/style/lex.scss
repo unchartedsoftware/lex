@@ -5,6 +5,7 @@ $lex-highlight-color: #0097a7 !default;
 $lex-highlight-text-color: #fff !default;
 $lex-danger-highlight-color: #d9534f !default;
 $lex-danger-highlight-text-color: #fff !default;
+$lex-token-padding: 2px !default;
 $lex-token-background: #ededed !default;
 $lex-token-color: #555 !default;
 $lex-token-remove-button-color: lighten($lex-token-color, 45%) !default;
@@ -46,7 +47,7 @@ div.lex-box {
 div.lex-box div.lex-placeholder {
   line-height: 20px;
   user-select: none;
-  margin: 0.2rem;
+  margin: 0.2em;
 }
 
 div.lex-box div.token  {
@@ -55,8 +56,8 @@ div.lex-box div.token  {
   background: $lex-token-background;
   border-radius: $lex-border-radius-base;
   border: 1px solid $lex-token-border-color;
-  margin: 0.2rem 0.6rem 0.2rem 0;
-  padding: 0 1.6rem 0 0.3rem;
+  margin: 0.2em 0.6em 0.2em 0;
+  padding: $lex-token-padding ($lex-token-padding + 14px) $lex-token-padding $lex-token-padding;
   position: relative;
   white-space: nowrap;
   cursor: default;
@@ -88,7 +89,7 @@ div.lex-box div.token  {
     border-radius: $lex-border-radius-base;
     border: 0;
     width: auto;
-    padding: 0 0.2rem 0 0;
+    padding: 0 0.2em 0 0;
     margin: 0;
     line-height: 20px;
     height: 21px;
@@ -102,12 +103,12 @@ div.lex-box div.token  {
       background: $lex-token-invalid-background;
     }
     &.token-input-units {
-      padding-left: 0.3rem;
+      padding-left: 0.3em;
     }
   }
 
   span.badge {
-    margin: 0 0.4rem 0 0.25rem;
+    margin: 0 0.4em 0 0.25em;
   }
 
   span.token-input {
@@ -117,7 +118,7 @@ div.lex-box div.token  {
   input.token-input {
     width: 150px;
     min-width: 150px;
-    padding-left: 0.2rem;
+    padding-left: 0.2em;
     // Remove IE "clear" button, its confusing to have both that and the remove X
     // since they appear right beside each other
     &::-ms-clear {
@@ -143,7 +144,7 @@ div.lex-box div.token  {
 
   button.token-remove {
     color: $lex-token-remove-button-color;
-    padding: 0.2rem 0.4rem 0.2rem 0;
+    padding: 0.2em 0.2em 0.2em 0;
     display: inline-block;
     height: 20px;
     width: 16px;
