@@ -14,6 +14,7 @@ $lex-token-remove-button-color: lighten($lex-token-color, 45%) !default;
 $lex-token-remove-button-hover-color: darken($lex-token-remove-button-color, 15%) !default;
 $lex-token-border-color: darken($lex-token-background, 15%) !default;
 $lex-token-active-background: darken($lex-token-background, 15%) !default; // lighten for dark theme
+$lex-token-input-border-color: transparent !default;
 $lex-token-invalid-background: #e2a4a4 !default; // lighten for dark theme
 $lex-assistant-background: #fff !default;
 $lex-assistant-text-color: #333 !default;
@@ -90,7 +91,11 @@ div.lex-box div.token  {
     background: transparent;
     transition: background-color 0.25s linear;
     border-radius: $lex-border-radius-base;
-    border: 0;
+    @if $lex-token-input-border-color == 'transparent' {
+      border: 0;
+    } @else {
+      border: solid 1px transparent;
+    }
     width: auto;
     padding: 0 $lex-token-value-spacing 0 0;
     margin: 0;
@@ -99,6 +104,11 @@ div.lex-box div.token  {
     outline: 0;
     &.active {
       background: $lex-token-active-background;
+      @if $lex-token-input-border-color == 'transparent' {
+        // Noop
+      } @else {
+        border: solid 1px $lex-token-input-border-color;
+      }
     }
     &.invalid {
       background: $lex-token-invalid-background;
