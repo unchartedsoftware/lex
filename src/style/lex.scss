@@ -98,7 +98,7 @@ div.lex-box div.token  {
     box-shadow: none;
     outline: 0;
     &.active {
-      background: darken($lex-token-background, 15%);
+      background: $lex-token-active-background;
     }
     &.invalid {
       background: $lex-token-invalid-background;
