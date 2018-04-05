@@ -62,7 +62,7 @@ div.lex-box div.token  {
   border-radius: $lex-border-radius-base;
   border: 1px solid $lex-token-border-color;
   margin: 0.2em 0.6em 0.2em 0;
-  padding: $lex-token-padding ($lex-token-padding + 14px) $lex-token-padding $lex-token-padding;
+  padding: $lex-token-padding ($lex-token-padding + 16px) $lex-token-padding ($lex-token-padding + 2px);
   position: relative;
   white-space: nowrap;
   cursor: default;
@@ -156,6 +156,7 @@ div.lex-box div.token  {
     top: 50%;
     transform: translateY(-50%);
     position: absolute;
+    height: 1.6em;
     &:hover {
       color: $lex-token-remove-button-hover-color;
     }

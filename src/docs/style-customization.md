@@ -6,12 +6,19 @@ $lex-border-color: revert; // use the border color inherited from Bootstrap
 $lex-border-radius-base: 3px; // border radius for various things
 $lex-highlight-color: #0097a7;  // highlight color for various things
 $lex-highlight-text-color: #fff; // color for text shown on top of a highlight-color background
+$lex-danger-highlight-color: #d9534f; // highlight color for dangerous things
+$lex-danger-highlight-text-color: #fff; // color for text shown on top of a danger-highlight-color background
+$lex-line-height: 1.67; // base line height for lex tokens, etc.
+$lex-token-padding: 2px; // padding for lex tokens
+$lex-token-value-spacing: 0.3em; // spacing for token value inputs
 $lex-token-background: #ededed; // background color for tokens
 $lex-token-color: #555; // text color for tokens (inherit from Bootstrap)
 $lex-token-hover-color: lighten($lex-token-color, 15%); // hover color for close button
 $lex-token-border-color: darken($lex-token-background, 15%); // border color for a token
-$lex-token-remove-button-color: lighten($lex-token-color, 45%) !default; // hover color for remove button in multi-entry
-$lex-token-remove-button-hover-color: darken($lex-token-remove-button-color, 15%) !default; // text color for remove button in multi-entry
+$lex-token-active-background: darken($lex-token-background, 15%); // background for active token components
+$lex-token-input-border-color: transparent; // border for lex token text inputs
+$lex-token-remove-button-color: lighten($lex-token-color, 45%); // hover color for remove button in multi-entry
+$lex-token-remove-button-hover-color: darken($lex-token-remove-button-color, 15%); // text color for remove button in multi-entry
 $lex-token-active-background: darken($lex-token-background, 15%); // background color for active region of a token. should lighten for dark theme
 $lex-token-invalid-background: #e2a4e2; // background color for invalid region of token. should lighten for dark theme
 $lex-assistant-background: #fff; // background color for assistant drop-down
