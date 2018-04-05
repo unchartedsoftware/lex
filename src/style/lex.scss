@@ -93,7 +93,7 @@ div.lex-box div.token  {
     width: auto;
     padding: 0 0.2em 0 0;
     margin: 0;
-    vertical-align: middle;
+    vertical-align: baseline;
     box-shadow: none;
     outline: 0;
     &.active {
@@ -109,10 +109,6 @@ div.lex-box div.token  {
 
   span.badge {
     margin: 0 0.4em 0 0.25em;
-  }
-
-  span.token-input {
-    margin-top: 1px;
   }
 
   input.token-input {
@@ -149,7 +145,6 @@ div.lex-box div.token  {
     top: 50%;
     transform: translateY(-50%);
     position: absolute;
-    top: 1px;
     &:hover {
       color: $lex-token-remove-button-hover-color;
     }
