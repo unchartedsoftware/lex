@@ -7,6 +7,7 @@ $lex-danger-highlight-color: #d9534f !default;
 $lex-danger-highlight-text-color: #fff !default;
 $lex-line-height: 1.67 !default;
 $lex-token-padding: 2px !default;
+$lex-token-value-spacing: 0.3em !default;
 $lex-token-background: #ededed !default;
 $lex-token-color: #555 !default;
 $lex-token-remove-button-color: lighten($lex-token-color, 45%) !default;
@@ -91,7 +92,7 @@ div.lex-box div.token  {
     border-radius: $lex-border-radius-base;
     border: 0;
     width: auto;
-    padding: 0 0.2em 0 0;
+    padding: 0 $lex-token-value-spacing 0 0;
     margin: 0;
     vertical-align: baseline;
     box-shadow: none;
