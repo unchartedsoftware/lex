@@ -5,6 +5,7 @@ $lex-highlight-color: #0097a7 !default;
 $lex-highlight-text-color: #fff !default;
 $lex-danger-highlight-color: #d9534f !default;
 $lex-danger-highlight-text-color: #fff !default;
+$lex-line-height: 1.67 !default;
 $lex-token-padding: 2px !default;
 $lex-token-background: #ededed !default;
 $lex-token-color: #555 !default;
@@ -26,6 +27,7 @@ div.lex-box {
   height: auto;
   background: $lex-background;
   border-color: $lex-border-color;
+  line-height: $lex-line-height;
 
   &.active, &.focused {
     outline: 0;
@@ -45,9 +47,10 @@ div.lex-box {
 }
 
 div.lex-box div.lex-placeholder {
-  line-height: 20px;
   user-select: none;
+  // Match spacing of tokens (padding + 1px for border)
   margin: 0.2em;
+  padding: $lex-token-padding + 1px;
 }
 
 div.lex-box div.token  {
@@ -62,7 +65,6 @@ div.lex-box div.token  {
   white-space: nowrap;
   cursor: default;
   user-select: none;
-  font-size: 12px;
 
   &.suggestion {
     border: 1px solid $lex-highlight-color;
@@ -91,8 +93,6 @@ div.lex-box div.token  {
     width: auto;
     padding: 0 0.2em 0 0;
     margin: 0;
-    line-height: 20px;
-    height: 21px;
     vertical-align: middle;
     box-shadow: none;
     outline: 0;
@@ -146,8 +146,8 @@ div.lex-box div.token  {
     color: $lex-token-remove-button-color;
     padding: 0.2em 0.2em 0.2em 0;
     display: inline-block;
-    height: 20px;
-    width: 16px;
+    top: 50%;
+    transform: translateY(-50%);
     position: absolute;
     top: 1px;
     &:hover {
@@ -155,10 +155,10 @@ div.lex-box div.token  {
     }
     span {
       display: inline-block;
-      width: 12px;
-      height: 12px;
-      font-size: 12px;
-      line-height: 12px;
+      width: 1em;
+      height: 1em;
+      font-size: 1em;
+      line-height: 1em;
     }
   }
 }
