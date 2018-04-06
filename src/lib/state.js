@@ -319,7 +319,7 @@ export class State extends EventEmitter {
   get isValid () {
     let isValid = false;
     try {
-      isValid = _validate.get(this.template)(this.value);
+      isValid = _validate.get(this.template)(this.value, this.archive);
     } catch (err) {
       let message = 'Error thrown during validation';
       if (this.name) {
