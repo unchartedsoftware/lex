@@ -43,40 +43,38 @@ export class DateTimeEntryBuilder extends Builder {
     return super.processProps(props);
   }
 
+  commitTypedValue () {
+    if (this.machineState.previewValue) {
+      this.machineState.value = this.machineState.previewValue;
+    } else {
+      this.unboxedValue = this.state.typedText;
+    }
+  }
+
   @bind
   handleKeyDown (e) {
     let consumed = true;
+    const nothingEntered = e.target.value === undefined || e.target.value === null || e.target.value.length === 0;
     const normalizedKey = normalizeKey(e);
-    this.unboxedValue = e.target.value;
     switch (normalizedKey) {
       case this.state.multivalueDelimiter:
-        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
+        if (nothingEntered) {
           consumed = false;
           break;
         }
         consumed = this.machineState.isMultivalue;
         if (this.machineState.isMultivalue) {
-          if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
+          this.commitTypedValue();
           this.requestArchive();
         }
         break;
       case ENTER:
       case TAB:
-        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
-          // if nothing is entered, but the archive has values, we can still request a transition
-          // unarchive most recent value and request.
-          if (this.archive.length === 0) {
-            consumed = false;
-            break;
-          } else {
-            this.requestUnarchive();
-          }
-        }
-        if (this.machineState.previewValue) this.machineState.value = this.machineState.previewValue;
+        this.commitTypedValue();
         consumed = this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
         break;
       case BACKSPACE:
-        if (e.target.value === undefined || e.target.value === null || e.target.value.length === 0) {
+        if (nothingEntered) {
           this.requestRewind();
         } else {
           consumed = false;
@@ -98,14 +96,14 @@ export class DateTimeEntryBuilder extends Builder {
   }
 
   @bind
-  handleKeyUp (e) {
-    this.unboxedValue = e.target.value;
-  }
-
-  @bind
   handleInput (e) {
     // assign typedText without re-rendering
     this.state.typedText = e.target.value;
+    if (this.commitTimeout) {
+      clearInterval(this.commitTimeout);
+      this.commitTimeout = undefined;
+    }
+    this.commitTimeout = setTimeout(() => this.commitTypedValue(), 500);
   }
 
   focus () {
@@ -113,6 +111,23 @@ export class DateTimeEntryBuilder extends Builder {
       this.textInput.focus();
       // move cursor to end of input
       this.textInput.selectionStart = this.textInput.selectionEnd = this.textInput.value.length;
+    }
+  }
+
+  @bind
+  clearPreview () {
+    this.setState({
+      previewText: ''
+    });
+  }
+
+  @bind
+  beforeTransition () {
+    this.commitTypedValue();
+    if (this.state.typedText === undefined || this.state.typedText === null || this.state.typedText.length === 0) {
+      if (this.archive.length > 0) {
+        this.requestUnarchive();
+      }
     }
   }
 
@@ -158,11 +173,11 @@ export class DateTimeEntryBuilder extends Builder {
             className={valid ? 'token-input active' : 'token-input invalid'}
             onKeyDown={this.handleKeyDown}
             onKeyUp={this.handleKeyUp}
+            onMouseDown={this.clearPreview}
             value={typedText}
             placeholder={machineState.template.format}
             onInput={this.handleInput}
             onFocus={this.requestFocus}
-            onFocusOut={this.requestBlur}
             onPaste={this.onPaste}
             ref={(input) => { this.textInput = input; }}
             disabled={readOnly} />

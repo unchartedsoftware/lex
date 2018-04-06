@@ -52,9 +52,10 @@ export class DateTimeEntryAssistant extends Assistant {
         });
       }
     } else if (this.dateInput) {
+      const now = new Date();
       this.dateInput.setState({
-        selectedDate: null,
-        hilightedDate: new Date()
+        selectedDate: now,
+        hilightedDate: now
       });
     }
   }
@@ -82,7 +83,6 @@ export class DateTimeEntryAssistant extends Assistant {
           const stringDate = moment(picker.state.selectedDate).format('YYYY-MM-DD'); // get selected date as a string
           const stringBoxedValue = this.boxedValue === null ? null : moment.tz(this.boxedValue, this.machineState.template.timezone).format('YYYY-MM-DD');
           if (stringDate !== stringBoxedValue) {
-            const stringDate = moment(picker.state.selectedDate).format('YYYY-MM-DD'); // get selected date as a string
             this.boxedValue = moment.tz(stringDate, 'YYYY-MM-DD', this.machineState.template.timezone).toDate(); // reinterpret as being in target timezone
             if (this.boxedValue !== null && this.machineState.isMultivalue) this.requestArchive();
             this.requestFocus();
