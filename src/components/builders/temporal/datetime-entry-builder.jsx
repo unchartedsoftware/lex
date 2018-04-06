@@ -133,9 +133,11 @@ export class DateTimeEntryBuilder extends Builder {
 
   @bind
   onValueChanged (_1, _2, newUnboxedValue) {
-    this.setState({
-      typedText: newUnboxedValue !== null && newUnboxedValue !== undefined ? newUnboxedValue : ''
-    });
+    if (newUnboxedValue !== null && newUnboxedValue !== undefined) {
+      this.setState({
+        typedText: newUnboxedValue
+      });
+    }
   }
 
   @bind

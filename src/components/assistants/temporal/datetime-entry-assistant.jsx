@@ -52,11 +52,11 @@ export class DateTimeEntryAssistant extends Assistant {
         });
       }
     } else if (this.dateInput) {
-      const now = new Date();
-      this.dateInput.setState({
-        selectedDate: now,
-        hilightedDate: now
-      });
+      // TODO clear selected date. This doesn't work right now because it sets the selection to "today", emitting a change event which overwrites what the user has typed
+      // this.dateInput.setState({
+      //   selectedDate: undefined,
+      //   hilightedDate: undefined
+      // });
     }
   }
 
