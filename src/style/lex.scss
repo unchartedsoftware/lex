@@ -51,7 +51,7 @@ div.lex-box {
 div.lex-box div.lex-placeholder {
   user-select: none;
   // Match spacing of tokens (padding + 1px for border)
-  margin: 0.2em;
+  margin: 3px;
   padding: $lex-token-padding + 1px;
 }
 
@@ -61,7 +61,7 @@ div.lex-box div.token  {
   background: $lex-token-background;
   border-radius: $lex-border-radius-base;
   border: 1px solid $lex-token-border-color;
-  margin: 0.2em 0.6em 0.2em 0;
+  margin: 2px 9px 2px 0;
   padding: $lex-token-padding ($lex-token-padding + 16px) $lex-token-padding ($lex-token-padding + 2px);
   position: relative;
   white-space: nowrap;
