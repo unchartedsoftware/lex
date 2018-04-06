@@ -71,13 +71,19 @@ const _suggestionCache = new WeakMap();
  */
 export class OptionState extends StateTemplate {
   constructor (config) {
-    if (config.validate === undefined) {
-      config.validate = (thisVal) => {
-        if (thisVal === null || thisVal === undefined) return false;
-        if (this.allowUnknown) return true;
-        return this.options.filter(o => o.key === thisVal.key).length === 1;
-      };
-    }
+    const origValidate = config.validate;
+    config.validate = (thisVal, thisArchive) => {
+      // try incoming validation function before trying ours
+      if (origValidate !== undefined && !origValidate(thisVal, thisArchive)) return false;
+      // don't allow null values
+      if (thisVal === null || thisVal === undefined) return false;
+      // don't allow duplicates
+      if (thisArchive.map(e => e.key === thisVal.key).reduce((l, r) => l || r, false)) return false;
+      // if we allow unknown values, then return true
+      if (this.allowUnknown) return true;
+      // otherwise, return whether or not the entered value matches a suggestion
+      return this.options.filter(o => o.key === thisVal.key).length === 1;
+    };
     if (config.options === undefined) config.options = [];
     if (config.allowUnknown === undefined) config.allowUnknown = false;
     if (config.suggestionLimit === undefined) config.suggestionLimit = 10;
@@ -228,31 +234,29 @@ export class OptionState extends StateTemplate {
    * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.options`.
    *
    * @param {string | undefined} hint - What the user has typed, if anything, converted to a key by unformatUnboxedValue.
-   * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
+   * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
+   * @param {any[]} archive - The current archive of values within this state.
    * @returns {Promise} Resolves with the new list of options.
    */
-  async refreshOptions (hint = '', context = []) {
+  async refreshOptions (hint = '', context = {}, archive = []) {
     if (hint === null) console.error('hint cannot be null in refreshOptions - perhaps unformatUnboxedValue returned null?');
     if (_refreshOptions.has(this)) {
-      if (!_suggestionCache.has(this) || _suggestionCache.get(this).hint !== hint || _suggestionCache.get(this).contextLength !== context.length) {
-        _lastRefresh.set(this, hint);
-        const newOptions = await _refreshOptions.get(this)(hint, context);
-        if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
-        // If user-created values are allowed, and this is a multi-value state,
-        // then add in an option for what the user has typed as long as what
-        // they've typed isn't identical to an existing option.
-        if (Array.isArray(newOptions) && this.allowUnknown && this.isMultivalue && hint.length > 0) {
-          if (!newOptions.map(o => o.key === hint).reduce((l, r) => l || r, false)) {
-            newOptions.unshift(this.boxValue(hint));
-          }
+      // start lookup
+      _lastRefresh.set(this, hint);
+      const newOptions = await _refreshOptions.get(this)(hint, context, archive);
+      if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
+      // create lookup table for archive
+      const lookup = new Map();
+      if (this.isMultivalue) archive.forEach(a => lookup.set(a.key)); // no need to look at archive if this isn't multivalue
+      // If user-created values are allowed, and this is a multi-value state,
+      // then add in an option for what the user has typed as long as what
+      // they've typed isn't identical to an existing option.
+      if (Array.isArray(newOptions) && this.allowUnknown && this.isMultivalue && hint.length > 0 && !lookup.has(hint)) {
+        if (!newOptions.map(o => o.key === hint).reduce((l, r) => l || r, false)) {
+          newOptions.unshift(this.boxValue(hint));
         }
-        _suggestionCache.set(this, {
-          hint: hint,
-          contextLength: context.length,
-          options: newOptions
-        });
       }
-      this.options = _suggestionCache.get(this).options;
+      this.options = this.isMultivalue ? newOptions.filter(o => !lookup.has(o.key)) : newOptions;
       return _suggestionCache.get(this);
     }
   }

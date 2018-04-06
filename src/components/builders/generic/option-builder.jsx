@@ -38,7 +38,7 @@ export class OptionBuilder extends Builder {
   componentWillMount () {
     super.componentWillMount();
     const boxed = this.machine.boxedValue;
-    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue('', boxed), boxed);
+    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue('', boxed), boxed, this.boxedArchive);
   }
 
   processProps (props) {
@@ -104,7 +104,7 @@ export class OptionBuilder extends Builder {
   @bind
   handleKeyUp (e) {
     const boxed = this.machine.boxedValue;
-    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue(e.target.value, boxed), boxed);
+    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue(e.target.value, boxed), boxed, this.boxedArchive);
   }
 
   focus () {
