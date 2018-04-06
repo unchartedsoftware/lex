@@ -241,29 +241,22 @@ export class OptionState extends StateTemplate {
   async refreshOptions (hint = '', context = {}, archive = []) {
     if (hint === null) console.error('hint cannot be null in refreshOptions - perhaps unformatUnboxedValue returned null?');
     if (_refreshOptions.has(this)) {
-      if (!_suggestionCache.has(this) || _suggestionCache.get(this).hint !== hint || _suggestionCache.get(this).contextLength !== context.length) {
-        // start lookup
-        _lastRefresh.set(this, hint);
-        const newOptions = await _refreshOptions.get(this)(hint, context, archive);
-        if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
-        // create lookup table for archive
-        const lookup = new Map();
-        if (this.isMultivalue) archive.forEach(a => lookup.set(a.key)); // no need to look at archive if this isn't multivalue
-        // If user-created values are allowed, and this is a multi-value state,
-        // then add in an option for what the user has typed as long as what
-        // they've typed isn't identical to an existing option.
-        if (Array.isArray(newOptions) && this.allowUnknown && this.isMultivalue && hint.length > 0 && !lookup.has(hint)) {
-          if (!newOptions.map(o => o.key === hint).reduce((l, r) => l || r, false)) {
-            newOptions.unshift(this.boxValue(hint));
-          }
+      // start lookup
+      _lastRefresh.set(this, hint);
+      const newOptions = await _refreshOptions.get(this)(hint, context, archive);
+      if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
+      // create lookup table for archive
+      const lookup = new Map();
+      if (this.isMultivalue) archive.forEach(a => lookup.set(a.key)); // no need to look at archive if this isn't multivalue
+      // If user-created values are allowed, and this is a multi-value state,
+      // then add in an option for what the user has typed as long as what
+      // they've typed isn't identical to an existing option.
+      if (Array.isArray(newOptions) && this.allowUnknown && this.isMultivalue && hint.length > 0 && !lookup.has(hint)) {
+        if (!newOptions.map(o => o.key === hint).reduce((l, r) => l || r, false)) {
+          newOptions.unshift(this.boxValue(hint));
         }
-        _suggestionCache.set(this, {
-          hint: hint,
-          contextLength: context.length,
-          options: this.isMultivalue ? newOptions.filter(o => !lookup.has(o.key)) : newOptions // filter out already-entered values
-        });
       }
-      this.options = _suggestionCache.get(this).options;
+      this.options = this.isMultivalue ? newOptions.filter(o => !lookup.has(o.key)) : newOptions;
       return _suggestionCache.get(this);
     }
   }
