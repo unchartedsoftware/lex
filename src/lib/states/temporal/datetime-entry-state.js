@@ -1,7 +1,9 @@
 import { StateTemplate } from '../../state';
-const moment = require('moment'); // couldn't get es6 import working here
+import moment from 'moment';
+import 'moment-timezone';
 
 const _dateFormat = new WeakMap();
+const _timeZone = new WeakMap();
 
 /**
  * This state supports the entry of a Date/Time value, with support for a custom acceptable format
@@ -9,18 +11,22 @@ const _dateFormat = new WeakMap();
  * @param {Object} config - A configuration object. Supports all of the parameters from `StateTemplate`,
  *                          providing defaults for `name` and `validate`.
  * @param {string|undefined} config.format - The acceptable format for a typed date. Defaults to `'YYYY/MM/DD'`.
+ * @param {string|undefined} config.timezone - The assumed timezone for a typed date. Defaults to `''`.
  */
 export class DateTimeEntryState extends StateTemplate {
   constructor (config) {
     if (config.name === undefined) config.name = 'Enter a date';
     if (config.format === undefined) config.format = 'YYYY/MM/DD';
+    if (config.timezone === undefined) config.timezone = 'Etc/UTC';
     if (config.validate === undefined) {
       config.validate = (val) => {
         return val !== null; // all good as long as the boxed value isn't null. If it was invalid, moment would have returned null.
       };
     }
+    if (moment.tz.zone(config.timezone) === null) throw new Error(`Timezone ${config.timezone} does not exist.`);
     super(config);
     _dateFormat.set(this, config.format);
+    _timeZone.set(this, config.timeZone);
   }
 
   /**
@@ -33,13 +39,22 @@ export class DateTimeEntryState extends StateTemplate {
   }
 
   /**
+   * Getter for `timezone`.
+   *
+   * @returns {string} - The timezone that all entered dates will be interpreted in.
+   */
+  get timezone () {
+    return _timeZone.get(this);
+  }
+
+  /**
    * Transform a user-supplied value into an internal representation.
    *
    * @param {string} datestring - The user-supplied value.
    * @returns {Date} A `Date` instance, or `null` if the `datestring` does not respect `this.format`.
    */
   boxValue (datestring) {
-    const result = moment(datestring, this.format, true);
+    const result = moment.tz(datestring, this.format, true, this.timezone);
     return isNaN(result.valueOf()) ? null : result.toDate();
   }
 
@@ -51,7 +66,7 @@ export class DateTimeEntryState extends StateTemplate {
    */
   unboxValue (dateobj) {
     if (dateobj === null || dateobj === undefined) return null;
-    const m = moment(dateobj);
+    const m = moment.tz(dateobj, this.timezone);
     return m.isValid() ? m.format(this.format) : null;
   }
 }
