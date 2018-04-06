@@ -11,7 +11,7 @@ const _timeZone = new WeakMap();
  * @param {Object} config - A configuration object. Supports all of the parameters from `StateTemplate`,
  *                          providing defaults for `name` and `validate`.
  * @param {string|undefined} config.format - The acceptable format for a typed date. Defaults to `'YYYY/MM/DD'`.
- * @param {string|undefined} config.timezone - The assumed timezone for a typed date. Defaults to `''`.
+ * @param {string|undefined} config.timezone - The assumed timezone for a typed date. Defaults to `'Etc/UTC'`.
  */
 export class DateTimeEntryState extends StateTemplate {
   constructor (config) {
