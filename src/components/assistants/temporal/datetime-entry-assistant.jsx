@@ -36,12 +36,20 @@ export class DateTimeEntryAssistant extends Assistant {
     }
   }
 
+  get timezone () {
+    return this.machineState.template.timezone;
+  }
+
+  get format () {
+    return this.machineState.template.format;
+  }
+
   @bind
   onValueChanged (newDate) {
     if (newDate) {
       // incoming date is in the target timezone, but TinyDatePicker wants the local timezone.
-      const stringDate = moment.tz(newDate, this.machineState.template.timezone).format('YYYY-MM-DD'); // get incoming date as a string
-      const localizedDate = moment(stringDate, 'YYYY-MM-DD').toDate();
+      const stringDate = moment.tz(newDate, this.timezone).format(this.format); // get incoming date as a string
+      const localizedDate = moment(stringDate, this.format).toDate();
       this.setState({
         value: localizedDate
       });
@@ -80,10 +88,10 @@ export class DateTimeEntryAssistant extends Assistant {
         // ignore irritating HTML error from date picker for now
       } finally {
         this.dateInput.on('statechange', (_, picker) => {
-          const stringDate = moment(picker.state.selectedDate).format('YYYY-MM-DD'); // get selected date as a string
-          const stringBoxedValue = this.boxedValue === null ? null : moment.tz(this.boxedValue, this.machineState.template.timezone).format('YYYY-MM-DD');
+          const stringDate = moment(picker.state.selectedDate).format(this.format); // get selected date as a string
+          const stringBoxedValue = this.boxedValue === null ? null : moment.tz(this.boxedValue, this.timezone).format(this.format);
           if (stringDate !== stringBoxedValue) {
-            this.boxedValue = moment.tz(stringDate, 'YYYY-MM-DD', this.machineState.template.timezone).toDate(); // reinterpret as being in target timezone
+            this.boxedValue = moment.tz(stringDate, this.format, this.timezone).toDate(); // reinterpret as being in target timezone
             if (this.boxedValue !== null && this.machineState.isMultivalue) this.requestArchive();
             this.requestFocus();
           }
@@ -105,8 +113,8 @@ export class DateTimeEntryAssistant extends Assistant {
       case TAB:
         // Use the currently "focused" date if we dont have a value
         if (this.boxedValue == null && this.dateInput && this.dateInput.state.hilightedDate) {
-          const stringDate = moment(this.dateInput.state.hilightedDate).format('YYYY-MM-DD'); // get selected date as a string
-          this.boxedValue = moment.tz(stringDate, 'YYYY-MM-DD', this.machineState.template.timezone).toDate(); // reinterpret as being in target timezone
+          const stringDate = moment(this.dateInput.state.hilightedDate).format(this.format); // get selected date as a string
+          this.boxedValue = moment.tz(stringDate, this.format, this.timezone).toDate(); // reinterpret as being in target timezone
         }
 
         this.requestTransition({nextToken: normalizedKey === TAB});
