@@ -131,13 +131,19 @@ export class TokenStateMachine extends EventEmitter {
         const oldState = this.state;
         // Find the first legal transition to a non-read-only, non-bind-only child, if possible
         let next = this.getFirstLegalTransition(this.state, ignoreBindOnly);
-        while (next.isReadOnly) {
+        while (next.isReadOnly && !next.isTerminal) {
           next = this.getFirstLegalTransition(next, ignoreBindOnly);
         }
         next.doInitialize(this.boxedValue);
         _currentState.set(this, next);
         this.emit('state changed', this.state, oldState);
-        return this.state;
+        // if we ended on a read-only terminal state, transition one more time to finish token.
+        if (next.isReadOnly && next.isTerminal) {
+          return this.transition(arguments);
+        } else {
+          // otherwise, we're finished.
+          return this.state;
+        }
       } catch (err) {
         this.emit('state change failed', err);
         throw err;

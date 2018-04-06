@@ -8,6 +8,7 @@ import { StateBuilderFactory } from './lib/state-builder-factory';
 import { TransitionFactory } from './lib/transition-factory';
 import { SearchBar } from './components/search-bar';
 import { LabelState } from './lib/states/generic/label-state';
+import { TerminalState } from './lib/states/generic/terminal-state';
 import { OptionStateOption, OptionState } from './lib/states/generic/option-state';
 import { TextRelationState } from './lib/states/text/text-relation-state';
 import { NumericRelationState } from './lib/states/numeric/numeric-relation-state';
@@ -17,6 +18,7 @@ import { NumericEntryState } from './lib/states/numeric/numeric-entry-state';
 import { CurrencyEntryState } from './lib/states/numeric/currency-entry-state';
 import { DateTimeEntryState } from './lib/states/temporal/datetime-entry-state';
 import { LabelBuilder } from './components/builders/generic/label-builder';
+import { TerminalBuilder } from './components/builders/generic/terminal-builder';
 import { OptionBuilder } from './components/builders/generic/option-builder';
 import { OptionAssistant } from './components/assistants/generic/option-assistant';
 import { DateTimeEntryBuilder } from './components/builders/temporal/datetime-entry-builder';
@@ -80,6 +82,7 @@ class Lex extends EventEmitter {
     _builders.get(this).registerBuilder(OptionState, OptionBuilder)
       .registerBuilder(DateTimeEntryState, DateTimeEntryBuilder)
       .registerBuilder(LabelState, LabelBuilder)
+      .registerBuilder(TerminalState, TerminalBuilder)
       .registerAssistant(OptionState, OptionAssistant)
       .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant);
     _proxiedEvents.set(this, new Map());
@@ -242,6 +245,7 @@ export {
   TransitionFactory,
   // states
   LabelState,
+  TerminalState,
   OptionState,
   OptionStateOption,
   TextRelationState,

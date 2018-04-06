@@ -87,7 +87,7 @@ export class OptionState extends StateTemplate {
     if (Array.isArray(config.options)) {
       _initialOptions.set(this, config.options);
       _refreshOptions.set(this, (hint = '') => {
-        return _initialOptions.get(this).filter(o => o.key.toLowerCase().indexOf(hint) === 0);
+        return _initialOptions.get(this).filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) === 0);
       });
     } else {
       _refreshOptions.set(this, async (hint = '', context = []) => {
