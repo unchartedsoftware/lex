@@ -421,10 +421,14 @@ export class SearchBar extends Component {
       // We were editing a token when we decided to remove it
       // this is actually a cancel action
       this.cancel();
+      this.setState({
+        flashActive: false
+      });
     } else {
       const oldQueryValues = this.state.tokenValues;
       this.setState({
-        tokenValues: [...this.state.tokenValues.slice(0, idx), ...this.state.tokenValues.slice(idx + 1)]
+        tokenValues: [...this.state.tokenValues.slice(0, idx), ...this.state.tokenValues.slice(idx + 1)],
+        flashActive: false
       });
       this.queryChanged(oldQueryValues, false);
     }
