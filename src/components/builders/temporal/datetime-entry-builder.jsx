@@ -153,11 +153,11 @@ export class DateTimeEntryBuilder extends Builder {
     if (this.machineState.value) {
       if (this.machineState.isMultivalue && this.archive.length > 0) {
         return (
-          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.unboxedValue} & {this.archive.length} others</span>
+          <span className={`${state.valid ? 'token-input' : 'token-input invalid'} ${state.machineState.vkeyClass}`}>{this.machineState.unboxedValue} & {this.archive.length} others</span>
         );
       } else {
         return (
-          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{this.machineState.unboxedValue}</span>
+          <span className={`${state.valid ? 'token-input' : 'token-input invalid'} ${state.machineState.vkeyClass}`}>{this.machineState.unboxedValue}</span>
         );
       }
     } else {
