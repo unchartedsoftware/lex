@@ -353,6 +353,7 @@ export class Token extends Component {
             readOnly={!active || s !== machine.state}
             blank={this.isBlank}
             focused={active && s === machine.state && focused}
+            tokenActive={active}
             multivalueDelimiter={multivalueDelimiter}
             multivaluePasteDelimiter={multivaluePasteDelimiter}
           />);
