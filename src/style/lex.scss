@@ -86,7 +86,7 @@ div.lex-box div.token  {
     }
   }
 
-  .token-input {
+  .token-input, .token-icon {
     display: inline-block;
     background: transparent;
     transition: background-color 0.25s linear;
@@ -115,6 +115,16 @@ div.lex-box div.token  {
     }
     &.token-input-units {
       padding-left: 0.3em;
+    }
+  }
+
+  &.active .token-input:not(.active):hover {
+    cursor: text;
+    background: $lex-token-active-background;
+    @if $lex-token-input-border-color == 'transparent' {
+      // Noop
+    } @else {
+      border: solid 1px $lex-token-input-border-color;
     }
   }
 

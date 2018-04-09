@@ -272,7 +272,7 @@ export class Token extends Component {
         st = st.parent;
       }
     }
-    return <span className='token-input token-icon' dangerouslySetInnerHTML={{__html: defaultIcon}} />;
+    return <span className='token-icon' dangerouslySetInnerHTML={{__html: defaultIcon}} />;
   }
 
   /*

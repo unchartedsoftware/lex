@@ -317,7 +317,7 @@ export class Builder extends Component {
    */
   renderReadOnly (props, state) {
     return (
-      <span className={`${state.valid ? 'token-input' : 'token-input invalid'} ${state.machineState.vkeyClass}`}>{this.unboxedValue}</span>
+      <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass}`}>{this.unboxedValue}</span>
     );
   }
 
