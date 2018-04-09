@@ -191,11 +191,11 @@ export class OptionBuilder extends Builder {
       const shortKey = this.machineState.value.shortKey !== undefined ? this.machineState.value.shortKey : this.machineStateTemplate.formatUnboxedValue(this.machineState.value.key, this.machine.boxedValue);
       if (this.machineState.isMultivalue && this.archive.length > 0) {
         return (
-          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{shortKey}{units} & {this.archive.length} others</span>
+          <span className={`${state.valid ? 'token-input' : 'token-input invalid'} ${state.machineState.vkeyClass}`}>{shortKey}{units} & {this.archive.length} others</span>
         );
       } else {
         return (
-          <span className={state.valid ? 'token-input' : 'token-input invalid'}>{shortKey}{units}</span>
+          <span className={`${state.valid ? 'token-input' : 'token-input invalid'} ${state.machineState.vkeyClass}`}>{shortKey}{units}</span>
         );
       }
     } else {

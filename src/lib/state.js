@@ -108,6 +108,10 @@ export class StateTemplate extends EventEmitter {
     return _vkey.get(this);
   }
 
+  get vkeyClass () {
+    return typeof this.vkey === 'string' ? `token-vkey-${this.vkey.toLowerCase().replace(/\s/g, '-')}` : '';
+  }
+
   get defaultValue () {
     return _defaultValue.get(this);
   }
@@ -275,6 +279,7 @@ export class State extends EventEmitter {
   }
   get name () { return this.template.name; }
   get vkey () { return this.template.vkey; }
+  get vkeyClass () { return this.template.vkeyClass; }
   get defaultValue () { return this.template.defaultValue; }
   get children () { return _children.get(this); }
   get isTerminal () { return this.template.isTerminal; }
