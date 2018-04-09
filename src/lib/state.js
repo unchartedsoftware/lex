@@ -11,6 +11,7 @@ const _bindOnly = new WeakMap();
 const _defaultValue = new WeakMap();
 const _previewValue = new WeakMap();
 const _multivalue = new WeakMap();
+const _multivalueLimit = new WeakMap();
 const _children = new WeakMap();
 const _template = new WeakMap();
 const _value = new WeakMap();
@@ -43,6 +44,7 @@ const _icon = new WeakMap();
  * @param {boolean} config.readOnly - This state is read only (for display purposes only) and should be skipped by the state machine. False by default.
  * @param {boolean} config.bindOnly - This state is bind only (can be created programatically, but not by a user). False by default.
  * @param {boolean} config.multivalue - Whether or not this state supports multi-value entry.
+ * @param {number | undefined} config.multivalueLimit - An optional limit on the number of values this state can contain.
  * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
  *
  * @example
@@ -65,7 +67,7 @@ const _icon = new WeakMap();
  */
 export class StateTemplate extends EventEmitter {
   constructor (config) {
-    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, icon} = config;
+    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon} = config;
     super();
     _parent.set(this, parent);
     _name.set(this, name);
@@ -74,6 +76,7 @@ export class StateTemplate extends EventEmitter {
     _validate.set(this, validate !== undefined ? validate : () => true);
     _defaultValue.set(this, defaultValue !== undefined ? defaultValue : null);
     _multivalue.set(this, multivalue !== undefined ? multivalue : false);
+    _multivalueLimit.set(this, multivalueLimit);
     _readOnly.set(this, readOnly !== undefined ? readOnly : false);
     _bindOnly.set(this, bindOnly !== undefined ? bindOnly : false);
     _children.set(this, []);
@@ -122,6 +125,10 @@ export class StateTemplate extends EventEmitter {
 
   get isMultivalue () {
     return _multivalue.get(this);
+  }
+
+  get multivalueLimit () {
+    return _multivalueLimit.get(this);
   }
 
   get isRoot () {
@@ -286,6 +293,7 @@ export class State extends EventEmitter {
   get isReadOnly () { return this.template.isReadOnly; }
   get isBindOnly () { return this.template.isBindOnly; }
   get isMultivalue () { return this.template.isMultivalue; }
+  get multivalueLimit () { return this.template.multivalueLimit; }
   initialize (...args) { return this.template.initialize(...args); }
   doInitialize (...args) { return this.template.doInitialize(...args); }
   boxValue (...args) { return this.template.boxValue(...args); }
@@ -497,9 +505,19 @@ export class State extends EventEmitter {
   }
 
   /**
+   * @returns {boolean} Returns true if the archive has room left, false otherwise. Does not validate.
+   */
+  get canArchiveValue () {
+    return this.isMultivalue && (this.multivalueLimit === undefined || this.archive.length < this.multivalueLimit);
+  }
+
+  /**
    * Moves the current value to the archive, and resets the current value.
    */
   archiveValue () {
+    if (this.multivalueLimit && this.archive.length === this.multivalueLimit) {
+      throw new Error(`Multivalue size limit reached for state ${this.name}`);
+    }
     const oldVal = this.value;
     const oldUnboxedVal = this.unboxedValue;
     this.archive.push(this.value);
