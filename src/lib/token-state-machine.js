@@ -197,30 +197,27 @@ export class TokenStateMachine extends EventEmitter {
   }
 
   /**
-   * Pops a value from the current `State`'s archive, if possible, overwriting the current value. If the
-   * archive is empty, transitions to the parent state from the current state, regardless of whether or
-   * not the current state is valid, or has a parent. Resets the value of the current state before rewinding.
-   * If the current state has no parent, then this will only reset the value of the current state.
+   * Transitions to the parent state (or target ancestor state) from the current state, regardless of whether or
+   * not the current state is valid, or has a parent. Leaves the value of the current state as-is,
+   * permitting a potential transition back to this state after editing a previous one.
    *
+   * @param {StateTemplate | undefined} targetState - Target `StateTemplate` to rewind to (optional).
    * @returns {State} The new current state.
    */
-  rewind () {
-    if (this.state.archive.length > 0) {
-      this.state.unarchiveValue();
-      this.emit('state changed', this.state, this.state);
+  rewind (targetState) {
+    const target = targetState !== undefined ? targetState : this.state.parent.template;
+    while (this.state.template !== target) {
+      if (!this.state.parent) break;
+      const oldState = this.state;
+      // oldState.reset();
+      _currentState.set(this, this.state.parent);
+      this.emit('state changed', this.state, oldState);
+    }
+    // If the new state is read-only, rewind past it automatically.
+    if (this.state.isReadOnly) {
+      return this.rewind();
     } else {
-      if (this.state.parent) {
-        const oldState = this.state;
-        oldState.reset();
-        _currentState.set(this, this.state.parent);
-        this.emit('state changed', this.state, oldState);
-      }
-      // If the new state is read-only, rewind past it automatically.
-      if (this.state.isReadOnly) {
-        return this.rewind();
-      } else {
-        return this.state;
-      }
+      return this.state;
     }
   }
 

@@ -18,6 +18,7 @@ export class Builder extends Component {
       valid: true,
       editing: false,
       readOnly: false,
+      tokenActive: false,
       multivalueDelimiter: COMMA,
       multivaluePasteDelimiter: ',',
       requestFocus: () => {},
@@ -88,6 +89,7 @@ export class Builder extends Component {
   processProps (props) {
     const {
       editing,
+      tokenActive,
       machine,
       machineState,
       requestTransition = () => {},
@@ -108,6 +110,11 @@ export class Builder extends Component {
     if (editing !== this.state.editing) {
       this.setState({
         editing: editing
+      });
+    }
+    if (tokenActive !== this.state.tokenActive) {
+      this.setState({
+        tokenActive: tokenActive
       });
     }
     if (machine !== this.state.machine) {
@@ -266,6 +273,20 @@ export class Builder extends Component {
     return this.state.requestRewind();
   }
 
+  @bind
+  /**
+   * Call from a subclass to request the state machine for the containing token to attempt rewind to
+   * this builder
+   */
+  requestRewindTo (e) {
+    if (!this.state.tokenActive) return;
+    if (e !== undefined) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    return this.state.requestRewind(this.state.machineState.template);
+  }
+
   /**
    * Provide this builder with focus. Must be overriden in a subclass.
    *
@@ -317,7 +338,9 @@ export class Builder extends Component {
    */
   renderReadOnly (props, state) {
     return (
-      <span className={`${state.valid ? 'token-input' : 'token-input invalid'} ${state.machineState.vkeyClass}`}>{this.unboxedValue}</span>
+      <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass}`} onMouseDown={this.requestRewindTo}>
+        {this.unboxedValue}
+      </span>
     );
   }
 

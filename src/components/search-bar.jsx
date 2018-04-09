@@ -374,9 +374,9 @@ export class SearchBar extends Component {
   }
 
   @bind
-  rewind () {
+  rewind (targetState) {
     const oldState = this.state.activeMachine.state;
-    const newState = this.state.activeMachine.rewind();
+    const newState = this.state.activeMachine.rewind(targetState);
     if (oldState === newState) {
       if (this.state.editing) {
         this.queryChanged(this.state.editing, false);
