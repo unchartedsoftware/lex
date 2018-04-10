@@ -221,7 +221,7 @@ export class OptionBuilder extends Builder {
             onFocusOut={this.onBlur}
             onPaste={this.onPaste}
             ref={(input) => { this.textInput = input; }}
-            disabled={readOnly} />
+            disabled={readOnly || (machineState.isMultivalue && !machineState.canArchiveValue)} />
           { machineState.template.units !== undefined ? <span className='token-input token-input-units text-muted'>{ machineState.template.units }</span> : '' }
         </span>
       </span>

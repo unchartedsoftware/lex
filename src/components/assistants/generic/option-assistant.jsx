@@ -150,7 +150,7 @@ export class OptionAssistant extends Assistant {
                 (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} onMouseOver={() => this.onOptionHover(idx)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{this.machineStateTemplate.formatUnboxedValue(o.key, this.machine.boxedValue)}</li>))
               }
               { (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
-              { this.machineState.isMultivalue && !this.machineState.canArchiveValue && <li><em className='text-muted'>Maximum number of values reached</em></li> }
+              { this.machineState.isMultivalue && !this.machineState.canArchiveValue && <li><em className='text-muted anim-flash'>Maximum number of values reached</em></li> }
             </ul>
           </div>
           {this.renderArchive(props)}
