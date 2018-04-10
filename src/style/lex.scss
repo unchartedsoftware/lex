@@ -116,6 +116,9 @@ div.lex-box div.token  {
     &.token-input-units {
       padding-left: 0.3em;
     }
+    &[disabled] {
+      background: transparentize($lex-token-active-background, 0.7);
+    }
   }
 
   &.active .token-input:hover {
@@ -128,6 +131,9 @@ div.lex-box div.token  {
     }
     &.invalid {
       background: $lex-token-invalid-background;
+    }
+    &[disabled] {
+      background: transparentize($lex-token-active-background, 0.7);
     }
   }
 
