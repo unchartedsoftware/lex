@@ -118,13 +118,16 @@ div.lex-box div.token  {
     }
   }
 
-  &.active .token-input:not(.active):hover {
+  &.active .token-input:hover {
     cursor: text;
     background: $lex-token-active-background;
     @if $lex-token-input-border-color == 'transparent' {
       // Noop
     } @else {
       border: solid 1px $lex-token-input-border-color;
+    }
+    &.invalid {
+      background: $lex-token-invalid-background;
     }
   }
 
