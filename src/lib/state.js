@@ -339,6 +339,7 @@ export class State extends EventEmitter {
         message += ` of state named: ${this.name}`;
       }
       console.error(message, err);
+      throw (err);
     }
     return isValid;
   }

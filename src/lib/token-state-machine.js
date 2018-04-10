@@ -55,41 +55,46 @@ export class TokenStateMachine extends EventEmitter {
    * @param {boolean} finalTransition - Whether or not to apply the final transition.
    */
   async bindValues (values, finalTransition = false) {
-    this.reset();
-    // bind to states
-    if (values !== undefined) {
-      const copy = Object.assign(Object.create(null), values);
-      while (Object.keys(copy).length > 0) {
-        await this.state.doInitialize(this.boxedValue);
-        const v = copy[this.state.vkey];
-        if (v === undefined) {
-          break; // we're missing a value for the current state, so break out.
-        } else if (Array.isArray(v)) {
-          for (const x of v) {
-            if (typeof x === 'object') {
-              this.state.value = x;
-            } else {
-              this.state.unboxedValue = x;
+    try {
+      this.reset();
+      // bind to states
+      if (values !== undefined) {
+        const copy = Object.assign(Object.create(null), values);
+        while (Object.keys(copy).length > 0) {
+          await this.state.doInitialize(this.boxedValue);
+          const v = copy[this.state.vkey];
+          if (v === undefined) {
+            break; // we're missing a value for the current state, so break out.
+          } else if (Array.isArray(v)) {
+            for (const x of v) {
+              if (typeof x === 'object') {
+                this.state.value = x;
+              } else {
+                this.state.unboxedValue = x;
+              }
+              this.state.archiveValue();
             }
-            this.state.archiveValue();
+            this.state.unarchiveValue(); // make the last value the "active" one
+          } else if (typeof v === 'object') {
+            this.state.value = v;
+          } else {
+            this.state.unboxedValue = v;
           }
-          this.state.unarchiveValue(); // make the last value the "active" one
-        } else if (typeof v === 'object') {
-          this.state.value = v;
-        } else {
-          this.state.unboxedValue = v;
-        }
-        delete copy[this.state.vkey]; // we're done with this value
-        // if there's more values, transition
-        if (Object.keys(copy).length > 0 || finalTransition) {
-          try {
-            this.transition({ignoreBindOnly: true}); // ignore bind-only states
-          } catch (err) {
-            console.error(err);
-            throw err; // the value for this state is invalid, so break out.
+          delete copy[this.state.vkey]; // we're done with this value
+          // if there's more values, transition
+          if (Object.keys(copy).length > 0 || finalTransition) {
+            try {
+              this.transition({ignoreBindOnly: true}); // ignore bind-only states
+            } catch (err) {
+              console.error(err);
+              throw err; // the value for this state is invalid, so break out.
+            }
           }
         }
       }
+    } catch (bindErr) {
+      bindErr.bindValues = values;
+      throw bindErr;
     }
     return this;
   }
@@ -205,7 +210,7 @@ export class TokenStateMachine extends EventEmitter {
    * @returns {State} The new current state.
    */
   rewind (targetState) {
-    const target = targetState !== undefined ? targetState : this.state.parent.template;
+    const target = targetState !== undefined ? targetState : (this.state.parent !== undefined ? this.state.parent.template : this.state.template);
     while (this.state.template !== target) {
       if (!this.state.parent) break;
       const oldState = this.state;

@@ -85,13 +85,17 @@ lex.on('token end', (...args) => console.log('token end', ...args));
 window.clearQuery = function () {
   lex.reset();
 };
-window.setQuery = function () {
-  lex.setQuery([
-    {field: 'Name', relation: 'is like', value: 'Sean'},
-    {field: 'Income', relation: 'equals', value: '12'},
-    {field: 'Keywords', value: ['Rob', 'Phil']},
-    {field: 'GeoHash', value: 'geohash things'}
-  ]);
+window.setQuery = async function () {
+  try {
+    await lex.setQuery([
+      {field: 'Name', relation: 'is like', value: 'Sean'},
+      {field: 'Income', relation: 'equals', value: '12'},
+      {field: 'Keywords', value: ['Rob', 'Phil', 'two', 'three']},
+      {field: 'GeoHash', value: 'geohash things'}
+    ]);
+  } catch (err) {
+    console.log('fuck');
+  }
 };
 window.setSuggestions = function () {
   lex.setSuggestions([{field: 'Name', relation: 'is like', value: 'Sean'}]);
