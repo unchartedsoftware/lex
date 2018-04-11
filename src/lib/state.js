@@ -319,6 +319,7 @@ export class State extends EventEmitter {
   reset () {
     this.template.reset();
     this.value = this.defaultValue;
+    this.previewValue = undefined;
     _archive.set(this, []);
   }
 
