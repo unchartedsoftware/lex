@@ -61,6 +61,7 @@ export class TokenStateMachine extends EventEmitter {
       if (values !== undefined) {
         const copy = Object.assign(Object.create(null), values);
         while (Object.keys(copy).length > 0) {
+          this.state.reset();
           await this.state.doInitialize(this.boxedValue);
           const v = copy[this.state.vkey];
           if (v === undefined) {
