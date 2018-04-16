@@ -33,6 +33,7 @@ const _defaultValue = new WeakMap();
 const _tokenXIcon = new WeakMap();
 const _multivalueDelimiterKey = new WeakMap();
 const _multivaluePasteDelimiter = new WeakMap();
+const _cssClass = new WeakMap();
 
 /**
  * Lex - A micro-framework for building search bars.
@@ -52,6 +53,7 @@ const _multivaluePasteDelimiter = new WeakMap();
  * @param {string} config.tokenXIcon - The default X icon for tokens (DOM string).
  * @param {number} config.multivalueDelimiterKey - The JS key code of the delimiter which will notionally 'separate' multiple values in any visual representation of a multivalue state. 188 (',') by default.
  * @param {string[]} config.multivaluePasteDelimiter - The characters which are supported as delimiters text which is pasted into a multivalue state. ',' by default.
+ * @param {string[]} config.cssClass - Add unique classes to the lex search bar and associated assistant
  * @example
  * // Instantiate a new instance of lex and bind it to the page.
  * const lex = new Lex(language);
@@ -70,7 +72,8 @@ class Lex extends EventEmitter {
       defaultQuery = [],
       tokenXIcon = '&times;',
       multivalueDelimiterKey = KEYS.COMMA,
-      multivaluePasteDelimiter = ','
+      multivaluePasteDelimiter = ',',
+      cssClass = []
     } = config;
     super();
     // TODO throw if language is not instanceof StateTemplate
@@ -94,6 +97,7 @@ class Lex extends EventEmitter {
       proxiedEvents.push(multivalueDelimiterKey);
     }
     proxiedEvents.forEach(e => _proxiedEvents.get(this).set(e, true));
+    _cssClass.set(this, cssClass);
   }
 
   /**
@@ -168,6 +172,7 @@ class Lex extends EventEmitter {
         machineTemplate={_language.get(this)}
         proxiedEvents={_proxiedEvents.get(this)}
         tokenXIcon={_tokenXIcon.get(this)}
+        cssClass={_cssClass.get(this)}
         multivalueDelimiter={_multivalueDelimiterKey.get(this)}
         multivaluePasteDelimiter={_multivaluePasteDelimiter.get(this)}
         onQueryChanged={(...args) => this.emit('query changed', ...args)}

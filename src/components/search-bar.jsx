@@ -27,6 +27,7 @@ export class SearchBar extends Component {
       focused: false,
       flashActive: false,
       tokenXIcon: '&times',
+      cssClass: [],
       multivalueDelimiter: COMMA,
       multivaluePasteDelimiter: ',',
       onQueryChanged: () => {},
@@ -47,6 +48,7 @@ export class SearchBar extends Component {
       suggestions = [],
       proxiedEvents,
       tokenXIcon = '&times;',
+      cssClass = [],
       multivalueDelimiter = COMMA,
       multivaluePasteDelimiter = ',',
       onQueryChanged = () => {},
@@ -106,6 +108,11 @@ export class SearchBar extends Component {
     if (tokenXIcon !== this.state.tokenXIcon) {
       this.setState({
         tokenXIcon: tokenXIcon
+      });
+    }
+    if (cssClass !== this.state.cssClass) {
+      this.setState({
+        cssClass: cssClass
       });
     }
     if (multivalueDelimiter !== this.state.multivalueDelimiter) {
@@ -250,7 +257,7 @@ export class SearchBar extends Component {
       // https://github.com/developit/preact-portal/issues/2
       return (
         <Portal into='body' ref={(r) => { this._portal = r; }}>
-          <div id='lex-assistant-box' className='lex-assistant-box' style={pos} ref={(r) => { this._portalAssistant = r; }}>
+          <div id='lex-assistant-box' className={`lex-assistant-box ${this.state.cssClass.join(' ')}`} style={pos} ref={(r) => { this._portalAssistant = r; }}>
             <Assistant
               editing={this.state.editing}
               machine={activeMachine}
@@ -491,9 +498,9 @@ export class SearchBar extends Component {
     this.state.onSuggestionsChanged(this.state.suggestions, oldSuggestionValues, newUnboxedValues, oldUnboxedValues);
   }
 
-  render (props, {placeholder, active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, multivalueDelimiter, multivaluePasteDelimiter}) {
+  render (props, {placeholder, active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, cssClass, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
-      <div className={'lex-box form-control' + (active ? ' active' : '') + (focused ? ' focused' : '')} onKeyDown={this.onKeyDown} onMouseDown={this.activate} onFocus={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
+      <div className={`lex-box form-control ${cssClass.join(' ')}` + (active ? ' active' : '') + (focused ? ' focused' : '')} onKeyDown={this.onKeyDown} onMouseDown={this.activate} onFocus={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         { !active && placeholder !== undefined && tokenValues.length === 0 && suggestions.length === 0 ? <div className='text-muted lex-placeholder'>{ placeholder }</div> : '' }
         {
           tokenValues.map((v, i) => {
