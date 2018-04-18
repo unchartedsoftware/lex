@@ -159,7 +159,8 @@ div.lex-box div.token  {
       position: absolute;
       background: darken($lex-token-background, 15%);
       left: 2px;
-      line-height: 21px;
+      line-height: 24px;
+      padding-right: 5px;
       pointer-events: none;
       user-select: none;
       max-width: 150px;

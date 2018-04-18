@@ -228,6 +228,7 @@ export class OptionState extends StateTemplate {
   reset () {
     super.reset();
     _suggestionCache.delete(this);
+    _options.set(this, []);
   }
 
   /**
