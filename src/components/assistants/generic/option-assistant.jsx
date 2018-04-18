@@ -2,7 +2,6 @@ import { h } from 'preact';
 import { bind } from 'decko';
 import { Assistant } from '../../assistant';
 import { UP_ARROW, DOWN_ARROW, TAB, ENTER, normalizeKey } from '../../../lib/keys';
-import { toChar } from '../../../lib/string-util';
 
 /**
  * A visual interaction mechanism for supplying values
