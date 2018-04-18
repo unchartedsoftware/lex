@@ -19,12 +19,19 @@ export class OptionAssistant extends Assistant {
     this.state.suggestions = [];
   }
 
+  getSuggestions (options = this.machineStateTemplate.options) {
+    // create lookup table for archive
+    const lookup = new Map();
+    this.archive.forEach(a => lookup.set(a.key));
+    return options.filter(o => !o.hidden && !lookup.has(o.key)).slice(0, this.machineStateTemplate.suggestionLimit);
+  }
+
   @bind
   onOptionsChanged (newOptions) {
     this.setState({
       options: newOptions,
       activeOption: -1,
-      suggestions: newOptions.filter(o => !o.hidden).slice(0, this.machineStateTemplate.suggestionLimit)
+      suggestions: this.getSuggestions(newOptions)
     });
   }
 
@@ -36,6 +43,9 @@ export class OptionAssistant extends Assistant {
       if (result) {
         this.machineState.unboxedValue = null;
         this.machineStateTemplate.refreshOptions('', this.machine.boxedValue, this.boxedArchive);
+        this.setState({
+          suggestions: this.getSuggestions()
+        });
       }
     } else {
       this.requestTransition();
@@ -51,6 +61,9 @@ export class OptionAssistant extends Assistant {
   onArchivedRemoved (idx) {
     this.requestRemoveArchivedValue(idx);
     this.machineStateTemplate.refreshOptions('', this.machine.boxedValue, this.boxedArchive);
+    this.setState({
+      suggestions: this.getSuggestions()
+    });
   }
 
   processProps (props) {
@@ -61,7 +74,7 @@ export class OptionAssistant extends Assistant {
       this.setState({
         options: this.machineStateTemplate.options,
         activeOption: -1,
-        suggestions: this.machineStateTemplate.options.filter(o => !o.hidden).slice(0, this.machineStateTemplate.suggestionLimit)
+        suggestions: this.getSuggestions()
       });
     }
     if (this.machineState) this.machineStateTemplate.on('options changed', this.onOptionsChanged);

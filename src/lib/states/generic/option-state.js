@@ -228,6 +228,7 @@ export class OptionState extends StateTemplate {
   reset () {
     super.reset();
     _suggestionCache.delete(this);
+    _options.set(this, []);
   }
 
   /**
@@ -244,22 +245,17 @@ export class OptionState extends StateTemplate {
     if (_refreshOptions.has(this)) {
       // start lookup
       _lastRefresh.set(this, hint);
-      // reset current options because they may no longer be valid
-      this.options = [];
       const newOptions = await _refreshOptions.get(this)(hint, context, archive);
       if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
-      // create lookup table for archive
-      const lookup = new Map();
-      if (this.isMultivalue) archive.forEach(a => lookup.set(a.key)); // no need to look at archive if this isn't multivalue
       // If user-created values are allowed, and this is a multi-value state,
       // then add in an option for what the user has typed as long as what
       // they've typed isn't identical to an existing option.
-      if (Array.isArray(newOptions) && this.allowUnknown && this.isMultivalue && hint.length > 0 && !lookup.has(hint)) {
+      if (Array.isArray(newOptions) && this.allowUnknown && this.isMultivalue && hint.length > 0) {
         if (!newOptions.map(o => o.key === hint).reduce((l, r) => l || r, false)) {
           newOptions.unshift(this.boxValue(hint));
         }
       }
-      this.options = this.isMultivalue ? newOptions.filter(o => !lookup.has(o.key)) : newOptions;
+      this.options = newOptions;
       return _suggestionCache.get(this);
     }
   }
