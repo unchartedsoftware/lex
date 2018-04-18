@@ -94,7 +94,7 @@ window.setQuery = async function () {
       {field: 'GeoHash', value: 'geohash things'}
     ]);
   } catch (err) {
-    console.log('something went wrong');
+    console.log('Something went wrong');
   }
 };
 window.setSuggestions = function () {
