@@ -243,6 +243,8 @@ export class OptionState extends StateTemplate {
     if (_refreshOptions.has(this)) {
       // start lookup
       _lastRefresh.set(this, hint);
+      // reset current options because they may no longer be valid
+      this.options = [];
       const newOptions = await _refreshOptions.get(this)(hint, context, archive);
       if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
       // create lookup table for archive
