@@ -84,6 +84,7 @@ export class OptionState extends StateTemplate {
       // otherwise, return whether or not the entered value matches a suggestion
       return this.options.filter(o => o.key === thisVal.key).length === 1;
     };
+    if (config.name === undefined) config.name = config.multivalue ? 'Select from the following options' : 'Choose an option';
     if (config.options === undefined) config.options = [];
     if (config.allowUnknown === undefined) config.allowUnknown = false;
     if (config.suggestionLimit === undefined) config.suggestionLimit = 10;
