@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const fs = require('fs');
 
-const testFolder = path.resolve(__dirname, '../test');
+const testFolder = path.resolve(__dirname, '../demo');
 const entry = fs.readdirSync(testFolder)
   .filter(c => process.env.DEV_ONLY === undefined || process.env.DEV_ONLY === 'false' || c === 'dev-test.js')
   .reduce((result, current) => {
@@ -80,7 +80,7 @@ module.exports = {
     extensions: ['.js', '.jsx']
   },
   devServer: {
-    contentBase: [path.resolve(__dirname, '../test/public')],
+    contentBase: [path.resolve(__dirname, '../demo/public')],
     hot: true
   }
 };

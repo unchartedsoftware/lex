@@ -1,4 +1,5 @@
 test/**
+demo/**
 .eslintrc.json
 .editorconfig
 jsconfig.json
