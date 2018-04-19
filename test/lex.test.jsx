@@ -20,7 +20,11 @@ describe('lex', () => {
   });
 
   describe('from()', () => {
-    // TODO
+    it('should produce a language', () => {
+      const language = Lex.from('value', TextEntryState);
+      expect(language).to.be.instanceOf(TextEntryState);
+      // more detailed tests for this will be performed against State
+    });
   });
 
   describe('render()', () => {
