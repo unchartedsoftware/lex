@@ -19,7 +19,11 @@ describe('lex', () => {
     scratch = null;
   });
 
-  describe('entrypoint', () => {
+  describe('from()', () => {
+    // TODO
+  });
+
+  describe('render()', () => {
     it('should render a basic search bar', async () => {
       const language = Lex.from('value', TextEntryState);
       const lex = new Lex({
@@ -29,5 +33,33 @@ describe('lex', () => {
       // await sleep(1);
       expect(scratch.innerHTML).to.include('<div class="lex-box form-control');
     });
+  });
+
+  describe('registerBuilder()', () => {
+    // TODO
+  });
+
+  describe('registerAssistant()', () => {
+    // TODO
+  });
+
+  describe('unmount()', () => {
+    // TODO
+  });
+
+  describe('reset()', () => {
+    // TODO
+  });
+
+  describe('focus()', () => {
+    // TODO
+  });
+
+  describe('setSuggestions()', () => {
+    // TODO
+  });
+
+  describe('setQuery()', () => {
+    // TODO
   });
 });
