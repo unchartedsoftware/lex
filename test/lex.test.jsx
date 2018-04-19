@@ -1,6 +1,6 @@
 import { h, render } from 'preact'; // eslint-disable-line no-unused-vars
 import { expect } from 'chai';
-import { Lex, TextEntryState } from '../../src/lex';
+import { Lex, TextEntryState } from '../src/lex';
 
 describe('lex', () => {
   let scratch;
