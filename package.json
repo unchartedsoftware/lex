@@ -76,7 +76,7 @@
     "decko": "1.2.0",
     "documentation": "5.3.3",
     "element-resize-detector": "1.1.14",
-    "enzyme": "3.3.0",
+    "enzyme": "2.9.1",
     "eslint": "4.10.0",
     "eslint-config-semistandard-react": "4.2.0",
     "eslint-plugin-semistandard-react": "4.1.0",
