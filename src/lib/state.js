@@ -151,7 +151,7 @@ export class StateTemplate extends EventEmitter {
    * @private
    */
   async doInitialize (context = []) {
-    if (_initialized.has(this)) return;
+    // if (_initialized.has(this)) return;
     const result = await this.initialize(context);
     _initialized.set(this, true);
     return result;

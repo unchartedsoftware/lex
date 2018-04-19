@@ -411,7 +411,7 @@ export class SearchBar extends Component {
         flashActive: false,
         tokenValues: [...this.state.tokenValues, newMachine]
       });
-      this.state.activeMachine.reset();
+      setTimeout(() => this.state.activeMachine.reset());
       this.queryChanged(oldQueryValues, nextToken);
       this.state.onEndToken();
       if (nextToken) {

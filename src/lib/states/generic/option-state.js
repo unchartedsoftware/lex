@@ -199,6 +199,7 @@ export class OptionState extends StateTemplate {
     } else if (this.allowUnknown) {
       return new OptionStateOption(key, {});
     } else {
+      if (!this.allowUnknown && this.options.length === 0) throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
       return null;
     }
   }
@@ -223,6 +224,7 @@ export class OptionState extends StateTemplate {
   async initialize (context = []) {
     await super.initialize();
     await this.refreshOptions(this.unformatUnboxedValue(''), context);
+    if (!this.allowUnknown && this.options.length === 0) throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
   }
 
   reset () {

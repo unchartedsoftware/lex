@@ -52,7 +52,7 @@ export class OptionBuilder extends Builder {
   commitTypedValue () {
     if (this.machineState.previewValue) {
       this.machineState.value = this.machineState.previewValue;
-    } else {
+    } else if (this.state.typedText && this.state.typedText.length > 0) {
       this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(this.state.typedText, this.machine.boxedValue);
     }
   }
