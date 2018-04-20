@@ -339,7 +339,7 @@ export class State extends EventEmitter {
       if (this.name) {
         message += ` of state named: ${this.name}`;
       }
-      console.error(message, err);
+      console.error(message, err); // eslint-disable-line no-console
       throw (err);
     }
     return isValid;

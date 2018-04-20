@@ -86,7 +86,7 @@ export class TokenStateMachine extends EventEmitter {
             try {
               this.transition({ignoreBindOnly: true}); // ignore bind-only states
             } catch (err) {
-              console.error(err);
+              console.error(err); // eslint-disable-line no-console
               throw err; // the value for this state is invalid, so break out.
             }
           }
