@@ -90,7 +90,7 @@ window.setQuery = async function () {
     await lex.setQuery([
       {field: 'Name', relation: 'is like', value: 'Sean'},
       {field: 'Income', relation: 'equals', value: '12'},
-      {field: 'Keywords', value: ['Rob', 'Phil', 'two', 'three']},
+      {field: 'Keywords', value: ['Rob', 'Phil', 'two']},
       {field: 'GeoHash', value: 'geohash things'}
     ]);
   } catch (err) {
