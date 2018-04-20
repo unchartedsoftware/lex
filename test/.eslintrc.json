@@ -9,7 +9,12 @@
     "it":         false,
     "require":    false,
     "module":     false,
-    "sleep":      false
+    "sleep":      false,
+    "expect":     false,
+    "click":      false,
+    "type":      false,
+    "wait":       false,
+    "simulant":   false
   },
   "rules": {
     "no-unused-expressions": "off"

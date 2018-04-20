@@ -342,7 +342,7 @@ export class SearchBar extends Component {
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
-        console.error(err.message);
+        console.error(err.message); // eslint-disable-line no-console
         return false;
       } else {
         throw err;
@@ -357,7 +357,7 @@ export class SearchBar extends Component {
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
-        console.error(err.message);
+        console.error(err.message); // eslint-disable-line no-console
         return false;
       } else {
         throw err;
@@ -372,7 +372,7 @@ export class SearchBar extends Component {
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
-        console.error(err.message);
+        console.error(err.message); // eslint-disable-line no-console
         return false;
       } else {
         throw err;

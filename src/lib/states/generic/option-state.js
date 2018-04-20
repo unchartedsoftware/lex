@@ -101,7 +101,7 @@ export class OptionState extends StateTemplate {
         try {
           return config.options.call(this, hint, context);
         } catch (err) {
-          console.error('Could not refresh list of options.');
+          console.error('Could not refresh list of options.'); // eslint-disable-line no-console
           throw err;
         }
       });
@@ -243,7 +243,7 @@ export class OptionState extends StateTemplate {
    * @returns {Promise} Resolves with the new list of options.
    */
   async refreshOptions (hint = '', context = {}, archive = []) {
-    if (hint === null) console.error('hint cannot be null in refreshOptions - perhaps unformatUnboxedValue returned null?');
+    if (hint === null) console.error('hint cannot be null in refreshOptions - perhaps unformatUnboxedValue returned null?'); // eslint-disable-line no-console
     if (_refreshOptions.has(this)) {
       // start lookup
       _lastRefresh.set(this, hint);
