@@ -137,7 +137,7 @@ export class SearchBar extends Component {
     }
   }
 
-  async setValue (newValue) {
+  async setValue (newValue, shouldFireChangeEvent = true) {
     const oldQueryValues = this.state.tokenValues;
     this.blur();
     const tokens = await Promise.all(newValue.map(v => {
@@ -151,10 +151,12 @@ export class SearchBar extends Component {
       active: false,
       editing: false
     });
-    this.queryChanged(oldQueryValues, false);
+    if (shouldFireChangeEvent) {
+      this.queryChanged(oldQueryValues, false);
+    }
   }
 
-  async setSuggestions (newSuggestions) {
+  async setSuggestions (newSuggestions, shouldFireChangeEvent = true) {
     const oldSuggestions = this.state.suggestions;
     this.blur();
     const suggestions = await Promise.all(newSuggestions.map((v) => {
@@ -164,7 +166,9 @@ export class SearchBar extends Component {
     this.setState({
       suggestions: suggestions
     });
-    this.suggestionsChanged(oldSuggestions);
+    if (shouldFireChangeEvent) {
+      this.suggestionsChanged(oldSuggestions);
+    }
   }
 
   componentWillMount () {
