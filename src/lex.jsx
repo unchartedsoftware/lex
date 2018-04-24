@@ -199,9 +199,9 @@ class Lex extends EventEmitter {
   /**
    * Completely reset the search state.
    */
-  reset () {
+  reset (shouldFireChangeEvent = true) {
     if (this.searchBar) {
-      this.searchBar.setValue(_defaultValue.get(this));
+      this.searchBar.setValue(_defaultValue.get(this), shouldFireChangeEvent);
     }
   }
 
@@ -211,9 +211,9 @@ class Lex extends EventEmitter {
    * @param {Object[]} suggestions - One or more token values (an array of objects of boxed or unboxed values) to display as "suggestions" in the search bar. Will have different styling than a traditional token, and offer the user an "ADD" button they can use to lock the preview token into their query.
    * @returns {Promise} Resolves when the attempt to rewrite the query is finished. This is `async` due to the fact that `State`s such as `OptionState`s might retrieve their options asynchronously.
    */
-  async setSuggestions (suggestions) {
+  async setSuggestions (suggestions, shouldFireChangeEvent = true) {
     if (this.searchBar) {
-      return this.searchBar.setSuggestions(suggestions);
+      return this.searchBar.setSuggestions(suggestions, shouldFireChangeEvent);
     }
   }
 
@@ -232,9 +232,9 @@ class Lex extends EventEmitter {
    * @param {Object[]} query - One or more token values (an array of objects of boxed or unboxed values) to display to overwrite the current query with.
    * @returns {Promise} Resolves when the attempt to rewrite the query is finished. This is `async` due to the fact that `State`s such as `OptionState`s might retrieve their options asynchronously.
    */
-  async setQuery (query) {
+  async setQuery (query, shouldFireChangeEvent = true) {
     if (this.searchBar) {
-      return this.searchBar.setValue(query);
+      return this.searchBar.setValue(query, shouldFireChangeEvent);
     }
   }
 }
