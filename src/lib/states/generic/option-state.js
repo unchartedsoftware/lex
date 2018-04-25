@@ -223,8 +223,11 @@ export class OptionState extends StateTemplate {
    */
   async initialize (context = []) {
     await super.initialize();
-    await this.refreshOptions(this.unformatUnboxedValue(''), context);
-    if (!this.allowUnknown && this.options.length === 0) throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
+    if (!this.allowUnknown) {
+      // We dont allow unknown values, fetch the options so we can be sure our value is valid
+      await this.refreshOptions(this.unformatUnboxedValue(''), context);
+      if (this.options.length === 0) throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
+    }
   }
 
   reset () {
