@@ -38,7 +38,11 @@ export class OptionBuilder extends Builder {
   componentWillMount () {
     super.componentWillMount();
     const boxed = this.machine.boxedValue;
-    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue('', boxed), boxed, this.boxedArchive);
+    const {readOnly, machineState} = this.state;
+    if (!readOnly && !machineState.isReadOnly) {
+      // This builder isn't read only, we should tell our template to refresh its options
+      this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue('', boxed), boxed, this.boxedArchive);
+    }
   }
 
   processProps (props) {
