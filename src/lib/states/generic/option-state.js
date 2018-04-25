@@ -51,6 +51,7 @@ const _allowUnknown = new WeakMap();
 const _units = new WeakMap();
 const _suggestionLimit = new WeakMap();
 const _suggestionCache = new WeakMap();
+const _refreshOptionsDebounce = new WeakMap();
 
 /**
  * A state representing the selection of an option from a list of options.
@@ -88,7 +89,11 @@ export class OptionState extends StateTemplate {
     if (config.options === undefined) config.options = [];
     if (config.allowUnknown === undefined) config.allowUnknown = false;
     if (config.suggestionLimit === undefined) config.suggestionLimit = 10;
+    // Default to a debounce of 250 ms
+    if (config.refreshOptionsDebounce === undefined) config.refreshOptionsDebounce = 250;
     super(config);
+
+    _refreshOptionsDebounce.set(this, config.refreshOptionsDebounce);
 
     _options.set(this, []);
     if (Array.isArray(config.options)) {
@@ -157,6 +162,13 @@ export class OptionState extends StateTemplate {
    */
   get units () {
     return _units.get(this);
+  }
+
+  /**
+   * @returns {number | undefined} - Duration in milliseconds to debounce calls to refreshOptions.
+   */
+  get refreshOptionsDebounce () {
+    return _refreshOptionsDebounce.get(this);
   }
 
   /**

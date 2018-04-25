@@ -1,5 +1,6 @@
 import { h } from 'preact';
 import { bind } from 'decko';
+import { debounce } from 'lodash';
 import { Builder } from '../../builder';
 import { ENTER, TAB, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
 
@@ -46,6 +47,14 @@ export class OptionBuilder extends Builder {
     this.setState({
       typedText: machineState.unboxedValue ? machineState.template.formatUnboxedValue(machineState.unboxedValue, machine.boxedValue) : ''
     });
+
+    const debounceDuration = machineState.template.refreshOptionsDebounce;
+    if (debounceDuration == null) {
+      this.handleKeyUp = this._handleKeyUp;
+    } else {
+      this.handleKeyUp = debounce(this._handleKeyUp, debounceDuration);
+    }
+
     return super.processProps(props);
   }
 
@@ -102,7 +111,7 @@ export class OptionBuilder extends Builder {
   }
 
   @bind
-  handleKeyUp (e) {
+  _handleKeyUp (e) {
     const boxed = this.machine.boxedValue;
     this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue(e.target.value, boxed), boxed, this.boxedArchive);
   }

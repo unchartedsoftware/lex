@@ -86,5 +86,8 @@
     "moment": "2.x",
     "moment-timezone": "0.5.x",
     "tiny-date-picker": "3.x"
+  },
+  "dependencies": {
+    "lodash": "^4.17.10"
   }
 }
