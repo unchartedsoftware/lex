@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, OptionState, OptionStateOption, NumericEntryState, NumericRelationState } from '../src/lex';
+import { Lex, TransitionFactory, LabelState, OptionState, OptionStateOption, NumericEntryState, NumericRelationState } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 // Since we want to suggest tokens for the user we will start with an option state
@@ -34,7 +34,8 @@ const language = Lex
       .branch(
         // Now that we have selected a relationship for our property we want to let the user
         // supply an valid number value so lets branch to a numeric entry state
-        Lex.from('value', NumericEntryState)
+        Lex.from('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
+        Lex.from('value', NumericEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', NumericEntryState)
       )
   );
 
