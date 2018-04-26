@@ -218,9 +218,12 @@ export class SearchBar extends Component {
 
   @bind
   activate () {
+    const wasActive = this.state.active;
     this.setState({active: true});
-    this.state.activeMachine.reset();
-    this.state.onStartToken();
+    if (!wasActive) {
+      this.state.activeMachine.reset();
+      this.state.onStartToken();
+    }
   }
 
   get machineInstance () {
