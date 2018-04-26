@@ -15,10 +15,14 @@ const _currentState = new WeakMap();
 export class TokenStateMachine extends EventEmitter {
   constructor (rootStateTemplate) {
     super();
-    this._dispatchId = Math.random();
+    this._id = Math.random();
     const root = rootStateTemplate.getInstance();
     _rootState.set(this, root);
     _currentState.set(this, root);
+  }
+
+  get id () {
+    return this._id;
   }
 
   /**

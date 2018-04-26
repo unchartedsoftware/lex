@@ -7,7 +7,6 @@ import { COMMA } from '../lib/keys';
 export class Token extends Component {
   constructor () {
     super(arguments);
-    this._id = Math.random();
     this.state = {
       idx: undefined,
       active: false,
@@ -190,7 +189,6 @@ export class Token extends Component {
   }
 
   componentWillUnmount () {
-    console.log(`unmounting ${this._id}`);
     this.cleanupListeners();
   }
 
@@ -200,7 +198,6 @@ export class Token extends Component {
 
   componentDidMount () {
     this.connectListeners();
-    console.log(`mounting ${this._id}`);
   }
 
   componentWillReceiveProps (nextProps) {
@@ -209,7 +206,6 @@ export class Token extends Component {
 
   @bind
   endToken (state, nextToken) {
-    console.log(`end in ${this._id}`);
     this.state.onEndToken(this.value, nextToken);
   }
 

@@ -234,6 +234,7 @@ export class SearchBar extends Component {
   renderTokenBuilder (activeMachine, builders) {
     if (this.state.active) {
       return (<Token
+        key={activeMachine.id}
         active
         editing={this.state.editing}
         flash={this.state.flashActive}
@@ -358,7 +359,7 @@ export class SearchBar extends Component {
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
-        console.error(err.message);
+        console.error(err.message); // eslint-disable-line no-console
         return false;
       } else {
         throw err;
@@ -521,12 +522,12 @@ export class SearchBar extends Component {
         { !active && placeholder !== undefined && tokenValues.length === 0 && suggestions.length === 0 ? <div className='text-muted lex-placeholder'>{ placeholder }</div> : '' }
         {
           tokenValues.map((v, i) => {
-            return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} focused={false} />;
+            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} focused={false} />;
           })
         }
         {
           suggestions.map((v, j) => {
-            return <Token tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeSuggestion} requestAddSuggestion={this.addSuggestion} idx={j} suggestion />;
+            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeSuggestion} requestAddSuggestion={this.addSuggestion} idx={j} suggestion />;
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }
