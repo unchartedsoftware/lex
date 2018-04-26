@@ -35,12 +35,6 @@ export class OptionBuilder extends Builder {
     }
   }
 
-  componentWillMount () {
-    super.componentWillMount();
-    const boxed = this.machine.boxedValue;
-    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue('', boxed), boxed, this.boxedArchive);
-  }
-
   processProps (props) {
     const { machine, machineState } = props;
     this.setState({

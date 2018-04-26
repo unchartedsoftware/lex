@@ -77,12 +77,20 @@ export class SearchBar extends Component {
     }
     if (value !== this.state.tokenValues) {
       this.setState({
-        tokenValues: value.map(v => new TokenStateMachine(this.state.machineTemplate, v)) // box incoming values
+        tokenValues: value.map(v => {
+          const m = new TokenStateMachine(this.state.machineTemplate)
+          m.bindValues(v);
+          return m;
+        }) // box incoming values
       });
     }
     if (suggestions !== this.state.suggestions) {
       this.setState({
-        suggestions: suggestions.map(v => new TokenStateMachine(this.state.machineTemplate, v)) // box incoming values
+        suggestions: suggestions.map(v => {
+          const m = new TokenStateMachine(this.state.machineTemplate);
+          m.bindValues(v);
+          return m;
+        }) // box incoming values
       });
     }
     if (onQueryChanged !== this.state.onQueryChanged) {
@@ -211,6 +219,7 @@ export class SearchBar extends Component {
   @bind
   activate () {
     this.setState({active: true});
+    this.state.activeMachine.reset();
     this.state.onStartToken();
   }
 
@@ -421,7 +430,7 @@ export class SearchBar extends Component {
       if (nextToken) {
         this.state.onStartToken();
       } else {
-        this.blur();
+        setTimeout(() => this.blur());
       }
     });
   }
@@ -497,8 +506,8 @@ export class SearchBar extends Component {
 
   @bind
   suggestionsChanged (oldSuggestionValues = []) {
-    const newUnboxedValues = this.state.suggestions.map(bv => new TokenStateMachine(this.state.machineTemplate, bv).unboxedValue);
-    const oldUnboxedValues = oldSuggestionValues.map(bv => new TokenStateMachine(this.state.machineTemplate, bv).unboxedValue);
+    const newUnboxedValues = this.state.suggestions.map(bv => bv.unboxedValue);
+    const oldUnboxedValues = oldSuggestionValues.map(bv => bv.unboxedValue);
     this.state.onSuggestionsChanged(this.state.suggestions, oldSuggestionValues, newUnboxedValues, oldUnboxedValues);
   }
 
