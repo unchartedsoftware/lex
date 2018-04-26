@@ -388,7 +388,7 @@ export class SearchBar extends Component {
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
-        console.error(err.message);
+        console.error(err.message); // eslint-disable-line no-console
         return false;
       } else {
         throw err;
@@ -426,15 +426,16 @@ export class SearchBar extends Component {
         editing: false,
         flashActive: false,
         tokenValues: [...this.state.tokenValues, newMachine]
+      }, () => {
+        this.state.activeMachine.reset();
+        this.queryChanged(oldQueryValues, nextToken);
+        this.state.onEndToken();
+        if (nextToken) {
+          this.state.onStartToken();
+        } else {
+          setTimeout(() => this.blur());
+        }
       });
-      setTimeout(() => this.state.activeMachine.reset());
-      this.queryChanged(oldQueryValues, nextToken);
-      this.state.onEndToken();
-      if (nextToken) {
-        this.state.onStartToken();
-      } else {
-        setTimeout(() => this.blur());
-      }
     });
   }
 

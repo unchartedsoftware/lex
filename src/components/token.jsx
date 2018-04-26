@@ -7,6 +7,7 @@ import { COMMA } from '../lib/keys';
 export class Token extends Component {
   constructor () {
     super(arguments);
+    this._id = Math.random();
     this.state = {
       idx: undefined,
       active: false,
@@ -80,7 +81,6 @@ export class Token extends Component {
       });
     }
     if (machine !== this.state.machine) {
-      this.cleanupListeners();
       this.setState({
         machine: machine
       });
@@ -174,39 +174,42 @@ export class Token extends Component {
   }
 
   cleanupListeners () {
-    if (this.state.machine) {
-      this.state.machine.removeListener('state changed', this.getStateArray);
-      this.state.machine.removeListener('end', this.endToken);
+    if (this._emitter) {
+      this._emitter.removeListener('state changed', this.getStateArray);
+      this._emitter.removeListener('end', this.endToken);
     }
   }
 
   connectListeners () {
+    this.cleanupListeners();
     if (this.state.machine) {
-      this.state.machine.on('end', this.endToken);
-      this.state.machine.on('state changed', this.onStateChanged);
+      this._emitter = this.state.machine;
+      this._emitter.on('end', this.endToken);
+      this._emitter.on('state changed', this.onStateChanged);
     }
   }
 
   componentWillUnmount () {
+    console.log(`unmounting ${this._id}`);
     this.cleanupListeners();
   }
 
   componentWillMount () {
     this.processProps(this.props);
+  }
+
+  componentDidMount () {
     this.connectListeners();
+    console.log(`mounting ${this._id}`);
   }
 
   componentWillReceiveProps (nextProps) {
-    const oldMachine = this.state.machine;
     this.processProps(nextProps);
-    if (this.state.machine !== oldMachine) {
-      this.cleanupListeners();
-      this.connectListeners();
-    }
   }
 
   @bind
   endToken (state, nextToken) {
+    console.log(`end in ${this._id}`);
     this.state.onEndToken(this.value, nextToken);
   }
 

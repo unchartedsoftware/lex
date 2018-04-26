@@ -69,9 +69,9 @@ export class Assistant extends Builder {
   renderAssistantMenu (props, state) { // eslint-disable-line no-unused-vars
     return (
       <span className='btn-group'>
-        <button className='btn btn-xs btn-default' onMouseDown={this.requestRewind} disabled={this.state.machine.state === this.state.machine.rootState}>&lt;&nbsp;Back</button>
-        <button className='btn btn-xs btn-default' onMouseDown={this.requestCancel}>{this.state.editing ? 'Discard Changes' : 'Cancel'}</button>
-        <button className='btn btn-xs btn-default' onMouseDown={this.requestTransition}>{this.state.machine.state.isTerminal ? 'Finish' : 'Next'}&nbsp;&gt;</button>
+        <button className='btn btn-xs btn-default' onClick={() => this.requestRewind()} disabled={this.state.machine.state === this.state.machine.rootState}>&lt;&nbsp;Back</button>
+        <button className='btn btn-xs btn-default' onClick={() => this.requestCancel()}>{this.state.editing ? 'Discard Changes' : 'Cancel'}</button>
+        <button className='btn btn-xs btn-default' onClick={() => this.requestTransition()}>{this.state.machine.state.isTerminal ? 'Finish' : 'Next'}&nbsp;&gt;</button>
       </span>
     );
   }
