@@ -43,7 +43,6 @@
     "babel-plugin-transform-react-jsx": "6.24.1",
     "babel-plugin-transform-object-rest-spread": "6.26.0",
     "babel-plugin-transform-runtime": "6.23.0",
-    "decko": "1.2.0",
     "documentation": "5.3.3",
     "element-resize-detector": "1.1.14",
     "eslint": "4.10.0",
@@ -88,6 +87,7 @@
     "tiny-date-picker": "3.x"
   },
   "dependencies": {
-    "lodash": "^4.17.10"
+    "lodash": "4.17.10",
+    "lodash-decorators": "5.0.0"
   }
 }
