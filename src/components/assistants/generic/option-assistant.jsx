@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { bind } from 'decko';
+import { Bind } from 'lodash-decorators';
 import { Assistant } from '../../assistant';
 import { UP_ARROW, DOWN_ARROW, TAB, ENTER, normalizeKey } from '../../../lib/keys';
 
@@ -26,7 +26,7 @@ export class OptionAssistant extends Assistant {
     return options.filter(o => !o.hidden && !lookup.has(o.key)).slice(0, this.machineStateTemplate.suggestionLimit);
   }
 
-  @bind
+  @Bind
   onOptionsChanged (newOptions) {
     this.setState({
       options: newOptions,
@@ -35,7 +35,7 @@ export class OptionAssistant extends Assistant {
     });
   }
 
-  @bind
+  @Bind
   onOptionSelected (option) {
     this.machineState.unboxedValue = option.key;
     if (this.machineState.isMultivalue) {
@@ -52,12 +52,12 @@ export class OptionAssistant extends Assistant {
     }
   }
 
-  @bind
+  @Bind
   onOptionHover (idx) {
     this.setState({activeOption: idx});
   }
 
-  @bind
+  @Bind
   onArchivedRemoved (idx) {
     this.requestRemoveArchivedValue(idx);
     this.machineStateTemplate.refreshOptions('', this.machine.boxedValue, this.boxedArchive);
