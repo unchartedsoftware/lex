@@ -470,7 +470,10 @@ export class SearchBar extends Component {
       });
       this.state.activeMachine.bindValues(toEdit.value).then(() => {
         // hack to push the current value back into the archive when editing starts in the multivalue case
-        if (this.state.activeMachine.state.isMultivalue) this.state.activeMachine.archive();
+        if (this.state.activeMachine.state.isMultivalue) {
+          this.state.activeMachine.archive();
+          this.state.activeMachine.state.template.refreshOptions('', this.state.activeMachine.boxedValue);
+        }
       });
     } else if (this.state.active) {
       this.setState({
