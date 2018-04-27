@@ -48,7 +48,6 @@ const _options = new WeakMap();
 const _refreshOptions = new WeakMap();
 const _fetchOptions = new WeakMap();
 const _lastRefresh = new WeakMap();
-const _lastFetch = new WeakMap();
 const _allowUnknown = new WeakMap();
 const _units = new WeakMap();
 const _suggestionLimit = new WeakMap();
@@ -100,7 +99,7 @@ export class OptionState extends StateTemplate {
       });
       _fetchOptions.set(this, (unformattedUnboxedValues = []) => {
         const lookup = new Map();
-        unformattedUnboxedValues.forEach(v => lookup.set(v.toLowerCase()), true);
+        unformattedUnboxedValues.forEach(v => lookup.set(v.toLowerCase(), true));
         return _initialOptions.get(this).filter(o => {
           return lookup.has(o.key.toLowerCase());
         });
@@ -250,7 +249,9 @@ export class OptionState extends StateTemplate {
     } else {
       await this.refreshOptions('', context);
     }
-    if (!this.allowUnknown && this.options.length === 0) throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
+    if (!this.allowUnknown && this.options.length === 0) {
+      throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
+    }
   }
 
   reset () {
@@ -259,9 +260,7 @@ export class OptionState extends StateTemplate {
   }
 
   async fetchOptions (unformattedUnboxedValues = [], context = {}, archive = []) {
-    _lastFetch.set(this, unformattedUnboxedValues);
     const newOptions = await _fetchOptions.get(this)(unformattedUnboxedValues, context, archive);
-    if (_lastFetch.get(this) !== unformattedUnboxedValues) return; // prevent overwriting of new response by older, slower request
     this.options = newOptions;
   }
 

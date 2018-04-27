@@ -16,7 +16,7 @@ const options = [
 function fetchSpecificOptions (query) {
   return new Promise((resolve) => {
     const lookup = new Map();
-    query.forEach(v => lookup.set(v.toLowerCase()), true);
+    query.forEach(v => lookup.set(v.toLowerCase(), true));
     // This simulates a network call for options (your API should filter based on the hint/context)
     setTimeout(() => {
       resolve(options.filter(o => lookup.has(o.key.toLowerCase())));
@@ -111,6 +111,7 @@ window.setQuery = async function () {
     ]);
   } catch (err) {
     console.log('Something went wrong');
+    console.error(err);
   }
 };
 window.setSuggestions = function () {
