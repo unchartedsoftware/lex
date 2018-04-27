@@ -1,5 +1,5 @@
 import { h, Component } from 'preact';
-import { bind } from '../../node_modules/decko/dist/decko';
+import { Bind } from 'lodash-decorators';
 import { COMMA } from '../lib/keys';
 /**
  * @private
@@ -204,12 +204,12 @@ export class Token extends Component {
     this.processProps(nextProps);
   }
 
-  @bind
+  @Bind
   endToken (state, nextToken) {
     this.state.onEndToken(this.value, nextToken);
   }
 
-  @bind
+  @Bind
   onStateChanged () {
     const result = [];
     let current = this.state.machine.state;
@@ -285,19 +285,19 @@ export class Token extends Component {
     this.setState({focused: true});
   }
 
-  @bind
+  @Bind
   requestFocus () {
     this.focus();
     this.state.requestFocus();
   }
 
-  @bind
+  @Bind
   requestBlur () {
     this.setState({focused: false});
     this.state.requestBlur();
   }
 
-  @bind
+  @Bind
   requestRemoval (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -307,14 +307,14 @@ export class Token extends Component {
     this.state.requestRemoval(this.state.idx);
   }
 
-  @bind
+  @Bind
   requestAddSuggestion (e) {
     e.preventDefault();
     e.stopPropagation();
     this.state.requestAddSuggestion(this.state.idx);
   }
 
-  @bind
+  @Bind
   requestEdit (e) {
     if (!this.state.active && this.state.requestEdit) {
       e.preventDefault();

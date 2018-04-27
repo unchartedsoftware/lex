@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { bind } from 'decko';
+import { Bind, Debounce } from 'lodash-decorators';
 import { Builder } from '../../builder';
 import { ENTER, TAB, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
 
@@ -40,6 +40,7 @@ export class OptionBuilder extends Builder {
     this.setState({
       typedText: machineState.unboxedValue ? machineState.template.formatUnboxedValue(machineState.unboxedValue, machine.boxedValue) : ''
     });
+
     return super.processProps(props);
   }
 
@@ -51,7 +52,7 @@ export class OptionBuilder extends Builder {
     }
   }
 
-  @bind
+  @Bind
   handleKeyDown (e) {
     let consumed = true;
     const nothingEntered = e.target.value === undefined || e.target.value === null || e.target.value.length === 0;
@@ -95,7 +96,8 @@ export class OptionBuilder extends Builder {
     }
   }
 
-  @bind
+  @Bind
+  @Debounce(250) // 250ms debounce
   handleKeyUp (e) {
     const boxed = this.machine.boxedValue;
     this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue(e.target.value, boxed), boxed, this.boxedArchive);
@@ -109,14 +111,14 @@ export class OptionBuilder extends Builder {
     }
   }
 
-  @bind
+  @Bind
   clearPreview () {
     this.setState({
       previewText: ''
     });
   }
 
-  @bind
+  @Bind
   beforeTransition () {
     this.commitTypedValue();
     if (this.state.typedText === undefined || this.state.typedText === null || this.state.typedText.length === 0) {
@@ -126,12 +128,12 @@ export class OptionBuilder extends Builder {
     }
   }
 
-  @bind
+  @Bind
   onOptionsChanged (newOptions) {
     this.setState({options: newOptions});
   }
 
-  @bind
+  @Bind
   onValueChanged (newValue) {
     if (this.machineStateTemplate.allowUnknown) {
       this.setState({
@@ -144,7 +146,7 @@ export class OptionBuilder extends Builder {
     }
   }
 
-  @bind
+  @Bind
   onPreviewValueChanged (_1, _2, newUnboxedPreviewValue) {
     if (newUnboxedPreviewValue !== this.state.previewText) {
       this.setState({
@@ -153,19 +155,19 @@ export class OptionBuilder extends Builder {
     }
   }
 
-  @bind
+  @Bind
   onBlur (e) {
     this.commitTypedValue();
     this.requestBlur(e);
   }
 
-  @bind
+  @Bind
   handleInput (e) {
     // assign typedText without re-rendering
     this.state.typedText = e.target.value;
   }
 
-  @bind
+  @Bind
   onPaste (e) {
     if (this.machineState.isMultivalue) {
       e.preventDefault();

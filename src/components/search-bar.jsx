@@ -1,4 +1,4 @@
-import { bind } from 'decko';
+import { Bind } from 'lodash-decorators';
 import { h, Component } from 'preact';
 import Portal from 'preact-portal';
 import { TokenStateMachine } from '../lib/token-state-machine';
@@ -211,12 +211,12 @@ export class SearchBar extends Component {
     }
   }
 
-  @bind
+  @Bind
   forceDraw () {
     this.forceUpdate();
   }
 
-  @bind
+  @Bind
   activate () {
     const wasActive = this.state.active;
     this.setState({active: true});
@@ -302,7 +302,7 @@ export class SearchBar extends Component {
     }
   }
 
-  @bind
+  @Bind
   focus () {
     this.setState({focused: true});
     if (this.state.active) {
@@ -312,7 +312,7 @@ export class SearchBar extends Component {
     }
   }
 
-  @bind
+  @Bind
   blur () {
     if (this.state.activeMachine.rootState.isDefault) {
       const {focused, active} = this.state;
@@ -325,7 +325,7 @@ export class SearchBar extends Component {
     }
   }
 
-  @bind
+  @Bind
   cancel () {
     const wasEditing = this.state.editing;
     this.state.activeMachine.reset();
@@ -338,7 +338,7 @@ export class SearchBar extends Component {
     }
   }
 
-  @bind
+  @Bind
   transition (options) {
     try {
       this.state.activeMachine.transition(options);
@@ -352,7 +352,7 @@ export class SearchBar extends Component {
     }
   }
 
-  @bind
+  @Bind
   archive () {
     try {
       this.state.activeMachine.archive();
@@ -367,7 +367,7 @@ export class SearchBar extends Component {
     }
   }
 
-  @bind
+  @Bind
   unarchive () {
     try {
       this.state.activeMachine.unarchive();
@@ -382,7 +382,7 @@ export class SearchBar extends Component {
     }
   }
 
-  @bind
+  @Bind
   removeArchivedValue (idx) {
     try {
       this.state.activeMachine.removeArchivedValue(idx);
@@ -397,7 +397,7 @@ export class SearchBar extends Component {
     }
   }
 
-  @bind
+  @Bind
   rewind (targetState) {
     const oldState = this.state.activeMachine.state;
     const newState = this.state.activeMachine.rewind(targetState);
@@ -409,7 +409,7 @@ export class SearchBar extends Component {
     }
   }
 
-  @bind
+  @Bind
   onKeyDown (e) {
     this.unboxedValue = e.target.value;
     const code = normalizeKey(e);
@@ -418,7 +418,7 @@ export class SearchBar extends Component {
     }
   }
 
-  @bind
+  @Bind
   onEndToken (v, nextToken) {
     const oldQueryValues = this.state.tokenValues;
     const newMachine = new TokenStateMachine(this.state.machineTemplate);
@@ -440,7 +440,7 @@ export class SearchBar extends Component {
     });
   }
 
-  @bind
+  @Bind
   removeToken (idx) {
     if (idx === undefined) {
       // We were editing a token when we decided to remove it
@@ -459,7 +459,7 @@ export class SearchBar extends Component {
     }
   }
 
-  @bind
+  @Bind
   editToken (idx) {
     if (!this.state.active && idx >= 0) {
       const toEdit = this.state.tokenValues[idx];
@@ -484,7 +484,7 @@ export class SearchBar extends Component {
     }
   }
 
-  @bind
+  @Bind
   removeSuggestion (idx) {
     const oldSuggestions = this.state.suggestions;
     this.setState({
@@ -493,7 +493,7 @@ export class SearchBar extends Component {
     this.suggestionsChanged(oldSuggestions);
   }
 
-  @bind
+  @Bind
   addSuggestion (idx) {
     const oldSuggestions = this.state.suggestions;
     const suggestion = this.state.suggestions[idx];
@@ -502,14 +502,14 @@ export class SearchBar extends Component {
     this.suggestionsChanged(oldSuggestions);
   }
 
-  @bind
+  @Bind
   queryChanged (oldQueryValues = [], nextToken = false) {
     const newUnboxedValues = this.state.tokenValues.map(bv => bv.unboxedValue);
     const oldUnboxedValues = oldQueryValues.map(bv => bv.unboxedValue);
     this.state.onQueryChanged(this.state.tokenValues.map(t => t.value), oldQueryValues, newUnboxedValues, oldUnboxedValues, nextToken);
   }
 
-  @bind
+  @Bind
   suggestionsChanged (oldSuggestionValues = []) {
     const newUnboxedValues = this.state.suggestions.map(bv => bv.unboxedValue);
     const oldUnboxedValues = oldSuggestionValues.map(bv => bv.unboxedValue);
