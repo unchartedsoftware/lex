@@ -259,6 +259,8 @@ export class StateTemplate extends EventEmitter {
  *
  * This class is an `EventEmitter`, exposing the following events:
  * - `on('value changed', (newVal, oldVal) => {})` when the internal value changes.
+ * - `on('value archived', () => {})` when a value is archived.
+ * - `on('value unarchived', () => {})` when a value is archived.
  * - `on('preview value changed', (newVal, oldVal) => {})` when the internal preview value changes.
  * - `on('unboxed value change attempted', (newUnboxedVal, oldUnboxedVal))` when a user attempts to change the unboxed value. If it cannot be boxed, it may not trigger `value changed`.
  *
@@ -526,6 +528,7 @@ export class State extends EventEmitter {
     this.value = this.defaultValue;
     this.previewValue = null;
     this.emit('value changed', this.value, oldVal, this.unboxedValue, oldUnboxedVal);
+    this.emit('value archived');
   }
 
   /**
@@ -536,6 +539,7 @@ export class State extends EventEmitter {
     const oldUnboxedVal = this.unboxedValue;
     this.value = this.archive.pop();
     this.emit('value changed', this.value, oldVal, this.unboxedValue, oldUnboxedVal);
+    this.emit('value unarchived');
   }
 
   /**
@@ -546,5 +550,6 @@ export class State extends EventEmitter {
   removeArchivedValue (idx) {
     this.archive.splice(idx, 1);
     this.emit('value changed', this.value, this.value, this.unboxedValue, this.unboxedValue);
+    this.emit('value unarchived');
   }
 }
