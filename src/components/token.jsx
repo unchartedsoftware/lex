@@ -80,7 +80,6 @@ export class Token extends Component {
       });
     }
     if (machine !== this.state.machine) {
-      this.cleanupListeners();
       this.setState({
         machine: machine
       });
@@ -174,16 +173,18 @@ export class Token extends Component {
   }
 
   cleanupListeners () {
-    if (this.state.machine) {
-      this.state.machine.removeListener('state changed', this.getStateArray);
-      this.state.machine.removeListener('end', this.endToken);
+    if (this._emitter) {
+      this._emitter.removeListener('state changed', this.getStateArray);
+      this._emitter.removeListener('end', this.endToken);
     }
   }
 
   connectListeners () {
+    this.cleanupListeners();
     if (this.state.machine) {
-      this.state.machine.on('end', this.endToken);
-      this.state.machine.on('state changed', this.onStateChanged);
+      this._emitter = this.state.machine;
+      this._emitter.on('end', this.endToken);
+      this._emitter.on('state changed', this.onStateChanged);
     }
   }
 
@@ -193,16 +194,14 @@ export class Token extends Component {
 
   componentWillMount () {
     this.processProps(this.props);
+  }
+
+  componentDidMount () {
     this.connectListeners();
   }
 
   componentWillReceiveProps (nextProps) {
-    const oldMachine = this.state.machine;
     this.processProps(nextProps);
-    if (this.state.machine !== oldMachine) {
-      this.cleanupListeners();
-      this.connectListeners();
-    }
   }
 
   @Bind

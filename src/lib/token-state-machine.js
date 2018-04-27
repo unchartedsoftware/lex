@@ -13,13 +13,16 @@ const _currentState = new WeakMap();
  * @param {Object | undefined} values - A optional array of (boxed) values to apply to the machine's states (applied from the root state onward). If any value is an array, all but the final value are added to the `State` archive.
  */
 export class TokenStateMachine extends EventEmitter {
-  constructor (rootStateTemplate, values) {
+  constructor (rootStateTemplate) {
     super();
-    this._dispatchId = Math.random();
+    this._id = Math.random();
     const root = rootStateTemplate.getInstance();
     _rootState.set(this, root);
     _currentState.set(this, root);
-    this.bindValues(values, false);
+  }
+
+  get id () {
+    return this._id;
   }
 
   /**
@@ -56,7 +59,6 @@ export class TokenStateMachine extends EventEmitter {
    */
   async bindValues (values, finalTransition = false) {
     try {
-      this.reset();
       // bind to states
       if (values !== undefined) {
         const copy = Object.assign(Object.create(null), values);
@@ -91,6 +93,8 @@ export class TokenStateMachine extends EventEmitter {
             }
           }
         }
+      } else {
+        await this.state.doInitialize(this.boxedValue);
       }
     } catch (bindErr) {
       bindErr.bindValues = values;
@@ -241,6 +245,7 @@ export class TokenStateMachine extends EventEmitter {
       s = s.parent;
     } while (s);
     _currentState.set(this, this.rootState);
+    this.state.doInitialize(this.boxedValue);
     this.emit('state changed', this.state, oldState);
     return this.state;
   }
