@@ -1,5 +1,6 @@
 import { h } from 'preact';
 import { Builder } from './builder';
+import { Bind } from 'lodash-decorators';
 
 /**
  * Richer interaction areas for building values.
@@ -55,6 +56,21 @@ export class Assistant extends Builder {
     return this.machineState.name;
   }
 
+  @Bind
+  clickRewind () {
+    this.requestRewind();
+  }
+
+  @Bind
+  clickCancel () {
+    this.requestCancel();
+  }
+
+  @Bind
+  clickTransition () {
+    this.requestTransition();
+  }
+
   /**
    * Render the interactive menu of this `Assistant`. Will appear at the top-right of the `Assistant` in its navigation bar.
    * Can override in subclasses.
@@ -69,9 +85,9 @@ export class Assistant extends Builder {
   renderAssistantMenu (props, state) { // eslint-disable-line no-unused-vars
     return (
       <span className='btn-group'>
-        <button className='btn btn-xs btn-default' onClick={() => this.requestRewind()} disabled={this.state.machine.state === this.state.machine.rootState}>&lt;&nbsp;Back</button>
-        <button className='btn btn-xs btn-default' onClick={() => this.requestCancel()}>{this.state.editing ? 'Discard Changes' : 'Cancel'}</button>
-        <button className='btn btn-xs btn-default' onClick={() => this.requestTransition()}>{this.state.machine.state.isTerminal ? 'Finish' : 'Next'}&nbsp;&gt;</button>
+        <button className='btn btn-xs btn-default' onClick={this.clickRewind} disabled={this.state.machine.state === this.state.machine.rootState}>&lt;&nbsp;Back</button>
+        <button className='btn btn-xs btn-default' onClick={this.clickCancel}>{this.state.editing ? 'Discard Changes' : 'Cancel'}</button>
+        <button className='btn btn-xs btn-default' onClick={this.clickTransition}>{this.state.machine.state.isTerminal ? 'Finish' : 'Next'}&nbsp;&gt;</button>
       </span>
     );
   }
