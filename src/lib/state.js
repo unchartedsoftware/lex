@@ -150,9 +150,8 @@ export class StateTemplate extends EventEmitter {
   /*
    * @private
    */
-  async doInitialize (context = []) {
-    // if (_initialized.has(this)) return;
-    const result = await this.initialize(context);
+  async doInitialize (context = [], initialValue) {
+    const result = await this.initialize(context, initialValue);
     _initialized.set(this, true);
     return result;
   }
@@ -162,9 +161,10 @@ export class StateTemplate extends EventEmitter {
    * Override in subclasses to add asynchronous functionality to a `State`.
    *
    * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
+   * @param {any | undefined} initialUnboxedValue - The initial unboxed value which will be bound to this `State`.
    * @returns {Promise} A `Promise` which resolves when initialize completes successfully, rejecting otherwise.
    */
-  async initialize (context = []) { // eslint-disable-line no-unused-vars
+  async initialize (context = [], initialUnboxedValue) { // eslint-disable-line no-unused-vars
     // override
   }
 
