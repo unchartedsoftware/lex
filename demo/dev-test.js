@@ -16,11 +16,11 @@ const options = [
 function fetchSpecificOptions (query) {
   return new Promise((resolve) => {
     const lookup = new Map();
-    query.forEach(v => lookup.set(v.toLowerCase()), true);
+    query.forEach(v => lookup.set(v.toLowerCase(), true));
     // This simulates a network call for options (your API should filter based on the hint/context)
     setTimeout(() => {
       resolve(options.filter(o => lookup.has(o.key.toLowerCase())));
-    }, 25);
+    }, 250);
   });
 }
 
@@ -28,7 +28,7 @@ function searchOptions (hint) {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(options.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
-    }, 25);
+    }, 250);
   });
 }
 
@@ -111,6 +111,7 @@ window.setQuery = async function () {
     ]);
   } catch (err) {
     console.log('Something went wrong');
+    console.error(err);
   }
 };
 window.setSuggestions = function () {
