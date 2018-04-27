@@ -63,11 +63,16 @@ export class TokenStateMachine extends EventEmitter {
       if (values !== undefined) {
         const copy = Object.assign(Object.create(null), values);
         while (Object.keys(copy).length > 0) {
-          await this.state.doInitialize(this.boxedValue);
           const v = copy[this.state.vkey];
           if (v === undefined) {
+            await this.state.doInitialize(this.boxedValue);
             break; // we're missing a value for the current state, so break out.
           } else if (Array.isArray(v)) {
+            if (v.length > 0 && typeof v[0] === 'object') {
+              await this.state.doInitialize(this.boxedValue, v.map(e => this.state.unboxValue(e)));
+            } else {
+              await this.state.doInitialize(this.boxedValue, v);
+            }
             for (const x of v) {
               if (typeof x === 'object') {
                 this.state.value = x;
@@ -78,8 +83,10 @@ export class TokenStateMachine extends EventEmitter {
             }
             this.state.unarchiveValue(); // make the last value the "active" one
           } else if (typeof v === 'object') {
+            await this.state.doInitialize(this.boxedValue, [this.state.unboxValue(v)]);
             this.state.value = v;
           } else {
+            await this.state.doInitialize(this.boxedValue, [v]);
             this.state.unboxedValue = v;
           }
           delete copy[this.state.vkey]; // we're done with this value

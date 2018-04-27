@@ -20,6 +20,23 @@ const language = Lex.from('field', OptionState, {
       }, 25);
     });
   },
+  fetchOptions: function (unboxedValues = []) {
+    // This simulates a network call for options (your API should filter based on the hint/context)
+    return new Promise((resolve) => {
+      const lookup = new Map();
+      unboxedValues.forEach(v => lookup.set(v.toLowerCase()), true);
+      setTimeout(() => {
+        const result = [
+          new OptionStateOption('Name', {type: 'string'}),
+          new OptionStateOption('Income', {type: 'currency'}),
+          new OptionStateOption('Keywords', {type: 'multistring'}),
+          new OptionStateOption('Date', {type: 'datetime'}),
+          new OptionStateOption('GeoHash', {type: 'geohash'}, {hidden: true})
+        ].filter(o => lookup.has(o.key.toLowerCase()));
+        resolve(result);
+      }, 25);
+    });
+  },
   icon: (value) => {
     if (!value) return '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>';
     switch (value.key) {
