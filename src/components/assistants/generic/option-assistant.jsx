@@ -26,6 +26,27 @@ export class OptionAssistant extends Assistant {
     return options.filter(o => !o.hidden && !lookup.has(o.key)).slice(0, this.machineStateTemplate.suggestionLimit);
   }
 
+  cleanupListeners () {
+    super.cleanupListeners();
+    if (this.machineState) {
+      this.machineState.removeListener('value unarchived', this.onValueUnarchived);
+    }
+  }
+
+  connectListeners () {
+    super.connectListeners();
+    if (this.machineState) {
+      this.machineState.on('value unarchived', this.onValueUnarchived);
+    }
+  }
+
+  @Bind
+  onValueUnarchived () {
+    if (this.machineStateTemplate) {
+      setTimeout(() => this.machineStateTemplate.refreshOptions('', this.boxedValue, this.boxedArchive));
+    }
+  }
+
   @Bind
   onOptionsChanged (newOptions) {
     this.setState({
@@ -42,7 +63,7 @@ export class OptionAssistant extends Assistant {
       const result = this.requestArchive();
       if (result) {
         this.machineState.unboxedValue = null;
-        this.machineStateTemplate.refreshOptions('', this.machine.boxedValue, this.boxedArchive);
+        this.machineStateTemplate.refreshOptions('', this.boxedValue, this.boxedArchive);
         this.setState({
           suggestions: this.getSuggestions()
         });
@@ -60,7 +81,6 @@ export class OptionAssistant extends Assistant {
   @Bind
   onArchivedRemoved (idx) {
     this.requestRemoveArchivedValue(idx);
-    this.machineStateTemplate.refreshOptions('', this.machine.boxedValue, this.boxedArchive);
     this.setState({
       suggestions: this.getSuggestions()
     });

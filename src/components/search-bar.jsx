@@ -78,7 +78,7 @@ export class SearchBar extends Component {
     if (value !== this.state.tokenValues) {
       this.setState({
         tokenValues: value.map(v => {
-          const m = new TokenStateMachine(this.state.machineTemplate)
+          const m = new TokenStateMachine(this.state.machineTemplate);
           m.bindValues(v);
           return m;
         }) // box incoming values
@@ -374,7 +374,7 @@ export class SearchBar extends Component {
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
-        console.error(err.message);
+        console.error(err.message); // eslint-disable-line no-console
         return false;
       } else {
         throw err;
