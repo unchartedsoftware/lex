@@ -43,7 +43,7 @@ export class OptionAssistant extends Assistant {
   @Bind
   onValueUnarchived () {
     if (this.machineStateTemplate) {
-      setTimeout(() => this.machineStateTemplate.refreshOptions('', this.boxedValue, this.boxedArchive));
+      setTimeout(() => this.machineStateTemplate.refreshOptions('', this.machine.boxedValue, this.boxedArchive));
     }
   }
 
@@ -63,7 +63,7 @@ export class OptionAssistant extends Assistant {
       const result = this.requestArchive();
       if (result) {
         this.machineState.unboxedValue = null;
-        this.machineStateTemplate.refreshOptions('', this.boxedValue, this.boxedArchive);
+        this.machineStateTemplate.refreshOptions('', this.machine.boxedValue, this.boxedArchive);
         this.setState({
           suggestions: this.getSuggestions()
         });
