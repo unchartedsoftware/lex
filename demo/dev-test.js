@@ -109,6 +109,10 @@ window.setQuery = async function () {
       {field: 'Keywords', value: ['Rob', 'Phil', 'two']},
       {field: 'GeoHash', value: 'geohash things'}
     ]);
+    // await lex.setQuery([
+    //   {field: options[0], relation: new OptionStateOption('is like'), value: new OptionStateOption('Sean')},
+    //   {field: options[1], relation: new OptionStateOption('equals'), value: new OptionStateOption('12')}
+    // ]);
   } catch (err) {
     console.log('Something went wrong');
     console.error(err);

@@ -246,11 +246,14 @@ export class OptionState extends StateTemplate {
     await super.initialize();
     if (initialUnboxedValues.length > 0) {
       await this.fetchOptions(initialUnboxedValues.map(v => this.unformatUnboxedValue(v)), context);
+      if (!this.allowUnknown && this.options.length !== initialUnboxedValues.length) {
+        throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but could not fetch matching options for initial values: [${initialUnboxedValues.join(',')}].`);
+      }
     } else {
       await this.refreshOptions('', context);
-    }
-    if (!this.allowUnknown && this.options.length === 0) {
-      throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
+      if (!this.allowUnknown && this.options.length === 0) {
+        throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
+      }
     }
   }
 
