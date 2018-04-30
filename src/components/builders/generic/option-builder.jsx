@@ -100,7 +100,7 @@ export class OptionBuilder extends Builder {
   @Debounce(250) // 250ms debounce
   handleKeyUp (e) {
     const boxed = this.machine.boxedValue;
-    this.machineState.refreshOptions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed, this.boxedArchive);
+    this.machineState.refreshOptions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed);
   }
 
   focus () {
