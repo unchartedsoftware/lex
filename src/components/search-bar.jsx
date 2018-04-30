@@ -148,10 +148,11 @@ export class SearchBar extends Component {
   async setValue (newValue, shouldFireChangeEvent = true) {
     const oldQueryValues = this.state.tokenValues;
     this.blur();
-    const tokens = await Promise.all(newValue.map(v => {
+    const tokens = [];
+    for (const v of newValue) {
       const machine = new TokenStateMachine(this.state.machineTemplate);
-      return machine.bindValues(v);
-    }));
+      tokens.push(await machine.bindValues(v));
+    }
     this.state.activeMachine.reset();
     this.setState({
       tokenValues: tokens,
@@ -167,10 +168,11 @@ export class SearchBar extends Component {
   async setSuggestions (newSuggestions, shouldFireChangeEvent = true) {
     const oldSuggestions = this.state.suggestions;
     this.blur();
-    const suggestions = await Promise.all(newSuggestions.map((v) => {
+    const suggestions = [];
+    for (const v of newSuggestions) {
       const machine = new TokenStateMachine(this.state.machineTemplate);
-      return machine.bindValues(v);
-    }));
+      suggestions.push(await machine.bindValues(v));
+    }
     this.setState({
       suggestions: suggestions
     });

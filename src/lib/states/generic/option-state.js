@@ -64,7 +64,7 @@ const _suggestionLimit = new WeakMap();
  * - `on('options changed', (newOptions, oldOptions) => {})` when the internal list of options changes.
  *
  * @param {Object} config - A configuration object. Inherits all options from `StateTemplate`, and adds the following:
- * @param {Option[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If a function is supplied (`async (hint, context, archive) => OptionStateOption[]`), it will execute in the scope of this `OptionState`, allowing access to its instance methods.
+ * @param {OptionStateOption[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If a function is supplied (`async (hint, context, archive) => OptionStateOption[]`), it will execute in the scope of this `OptionState`, allowing access to its instance methods.
  * @param {AsyncFunction | undefined} config.fetchOptions - An optional function which can be supplied as a mechanism for fetching specific options more efficiently than fetching via a hint. Function signature is identical to config.options, but takes an array of unformatted unboxed values instead of a hint (`async (unformattedUnboxedValues, context, archive) => OptionStateOption[]`)
  * @param {boolean | undefined} config.allowUnknown - Allow user to enter unknown options by entering custom values. Defaults to false.
  * @param {number | undefined} config.suggestionLimit - A limit on the number of options that will be shown at one time. Defaults to 10.
@@ -134,7 +134,7 @@ export class OptionState extends StateTemplate {
   /**
    * Getter for `options`.
    *
-   * @returns {Array[Option]} - The list of options to select from.
+   * @returns {Array[OptionStateOption]} - The list of options to select from.
    */
   get options () {
     return _options.get(this);
@@ -143,7 +143,7 @@ export class OptionState extends StateTemplate {
   /**
    * Setter for `options`.
    *
-   * @param {Option[]} newOptions - A new set of options for this selector.
+   * @param {OptionStateOption[]} newOptions - A new set of options for this selector.
    */
   set options (newOptions) {
     if (this.options !== newOptions) {
@@ -236,7 +236,7 @@ export class OptionState extends StateTemplate {
   }
 
   /**
-   * Perform any asynchronous operations required to initialize this `State`.
+   * Perform any asynchronous operations required to initialize a `State`s instanced from this `StateTemplate`.
    *
    * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    * @param {string[], undefined} initialUnboxedValues - The initial unboxed values which will be bound to this `State`.
