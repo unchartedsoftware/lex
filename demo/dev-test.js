@@ -20,7 +20,7 @@ function fetchSpecificOptions (query) {
     // This simulates a network call for options (your API should filter based on the hint/context)
     setTimeout(() => {
       resolve(options.filter(o => lookup.has(o.key.toLowerCase())));
-    }, 250);
+    }, 25);
   });
 }
 
@@ -28,7 +28,7 @@ function searchOptions (hint) {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(options.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
-    }, 250);
+    }, 25);
   });
 }
 
