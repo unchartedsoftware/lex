@@ -284,7 +284,7 @@ export class Builder extends Component {
       e.preventDefault();
       e.stopPropagation();
     }
-    return this.state.requestRewind(this.state.machineState.template);
+    return this.state.requestRewind(this.state.machineState);
   }
 
   /**
@@ -409,14 +409,6 @@ export class Builder extends Component {
    */
   get machineState () {
     return this.state.machineState;
-  }
-
-  /**
-   * @readonly
-   * @returns {StateTemplate} The underlying `StateTemplate`.
-   */
-  get machineStateTemplate () {
-    return this.state.machineState.template;
   }
 
   /**

@@ -1,5 +1,5 @@
 import { NoStateBuilderTypeError, NoStateAssistantTypeError } from './errors';
-import { StateTemplate } from './state';
+import { State } from './state';
 
 const _builderMap = new WeakMap();
 const _assistantMap = new WeakMap();
@@ -14,7 +14,7 @@ function recursiveClassGet (map, clazz) {
 
   const prototype = Object.getPrototypeOf(clazz);
 
-  if (!StateTemplate.isPrototypeOf(prototype)) {
+  if (!State.isPrototypeOf(prototype)) {
     return null;
   } else {
     return recursiveClassGet(map, prototype);

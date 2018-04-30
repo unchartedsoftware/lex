@@ -1,4 +1,4 @@
-import { StateTemplate } from '../../state';
+import { State } from '../../state';
 
 const _key = new WeakMap();
 const _shortKey = new WeakMap();
@@ -63,14 +63,14 @@ const _suggestionLimit = new WeakMap();
  * This class is an `EventEmitter` and exposes the following events (in addition to `State`'s events):
  * - `on('options changed', (newOptions, oldOptions) => {})` when the internal list of options changes.
  *
- * @param {Object} config - A configuration object. Inherits all options from `StateTemplate`, and adds the following:
+ * @param {Object} config - A configuration object. Inherits all options from `State`, and adds the following:
  * @param {OptionStateOption[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If a function is supplied (`async (hint, context, archive) => OptionStateOption[]`), it will execute in the scope of this `OptionState`, allowing access to its instance methods.
  * @param {AsyncFunction | undefined} config.fetchOptions - An optional function which can be supplied as a mechanism for fetching specific options more efficiently than fetching via a hint. Function signature is identical to config.options, but takes an array of unformatted unboxed values instead of a hint (`async (unformattedUnboxedValues, context, archive) => OptionStateOption[]`)
  * @param {boolean | undefined} config.allowUnknown - Allow user to enter unknown options by entering custom values. Defaults to false.
  * @param {number | undefined} config.suggestionLimit - A limit on the number of options that will be shown at one time. Defaults to 10.
  * @param {string} config.units - A textual label which represents "units" for the option state (will display to the right of the builder)
  */
-export class OptionState extends StateTemplate {
+export class OptionState extends State {
   constructor (config) {
     const origValidate = config.validate;
     config.validate = (thisVal, thisArchive) => {

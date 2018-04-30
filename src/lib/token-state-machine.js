@@ -217,12 +217,12 @@ export class TokenStateMachine extends EventEmitter {
    * not the current state is valid, or has a parent. Leaves the value of the current state as-is,
    * permitting a potential transition back to this state after editing a previous one.
    *
-   * @param {StateTemplate | undefined} targetState - Target `StateTemplate` to rewind to (optional).
+   * @param {State | undefined} targetState - Target `State` to rewind to (optional).
    * @returns {State} The new current state.
    */
   rewind (targetState) {
-    const target = targetState !== undefined ? targetState : (this.state.parent !== undefined ? this.state.parent.template : this.state.template);
-    while (this.state.template !== target) {
+    const target = targetState !== undefined ? targetState : (this.state.parent !== undefined ? this.state.parent : this.state);
+    while (this.state !== target) {
       if (!this.state.parent) break;
       const oldState = this.state;
       // oldState.reset();

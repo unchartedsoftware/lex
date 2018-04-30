@@ -264,7 +264,7 @@ export class SearchBar extends Component {
   renderAssistant (activeMachine) {
     try {
       if (!this.state.editing && (!this.state.active || !this.state.focused)) return;
-      const Assistant = this.state.builders.getAssistant(activeMachine.state.template.constructor);
+      const Assistant = this.state.builders.getAssistant(activeMachine.state.constructor);
       const rect = this.searchBox.getBoundingClientRect();
       const pos = {
         left: rect.left,

@@ -3,7 +3,7 @@ import './style/lex.scss';
 import { h, render } from 'preact';
 import EventEmitter from 'wolfy87-eventemitter';
 import { StateTransitionError, NoStateAssistantTypeError, NoStateBuilderTypeError } from './lib/errors';
-import { StateTemplate } from './lib/state';
+import { State, StateTemplate } from './lib/state';
 import { StateBuilderFactory } from './lib/state-builder-factory';
 import { TransitionFactory } from './lib/transition-factory';
 import { SearchBar } from './components/search-bar';
@@ -77,7 +77,7 @@ class Lex extends EventEmitter {
     } = config;
     super();
     // TODO throw if language is not instanceof StateTemplate
-    if (language.root.isBindOnly) throw new Error('Root StateTemplate of language cannot be bind-only.');
+    if (language.getInstance().root.isBindOnly) throw new Error('Root StateTemplate of language cannot be bind-only.');
     _language.set(this, language.root);
     _placeholder.set(this, placeholder);
     _builders.set(this, new StateBuilderFactory());
@@ -128,9 +128,9 @@ class Lex extends EventEmitter {
    * Define a new search language.
    *
    * @param {string} vkey - The (optional) unique key used to store this state's value within a `Token` output object. If not supplied, this state won't be represented in the `Token` value.
-   * @param {StateTemplate} StateTemplateClass - The root state - must be a class which extends `StateTemplate`.
-   * @param {Object} config - Construction parameters for the root `StateTemplate` class.
-   * @returns {StateTemplate} A reference to the new root `State`, for chaining purposes to `.addChild()`.
+   * @param {State} StateKlass - The root state - must be a class which extends `State`.
+   * @param {Object} config - Construction parameters for the root `State` class.
+   * @returns {StateTemplate} A reference to the new root `StateTemplate`, for chaining purposes to `.addChild()`.
    * @example
    * import { Lex } from 'lex';
    * Lex.from('field', OptionState, {
@@ -141,17 +141,17 @@ class Lex extends EventEmitter {
    *   ]
    * }).to(...).to(...) // to() has the same signature as from()
    */
-  static from (vkey, StateTemplateClass, config = {}) {
+  static from (vkey, StateKlass, config = {}) {
     // vkey is optional, so we have to jump through some hoops
-    let Klass = StateTemplateClass;
+    let Klass = StateKlass;
     let confObj = config;
     if (typeof vkey === 'string') {
       confObj.vkey = vkey;
     } else {
       Klass = vkey;
-      confObj = StateTemplateClass;
+      confObj = StateKlass;
     }
-    return new Klass(confObj);
+    return new StateTemplate(Klass, confObj);
   }
 
   /**
@@ -198,6 +198,8 @@ class Lex extends EventEmitter {
 
   /**
    * Completely reset the search state.
+   *
+   * @param {boolean} shouldFireChangeEvent - If false, suppresses associated `'query changed' event. Defaults to true.
    */
   reset (shouldFireChangeEvent = true) {
     if (this.searchBar) {
@@ -209,6 +211,7 @@ class Lex extends EventEmitter {
    * Suggestion tokens.
    *
    * @param {Object[]} suggestions - One or more token values (an array of objects of boxed or unboxed values) to display as "suggestions" in the search bar. Will have different styling than a traditional token, and offer the user an "ADD" button they can use to lock the preview token into their query.
+   * @param {boolean} shouldFireChangeEvent - If false, suppresses associated `'query changed'` event. Defaults to true.
    * @returns {Promise} Resolves when the attempt to rewrite the query is finished. This is `async` due to the fact that `State`s such as `OptionState`s might retrieve their options asynchronously.
    */
   async setSuggestions (suggestions, shouldFireChangeEvent = true) {
@@ -230,6 +233,7 @@ class Lex extends EventEmitter {
    * Rewrite the query.
    *
    * @param {Object[]} query - One or more token values (an array of objects of boxed or unboxed values) to display to overwrite the current query with.
+   * @param {boolean} shouldFireChangeEvent - If false, suppresses associated `'query changed'` event. Defaults to true.
    * @returns {Promise} Resolves when the attempt to rewrite the query is finished. This is `async` due to the fact that `State`s such as `OptionState`s might retrieve their options asynchronously.
    */
   async setQuery (query, shouldFireChangeEvent = true) {
@@ -246,7 +250,7 @@ export {
   NoStateAssistantTypeError,
   NoStateBuilderTypeError,
   // base classes
-  StateTemplate,
+  State,
   TransitionFactory,
   // states
   LabelState,

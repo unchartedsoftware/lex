@@ -37,11 +37,11 @@ export class DateTimeEntryAssistant extends Assistant {
   }
 
   get timezone () {
-    return this.machineState.template.timezone;
+    return this.machineState.timezone;
   }
 
   get format () {
-    return this.machineState.template.format;
+    return this.machineState.format;
   }
 
   @Bind
