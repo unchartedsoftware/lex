@@ -64,8 +64,8 @@ const _suggestionLimit = new WeakMap();
  * - `on('options changed', (newOptions, oldOptions) => {})` when the internal list of options changes.
  *
  * @param {Object} config - A configuration object. Inherits all options from `State`, and adds the following:
- * @param {OptionStateOption[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If a function is supplied (`async (hint, context, archive) => OptionStateOption[]`), it will execute in the scope of this `OptionState`, allowing access to its instance methods.
- * @param {AsyncFunction | undefined} config.fetchOptions - An optional function which can be supplied as a mechanism for fetching specific options more efficiently than fetching via a hint. Function signature is identical to config.options, but takes an array of unformatted unboxed values instead of a hint (`async (unformattedUnboxedValues, context, archive) => OptionStateOption[]`)
+ * @param {OptionStateOption[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If a function is supplied (`async (hint, context) => OptionStateOption[]`), it will execute in the scope of this `OptionState`, allowing access to its instance methods.
+ * @param {AsyncFunction | undefined} config.fetchOptions - An optional function which can be supplied as a mechanism for fetching specific options more efficiently than fetching via a hint. Function signature is identical to config.options, but takes an array of unformatted unboxed values instead of a hint (`async (unformattedUnboxedValues, context) => OptionStateOption[]`)
  * @param {boolean | undefined} config.allowUnknown - Allow user to enter unknown options by entering custom values. Defaults to false.
  * @param {number | undefined} config.suggestionLimit - A limit on the number of options that will be shown at one time. Defaults to 10.
  * @param {string} config.units - A textual label which represents "units" for the option state (will display to the right of the builder)
@@ -105,9 +105,9 @@ export class OptionState extends State {
         });
       });
     } else {
-      _refreshOptions.set(this, async (hint = '', context = [], archive = []) => {
+      _refreshOptions.set(this, async (hint = '', context = []) => {
         try {
-          return config.options.call(this, hint, context, archive);
+          return config.options.call(this, hint, context);
         } catch (err) {
           console.error('Could not refresh list of options.'); // eslint-disable-line no-console
           throw err;
@@ -116,9 +116,9 @@ export class OptionState extends State {
       if (!config.fetchOptions) {
         throw new Error('Async options supplied to OptionState without a fetchOptions function (which is required).');
       } else {
-        _fetchOptions.set(this, async (unformattedUnboxedValues = [], context = [], archive = []) => {
+        _fetchOptions.set(this, async (unformattedUnboxedValues = [], context = []) => {
           try {
-            return config.fetchOptions.call(this, unformattedUnboxedValues, context, archive);
+            return config.fetchOptions.call(this, unformattedUnboxedValues, context);
           } catch (err) {
             console.error('Could not fetch list of supplied options for validation.'); // eslint-disable-line no-console
             throw err;
@@ -262,8 +262,8 @@ export class OptionState extends State {
     _options.set(this, []);
   }
 
-  async fetchOptions (unformattedUnboxedValues = [], context = {}, archive = []) {
-    const newOptions = await _fetchOptions.get(this)(unformattedUnboxedValues, context, archive);
+  async fetchOptions (unformattedUnboxedValues = [], context = {}) {
+    const newOptions = await _fetchOptions.get(this)(unformattedUnboxedValues, context);
     this.options = newOptions;
   }
 
@@ -273,15 +273,14 @@ export class OptionState extends State {
    *
    * @param {string | undefined} hint - What the user has typed, if anything, converted to a key by unformatUnboxedValue.
    * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
-   * @param {any[]} archive - The current archive of values within this state.
    * @returns {Promise} Resolves with the new list of options.
    */
-  async refreshOptions (hint = '', context = {}, archive = []) {
+  async refreshOptions (hint = '', context = {}) {
     if (hint === null) console.error('hint cannot be null in refreshOptions - perhaps unformatUnboxedValue returned null?'); // eslint-disable-line no-console
     if (_refreshOptions.has(this)) {
       // start lookup
       _lastRefresh.set(this, hint);
-      const newOptions = await _refreshOptions.get(this)(hint, context, archive);
+      const newOptions = await _refreshOptions.get(this)(hint, context);
       if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
       // If user-created values are allowed, and this is a multi-value state,
       // then add in an option for what the user has typed as long as what
