@@ -19,20 +19,11 @@ const language = Lex
     ],
     icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
   })
-  // Now that we have selected an option from the available list we need to provide target
-  // states that we can transition to
-  .branch(
-    // We want to let the user supply a height in feet and inches, to do this we are going
-    // to combine 2 number entry states with a label state between them
-    Lex
-      .from('heightFeet', NumericEntryState, {
-        units: "'"
-      })
-      .to(LabelState, {label: 'and'})
-      .to('heightInches', NumericEntryState, {
-        units: '"'
-      })
-  );
+  // We want to let the user supply a height in feet and inches, to do this we are going
+  // to combine 2 number entry states with a label state between them
+  .to('heightFeet', NumericEntryState, {units: "'"})
+  .to(LabelState, {label: 'and'})
+  .to('heightInches', NumericEntryState, {units: "'"});
 
 // Now that we have a language defined we can initialize our lex instance
 const lex = new Lex({

@@ -16,13 +16,9 @@ const language = Lex
     ],
     icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
   })
-  // Now that we have selected an option from the available list we need to provide target
-  // states that we can transition to
-  .branch(
-    // We want to let the user supply an arbitrary string value so lets branch to a simple
-    // text entry state
-    Lex.from('value', TextEntryState)
-  );
+  // Now that the user has selected an option from the available list, provide a
+  // TextEntryState to allow the user to supply a value.
+  .to('value', TextEntryState);
 
 // Now that we have a language defined we can initialize our lex instance
 const lex = new Lex({

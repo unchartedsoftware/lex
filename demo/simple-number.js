@@ -17,12 +17,8 @@ const language = Lex
     ],
     icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
   })
-  // Now that we have selected an option from the available list we need to provide target
-  // states that we can transition to
-  .branch(
-    // We want to let the user supply a valid number value so lets branch to a numeric entry state
-    Lex.from('value', NumericEntryState)
-  );
+  // We want to let the user supply a valid number value so lets chain a numeric entry state
+  .to('value', NumericEntryState);
 
 // Now that we have a language defined we can initialize our lex instance
 const lex = new Lex({

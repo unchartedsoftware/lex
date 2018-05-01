@@ -10,7 +10,6 @@ const _currentState = new WeakMap();
  *
  * @private
  * @param {StateTemplate} rootStateTemplate - The DAG describing the states for this state machine.
- * @param {Object | undefined} values - A optional array of (boxed) values to apply to the machine's states (applied from the root state onward). If any value is an array, all but the final value are added to the `State` archive.
  */
 export class TokenStateMachine extends EventEmitter {
   constructor (rootStateTemplate) {
