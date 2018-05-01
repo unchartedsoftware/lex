@@ -28,7 +28,7 @@ export class Token extends Component {
       requestRemoveArchivedValue: () => {},
       requestRewind: () => {},
       requestCancel: () => {},
-      requestAddSuggestion: () => {},
+      requestAcceptSuggestion: () => {},
       onEndToken: () => {},
       onValidityChanged: () => {}
     };
@@ -55,7 +55,7 @@ export class Token extends Component {
       requestUnarchive = () => {},
       requestRemoveArchivedValue = () => {},
       requestRewind = () => {},
-      requestAddSuggestion = () => {},
+      requestAcceptSuggestion = () => {},
       onEndToken = () => {},
       onValidityChanged = () => {}
     } = props;
@@ -155,9 +155,9 @@ export class Token extends Component {
         requestRemoval: requestRemoval
       });
     }
-    if (requestAddSuggestion !== this.state.requestAddSuggestion) {
+    if (requestAcceptSuggestion !== this.state.requestAcceptSuggestion) {
       this.setState({
-        requestAddSuggestion: requestAddSuggestion
+        requestAcceptSuggestion: requestAcceptSuggestion
       });
     }
     if (onEndToken !== this.state.onEndToken) {
@@ -308,10 +308,10 @@ export class Token extends Component {
   }
 
   @Bind
-  requestAddSuggestion (e) {
+  requestAcceptSuggestion (e) {
     e.preventDefault();
     e.stopPropagation();
-    this.state.requestAddSuggestion(this.state.idx);
+    this.state.requestAcceptSuggestion(this.state.idx);
   }
 
   @Bind
@@ -327,7 +327,7 @@ export class Token extends Component {
 
   get addButton () {
     if (this.state.suggestion) {
-      return <button className='token-action-add-suggestion' onClick={this.requestAddSuggestion}>ADD</button>;
+      return <button className='token-action-add-suggestion' onClick={this.requestAcceptSuggestion}>ADD</button>;
     }
   }
 
