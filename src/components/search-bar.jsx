@@ -148,11 +148,10 @@ export class SearchBar extends Component {
   async setValue (newValue, shouldFireChangeEvent = true) {
     const oldQueryValues = this.state.tokenValues;
     this.blur();
-    const tokens = [];
-    for (const v of newValue) {
+    const tokens = await Promise.all(newValue.map(v => {
       const machine = new TokenStateMachine(this.state.machineTemplate);
-      tokens.push(await machine.bindValues(v));
-    }
+      return machine.bindValues(v);
+    }));
     this.state.activeMachine.reset();
     this.setState({
       tokenValues: tokens,
@@ -168,11 +167,10 @@ export class SearchBar extends Component {
   async setSuggestions (newSuggestions, shouldFireChangeEvent = true) {
     const oldSuggestions = this.state.suggestions;
     this.blur();
-    const suggestions = [];
-    for (const v of newSuggestions) {
+    const suggestions = await Promise.all(newSuggestions.map(v => {
       const machine = new TokenStateMachine(this.state.machineTemplate);
-      suggestions.push(await machine.bindValues(v));
-    }
+      return machine.bindValues(v);
+    }));
     this.setState({
       suggestions: suggestions
     });
@@ -264,7 +262,7 @@ export class SearchBar extends Component {
   renderAssistant (activeMachine) {
     try {
       if (!this.state.editing && (!this.state.active || !this.state.focused)) return;
-      const Assistant = this.state.builders.getAssistant(activeMachine.state.template.constructor);
+      const Assistant = this.state.builders.getAssistant(activeMachine.state.constructor);
       const rect = this.searchBox.getBoundingClientRect();
       const pos = {
         left: rect.left,

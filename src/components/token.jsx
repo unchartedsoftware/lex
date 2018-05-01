@@ -336,7 +336,7 @@ export class Token extends Component {
       <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''}`} onMouseDown={this.requestEdit}>
         {this.icon}
         {this.state.stateArray.map(s => {
-          const Builder = this.state.builders.getBuilder(s.template.constructor);
+          const Builder = this.state.builders.getBuilder(s.constructor);
           return (<Builder
             machine={machine}
             machineState={s}

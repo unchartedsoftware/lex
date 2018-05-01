@@ -177,7 +177,7 @@ export class DateTimeEntryBuilder extends Builder {
             onKeyUp={this.handleKeyUp}
             onMouseDown={this.clearPreview}
             value={typedText}
-            placeholder={machineState.template.format}
+            placeholder={machineState.format}
             onInput={this.handleInput}
             onFocus={this.requestFocus}
             onPaste={this.onPaste}

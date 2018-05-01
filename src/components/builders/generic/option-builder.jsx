@@ -20,7 +20,7 @@ export class OptionBuilder extends Builder {
   cleanupListeners () {
     super.cleanupListeners();
     if (this.machineState) {
-      this.machineStateTemplate.removeListener('options changed', this.onOptionsChanged);
+      this.machineState.removeListener('options changed', this.onOptionsChanged);
       this.machineState.removeListener('value changed', this.onValueChanged);
       this.machineState.removeListener('preview value changed', this.onPreviewValueChanged);
     }
@@ -29,7 +29,7 @@ export class OptionBuilder extends Builder {
   connectListeners () {
     super.connectListeners();
     if (this.machineState) {
-      this.machineStateTemplate.on('options changed', this.onOptionsChanged);
+      this.machineState.on('options changed', this.onOptionsChanged);
       this.machineState.on('value changed', this.onValueChanged);
       this.machineState.on('preview value changed', this.onPreviewValueChanged);
     }
@@ -38,7 +38,7 @@ export class OptionBuilder extends Builder {
   processProps (props) {
     const { machine, machineState } = props;
     this.setState({
-      typedText: machineState.unboxedValue ? machineState.template.formatUnboxedValue(machineState.unboxedValue, machine.boxedValue) : ''
+      typedText: machineState.unboxedValue ? machineState.formatUnboxedValue(machineState.unboxedValue, machine.boxedValue) : ''
     });
 
     return super.processProps(props);
@@ -48,7 +48,7 @@ export class OptionBuilder extends Builder {
     if (this.machineState.previewValue) {
       this.machineState.value = this.machineState.previewValue;
     } else if (this.state.typedText && this.state.typedText.length > 0) {
-      this.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(this.state.typedText, this.machine.boxedValue);
+      this.unboxedValue = this.machineState.unformatUnboxedValue(this.state.typedText, this.machine.boxedValue);
     }
   }
 
@@ -100,7 +100,7 @@ export class OptionBuilder extends Builder {
   @Debounce(250) // 250ms debounce
   handleKeyUp (e) {
     const boxed = this.machine.boxedValue;
-    this.machineStateTemplate.refreshOptions(this.machineStateTemplate.unformatUnboxedValue(e.target.value, boxed), boxed, this.boxedArchive);
+    this.machineState.refreshOptions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed);
   }
 
   focus () {
@@ -135,13 +135,13 @@ export class OptionBuilder extends Builder {
 
   @Bind
   onValueChanged (newValue) {
-    if (this.machineStateTemplate.allowUnknown) {
+    if (this.machineState.allowUnknown) {
       this.setState({
-        typedText: newValue ? this.machineStateTemplate.formatUnboxedValue(newValue.key, this.machine.boxedValue) : ''
+        typedText: newValue ? this.machineState.formatUnboxedValue(newValue.key, this.machine.boxedValue) : ''
       });
     } else if (newValue) {
       this.setState({
-        typedText: this.machineStateTemplate.formatUnboxedValue(newValue.key, this.machine.boxedValue)
+        typedText: this.machineState.formatUnboxedValue(newValue.key, this.machine.boxedValue)
       });
     }
   }
@@ -175,16 +175,16 @@ export class OptionBuilder extends Builder {
       const clipboardData = (e.clipboardData || window.clipboardData).getData('Text');
       const values = clipboardData.split(this.state.multivaluePasteDelimiter).map(e => e.trim());
       values.forEach(v => {
-        this.machineState.unboxedValue = this.machineStateTemplate.unformatUnboxedValue(v, this.machine.boxedValue);
+        this.machineState.unboxedValue = this.machineState.unformatUnboxedValue(v, this.machine.boxedValue);
         this.requestArchive();
       });
     }
   }
 
   renderReadOnly (props, state) {
-    const units = this.machineStateTemplate.units !== undefined ? <span className='text-muted'> { this.machineStateTemplate.units }</span> : '';
+    const units = this.machineState.units !== undefined ? <span className='text-muted'> { this.machineState.units }</span> : '';
     if (this.machineState.value) {
-      const shortKey = this.machineState.value.shortKey !== undefined ? this.machineState.value.shortKey : this.machineStateTemplate.formatUnboxedValue(this.machineState.value.key, this.machine.boxedValue);
+      const shortKey = this.machineState.value.shortKey !== undefined ? this.machineState.value.shortKey : this.machineState.formatUnboxedValue(this.machineState.value.key, this.machine.boxedValue);
       if (this.machineState.isMultivalue && this.archive.length > 0) {
         return (
           <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass}`} onMouseDown={this.requestRewindTo}>{shortKey}{units} & {this.archive.length} others</span>
@@ -218,7 +218,7 @@ export class OptionBuilder extends Builder {
             onPaste={this.onPaste}
             ref={(input) => { this.textInput = input; }}
             disabled={readOnly || (machineState.isMultivalue && !machineState.canArchiveValue)} />
-          { machineState.template.units !== undefined ? <span className='token-input token-input-units text-muted'>{ machineState.template.units }</span> : '' }
+          { machineState.units !== undefined ? <span className='token-input token-input-units text-muted'>{ machineState.units }</span> : '' }
         </span>
       </span>
     );
