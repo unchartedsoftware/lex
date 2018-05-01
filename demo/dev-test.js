@@ -87,7 +87,13 @@ const lex = new Lex({
   language: language,
   placeholder: 'Start typing to search...',
   defaultValue: [],
-  tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>'
+  tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>',
+  onAcceptSuggestion: (s) => {
+    return s;
+  },
+  onRejectSuggestion: (s) => { // eslint-disable-line no-unused-vars
+    return true;
+  }
 });
 
 lex.render(document.getElementById('LexContainer'));

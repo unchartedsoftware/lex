@@ -32,6 +32,8 @@ export class SearchBar extends Component {
       multivaluePasteDelimiter: ',',
       onQueryChanged: () => {},
       onSuggestionsChanged: () => {},
+      onAcceptSuggestion: (s) => s,
+      onRejectSuggestion: () => true,
       onValidityChanged: () => {},
       onStartToken: () => {},
       onEndToken: () => {},
@@ -53,6 +55,8 @@ export class SearchBar extends Component {
       multivaluePasteDelimiter = ',',
       onQueryChanged = () => {},
       onSuggestionsChanged = () => {},
+      onAcceptSuggestion = (s) => s,
+      onRejectSuggestion = () => true,
       onValidityChanged = () => {},
       onStartToken = () => {},
       onEndToken = () => {}
@@ -91,6 +95,16 @@ export class SearchBar extends Component {
           m.bindValues(v);
           return m;
         }) // box incoming values
+      });
+    }
+    if (onAcceptSuggestion !== this.state.onAcceptSuggestion) {
+      this.setState({
+        onAcceptSuggestion: onAcceptSuggestion
+      });
+    }
+    if (onRejectSuggestion !== this.state.onRejectSuggestion) {
+      this.setState({
+        onRejectSuggestion: onRejectSuggestion
       });
     }
     if (onQueryChanged !== this.state.onQueryChanged) {
@@ -485,21 +499,28 @@ export class SearchBar extends Component {
   }
 
   @Bind
-  removeSuggestion (idx) {
+  rejectSuggestion (idx) {
     const oldSuggestions = this.state.suggestions;
-    this.setState({
-      suggestions: [...this.state.suggestions.slice(0, idx), ...this.state.suggestions.slice(idx + 1)]
-    });
-    this.suggestionsChanged(oldSuggestions);
+    const suggestion = this.state.suggestions[idx];
+    if (this.state.onRejectSuggestion(suggestion.value, idx)) {
+      this.setState({
+        suggestions: [...this.state.suggestions.slice(0, idx), ...this.state.suggestions.slice(idx + 1)]
+      });
+      this.suggestionsChanged(oldSuggestions);
+    }
   }
 
   @Bind
-  addSuggestion (idx) {
+  acceptSuggestion (idx) {
     const oldSuggestions = this.state.suggestions;
-    const suggestion = this.state.suggestions[idx];
-    this.removeSuggestion(idx);
-    this.onEndToken(suggestion && suggestion.value);
-    this.suggestionsChanged(oldSuggestions);
+    const boxedSuggestionValue = this.state.onAcceptSuggestion(this.state.suggestions[idx].value, idx);
+    if (boxedSuggestionValue !== null && boxedSuggestionValue !== undefined) {
+      this.setState({
+        suggestions: [...this.state.suggestions.slice(0, idx), ...this.state.suggestions.slice(idx + 1)]
+      });
+      this.onEndToken(boxedSuggestionValue);
+      this.suggestionsChanged(oldSuggestions);
+    }
   }
 
   @Bind
@@ -527,7 +548,7 @@ export class SearchBar extends Component {
         }
         {
           suggestions.map((v, j) => {
-            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeSuggestion} requestAddSuggestion={this.addSuggestion} idx={j} suggestion />;
+            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.rejectSuggestion} requestAcceptSuggestion={this.acceptSuggestion} idx={j} suggestion />;
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }
