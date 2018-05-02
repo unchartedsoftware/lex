@@ -30,6 +30,34 @@ describe('State', () => {
     });
   });
 
+  describe('box unbox interactions', () => {
+    it('box -> unbox -> box returns first boxed result', () => {
+      // Given
+      const config = {};
+      const state = new State(config);
+      const userVal = 'John';
+      // When
+      const boxed = state.boxValue(userVal);
+      const unboxed = state.unboxValue(boxed);
+      const result = state.boxValue(unboxed);
+      // Then
+      expect(result).to.equal(boxed);
+    });
+
+    it('unbox -> box -> unbox returns first unboxed result', () => {
+      // Given
+      const config = {};
+      const state = new State(config);
+      const internalRepresentation = 'John';
+      // When
+      const unboxed = state.unboxValue(internalRepresentation);
+      const boxed = state.boxValue(unboxed);
+      const result = state.unboxValue(boxed);
+      // Then
+      expect(result).to.equal(unboxed);
+    });
+  });
+
   describe('isValid', () => {
     it('Uses default validate function to always return true', () => {
       // Given
