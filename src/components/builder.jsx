@@ -1,4 +1,4 @@
-import { bind } from 'decko';
+import { Bind } from 'lodash-decorators';
 import { h, Component } from 'preact';
 import { COMMA } from '../lib/keys';
 
@@ -201,7 +201,7 @@ export class Builder extends Component {
     }
   }
 
-  @bind
+  @Bind
   /**
    * Called just before a component, such as this `Builder` or an `Assistant`, requests a transition.
    * This is useful, for example, when an `Assistant` wants to trigger a transition but needs its
@@ -211,7 +211,7 @@ export class Builder extends Component {
     // Override in subclass if necessary.
   }
 
-  @bind
+  @Bind
   onTransition () {
     const oldValidity = this.state.valid;
     this.setState({valid: true, errorMsg: undefined});
@@ -220,7 +220,7 @@ export class Builder extends Component {
     }
   }
 
-  @bind
+  @Bind
   onTransitionFailed (reason) {
     if (this.state.machineState === this.state.machine.state) {
       const oldValidity = this.state.valid;
@@ -231,7 +231,7 @@ export class Builder extends Component {
     }
   }
 
-  @bind
+  @Bind
   /**
    * Call from a subclass to request the state machine for the containing token to attempt transition.
    * @param {object} options - Options for transition
@@ -241,7 +241,7 @@ export class Builder extends Component {
     return this.state.requestTransition(options);
   }
 
-  @bind
+  @Bind
   /**
    * Call from a subclass to request the state machine for the containing token to attempt archive a value.
    */
@@ -249,7 +249,7 @@ export class Builder extends Component {
     return this.state.requestArchive();
   }
 
-  @bind
+  @Bind
   /**
    * Call from a subclass to request the state machine for the containing token to attempt unarchiving a value.
    */
@@ -257,7 +257,7 @@ export class Builder extends Component {
     return this.state.requestUnarchive();
   }
 
-  @bind
+  @Bind
   /**
    * Call from a subclass to request the state machine for the containing token to attempt removal of a specific value from the archive.
    */
@@ -265,7 +265,7 @@ export class Builder extends Component {
     return this.state.requestRemoveArchivedValue(idx);
   }
 
-  @bind
+  @Bind
   /**
    * Call from a subclass to request the state machine for the containing token to attempt rewind.
    */
@@ -273,7 +273,7 @@ export class Builder extends Component {
     return this.state.requestRewind();
   }
 
-  @bind
+  @Bind
   /**
    * Call from a subclass to request the state machine for the containing token to attempt rewind to
    * this builder
@@ -284,7 +284,7 @@ export class Builder extends Component {
       e.preventDefault();
       e.stopPropagation();
     }
-    return this.state.requestRewind(this.state.machineState.template);
+    return this.state.requestRewind(this.state.machineState);
   }
 
   /**
@@ -299,7 +299,7 @@ export class Builder extends Component {
     // override in subclass
   }
 
-  @bind
+  @Bind
   /**
    * Call from a subclass to inform containing components that this component has received focus.
    * Since "focus" is not necessarily a literal concept (and could be triggered by a button press, or some
@@ -309,7 +309,7 @@ export class Builder extends Component {
     this.state.requestFocus();
   }
 
-  @bind
+  @Bind
   /**
    * Call from a subclass to inform containing components that this `Builder` is cancelling
    * input.
@@ -318,7 +318,7 @@ export class Builder extends Component {
     this.state.requestCancel();
   }
 
-  @bind
+  @Bind
   /**
    * Call from a subclass to inform containing components that this component has been blurred.
    * Since "focus" is not necessarily a literal concept (and could be triggered by a button press, or some
@@ -409,14 +409,6 @@ export class Builder extends Component {
    */
   get machineState () {
     return this.state.machineState;
-  }
-
-  /**
-   * @readonly
-   * @returns {StateTemplate} The underlying `StateTemplate`.
-   */
-  get machineStateTemplate () {
-    return this.state.machineState.template;
   }
 
   /**

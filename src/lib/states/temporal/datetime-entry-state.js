@@ -1,4 +1,4 @@
-import { StateTemplate } from '../../state';
+import { State } from '../../state';
 import moment from 'moment';
 import 'moment-timezone';
 
@@ -8,12 +8,12 @@ const _timeZone = new WeakMap();
 /**
  * This state supports the entry of a Date/Time value, with support for a custom acceptable format
  *
- * @param {Object} config - A configuration object. Supports all of the parameters from `StateTemplate`,
+ * @param {Object} config - A configuration object. Supports all of the parameters from `State`,
  *                          providing defaults for `name` and `validate`.
  * @param {string|undefined} config.format - The acceptable format for a typed date. Defaults to `'YYYY/MM/DD'`.
  * @param {string|undefined} config.timezone - The assumed timezone for a typed date. Defaults to `'Etc/UTC'`.
  */
-export class DateTimeEntryState extends StateTemplate {
+export class DateTimeEntryState extends State {
   constructor (config) {
     if (config.name === undefined) config.name = 'Enter a date';
     if (config.format === undefined) config.format = 'YYYY/MM/DD';

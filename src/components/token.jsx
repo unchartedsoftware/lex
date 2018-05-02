@@ -1,5 +1,5 @@
 import { h, Component } from 'preact';
-import { bind } from '../../node_modules/decko/dist/decko';
+import { Bind } from 'lodash-decorators';
 import { COMMA } from '../lib/keys';
 /**
  * @private
@@ -28,7 +28,7 @@ export class Token extends Component {
       requestRemoveArchivedValue: () => {},
       requestRewind: () => {},
       requestCancel: () => {},
-      requestAddSuggestion: () => {},
+      requestAcceptSuggestion: () => {},
       onEndToken: () => {},
       onValidityChanged: () => {}
     };
@@ -55,7 +55,7 @@ export class Token extends Component {
       requestUnarchive = () => {},
       requestRemoveArchivedValue = () => {},
       requestRewind = () => {},
-      requestAddSuggestion = () => {},
+      requestAcceptSuggestion = () => {},
       onEndToken = () => {},
       onValidityChanged = () => {}
     } = props;
@@ -80,7 +80,6 @@ export class Token extends Component {
       });
     }
     if (machine !== this.state.machine) {
-      this.cleanupListeners();
       this.setState({
         machine: machine
       });
@@ -156,9 +155,9 @@ export class Token extends Component {
         requestRemoval: requestRemoval
       });
     }
-    if (requestAddSuggestion !== this.state.requestAddSuggestion) {
+    if (requestAcceptSuggestion !== this.state.requestAcceptSuggestion) {
       this.setState({
-        requestAddSuggestion: requestAddSuggestion
+        requestAcceptSuggestion: requestAcceptSuggestion
       });
     }
     if (onEndToken !== this.state.onEndToken) {
@@ -174,16 +173,18 @@ export class Token extends Component {
   }
 
   cleanupListeners () {
-    if (this.state.machine) {
-      this.state.machine.removeListener('state changed', this.getStateArray);
-      this.state.machine.removeListener('end', this.endToken);
+    if (this._emitter) {
+      this._emitter.removeListener('state changed', this.getStateArray);
+      this._emitter.removeListener('end', this.endToken);
     }
   }
 
   connectListeners () {
+    this.cleanupListeners();
     if (this.state.machine) {
-      this.state.machine.on('end', this.endToken);
-      this.state.machine.on('state changed', this.onStateChanged);
+      this._emitter = this.state.machine;
+      this._emitter.on('end', this.endToken);
+      this._emitter.on('state changed', this.onStateChanged);
     }
   }
 
@@ -193,24 +194,22 @@ export class Token extends Component {
 
   componentWillMount () {
     this.processProps(this.props);
+  }
+
+  componentDidMount () {
     this.connectListeners();
   }
 
   componentWillReceiveProps (nextProps) {
-    const oldMachine = this.state.machine;
     this.processProps(nextProps);
-    if (this.state.machine !== oldMachine) {
-      this.cleanupListeners();
-      this.connectListeners();
-    }
   }
 
-  @bind
+  @Bind
   endToken (state, nextToken) {
     this.state.onEndToken(this.value, nextToken);
   }
 
-  @bind
+  @Bind
   onStateChanged () {
     const result = [];
     let current = this.state.machine.state;
@@ -286,19 +285,19 @@ export class Token extends Component {
     this.setState({focused: true});
   }
 
-  @bind
+  @Bind
   requestFocus () {
     this.focus();
     this.state.requestFocus();
   }
 
-  @bind
+  @Bind
   requestBlur () {
     this.setState({focused: false});
     this.state.requestBlur();
   }
 
-  @bind
+  @Bind
   requestRemoval (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -308,14 +307,14 @@ export class Token extends Component {
     this.state.requestRemoval(this.state.idx);
   }
 
-  @bind
-  requestAddSuggestion (e) {
+  @Bind
+  requestAcceptSuggestion (e) {
     e.preventDefault();
     e.stopPropagation();
-    this.state.requestAddSuggestion(this.state.idx);
+    this.state.requestAcceptSuggestion(this.state.idx);
   }
 
-  @bind
+  @Bind
   requestEdit (e) {
     if (!this.state.active && this.state.requestEdit) {
       e.preventDefault();
@@ -328,7 +327,7 @@ export class Token extends Component {
 
   get addButton () {
     if (this.state.suggestion) {
-      return <button className='token-action-add-suggestion' onClick={this.requestAddSuggestion}>ADD</button>;
+      return <button className='token-action-add-suggestion' onClick={this.requestAcceptSuggestion}>ADD</button>;
     }
   }
 
@@ -337,7 +336,7 @@ export class Token extends Component {
       <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''}`} onMouseDown={this.requestEdit}>
         {this.icon}
         {this.state.stateArray.map(s => {
-          const Builder = this.state.builders.getBuilder(s.template.constructor);
+          const Builder = this.state.builders.getBuilder(s.constructor);
           return (<Builder
             machine={machine}
             machineState={s}

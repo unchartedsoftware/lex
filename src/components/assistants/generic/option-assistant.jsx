@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { bind } from 'decko';
+import { Bind } from 'lodash-decorators';
 import { Assistant } from '../../assistant';
 import { UP_ARROW, DOWN_ARROW, TAB, ENTER, normalizeKey } from '../../../lib/keys';
 
@@ -19,14 +19,35 @@ export class OptionAssistant extends Assistant {
     this.state.suggestions = [];
   }
 
-  getSuggestions (options = this.machineStateTemplate.options) {
+  getSuggestions (options = this.machineState.options) {
     // create lookup table for archive
     const lookup = new Map();
     this.archive.forEach(a => lookup.set(a.key));
-    return options.filter(o => !o.hidden && !lookup.has(o.key)).slice(0, this.machineStateTemplate.suggestionLimit);
+    return options.filter(o => !o.hidden && !lookup.has(o.key)).slice(0, this.machineState.suggestionLimit);
   }
 
-  @bind
+  cleanupListeners () {
+    super.cleanupListeners();
+    if (this.machineState) {
+      this.machineState.removeListener('value unarchived', this.onValueUnarchived);
+    }
+  }
+
+  connectListeners () {
+    super.connectListeners();
+    if (this.machineState) {
+      this.machineState.on('value unarchived', this.onValueUnarchived);
+    }
+  }
+
+  @Bind
+  onValueUnarchived () {
+    if (this.machineState) {
+      setTimeout(() => this.machineState.refreshOptions('', this.machine.boxedValue));
+    }
+  }
+
+  @Bind
   onOptionsChanged (newOptions) {
     this.setState({
       options: newOptions,
@@ -35,14 +56,14 @@ export class OptionAssistant extends Assistant {
     });
   }
 
-  @bind
+  @Bind
   onOptionSelected (option) {
     this.machineState.unboxedValue = option.key;
     if (this.machineState.isMultivalue) {
       const result = this.requestArchive();
       if (result) {
         this.machineState.unboxedValue = null;
-        this.machineStateTemplate.refreshOptions('', this.machine.boxedValue, this.boxedArchive);
+        this.machineState.refreshOptions('', this.machine.boxedValue);
         this.setState({
           suggestions: this.getSuggestions()
         });
@@ -52,15 +73,14 @@ export class OptionAssistant extends Assistant {
     }
   }
 
-  @bind
+  @Bind
   onOptionHover (idx) {
     this.setState({activeOption: idx});
   }
 
-  @bind
+  @Bind
   onArchivedRemoved (idx) {
     this.requestRemoveArchivedValue(idx);
-    this.machineStateTemplate.refreshOptions('', this.machine.boxedValue, this.boxedArchive);
     this.setState({
       suggestions: this.getSuggestions()
     });
@@ -68,16 +88,16 @@ export class OptionAssistant extends Assistant {
 
   processProps (props) {
     const oldMachineState = this.machineState;
-    if (oldMachineState) oldMachineState.template.removeListener('options changed', this.onOptionsChanged);
+    if (oldMachineState) oldMachineState.removeListener('options changed', this.onOptionsChanged);
     super.processProps(props);
     if (this.machineState !== oldMachineState) {
       this.setState({
-        options: this.machineStateTemplate.options,
+        options: this.machineState.options,
         activeOption: -1,
         suggestions: this.getSuggestions()
       });
     }
-    if (this.machineState) this.machineStateTemplate.on('options changed', this.onOptionsChanged);
+    if (this.machineState) this.machineState.on('options changed', this.onOptionsChanged);
   }
 
   delegateEvent (e) {
@@ -144,7 +164,7 @@ export class OptionAssistant extends Assistant {
           <div className='assistant-header'>Entered Values{limitCounter}</div>
           <ul>
             {
-              this.machineState.archive.map((o, idx) => <li tabIndex='0' className='removable clearfix' onClick={() => this.onArchivedRemoved(idx)}><span className='pull-left'>{this.machineStateTemplate.formatUnboxedValue(o.key, this.machine.boxedValue)}</span><em className='pull-right'>(click to remove)</em></li>)
+              this.machineState.archive.map((o, idx) => <li tabIndex='0' className='removable clearfix' onClick={() => this.onArchivedRemoved(idx)}><span className='pull-left'>{this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)}</span><em className='pull-right'>(click to remove)</em></li>)
             }
           </ul>
         </div>
@@ -153,14 +173,14 @@ export class OptionAssistant extends Assistant {
   }
 
   renderAssistantBody (props, {activeOption, suggestions}) {
-    if (this.machineState.isMultivalue || this.machineStateTemplate.options.length > 0) {
+    if (this.machineState.isMultivalue || this.machineState.options.length > 0) {
       return (
         <div className='assistant-body'>
           <div className={this.machineState.isMultivalue ? 'assistant-left' : ''}>
             { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
             <ul ref={(n) => { this.suggestionContainer = n; }}>
               {
-                (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} onMouseOver={() => this.onOptionHover(idx)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{this.machineStateTemplate.formatUnboxedValue(o.key, this.machine.boxedValue)}</li>))
+                (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} onMouseOver={() => this.onOptionHover(idx)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)}</li>))
               }
               { (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
               { this.machineState.isMultivalue && !this.machineState.canArchiveValue && <li><em className='text-muted anim-flash'>Maximum number of values reached. <button className='btn btn-xs btn-default' onMouseDown={this.requestTransition}>{this.state.machine.state.isTerminal ? 'Finish' : 'Next'}?</button></em></li> }

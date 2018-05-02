@@ -1,4 +1,4 @@
-import { StateTemplate } from '../../state';
+import { State } from '../../state';
 
 const _label = new WeakMap();
 
@@ -10,7 +10,7 @@ const _label = new WeakMap();
  * @param {Object} config - A configuration object. Inherits all options from `StateTemplate`, and adds the following:
  * @param {string} config.label - The label to display. Will also be used as the (fixed) value.
  */
-export class LabelState extends StateTemplate {
+export class LabelState extends State {
   constructor (config) {
     config.readOnly = true;
     config.defaultValue = config.label;

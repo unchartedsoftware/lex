@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { bind } from 'decko';
+import { Bind } from 'lodash-decorators';
 import { Assistant } from '../../assistant';
 import TinyDatePicker from 'tiny-date-picker';
 import { ENTER, TAB, normalizeKey } from '../../../lib/keys';
@@ -37,14 +37,14 @@ export class DateTimeEntryAssistant extends Assistant {
   }
 
   get timezone () {
-    return this.machineState.template.timezone;
+    return this.machineState.timezone;
   }
 
   get format () {
-    return this.machineState.template.format;
+    return this.machineState.format;
   }
 
-  @bind
+  @Bind
   onValueChanged (newDate) {
     if (newDate) {
       // incoming date is in the target timezone, but TinyDatePicker wants the local timezone.
@@ -100,7 +100,7 @@ export class DateTimeEntryAssistant extends Assistant {
     }
   }
 
-  @bind
+  @Bind
   onArchivedRemoved (idx) {
     this.requestRemoveArchivedValue(idx);
   }

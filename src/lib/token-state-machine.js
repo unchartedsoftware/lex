@@ -10,16 +10,18 @@ const _currentState = new WeakMap();
  *
  * @private
  * @param {StateTemplate} rootStateTemplate - The DAG describing the states for this state machine.
- * @param {Object | undefined} values - A optional array of (boxed) values to apply to the machine's states (applied from the root state onward). If any value is an array, all but the final value are added to the `State` archive.
  */
 export class TokenStateMachine extends EventEmitter {
-  constructor (rootStateTemplate, values) {
+  constructor (rootStateTemplate) {
     super();
-    this._dispatchId = Math.random();
+    this._id = Math.random();
     const root = rootStateTemplate.getInstance();
     _rootState.set(this, root);
     _currentState.set(this, root);
-    this.bindValues(values, false);
+  }
+
+  get id () {
+    return this._id;
   }
 
   /**
@@ -56,16 +58,20 @@ export class TokenStateMachine extends EventEmitter {
    */
   async bindValues (values, finalTransition = false) {
     try {
-      this.reset();
       // bind to states
       if (values !== undefined) {
         const copy = Object.assign(Object.create(null), values);
         while (Object.keys(copy).length > 0) {
-          await this.state.doInitialize(this.boxedValue);
           const v = copy[this.state.vkey];
           if (v === undefined) {
+            await this.state.doInitialize(this.boxedValue);
             break; // we're missing a value for the current state, so break out.
           } else if (Array.isArray(v)) {
+            if (v.length > 0 && typeof v[0] === 'object') {
+              await this.state.doInitialize(this.boxedValue, v.map(e => this.state.unboxValue(e)));
+            } else {
+              await this.state.doInitialize(this.boxedValue, v);
+            }
             for (const x of v) {
               if (typeof x === 'object') {
                 this.state.value = x;
@@ -76,8 +82,10 @@ export class TokenStateMachine extends EventEmitter {
             }
             this.state.unarchiveValue(); // make the last value the "active" one
           } else if (typeof v === 'object') {
+            await this.state.doInitialize(this.boxedValue, [this.state.unboxValue(v)]);
             this.state.value = v;
           } else {
+            await this.state.doInitialize(this.boxedValue, [v]);
             this.state.unboxedValue = v;
           }
           delete copy[this.state.vkey]; // we're done with this value
@@ -91,6 +99,8 @@ export class TokenStateMachine extends EventEmitter {
             }
           }
         }
+      } else {
+        await this.state.doInitialize(this.boxedValue);
       }
     } catch (bindErr) {
       bindErr.bindValues = values;
@@ -206,12 +216,12 @@ export class TokenStateMachine extends EventEmitter {
    * not the current state is valid, or has a parent. Leaves the value of the current state as-is,
    * permitting a potential transition back to this state after editing a previous one.
    *
-   * @param {StateTemplate | undefined} targetState - Target `StateTemplate` to rewind to (optional).
+   * @param {State | undefined} targetState - Target `State` to rewind to (optional).
    * @returns {State} The new current state.
    */
   rewind (targetState) {
-    const target = targetState !== undefined ? targetState : (this.state.parent !== undefined ? this.state.parent.template : this.state.template);
-    while (this.state.template !== target) {
+    const target = targetState !== undefined ? targetState : (this.state.parent !== undefined ? this.state.parent : this.state);
+    while (this.state !== target) {
       if (!this.state.parent) break;
       const oldState = this.state;
       // oldState.reset();
@@ -241,6 +251,7 @@ export class TokenStateMachine extends EventEmitter {
       s = s.parent;
     } while (s);
     _currentState.set(this, this.rootState);
+    this.state.doInitialize(this.boxedValue);
     this.emit('state changed', this.state, oldState);
     return this.state;
   }

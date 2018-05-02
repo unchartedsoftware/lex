@@ -10,28 +10,15 @@ const language = Lex
     name: 'Choose a field to search',
     // This is our list of options we are providing to the user to select from
     // we can return a promise from this method as well to support network requests
-    options: function (hint = '', context) { // eslint-disable-line no-unused-vars
-      // It is up to us to filter our options based on the provided hint, we are using
-      // a simple check for if our option label contains the current hint
-      function optionMatchesHint (option) {
-        return option.key.toLowerCase().indexOf(hint.toLowerCase()) > -1;
-      }
-
-      // Return a list of options for the user to pick from
-      return [
-        new OptionStateOption('Age'),
-        new OptionStateOption('Height'),
-        new OptionStateOption('Weight')
-      ].filter(optionMatchesHint);
-    },
+    options: [
+      new OptionStateOption('Age'),
+      new OptionStateOption('Height'),
+      new OptionStateOption('Weight')
+    ],
     icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
   })
-  // Now that we have selected an option from the available list we need to provide target
-  // states that we can transition to
-  .branch(
-    // We want to let the user supply a valid number value so lets branch to a numeric entry state
-    Lex.from('value', NumericEntryState)
-  );
+  // We want to let the user supply a valid number value so lets chain a numeric entry state
+  .to('value', NumericEntryState);
 
 // Now that we have a language defined we can initialize our lex instance
 const lex = new Lex({

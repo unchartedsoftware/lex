@@ -1,5 +1,5 @@
 import { h } from 'preact';
-import { bind } from 'decko';
+import { Bind } from 'lodash-decorators';
 import { Builder } from '../../builder';
 import { TAB, ENTER, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
 
@@ -51,7 +51,7 @@ export class DateTimeEntryBuilder extends Builder {
     }
   }
 
-  @bind
+  @Bind
   handleKeyDown (e) {
     let consumed = true;
     const nothingEntered = e.target.value === undefined || e.target.value === null || e.target.value.length === 0;
@@ -95,7 +95,7 @@ export class DateTimeEntryBuilder extends Builder {
     }
   }
 
-  @bind
+  @Bind
   handleInput (e) {
     // assign typedText without re-rendering
     this.state.typedText = e.target.value;
@@ -114,14 +114,14 @@ export class DateTimeEntryBuilder extends Builder {
     }
   }
 
-  @bind
+  @Bind
   clearPreview () {
     this.setState({
       previewText: ''
     });
   }
 
-  @bind
+  @Bind
   beforeTransition () {
     this.commitTypedValue();
     if (this.state.typedText === undefined || this.state.typedText === null || this.state.typedText.length === 0) {
@@ -131,7 +131,7 @@ export class DateTimeEntryBuilder extends Builder {
     }
   }
 
-  @bind
+  @Bind
   onValueChanged (_1, _2, newUnboxedValue) {
     if (newUnboxedValue !== null && newUnboxedValue !== undefined) {
       this.setState({
@@ -140,7 +140,7 @@ export class DateTimeEntryBuilder extends Builder {
     }
   }
 
-  @bind
+  @Bind
   onPreviewValueChanged (_1, _2, newUnboxedPreviewValue) {
     if (newUnboxedPreviewValue !== this.state.previewText) {
       this.setState({
@@ -177,7 +177,7 @@ export class DateTimeEntryBuilder extends Builder {
             onKeyUp={this.handleKeyUp}
             onMouseDown={this.clearPreview}
             value={typedText}
-            placeholder={machineState.template.format}
+            placeholder={machineState.format}
             onInput={this.handleInput}
             onFocus={this.requestFocus}
             onPaste={this.onPaste}

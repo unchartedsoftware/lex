@@ -10,20 +10,11 @@ const language = Lex
     name: 'Choose a field to search',
     // This is our list of options we are providing to the user to select from
     // we can return a promise from this method as well to support network requests
-    options: function (hint = '', context) { // eslint-disable-line no-unused-vars
-      // It is up to us to filter our options based on the provided hint, we are using
-      // a simple check for if our option label contains the current hint
-      function optionMatchesHint (option) {
-        return option.key.toLowerCase().indexOf(hint.toLowerCase()) > -1;
-      }
-
-      // Return a list of options for the user to pick from
-      return [
-        new OptionStateOption('Age', { type: 'age' }),
-        new OptionStateOption('Height', { type: 'height' }),
-        new OptionStateOption('Weight', { type: 'weight' })
-      ].filter(optionMatchesHint);
-    },
+    options: [
+      new OptionStateOption('Age', { type: 'age' }),
+      new OptionStateOption('Height', { type: 'height' }),
+      new OptionStateOption('Weight', { type: 'weight' })
+    ],
     icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
   })
   // Now that we have selected an option from the available list we need to provide target

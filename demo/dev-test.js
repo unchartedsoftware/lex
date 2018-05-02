@@ -4,22 +4,38 @@ import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationSta
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import '../node_modules/tiny-date-picker/tiny-date-picker.css';
 
+// This array and the following two functions are simulations of a back-end API for fetching options
+const options = [
+  new OptionStateOption('Name', {type: 'string'}),
+  new OptionStateOption('Income', {type: 'currency'}),
+  new OptionStateOption('Keywords', {type: 'multistring'}),
+  new OptionStateOption('Date', {type: 'datetime'}),
+  new OptionStateOption('GeoHash', {type: 'geohash'}, {hidden: true})
+];
+
+function fetchSpecificOptions (query) {
+  return new Promise((resolve) => {
+    const lookup = new Map();
+    query.forEach(v => lookup.set(v.toLowerCase(), true));
+    // This simulates a network call for options (your API should filter based on the hint/context)
+    setTimeout(() => {
+      resolve(options.filter(o => lookup.has(o.key.toLowerCase())));
+    }, 25);
+  });
+}
+
+function searchOptions (hint) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(options.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
+    }, 25);
+  });
+}
+
 const language = Lex.from('field', OptionState, {
   name: 'Choose a field to search',
-  options: function (hint = '', context) { // eslint-disable-line no-unused-vars
-    // This simulates a network call for options (your API should filter based on the hint/context)
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          new OptionStateOption('Name', {type: 'string'}),
-          new OptionStateOption('Income', {type: 'currency'}),
-          new OptionStateOption('Keywords', {type: 'multistring'}),
-          new OptionStateOption('Date', {type: 'datetime'}),
-          new OptionStateOption('GeoHash', {type: 'geohash'}, {hidden: true})
-        ].filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
-      }, 25);
-    });
-  },
+  options: searchOptions,
+  fetchOptions: fetchSpecificOptions,
   icon: (value) => {
     if (!value) return '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>';
     switch (value.key) {
@@ -71,7 +87,13 @@ const lex = new Lex({
   language: language,
   placeholder: 'Start typing to search...',
   defaultValue: [],
-  tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>'
+  tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>',
+  onAcceptSuggestion: (s) => {
+    return s;
+  },
+  onRejectSuggestion: (s) => { // eslint-disable-line no-unused-vars
+    return true;
+  }
 });
 
 lex.render(document.getElementById('LexContainer'));
@@ -90,11 +112,16 @@ window.setQuery = async function () {
     await lex.setQuery([
       {field: 'Name', relation: 'is like', value: 'Sean'},
       {field: 'Income', relation: 'equals', value: '12'},
-      {field: 'Keywords', value: ['Rob', 'Phil', 'two', 'three']},
+      {field: 'Keywords', value: ['Rob', 'Phil', 'two']},
       {field: 'GeoHash', value: 'geohash things'}
     ]);
+    // await lex.setQuery([
+    //   {field: options[0], relation: new OptionStateOption('is like'), value: new OptionStateOption('Sean')},
+    //   {field: options[1], relation: new OptionStateOption('equals'), value: new OptionStateOption('12')}
+    // ]);
   } catch (err) {
     console.log('Something went wrong');
+    console.error(err);
   }
 };
 window.setSuggestions = function () {

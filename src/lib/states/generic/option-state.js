@@ -1,4 +1,4 @@
-import { StateTemplate } from '../../state';
+import { State } from '../../state';
 
 const _key = new WeakMap();
 const _shortKey = new WeakMap();
@@ -46,11 +46,11 @@ export class OptionStateOption {
 const _initialOptions = new WeakMap();
 const _options = new WeakMap();
 const _refreshOptions = new WeakMap();
+const _fetchOptions = new WeakMap();
 const _lastRefresh = new WeakMap();
 const _allowUnknown = new WeakMap();
 const _units = new WeakMap();
 const _suggestionLimit = new WeakMap();
-const _suggestionCache = new WeakMap();
 
 /**
  * A state representing the selection of an option from a list of options.
@@ -63,13 +63,14 @@ const _suggestionCache = new WeakMap();
  * This class is an `EventEmitter` and exposes the following events (in addition to `State`'s events):
  * - `on('options changed', (newOptions, oldOptions) => {})` when the internal list of options changes.
  *
- * @param {Object} config - A configuration object. Inherits all options from `StateTemplate`, and adds the following:
- * @param {Option[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If a function is supplied, it will execute in the scope of this `OptionState`, allowing access to its instance methods.
+ * @param {Object} config - A configuration object. Inherits all options from `State`, and adds the following:
+ * @param {OptionStateOption[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If a function is supplied (`async (hint, context) => OptionStateOption[]`), it will execute in the scope of this `OptionState`, allowing access to its instance methods.
+ * @param {AsyncFunction | undefined} config.fetchOptions - An optional function which can be supplied as a mechanism for fetching specific options more efficiently than fetching via a hint. Function signature is identical to config.options, but takes an array of unformatted unboxed values instead of a hint (`async (unformattedUnboxedValues, context) => OptionStateOption[]`)
  * @param {boolean | undefined} config.allowUnknown - Allow user to enter unknown options by entering custom values. Defaults to false.
  * @param {number | undefined} config.suggestionLimit - A limit on the number of options that will be shown at one time. Defaults to 10.
  * @param {string} config.units - A textual label which represents "units" for the option state (will display to the right of the builder)
  */
-export class OptionState extends StateTemplate {
+export class OptionState extends State {
   constructor (config) {
     const origValidate = config.validate;
     config.validate = (thisVal, thisArchive) => {
@@ -96,6 +97,13 @@ export class OptionState extends StateTemplate {
       _refreshOptions.set(this, (hint = '') => {
         return _initialOptions.get(this).filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) === 0);
       });
+      _fetchOptions.set(this, (unformattedUnboxedValues = []) => {
+        const lookup = new Map();
+        unformattedUnboxedValues.forEach(v => lookup.set(v.toLowerCase(), true));
+        return _initialOptions.get(this).filter(o => {
+          return lookup.has(o.key.toLowerCase());
+        });
+      });
     } else {
       _refreshOptions.set(this, async (hint = '', context = []) => {
         try {
@@ -105,6 +113,18 @@ export class OptionState extends StateTemplate {
           throw err;
         }
       });
+      if (!config.fetchOptions) {
+        throw new Error('Async options supplied to OptionState without a fetchOptions function (which is required).');
+      } else {
+        _fetchOptions.set(this, async (unformattedUnboxedValues = [], context = []) => {
+          try {
+            return config.fetchOptions.call(this, unformattedUnboxedValues, context);
+          } catch (err) {
+            console.error('Could not fetch list of supplied options for validation.'); // eslint-disable-line no-console
+            throw err;
+          }
+        });
+      }
     }
     _units.set(this, config.units);
     _allowUnknown.set(this, config.allowUnknown);
@@ -114,7 +134,7 @@ export class OptionState extends StateTemplate {
   /**
    * Getter for `options`.
    *
-   * @returns {Array[Option]} - The list of options to select from.
+   * @returns {Array[OptionStateOption]} - The list of options to select from.
    */
   get options () {
     return _options.get(this);
@@ -123,7 +143,7 @@ export class OptionState extends StateTemplate {
   /**
    * Setter for `options`.
    *
-   * @param {Option[]} newOptions - A new set of options for this selector.
+   * @param {OptionStateOption[]} newOptions - A new set of options for this selector.
    */
   set options (newOptions) {
     if (this.options !== newOptions) {
@@ -216,21 +236,35 @@ export class OptionState extends StateTemplate {
   }
 
   /**
-   * Perform any asynchronous operations required to initialize this `State`.
+   * Perform any asynchronous operations required to initialize a `State`s instanced from this `StateTemplate`.
    *
    * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
+   * @param {string[], undefined} initialUnboxedValues - The initial unboxed values which will be bound to this `State`.
    * @returns {Promise} A `Promise` which resolves when initialize completes successfully, rejecting otherwise.
    */
-  async initialize (context = []) {
+  async initialize (context = {}, initialUnboxedValues = []) {
     await super.initialize();
-    await this.refreshOptions(this.unformatUnboxedValue(''), context);
-    if (!this.allowUnknown && this.options.length === 0) throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
+    if (initialUnboxedValues.length > 0) {
+      await this.fetchOptions(initialUnboxedValues.map(v => this.unformatUnboxedValue(v)), context);
+      if (!this.allowUnknown && this.options.length !== initialUnboxedValues.length) {
+        throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but could not fetch matching options for initial values: [${initialUnboxedValues.join(',')}].`);
+      }
+    } else {
+      await this.refreshOptions('', context);
+      if (!this.allowUnknown && this.options.length === 0) {
+        throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
+      }
+    }
   }
 
   reset () {
     super.reset();
-    _suggestionCache.delete(this);
     _options.set(this, []);
+  }
+
+  async fetchOptions (unformattedUnboxedValues = [], context = {}) {
+    const newOptions = await _fetchOptions.get(this)(unformattedUnboxedValues, context);
+    this.options = newOptions;
   }
 
   /**
@@ -239,15 +273,14 @@ export class OptionState extends StateTemplate {
    *
    * @param {string | undefined} hint - What the user has typed, if anything, converted to a key by unformatUnboxedValue.
    * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
-   * @param {any[]} archive - The current archive of values within this state.
    * @returns {Promise} Resolves with the new list of options.
    */
-  async refreshOptions (hint = '', context = {}, archive = []) {
-    if (hint === null) console.error('hint cannot be null in refreshOptions - perhaps unformatUnboxedValue returned null?'); // eslint-disable-line no-console
+  async refreshOptions (hint = '', context = {}) {
+    if (hint === null) console.error('hint cannot be null in refreshOptions - perhaps unformatUnboxedValue returned null?');
     if (_refreshOptions.has(this)) {
       // start lookup
       _lastRefresh.set(this, hint);
-      const newOptions = await _refreshOptions.get(this)(hint, context, archive);
+      const newOptions = await _refreshOptions.get(this)(hint, context);
       if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
       // If user-created values are allowed, and this is a multi-value state,
       // then add in an option for what the user has typed as long as what
@@ -258,7 +291,7 @@ export class OptionState extends StateTemplate {
         }
       }
       this.options = newOptions;
-      return _suggestionCache.get(this);
+      return this.options;
     }
   }
 }

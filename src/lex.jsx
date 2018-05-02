@@ -3,7 +3,7 @@ import './style/lex.scss';
 import { h, render } from 'preact';
 import EventEmitter from 'wolfy87-eventemitter';
 import { StateTransitionError, NoStateAssistantTypeError, NoStateBuilderTypeError } from './lib/errors';
-import { StateTemplate } from './lib/state';
+import { State, StateTemplate } from './lib/state';
 import { StateBuilderFactory } from './lib/state-builder-factory';
 import { TransitionFactory } from './lib/transition-factory';
 import { SearchBar } from './components/search-bar';
@@ -34,6 +34,8 @@ const _tokenXIcon = new WeakMap();
 const _multivalueDelimiterKey = new WeakMap();
 const _multivaluePasteDelimiter = new WeakMap();
 const _cssClass = new WeakMap();
+const _onAcceptSuggestion = new WeakMap();
+const _onRejectSuggestion = new WeakMap();
 
 /**
  * Lex - A micro-framework for building search bars.
@@ -54,6 +56,8 @@ const _cssClass = new WeakMap();
  * @param {number} config.multivalueDelimiterKey - The JS key code of the delimiter which will notionally 'separate' multiple values in any visual representation of a multivalue state. 188 (',') by default.
  * @param {string[]} config.multivaluePasteDelimiter - The characters which are supported as delimiters text which is pasted into a multivalue state. ',' by default.
  * @param {string[]} config.cssClass - Add unique classes to the lex search bar and associated assistant
+ * @param {function | undefined} config.onAcceptSuggestion - A callback called when the user presses "add" on a suggestion. A no-op by default (`(s, idx) => s`) but, if supplied, can be used to transform the incoming boxed suggestion, perform additional actions, etc. Return `null` to stop Lex from updating suggestions and query automatically, or return the suggestion (or a transformed version) to allow Lex to handle the rest.
+ * @param {function | undefined} config.onRejectSuggestion - A callback called when the user presses "x" on a suggestion. A no-op by default (`(s, idx) => true`) but, if supplied, can be used to perform additional actions or stop Lex from auto-updating the suggestions and query (by returning `false`)
  * @example
  * // Instantiate a new instance of lex and bind it to the page.
  * const lex = new Lex(language);
@@ -73,11 +77,13 @@ class Lex extends EventEmitter {
       tokenXIcon = '&times;',
       multivalueDelimiterKey = KEYS.COMMA,
       multivaluePasteDelimiter = ',',
-      cssClass = []
+      cssClass = [],
+      onAcceptSuggestion = (s) => s,
+      onRejectSuggestion = () => true
     } = config;
     super();
     // TODO throw if language is not instanceof StateTemplate
-    if (language.root.isBindOnly) throw new Error('Root StateTemplate of language cannot be bind-only.');
+    if (language.getInstance().root.isBindOnly) throw new Error('Root StateTemplate of language cannot be bind-only.');
     _language.set(this, language.root);
     _placeholder.set(this, placeholder);
     _builders.set(this, new StateBuilderFactory());
@@ -98,6 +104,8 @@ class Lex extends EventEmitter {
     }
     proxiedEvents.forEach(e => _proxiedEvents.get(this).set(e, true));
     _cssClass.set(this, cssClass);
+    _onAcceptSuggestion.set(this, onAcceptSuggestion);
+    _onRejectSuggestion.set(this, onRejectSuggestion);
   }
 
   /**
@@ -128,9 +136,9 @@ class Lex extends EventEmitter {
    * Define a new search language.
    *
    * @param {string} vkey - The (optional) unique key used to store this state's value within a `Token` output object. If not supplied, this state won't be represented in the `Token` value.
-   * @param {StateTemplate} StateTemplateClass - The root state - must be a class which extends `StateTemplate`.
-   * @param {Object} config - Construction parameters for the root `StateTemplate` class.
-   * @returns {StateTemplate} A reference to the new root `State`, for chaining purposes to `.addChild()`.
+   * @param {State} StateKlass - The root state - must be a class which extends `State`.
+   * @param {Object} config - Construction parameters for the root `State` class.
+   * @returns {StateTemplate} A reference to the new root `StateTemplate`, for chaining purposes to `.addChild()`.
    * @example
    * import { Lex } from 'lex';
    * Lex.from('field', OptionState, {
@@ -141,17 +149,17 @@ class Lex extends EventEmitter {
    *   ]
    * }).to(...).to(...) // to() has the same signature as from()
    */
-  static from (vkey, StateTemplateClass, config = {}) {
+  static from (vkey, StateKlass, config = {}) {
     // vkey is optional, so we have to jump through some hoops
-    let Klass = StateTemplateClass;
+    let Klass = StateKlass;
     let confObj = config;
     if (typeof vkey === 'string') {
       confObj.vkey = vkey;
     } else {
       Klass = vkey;
-      confObj = StateTemplateClass;
+      confObj = StateKlass;
     }
-    return new Klass(confObj);
+    return new StateTemplate(Klass, confObj);
   }
 
   /**
@@ -177,6 +185,8 @@ class Lex extends EventEmitter {
         multivaluePasteDelimiter={_multivaluePasteDelimiter.get(this)}
         onQueryChanged={(...args) => this.emit('query changed', ...args)}
         onSuggestionsChanged={(...args) => this.emit('suggestions changed', ...args)}
+        onAcceptSuggestion={_onAcceptSuggestion.get(this)}
+        onRejectSuggestion={_onRejectSuggestion.get(this)}
         onValidityChanged={(...args) => this.emit('validity changed', ...args)}
         onStartToken={() => this.emit('token start')}
         onEndToken={() => this.emit('token end')}
@@ -198,10 +208,12 @@ class Lex extends EventEmitter {
 
   /**
    * Completely reset the search state.
+   *
+   * @param {boolean} shouldFireChangeEvent - If false, suppresses associated `'query changed' event. Defaults to true.
    */
-  reset () {
+  reset (shouldFireChangeEvent = true) {
     if (this.searchBar) {
-      this.searchBar.setValue(_defaultValue.get(this));
+      this.searchBar.setValue(_defaultValue.get(this), shouldFireChangeEvent);
     }
   }
 
@@ -209,11 +221,12 @@ class Lex extends EventEmitter {
    * Suggestion tokens.
    *
    * @param {Object[]} suggestions - One or more token values (an array of objects of boxed or unboxed values) to display as "suggestions" in the search bar. Will have different styling than a traditional token, and offer the user an "ADD" button they can use to lock the preview token into their query.
+   * @param {boolean} shouldFireChangeEvent - If false, suppresses associated `'query changed'` event. Defaults to true.
    * @returns {Promise} Resolves when the attempt to rewrite the query is finished. This is `async` due to the fact that `State`s such as `OptionState`s might retrieve their options asynchronously.
    */
-  async setSuggestions (suggestions) {
+  async setSuggestions (suggestions, shouldFireChangeEvent = true) {
     if (this.searchBar) {
-      return this.searchBar.setSuggestions(suggestions);
+      return this.searchBar.setSuggestions(suggestions, shouldFireChangeEvent);
     }
   }
 
@@ -230,11 +243,12 @@ class Lex extends EventEmitter {
    * Rewrite the query.
    *
    * @param {Object[]} query - One or more token values (an array of objects of boxed or unboxed values) to display to overwrite the current query with.
+   * @param {boolean} shouldFireChangeEvent - If false, suppresses associated `'query changed'` event. Defaults to true.
    * @returns {Promise} Resolves when the attempt to rewrite the query is finished. This is `async` due to the fact that `State`s such as `OptionState`s might retrieve their options asynchronously.
    */
-  async setQuery (query) {
+  async setQuery (query, shouldFireChangeEvent = true) {
     if (this.searchBar) {
-      return this.searchBar.setValue(query);
+      return this.searchBar.setValue(query, shouldFireChangeEvent);
     }
   }
 }
@@ -246,7 +260,7 @@ export {
   NoStateAssistantTypeError,
   NoStateBuilderTypeError,
   // base classes
-  StateTemplate,
+  State,
   TransitionFactory,
   // states
   LabelState,
