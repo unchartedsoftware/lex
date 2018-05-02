@@ -16,4 +16,17 @@ describe('State', () => {
       expect(result).to.equal('John');
     });
   });
+
+  describe('boxValue', () => {
+    it('Returns same value as provided', () => {
+      // Given
+      const config = {};
+      const state = new State(config);
+      const userVal = 'John';
+      // When
+      const result = state.boxValue(userVal);
+      // Then
+      expect(result).to.equal('John');
+    });
+  });
 });

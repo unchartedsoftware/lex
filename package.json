@@ -24,6 +24,7 @@
     "serve": "DEV_ONLY=true webpack-dev-server --config config/webpack.config.watch.js --open",
     "serve-demos": "DEV_ONLY=false webpack-dev-server --config config/webpack.config.watch.js --open",
     "test": "npm run lint && jest --coverage",
+    "tdd": "jest --watchAll",
     "lint": "eslint ./src",
     "prepublishOnly": "npm run build",
     "docs": "documentation build --config documentation.yml src/lex.jsx -f html -o docs",
