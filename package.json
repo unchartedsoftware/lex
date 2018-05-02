@@ -90,7 +90,6 @@
     "if-env": "1.0.0",
     "identity-obj-proxy": "3.0.0",
     "jest": "22.4.3",
-    "simulant": "0.2.2",
     "preact": "8.2.7",
     "preact-compat": "3.18.0",
     "preact-test-utils": "0.1.3",
