@@ -114,7 +114,7 @@ describe('OptionState', () => {
       const unboxed = optionState.unboxValue(boxed);
       const result = optionState.boxValue(unboxed);
       // Then
-      expect(result).to.equal(boxed);
+      expect(result).to.deep.equal(boxed);
     });
 
     it('unbox -> box -> unbox returns first unboxed result', () => {
@@ -133,7 +133,7 @@ describe('OptionState', () => {
       const boxed = optionState.boxValue(unboxed);
       const result = optionState.unboxValue(boxed);
       // Then
-      expect(result).to.equal(unboxed);
+      expect(result).to.deep.equal(unboxed);
     });
   });
 });
