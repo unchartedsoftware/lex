@@ -29,4 +29,46 @@ describe('State', () => {
       expect(result).to.equal('John');
     });
   });
+
+  describe('isValid', () => {
+    it('Uses default validate function to always return true', () => {
+      // Given
+      const config = {
+        defaultValue: 'foo'
+      };
+      const state = new State(config);
+      // When
+      const result = state.isValid;
+      // Then
+      expect(result).to.be.true;
+    });
+
+    it('Uses validate function provided via config', () => {
+      // Given
+      const config = {
+        defaultValue: 'foo',
+        validate: (value, archive) => false // eslint-disable-line no-unused-vars
+      };
+      const state = new State(config);
+      // When
+      const result = state.isValid;
+      // Then
+      expect(result).to.be.false;
+    });
+
+    it('Throws error if provided validation function throws an error', () => {
+      // Given
+      const config = {
+        defaultValue: 'foo',
+        validate: (value, archive) => { // eslint-disable-line no-unused-vars
+          throw new TypeError('test validation error');
+        }
+      };
+      const state = new State(config);
+      // When
+      const valFn = () => state.isValid;
+      // Then
+      expect(valFn).to.throw(TypeError);
+    });
+  });
 });
