@@ -136,4 +136,82 @@ describe('OptionState', () => {
       expect(result).to.deep.equal(unboxed);
     });
   });
+
+  describe('isValid', () => {
+    it('Returns false when validation function provided via config returns false', () => {
+      // Given
+      const config = {
+        validate: (value, archive) => false // eslint-disable-line no-unused-vars
+      };
+      const optionState = new OptionState(config);
+      // Then
+      expect(optionState.isValid).to.be.false;
+    });
+
+    // Fails, should it be working?
+    // it('Returns true when validation function provided via config returns true', () => {
+    //   // Given
+    //   const config = {
+    //     validate: (value, archive) => true // eslint-disable-line no-unused-vars
+    //   };
+    //   const optionState = new OptionState(config);
+    //   // Then
+    //   expect(optionState.isValid).to.be.true;
+    // });
+
+    it('Using default validation, returns false when value is null', () => {
+      // Given
+      const config = {};
+      const optionState = new OptionState(config);
+      optionState.value = null;
+      // Then
+      expect(optionState.isValid).to.be.false;
+    });
+
+    it('Using default validation, returns false when value is undefined', () => {
+      // Given
+      const config = {};
+      const optionState = new OptionState(config);
+      optionState.value = undefined;
+      // Then
+      expect(optionState.isValid).to.be.false;
+    });
+
+    it('Using default validation, returns true when allowUknown is true and value is defined and not a dupe', () => {
+      // Given
+      const config = {
+        allowUnknown: true
+      };
+      const optionState = new OptionState(config);
+      optionState.value = new OptionStateOption('Age');
+      // Then
+      expect(optionState.isValid).to.be.true;
+    });
+
+    it('Using default validation, returns true when value matches an option by key', () => {
+      // Given
+      const config = {};
+      const optionState = new OptionState(config);
+      optionState.options = [
+        new OptionStateOption('First Name'),
+        new OptionStateOption('Last Name')
+      ];
+      optionState.value = new OptionStateOption('First Name');
+      // Then
+      expect(optionState.isValid).to.be.true;
+    });
+
+    it('Using default validation, returns false when value does not match an option by key and allowUknown is false', () => {
+      // Given
+      const config = {};
+      const optionState = new OptionState(config);
+      optionState.options = [
+        new OptionStateOption('First Name'),
+        new OptionStateOption('Last Name')
+      ];
+      optionState.value = new OptionStateOption('Age');
+      // Then
+      expect(optionState.isValid).to.be.false;
+    });
+  });
 });
