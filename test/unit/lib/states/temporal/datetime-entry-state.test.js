@@ -120,4 +120,37 @@ describe('DateTimeEntryState', () => {
       expect(result).to.equal(unboxed);
     });
   });
+
+  describe('isValid', () => {
+    it('Default validation returns false when value is null', () => {
+      // Given
+      const config = {};
+      const dateTimeEntryState = new DateTimeEntryState(config);
+      // When
+      dateTimeEntryState.value = null;
+      // Then
+      expect(dateTimeEntryState.isValid).to.be.false;
+    });
+
+    it('Default validation returns true when value is a date', () => {
+      // Given
+      const config = {};
+      const dateTimeEntryState = new DateTimeEntryState(config);
+      // When
+      dateTimeEntryState.value = new Date('2018-12-17');
+      // Then
+      expect(dateTimeEntryState.isValid).to.be.true;
+    });
+
+    // console warning from moment about not RFC date but validation still returns true
+    it('Default validation returns true when value is a date', () => {
+      // Given
+      const config = {};
+      const dateTimeEntryState = new DateTimeEntryState(config);
+      // When
+      dateTimeEntryState.value = 'foo';
+      // Then
+      expect(dateTimeEntryState.isValid).to.be.true;
+    });
+  });
 });
