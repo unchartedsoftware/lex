@@ -65,10 +65,8 @@ describe('State', () => {
         defaultValue: 'foo'
       };
       const state = new State(config);
-      // When
-      const result = state.isValid;
       // Then
-      expect(result).to.be.true;
+      expect(state.isValid).to.be.true;
     });
 
     it('Uses validate function provided via config', () => {
@@ -78,10 +76,8 @@ describe('State', () => {
         validate: (value, archive) => false // eslint-disable-line no-unused-vars
       };
       const state = new State(config);
-      // When
-      const result = state.isValid;
       // Then
-      expect(result).to.be.false;
+      expect(state.isValid).to.be.false;
     });
 
     it('Throws error if provided validation function throws an error', () => {
@@ -93,10 +89,8 @@ describe('State', () => {
         }
       };
       const state = new State(config);
-      // When
-      const valFn = () => state.isValid;
       // Then
-      expect(valFn).to.throw(TypeError);
+      expect(() => state.isValid).to.throw(TypeError);
     });
   });
 
