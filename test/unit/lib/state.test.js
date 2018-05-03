@@ -99,4 +99,58 @@ describe('State', () => {
       expect(valFn).to.throw(TypeError);
     });
   });
+
+  describe('archiveValue', () => {
+    it('Moves current value to archive and resets current value', () => {
+      // Given
+      const config = {};
+      const state = new State(config);
+      const someVal = 'bar';
+      state.value = someVal;
+      // When
+      state.archiveValue();
+      // Then
+      const archive = state.archive;
+      expect(archive.length).to.equal(1);
+      expect(archive[0]).to.equal(someVal);
+      expect(state.value).to.be.null;
+    });
+
+    it('Maintains multiple items in archive', () => {
+      // Given
+      const config = {};
+      const state = new State(config);
+      const someVal1 = 'foo';
+      const someVal2 = 'bar';
+      // When
+      state.value = someVal1;
+      state.archiveValue();
+      state.value = someVal2;
+      state.archiveValue();
+      // Then
+      const archive = state.archive;
+      expect(archive.length).to.equal(2);
+      expect(archive[0]).to.equal(someVal1);
+      expect(archive[1]).to.equal(someVal2);
+      expect(state.value).to.be.null;
+    });
+
+    it('Throws error if number of items in archive equals limit', () => {
+      // Given a state with a limit of 2 and 2 archived items
+      const config = {
+        multivalueLimit: 2
+      };
+      const state = new State(config);
+      const someVal1 = 'foo';
+      const someVal2 = 'bar';
+      const someVal3 = 'bat';
+      state.value = someVal1;
+      state.archiveValue();
+      state.value = someVal2;
+      state.archiveValue();
+      state.value = someVal3;
+      // Then attempting to archive one more exceeds limit
+      expect(state.archiveValue).to.throw(Error);
+    });
+  });
 });
