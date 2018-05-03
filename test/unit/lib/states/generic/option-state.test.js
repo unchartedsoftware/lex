@@ -177,7 +177,23 @@ describe('OptionState', () => {
       expect(optionState.isValid).to.be.false;
     });
 
-    it('Using default validation, returns true when allowUknown is true and value is defined and not a dupe', () => {
+    it('Using default validation, returns false when value already exists in archive', () => {
+      // Given a state with one value in archive
+      const config = {};
+      const optionState = new OptionState(config);
+      optionState.options = [
+        new OptionStateOption('First Name'),
+        new OptionStateOption('Last Name')
+      ];
+      optionState.value = new OptionStateOption('First Name');
+      optionState.archiveValue();
+      // When a value is set that is already in the archive
+      optionState.value = new OptionStateOption('First Name');
+      // Then it should be considered invalid
+      expect(optionState.isValid).to.be.false;
+    });
+
+    it('Using default validation, returns true when allowUknown is true and value is defined and not already in archive', () => {
       // Given
       const config = {
         allowUnknown: true
