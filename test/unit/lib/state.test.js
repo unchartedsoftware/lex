@@ -85,12 +85,12 @@ describe('State', () => {
       const config = {
         defaultValue: 'foo',
         validate: (value, archive) => { // eslint-disable-line no-unused-vars
-          throw new TypeError('test validation error');
+          throw new Error('test validation error');
         }
       };
       const state = new State(config);
       // Then
-      expect(() => state.isValid).to.throw(TypeError);
+      expect(() => state.isValid).to.throw(Error);
     });
   });
 
