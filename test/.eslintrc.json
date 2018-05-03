@@ -13,8 +13,7 @@
     "expect":     false,
     "click":      false,
     "type":      false,
-    "wait":       false,
-    "simulant":   false
+    "wait":       false
   },
   "rules": {
     "no-unused-expressions": "off"
