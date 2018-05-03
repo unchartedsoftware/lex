@@ -26,7 +26,7 @@ export class DateTimeEntryState extends State {
     if (moment.tz.zone(config.timezone) === null) throw new Error(`Timezone ${config.timezone} does not exist.`);
     super(config);
     _dateFormat.set(this, config.format);
-    _timeZone.set(this, config.timeZone);
+    _timeZone.set(this, config.timezone);
   }
 
   /**
