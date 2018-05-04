@@ -2,6 +2,7 @@ import { h } from 'preact';
 import { Bind } from 'lodash-decorators';
 import { Builder } from '../../builder';
 import { TAB, ENTER, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
+import { propsToState } from '../../../lib/util';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -34,12 +35,9 @@ export class DateTimeEntryBuilder extends Builder {
   }
 
   processProps (props) {
-    const { machineState } = props;
-    if (machineState !== this.state.machineState) {
-      this.setState({
-        typedText: machineState.unboxedValue
-      });
-    }
+    propsToState(this, props, [
+      {k: 'machineState', sk: 'typedText', transform: (v) => v.unboxedValue}
+    ]);
     return super.processProps(props);
   }
 
