@@ -23,7 +23,7 @@ export class SearchBar extends Component {
         after: (machineTemplate) => {
           this.setState({
             activeMachine: new TokenStateMachine(machineTemplate)
-          });
+          }, () => this.connectListeners);
         }
       },
       {k: 'builders'},
