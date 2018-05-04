@@ -1,175 +1,37 @@
 import { h, Component } from 'preact';
 import { Bind } from 'lodash-decorators';
 import { COMMA } from '../lib/keys';
+import { propsToState } from '../lib/util';
 /**
  * @private
  */
 export class Token extends Component {
-  constructor () {
-    super(arguments);
-    this.state = {
-      idx: undefined,
-      active: false,
-      focused: false,
-      flash: false,
-      suggestion: false,
-      machine: undefined,
-      builders: undefined,
-      stateArray: [],
-      tokenXIcon: '&times',
-      multivalueDelimiter: COMMA,
-      multivaluePasteDelimiter: ',',
-      requestFocus: () => {},
-      requestBlur: () => {},
-      requestEdit: () => {},
-      requestTransition: () => {},
-      requestArchive: () => {},
-      requestUnarchive: () => {},
-      requestRemoveArchivedValue: () => {},
-      requestRewind: () => {},
-      requestCancel: () => {},
-      requestAcceptSuggestion: () => {},
-      onEndToken: () => {},
-      onValidityChanged: () => {}
-    };
-  }
-
   processProps (props) {
-    const {
-      idx,
-      active,
-      flash,
-      suggestion,
-      machine,
-      builders,
-      tokenXIcon = '&times',
-      multivalueDelimiter = COMMA,
-      multivaluePasteDelimiter = ',',
-      requestRemoval = () => {},
-      requestFocus = () => {},
-      requestBlur = () => {},
-      requestEdit = () => {},
-      requestCancel = () => {},
-      requestTransition = () => {},
-      requestArchive = () => {},
-      requestUnarchive = () => {},
-      requestRemoveArchivedValue = () => {},
-      requestRewind = () => {},
-      requestAcceptSuggestion = () => {},
-      onEndToken = () => {},
-      onValidityChanged = () => {}
-    } = props;
-    if (idx !== this.state.idx) {
-      this.setState({
-        idx: idx
-      });
-    }
-    if (active !== this.state.active) {
-      this.setState({
-        active: active
-      });
-    }
-    if (flash !== this.state.flash) {
-      this.setState({
-        flash: flash
-      });
-    }
-    if (suggestion !== this.state.suggestion) {
-      this.setState({
-        suggestion: suggestion
-      });
-    }
-    if (machine !== this.state.machine) {
-      this.setState({
-        machine: machine
-      });
-      this.onStateChanged();
-    }
-    if (builders !== this.state.builders) {
-      this.setState({
-        builders: builders
-      });
-    }
-    if (tokenXIcon !== this.state.tokenXIcon) {
-      this.setState({
-        tokenXIcon: tokenXIcon
-      });
-    }
-    if (multivalueDelimiter !== this.state.multivalueDelimiter) {
-      this.setState({
-        multivalueDelimiter: multivalueDelimiter
-      });
-    }
-    if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {
-      this.setState({
-        multivaluePasteDelimiter: multivaluePasteDelimiter
-      });
-    }
-    if (requestTransition !== this.state.requestTransition) {
-      this.setState({
-        requestTransition: requestTransition
-      });
-    }
-    if (requestArchive !== this.state.requestArchive) {
-      this.setState({
-        requestArchive: requestArchive
-      });
-    }
-    if (requestUnarchive !== this.state.requestUnarchive) {
-      this.setState({
-        requestUnarchive: requestUnarchive
-      });
-    }
-    if (requestRemoveArchivedValue !== this.state.requestRemoveArchivedValue) {
-      this.setState({
-        requestRemoveArchivedValue: requestRemoveArchivedValue
-      });
-    }
-    if (requestRewind !== this.state.requestRewind) {
-      this.setState({
-        requestRewind: requestRewind
-      });
-    }
-    if (requestFocus !== this.state.requestFocus) {
-      this.setState({
-        requestFocus: requestFocus
-      });
-    }
-    if (requestBlur !== this.state.requestBlur) {
-      this.setState({
-        requestBlur: requestBlur
-      });
-    }
-    if (requestEdit !== this.state.requestEdit) {
-      this.setState({
-        requestEdit: requestEdit
-      });
-    }
-    if (requestCancel !== this.state.requestCancel) {
-      this.setState({
-        requestCancel: requestCancel
-      });
-    }
-    if (requestRemoval !== this.state.requestRemoval) {
-      this.setState({
-        requestRemoval: requestRemoval
-      });
-    }
-    if (requestAcceptSuggestion !== this.state.requestAcceptSuggestion) {
-      this.setState({
-        requestAcceptSuggestion: requestAcceptSuggestion
-      });
-    }
-    if (onEndToken !== this.state.onEndToken) {
-      this.setState({
-        onEndToken: onEndToken
-      });
-    }
-    if (onValidityChanged !== this.state.onValidityChanged) {
-      this.setState({
-        onValidityChanged: onValidityChanged
-      });
-    }
+    propsToState(this, props, [
+      {k: 'idx'},
+      {k: 'active'},
+      {k: 'flash'},
+      {k: 'suggestion'},
+      {k: 'machine', after: () => this.onStateChanged()},
+      {k: 'builders'},
+      {k: 'tokenXIcon', default: '&times'},
+      {k: 'multivalueDelimiter', default: COMMA},
+      {k: 'multivaluePasteDelimiter', default: ','},
+      {k: 'stateArray', default: []},
+      {k: 'requestTransition', default: () => true},
+      {k: 'requestArchive', default: () => true},
+      {k: 'requestUnarchive', default: () => true},
+      {k: 'requestRemoveArchivedValue', default: () => true},
+      {k: 'requestRewind', default: () => true},
+      {k: 'requestFocus', default: () => true},
+      {k: 'requestBlur', default: () => true},
+      {k: 'requestEdit', default: () => true},
+      {k: 'requestCancel', default: () => true},
+      {k: 'requestRemoval', default: () => true},
+      {k: 'requestAcceptSuggestion', default: () => true},
+      {k: 'onEndToken', default: () => true},
+      {k: 'onValidityChanged', default: () => true}
+    ]);
   }
 
   cleanupListeners () {

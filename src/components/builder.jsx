@@ -1,6 +1,7 @@
 import { Bind } from 'lodash-decorators';
 import { h, Component } from 'preact';
 import { COMMA } from '../lib/keys';
+import { propsToState } from '../lib/util';
 
 /**
  * An abstract superclass for a `Component` which can be
@@ -12,27 +13,6 @@ import { COMMA } from '../lib/keys';
  * // See OptionBuilder for an example implementation.
  */
 export class Builder extends Component {
-  constructor () {
-    super(arguments);
-    this.state = {
-      valid: true,
-      editing: false,
-      readOnly: false,
-      tokenActive: false,
-      multivalueDelimiter: COMMA,
-      multivaluePasteDelimiter: ',',
-      requestFocus: () => {},
-      requestBlur: () => {},
-      requestTransition: () => {},
-      requestArchive: () => {},
-      requestUnarchive: () => {},
-      requestRemoveArchivedValue: () => {},
-      requestRewind: () => {},
-      requestCancel: () => {},
-      validityChanged: () => {}
-    };
-  }
-
   /**
    * If overidden, must be called via `super.cleanupListeners()`.
    * Fires whenever the underlying machine or machine state changes.
@@ -87,117 +67,35 @@ export class Builder extends Component {
    * @param {Object} props - Incoming properties.
    */
   processProps (props) {
-    const {
-      editing,
-      tokenActive,
-      machine,
-      machineState,
-      requestTransition = () => {},
-      requestArchive = () => {},
-      requestUnarchive = () => {},
-      requestRemoveArchivedValue = () => {},
-      requestRewind = () => {},
-      readOnly,
-      blank,
-      focused,
-      multivalueDelimiter = COMMA,
-      multivaluePasteDelimiter = ',',
-      requestFocus = () => {},
-      requestBlur = () => {},
-      requestCancel = () => {},
-      validityChanged = () => {}
-    } = props;
-    if (editing !== this.state.editing) {
-      this.setState({
-        editing: editing
-      });
-    }
-    if (tokenActive !== this.state.tokenActive) {
-      this.setState({
-        tokenActive: tokenActive
-      });
-    }
-    if (machine !== this.state.machine) {
-      this.cleanupListeners();
-      this.setState({
-        machine: machine
-      });
-      this.connectListeners();
-    }
-    if (machineState !== this.state.machineState) {
-      this.cleanupListeners();
-      this.setState({
-        machineState: machineState
-      });
-      this.connectListeners();
-    }
-    if (readOnly !== this.state.readOnly) {
-      this.setState({
-        readOnly: readOnly
-      });
-    }
-    if (blank !== this.state.blank) {
-      this.setState({
-        blank: blank
-      });
-    }
-    if (requestTransition !== this.state.requestTransition) {
-      this.setState({
-        requestTransition: requestTransition
-      });
-    }
-    if (requestArchive !== this.state.requestArchive) {
-      this.setState({
-        requestArchive: requestArchive
-      });
-    }
-    if (requestUnarchive !== this.state.requestUnarchive) {
-      this.setState({
-        requestUnarchive: requestUnarchive
-      });
-    }
-    if (requestRemoveArchivedValue !== this.state.requestRemoveArchivedValue) {
-      this.setState({
-        requestRemoveArchivedValue: requestRemoveArchivedValue
-      });
-    }
-    if (requestRewind !== this.state.requestRewind) {
-      this.setState({
-        requestRewind: requestRewind
-      });
-    }
-    if (focused) {
+    propsToState(this, props, [
+      {k: 'valid', default: true},
+      {k: 'editing', default: false},
+      {k: 'readOnly', default: false},
+      {k: 'tokenActive', default: false},
+      {
+        k: 'machine',
+        before: () => this.cleanupListeners,
+        after: () => this.connectListeners
+      },
+      {
+        k: 'machineState',
+        before: () => this.cleanupListeners,
+        after: () => this.connectListeners
+      },
+      {k: 'multivalueDelimiter', default: COMMA},
+      {k: 'multivaluePasteDelimiter', default: ','},
+      {k: 'requestTransition', default: () => true},
+      {k: 'requestArchive', default: () => true},
+      {k: 'requestUnarchive', default: () => true},
+      {k: 'requestRemoveArchivedValue', default: () => true},
+      {k: 'requestRewind', default: () => true},
+      {k: 'requestFocus', default: () => true},
+      {k: 'requestBlur', default: () => true},
+      {k: 'requestCancel', default: () => true},
+      {k: 'validityChanged', default: () => true}
+    ]);
+    if (props.focused) {
       setTimeout(() => { this.focus(); });
-    }
-    if (multivalueDelimiter !== this.state.multivalueDelimiter) {
-      this.setState({
-        multivalueDelimiter: multivalueDelimiter
-      });
-    }
-    if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {
-      this.setState({
-        multivaluePasteDelimiter: multivaluePasteDelimiter
-      });
-    }
-    if (requestFocus !== this.state.requestFocus) {
-      this.setState({
-        requestFocus: requestFocus
-      });
-    }
-    if (requestBlur !== this.state.requestBlur) {
-      this.setState({
-        requestBlur: requestBlur
-      });
-    }
-    if (requestCancel !== this.state.requestCancel) {
-      this.setState({
-        requestCancel: requestCancel
-      });
-    }
-    if (validityChanged !== this.state.validityChanged) {
-      this.setState({
-        validityChanged: validityChanged
-      });
     }
   }
 
