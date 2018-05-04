@@ -6,6 +6,7 @@ import { StateTransitionError, ValueArchiveError } from '../lib/errors';
 import { Token } from './token';
 import { normalizeKey, COMMA } from '../lib/keys';
 import ElementResizeDetector from 'element-resize-detector';
+import { propsToState } from '../lib/util';
 
 const _erd = new WeakMap();
 
@@ -13,150 +14,45 @@ const _erd = new WeakMap();
  * @private
  */
 export class SearchBar extends Component {
-  constructor () {
-    super();
-    this.state = {
-      placeholder: undefined,
-      tokenValues: [],
-      suggestions: [],
-      builders: undefined,
-      machineTemplate: undefined,
-      machines: undefined,
-      active: false,
-      editing: false,
-      focused: false,
-      flashActive: false,
-      tokenXIcon: '&times',
-      cssClass: [],
-      multivalueDelimiter: COMMA,
-      multivaluePasteDelimiter: ',',
-      onQueryChanged: () => {},
-      onSuggestionsChanged: () => {},
-      onAcceptSuggestion: (s) => s,
-      onRejectSuggestion: () => true,
-      onValidityChanged: () => {},
-      onStartToken: () => {},
-      onEndToken: () => {},
-      proxiedEvents: new Map()
-    };
-  }
-
   processProps (props) {
-    const {
-      placeholder,
-      machineTemplate,
-      builders,
-      value = [],
-      suggestions = [],
-      proxiedEvents,
-      tokenXIcon = '&times;',
-      cssClass = [],
-      multivalueDelimiter = COMMA,
-      multivaluePasteDelimiter = ',',
-      onQueryChanged = () => {},
-      onSuggestionsChanged = () => {},
-      onAcceptSuggestion = (s) => s,
-      onRejectSuggestion = () => true,
-      onValidityChanged = () => {},
-      onStartToken = () => {},
-      onEndToken = () => {}
-    } = props;
-    if (placeholder !== this.state.placeholder) {
-      this.setState({
-        placeholder: placeholder
-      });
-    }
-    if (machineTemplate !== this.state.machineTemplate) {
-      this.cleanupListeners();
-      this.setState({
-        machineTemplate: machineTemplate,
-        activeMachine: new TokenStateMachine(machineTemplate)
-      });
-      this.connectListeners();
-    }
-    if (builders !== this.state.builders) {
-      this.setState({
-        builders: builders
-      });
-    }
-    if (value !== this.state.tokenValues) {
-      this.setState({
-        tokenValues: value.map(v => {
-          const m = new TokenStateMachine(this.state.machineTemplate);
-          m.bindValues(v);
-          return m;
-        }) // box incoming values
-      });
-    }
-    if (suggestions !== this.state.suggestions) {
-      this.setState({
-        suggestions: suggestions.map(v => {
-          const m = new TokenStateMachine(this.state.machineTemplate);
-          m.bindValues(v);
-          return m;
-        }) // box incoming values
-      });
-    }
-    if (onAcceptSuggestion !== this.state.onAcceptSuggestion) {
-      this.setState({
-        onAcceptSuggestion: onAcceptSuggestion
-      });
-    }
-    if (onRejectSuggestion !== this.state.onRejectSuggestion) {
-      this.setState({
-        onRejectSuggestion: onRejectSuggestion
-      });
-    }
-    if (onQueryChanged !== this.state.onQueryChanged) {
-      this.setState({
-        onQueryChanged: onQueryChanged
-      });
-    }
-    if (onSuggestionsChanged !== this.state.onSuggestionsChanged) {
-      this.setState({
-        onSuggestionsChanged: onSuggestionsChanged
-      });
-    }
-    if (onValidityChanged !== this.state.onValidityChanged) {
-      this.setState({
-        onValidityChanged: onValidityChanged
-      });
-    }
-    if (proxiedEvents !== this.state.proxiedEvents) {
-      this.setState({
-        proxiedEvents: proxiedEvents
-      });
-    }
-    if (tokenXIcon !== this.state.tokenXIcon) {
-      this.setState({
-        tokenXIcon: tokenXIcon
-      });
-    }
-    if (cssClass !== this.state.cssClass) {
-      this.setState({
-        cssClass: cssClass
-      });
-    }
-    if (multivalueDelimiter !== this.state.multivalueDelimiter) {
-      this.setState({
-        multivalueDelimiter: multivalueDelimiter
-      });
-    }
-    if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {
-      this.setState({
-        multivaluePasteDelimiter: multivaluePasteDelimiter
-      });
-    }
-    if (onStartToken !== this.state.onStartToken) {
-      this.setState({
-        onStartToken: onStartToken
-      });
-    }
-    if (onEndToken !== this.state.onEndToken) {
-      this.setState({
-        onEndToken: onEndToken
-      });
-    }
+    propsToState(this, props, [
+      {k: 'placeholder', default: ''},
+      {
+        k: 'machineTemplate',
+        before: () => this.cleanupListeners,
+        after: (machineTemplate) => {
+          this.setState({
+            activeMachine: new TokenStateMachine(machineTemplate)
+          });
+        }
+      },
+      {k: 'builders'},
+      {k: 'value', default: []},
+      {k: 'value', sk: 'tokenValues', default: []},
+      {
+        k: 'suggestions',
+        default: [],
+        transform: (iv) => {
+          return iv.map(v => {
+            const m = new TokenStateMachine(this.state.machineTemplate);
+            m.bindValues(v);
+            return m;
+          });
+        }
+      },
+      {k: 'onAcceptSuggestion', default: (s) => s},
+      {k: 'onRejectSuggestion', default: () => true},
+      {k: 'onQueryChanged', default: () => undefined},
+      {k: 'onSuggestionsChanged', default: () => undefined},
+      {k: 'onValidityChanged', default: () => undefined},
+      {k: 'proxiedEvents'},
+      {k: 'tokenXIcon', default: '&times'},
+      {k: 'cssClass', default: []},
+      {k: 'multivalueDelimiter', default: COMMA},
+      {k: 'multivaluePasteDelimiter', default: ','},
+      {k: 'onStartToken', default: () => undefined},
+      {k: 'onEndToken', default: () => undefined}
+    ]);
   }
 
   async setValue (newValue, shouldFireChangeEvent = true) {
