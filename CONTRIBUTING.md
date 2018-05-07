@@ -23,3 +23,7 @@ $ npm install
 - `npm run build`: Production-ready build
 
 - `npm run lint`: Pass JavaScript files using ESLint
+
+- `npm test`: Run tests with coverage
+
+- `npm run tdd`: Run tests in watch mode

@@ -23,15 +23,3 @@ The following co-requisites must be part of your JS build in order to use Lex:
 The following polyfills are required for use in IE and are not provided by this library:
 
 - Promise Polyfill
-
-Run tests with coverage:
-
-```bash
-npm test
-```
-
-Run tests in watch mode:
-
-```bash
-npm run tdd
-```
