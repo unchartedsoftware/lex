@@ -49,6 +49,7 @@ const _refreshOptions = new WeakMap();
 const _fetchOptions = new WeakMap();
 const _lastRefresh = new WeakMap();
 const _allowUnknown = new WeakMap();
+const _onUnknownOption = new WeakMap();
 const _units = new WeakMap();
 const _suggestionLimit = new WeakMap();
 
@@ -67,6 +68,7 @@ const _suggestionLimit = new WeakMap();
  * @param {OptionStateOption[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If a function is supplied (`async (hint, context) => OptionStateOption[]`), it will execute in the scope of this `OptionState`, allowing access to its instance methods.
  * @param {AsyncFunction | undefined} config.fetchOptions - An optional function which can be supplied as a mechanism for fetching specific options more efficiently than fetching via a hint. Function signature is identical to config.options, but takes an array of unformatted unboxed values instead of a hint (`async (unformattedUnboxedValues, context) => OptionStateOption[]`)
  * @param {boolean | undefined} config.allowUnknown - Allow user to enter unknown options by entering custom values. Defaults to false.
+ * @param {Function | undefined} config.onUnknownOption - Optional hook (`(OptionStateOption) => OptionStateOption`) which, when a user enters an unknown `OptionStateOption`, allows for augmentation with things like metadata. Must return a new `OptionStateOption`, since `OptionStateOption` is immutable.
  * @param {number | undefined} config.suggestionLimit - A limit on the number of options that will be shown at one time. Defaults to 10.
  * @param {string} config.units - A textual label which represents "units" for the option state (will display to the right of the builder)
  */
@@ -128,6 +130,11 @@ export class OptionState extends State {
     }
     _units.set(this, config.units);
     _allowUnknown.set(this, config.allowUnknown);
+    if (_allowUnknown.get(this) && typeof config.onUnknownOption === 'function') {
+      _onUnknownOption.set(this, config.onUnknownOption);
+    } else if (config.onUnknownOption !== undefined) {
+      throw new Error(`Cannot specify config.onUnknownOption in state ${this.name} when config.allowUnknown is false.`);
+    }
     _suggestionLimit.set(this, config.suggestionLimit);
   }
 
@@ -217,7 +224,11 @@ export class OptionState extends State {
     if (matches.length > 0) {
       return matches[0];
     } else if (this.allowUnknown) {
-      return new OptionStateOption(key, {});
+      if (_onUnknownOption.has(this)) {
+        return _onUnknownOption.get(this).call(this, new OptionStateOption(key, {}));
+      } else {
+        return new OptionStateOption(key, {});
+      }
     } else {
       if (!this.allowUnknown && this.options.length === 0) throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
       return null;
