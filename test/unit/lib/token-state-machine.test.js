@@ -27,7 +27,7 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.rootState.name).to.equal('Choose a field to search');
       expect(tokenStateMachine.rootState.vkey).to.equal('field');
 
-      // Given a valid initial state
+      // Given a valid initial state -> pick First Name option
       tokenStateMachine.rootState.options = [opt1, opt2];
       tokenStateMachine.rootState.value = opt1;
 
@@ -46,6 +46,8 @@ describe('TokenStateMachine', () => {
 
       // Expect to be in terminal state
       expect(tokenStateMachine.state.isTerminal).to.be.true;
+      expect(tokenStateMachine.value.field.key).to.equal('First Name');
+      expect(tokenStateMachine.value.value.key).to.equal('Joe');
     });
   });
 });
