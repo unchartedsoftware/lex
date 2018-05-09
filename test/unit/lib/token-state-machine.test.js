@@ -14,11 +14,11 @@ describe('TokenStateMachine', () => {
   describe('transition', () => {
     it('Walks a simple tree', () => {
       // Given a simple language
-      const opt1 = new OptionStateOption('First Name');
-      const opt2 = new OptionStateOption('Last Name');
+      const optFirstName = new OptionStateOption('First Name');
+      const optLastName = new OptionStateOption('Last Name');
       const language = lexFrom('field', OptionState, {
         name: 'Choose a field to search',
-        options: [opt1, opt2]
+        options: [optFirstName, optLastName]
       })
         .to('value', TextEntryState);
 
@@ -31,8 +31,8 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.rootState.vkey).to.equal('field');
 
       // Given a valid initial state -> pick First Name option
-      tokenStateMachine.rootState.options = [opt1, opt2];
-      tokenStateMachine.rootState.value = opt1;
+      tokenStateMachine.rootState.options = [optFirstName, optLastName];
+      tokenStateMachine.rootState.value = optFirstName;
 
       // When transition is invoked
       tokenStateMachine.transition();
@@ -41,13 +41,13 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.state.name).to.equal('Enter a value');
       expect(tokenStateMachine.state.vkey).to.equal('value');
 
-      // Ensure nextState is valid
+      // Given a value is entered
       tokenStateMachine.state.value = {key: 'Joe'};
 
       // When another transition is invoked
       tokenStateMachine.transition();
 
-      // Expect to be in terminal state
+      // Then expect to be in terminal state
       expect(tokenStateMachine.state.isTerminal).to.be.true;
       expect(tokenStateMachine.value.field.key).to.equal('First Name');
       expect(tokenStateMachine.value.value.key).to.equal('Joe');
@@ -55,12 +55,11 @@ describe('TokenStateMachine', () => {
 
     it('Walks a tree with branches', () => {
       // Given a language with branches
+      const optAge = new OptionStateOption('Age');
+      const optHeight = new OptionStateOption('Height');
       const language = lexFrom('field', OptionState, {
         name: 'Choose a field to search',
-        options: [
-          new OptionStateOption('Age'),
-          new OptionStateOption('Height')
-        ]
+        options: [optAge, optHeight]
       })
         .branch(
           lexFrom('relation', NumericRelationState)
@@ -77,6 +76,51 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.id).to.be.finite;
       expect(tokenStateMachine.rootState.name).to.equal('Choose a field to search');
       expect(tokenStateMachine.rootState.vkey).to.equal('field');
+
+      // Given a valid initial state -> pick Height option
+      tokenStateMachine.rootState.options = [optAge, optHeight];
+      tokenStateMachine.rootState.value = optHeight;
+
+      // When transition is invoked
+      tokenStateMachine.transition();
+
+      // Then verify current state
+      expect(tokenStateMachine.state.name).to.equal('Choose a numeric relation');
+      expect(tokenStateMachine.state.vkey).to.equal('relation');
+
+      // Given a relation has been chosen
+      tokenStateMachine.state.options = [{key: 'between', shortKey: 'between'}, {key: 'equals', shortKey: '='}];
+      tokenStateMachine.state.value = {key: 'between'};
+
+      // When another transition is invoked
+      tokenStateMachine.transition();
+
+      // Then verify current state
+      expect(tokenStateMachine.state.name).to.equal('Enter a value');
+      expect(tokenStateMachine.state.vkey).to.equal('value');
+
+      // Given a value is entered
+      tokenStateMachine.state.value = {key: 60};
+
+      // When another transition is invoked
+      tokenStateMachine.transition();
+
+      // Then verify current state
+      expect(tokenStateMachine.state.name).to.equal('Enter a value');
+      expect(tokenStateMachine.state.vkey).to.equal('secondaryValue');
+
+      // Given a secondary value is entered
+      tokenStateMachine.state.value = {key: 65};
+
+      // When another transition is invoked
+      tokenStateMachine.transition();
+
+      // Then expect to be in terminal state
+      expect(tokenStateMachine.state.isTerminal).to.be.true;
+      expect(tokenStateMachine.value.field.key).to.equal('Height');
+      expect(tokenStateMachine.value.relation.key).to.equal('between');
+      expect(tokenStateMachine.value.value.key).to.equal(60);
+      expect(tokenStateMachine.value.secondaryValue.key).to.equal(65);
     });
   });
 });
