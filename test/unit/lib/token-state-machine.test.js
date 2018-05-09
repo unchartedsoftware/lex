@@ -9,6 +9,7 @@ import { TextEntryState } from '../../../src/lib/states/text/text-entry-state';
 import { lexFrom } from '../../../src/lib/lex-util';
 import { TransitionFactory } from '../../../src/lib/transition-factory';
 import { LabelState } from '../../../src/lib/states/generic/label-state';
+import { TerminalState } from '../../../src/lib/states/generic/terminal-state';
 
 describe('TokenStateMachine', () => {
   describe('transition', () => {
@@ -121,6 +122,41 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.value.relation.key).to.equal('between');
       expect(tokenStateMachine.value.value.key).to.equal(60);
       expect(tokenStateMachine.value.secondaryValue.key).to.equal(65);
+    });
+
+    it('Transitions to terminal state for terminal option', () => {
+      // Given a language with a terminal option
+      const optName = new OptionStateOption('Name', {type: 'string'});
+      const optTerminal = new OptionStateOption('Terminal', {type: 'terminal'});
+      const language = lexFrom('field', OptionState, {
+        name: 'Choose a field to search',
+        // One option will immediately end the token, the other will not.
+        options: [optName, optTerminal]
+      })
+        .branch(
+          lexFrom('value', TextEntryState, TransitionFactory.optionMetaCompare({type: 'string'})),
+          lexFrom('terminal', TerminalState, TransitionFactory.optionMetaCompare({type: 'terminal'}))
+        );
+
+      // When machine is initialized with language root
+      const tokenStateMachine = new TokenStateMachine(language.root);
+
+      // Then verify expected root state
+      expect(tokenStateMachine.id).to.be.finite;
+      expect(tokenStateMachine.rootState.name).to.equal('Choose a field to search');
+      expect(tokenStateMachine.rootState.vkey).to.equal('field');
+
+      // Given a valid initial state -> pick Terminal option
+      tokenStateMachine.rootState.options = [optName, optTerminal];
+      tokenStateMachine.rootState.value = optTerminal;
+
+      // When transition is invoked
+      tokenStateMachine.transition();
+
+      // Then expect to be in terminal state
+      expect(tokenStateMachine.state.isTerminal).to.be.true;
+      expect(tokenStateMachine.value.field.key).to.equal('Terminal');
+      expect(tokenStateMachine.value.value).to.be.undefined;
     });
   });
 });
