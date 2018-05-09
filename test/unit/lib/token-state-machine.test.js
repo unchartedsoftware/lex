@@ -10,14 +10,14 @@ describe('TokenStateMachine', () => {
   describe('transition', () => {
     it('Walks a simple tree', () => {
       // Given
-      const opt1 = new OptionStateOption('First Name');
-      const opt2 = new OptionStateOption('Last Name');
-      const st = new StateTemplate(OptionState, {
+      const stateTemplate = new StateTemplate(OptionState, {
         name: 'Choose a field to search',
-        options: [ opt1, opt2 ],
+        options: [
+          new OptionStateOption('First Name'),
+          new OptionStateOption('Last Name') ],
         vkey: 'field'
       });
-      const language = st.to('value', TextEntryState);
+      const language = stateTemplate.to('value', TextEntryState);
       // When
       const tokenStateMachine = new TokenStateMachine(language.root);
       // Then
