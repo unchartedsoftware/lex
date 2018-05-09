@@ -5,3 +5,6 @@ node_modules
 /.cache
 /docs
 /coverage
+
+# vscode
+.nvm-node

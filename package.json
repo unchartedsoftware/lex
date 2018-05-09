@@ -28,7 +28,8 @@
     "lint": "eslint ./src",
     "prepublishOnly": "npm run build",
     "docs": "documentation build --config documentation.yml src/lex.jsx -f html -o docs",
-    "serve-docs": "documentation serve --config documentation.yml --watch src/lex.jsx"
+    "serve-docs": "documentation serve --config documentation.yml --watch src/lex.jsx",
+    "nvm": "~/.nvm/nvm-exec which node | xargs -J % ln -sf % ./.nvm-node && chmod +x ./.nvm-node"
   },
   "main": "dist/lex.js",
   "style": "dist/lex.css",
