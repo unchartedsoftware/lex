@@ -423,14 +423,14 @@ export class SearchBar extends Component {
   queryChanged (oldQueryValues = [], nextToken = false) {
     const newUnboxedValues = this.state.tokenValues.map(bv => bv.unboxedValue);
     const oldUnboxedValues = oldQueryValues.map(bv => bv.unboxedValue);
-    this.state.onQueryChanged(this.state.tokenValues.map(t => t.value), oldQueryValues, newUnboxedValues, oldUnboxedValues, nextToken);
+    this.state.onQueryChanged(this.state.tokenValues.map(t => t.value), oldQueryValues.map(t => t.value), newUnboxedValues, oldUnboxedValues, nextToken);
   }
 
   @Bind
   suggestionsChanged (oldSuggestionValues = []) {
     const newUnboxedValues = this.state.suggestions.map(bv => bv.unboxedValue);
     const oldUnboxedValues = oldSuggestionValues.map(bv => bv.unboxedValue);
-    this.state.onSuggestionsChanged(this.state.suggestions, oldSuggestionValues, newUnboxedValues, oldUnboxedValues);
+    this.state.onSuggestionsChanged(this.state.suggestions.map(t => t.value), oldSuggestionValues.map(t => t.value), newUnboxedValues, oldUnboxedValues);
   }
 
   render (props, {placeholder, active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, cssClass, multivalueDelimiter, multivaluePasteDelimiter}) {
