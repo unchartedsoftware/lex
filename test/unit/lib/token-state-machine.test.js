@@ -10,6 +10,7 @@ import { lexFrom } from '../../../src/lib/lex-util';
 import { TransitionFactory } from '../../../src/lib/transition-factory';
 import { LabelState } from '../../../src/lib/states/generic/label-state';
 import { TerminalState } from '../../../src/lib/states/generic/terminal-state';
+import { StateTransitionError } from '../../../src/lib/errors';
 
 describe('TokenStateMachine', () => {
   describe('transition', () => {
@@ -157,6 +158,41 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.state.isTerminal).to.be.true;
       expect(tokenStateMachine.value.field.key).to.equal('Terminal');
       expect(tokenStateMachine.value.value).to.be.undefined;
+    });
+
+    it('Does not transition when in an invalid state', () => {
+      // Given a language with a numeric option
+      const optAge = new OptionStateOption('Age');
+      const language = lexFrom('field', OptionState, {
+        name: 'Choose a field to search',
+        options: [optAge]
+      })
+        .to('value', NumericEntryState);
+
+      // When machine is initialized with language root
+      const tokenStateMachine = new TokenStateMachine(language.root);
+
+      // Then verify expected root state
+      expect(tokenStateMachine.id).to.be.finite;
+      expect(tokenStateMachine.rootState.name).to.equal('Choose a field to search');
+      expect(tokenStateMachine.rootState.vkey).to.equal('field');
+
+      // Given a valid initial state -> pick First Name option
+      tokenStateMachine.rootState.options = [optAge];
+      tokenStateMachine.rootState.value = optAge;
+
+      // When transition is invoked
+      tokenStateMachine.transition();
+
+      // Then verify current state
+      expect(tokenStateMachine.state.name).to.equal('Enter a value');
+      expect(tokenStateMachine.state.vkey).to.equal('value');
+
+      // Given an invalid value is entered
+      tokenStateMachine.state.value = {key: 'not a number'};
+
+      // Then will fail to transition
+      expect(tokenStateMachine.transition.bind(tokenStateMachine)).to.throw(StateTransitionError);
     });
   });
 });
