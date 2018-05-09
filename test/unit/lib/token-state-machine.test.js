@@ -195,4 +195,42 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.transition.bind(tokenStateMachine)).to.throw(StateTransitionError);
     });
   });
+
+  describe('rewind', () => {
+    it('Goes to previous state', () => {
+      // Given a language with branches
+      const optAge = new OptionStateOption('Age');
+      const optHeight = new OptionStateOption('Height');
+      const language = lexFrom('field', OptionState, {
+        name: 'Choose a field to search',
+        options: [optAge, optHeight]
+      })
+        .branch(
+          lexFrom('relation', NumericRelationState)
+            .branch(
+              lexFrom('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
+              lexFrom('value', NumericEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', NumericEntryState)
+            )
+        );
+
+      // Given entry of: Age between 5 and
+      const tokenStateMachine = new TokenStateMachine(language.root);
+      tokenStateMachine.rootState.options = [optAge, optHeight];
+      tokenStateMachine.rootState.value = optAge;
+      tokenStateMachine.transition();
+      tokenStateMachine.state.options = [{key: 'between', shortKey: 'between'}, {key: 'equals', shortKey: '='}];
+      tokenStateMachine.state.value = {key: 'between'};
+      tokenStateMachine.transition();
+      tokenStateMachine.state.value = {key: 5};
+      tokenStateMachine.transition();
+
+      // When
+      tokenStateMachine.rewind();
+
+      // Then we're back on Enter a value state with previous value of 5 preserved
+      expect(tokenStateMachine.state.name).to.equal('Enter a value');
+      expect(tokenStateMachine.state.vkey).to.equal('value');
+      expect(tokenStateMachine.state.value.key).to.equal(5);
+    });
+  });
 });
