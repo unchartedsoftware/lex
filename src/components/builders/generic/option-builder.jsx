@@ -71,7 +71,6 @@ export class OptionBuilder extends Builder {
         break;
       case ENTER:
       case TAB:
-        console.log(this.state.typedText);
         this.commitTypedValue();
         consumed = this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
         break;
