@@ -9,9 +9,7 @@ describe('OptionState', () => {
       // Given
       const config = {};
       const optionState = new OptionState(config);
-      const option = {
-        key: 'First Name'
-      };
+      const option = new OptionStateOption('First Name');
       // When
       const result = optionState.unboxValue(option);
       // Then
