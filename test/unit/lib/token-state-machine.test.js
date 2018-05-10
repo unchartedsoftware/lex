@@ -197,7 +197,7 @@ describe('TokenStateMachine', () => {
   });
 
   describe('rewind', () => {
-    it('Goes to previous state', () => {
+    it('Returns to previous state', () => {
       // Given a language with branches
       const optAge = new OptionStateOption('Age');
       const optHeight = new OptionStateOption('Height');
@@ -231,6 +231,42 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.state.name).to.equal('Enter a value');
       expect(tokenStateMachine.state.vkey).to.equal('value');
       expect(tokenStateMachine.state.value.key).to.equal(5);
+    });
+
+    it('Returns to previous state even when current state is invalid', () => {
+      // Given a language with branches
+      const optAge = new OptionStateOption('Age');
+      const optHeight = new OptionStateOption('Height');
+      const language = lexFrom('field', OptionState, {
+        name: 'Choose a field to search',
+        options: [optAge, optHeight]
+      })
+        .branch(
+          lexFrom('relation', NumericRelationState)
+            .branch(
+              lexFrom('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
+              lexFrom('value', NumericEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', NumericEntryState)
+            )
+        );
+
+      // Given entry of: Age between foo (invalid)
+      const tokenStateMachine = new TokenStateMachine(language.root);
+      tokenStateMachine.rootState.options = [optAge, optHeight];
+      tokenStateMachine.rootState.value = optAge;
+      tokenStateMachine.transition();
+      tokenStateMachine.state.options = [{key: 'between', shortKey: 'between'}, {key: 'equals', shortKey: '='}];
+      tokenStateMachine.state.value = {key: 'between'};
+      tokenStateMachine.transition();
+      tokenStateMachine.state.value = {key: 'foo'};
+      expect(tokenStateMachine.state.isValid).to.be.false;
+
+      // When
+      tokenStateMachine.rewind();
+
+      // Then we're back on Choose a numeric value with previous value of `between` preserved
+      expect(tokenStateMachine.state.name).to.equal('Choose a numeric relation');
+      expect(tokenStateMachine.state.vkey).to.equal('relation');
+      expect(tokenStateMachine.state.value.key).to.equal('between');
     });
   });
 });
