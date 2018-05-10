@@ -1,6 +1,3 @@
-// test dependencies
-import { expect } from 'chai';
-// system under test
 import { State } from '../../../src/lib/state';
 
 describe('State', () => {
@@ -13,7 +10,7 @@ describe('State', () => {
       // When
       const result = state.unboxValue(internalRepresentation);
       // Then
-      expect(result).to.equal('John');
+      expect(result).toEqual('John');
     });
   });
 
@@ -26,7 +23,7 @@ describe('State', () => {
       // When
       const result = state.boxValue(userVal);
       // Then
-      expect(result).to.equal('John');
+      expect(result).toEqual('John');
     });
   });
 
@@ -41,7 +38,7 @@ describe('State', () => {
       const unboxed = state.unboxValue(boxed);
       const result = state.boxValue(unboxed);
       // Then
-      expect(result).to.equal(boxed);
+      expect(result).toEqual(boxed);
     });
 
     it('unbox -> box -> unbox returns first unboxed result', () => {
@@ -54,7 +51,7 @@ describe('State', () => {
       const boxed = state.boxValue(unboxed);
       const result = state.unboxValue(boxed);
       // Then
-      expect(result).to.equal(unboxed);
+      expect(result).toEqual(unboxed);
     });
   });
 
@@ -66,7 +63,7 @@ describe('State', () => {
       };
       const state = new State(config);
       // Then
-      expect(state.isValid).to.be.true;
+      expect(state.isValid).toBe(true);
     });
 
     it('Uses validate function provided via config', () => {
@@ -77,7 +74,7 @@ describe('State', () => {
       };
       const state = new State(config);
       // Then
-      expect(state.isValid).to.be.false;
+      expect(state.isValid).toBe(false);
     });
 
     it('Throws error if provided validation function throws an error', () => {
@@ -90,7 +87,7 @@ describe('State', () => {
       };
       const state = new State(config);
       // Then
-      expect(() => state.isValid).to.throw(Error);
+      expect(() => state.isValid).toThrow(Error);
     });
   });
 
@@ -105,9 +102,9 @@ describe('State', () => {
       state.archiveValue();
       // Then
       const archive = state.archive;
-      expect(archive.length).to.equal(1);
-      expect(archive[0]).to.equal(someVal);
-      expect(state.value).to.be.null;
+      expect(archive).toHaveLength(1);
+      expect(archive[0]).toEqual(someVal);
+      expect(state.value).toBe(null);
     });
 
     it('Maintains multiple items in archive', () => {
@@ -123,10 +120,10 @@ describe('State', () => {
       state.archiveValue();
       // Then
       const archive = state.archive;
-      expect(archive.length).to.equal(2);
-      expect(archive[0]).to.equal(someVal1);
-      expect(archive[1]).to.equal(someVal2);
-      expect(state.value).to.be.null;
+      expect(archive).toHaveLength(2);
+      expect(archive[0]).toEqual(someVal1);
+      expect(archive[1]).toEqual(someVal2);
+      expect(state.value).toBe(null);
     });
 
     it('Throws error if number of items in archive equals limit', () => {
@@ -144,7 +141,7 @@ describe('State', () => {
       state.archiveValue();
       state.value = someVal3;
       // Then attempting to archive one more exceeds limit
-      expect(state.archiveValue).to.throw(Error);
+      expect(state.archiveValue).toThrow(Error);
     });
   });
 
@@ -162,12 +159,12 @@ describe('State', () => {
       // When
       state.unarchiveValue();
       // Then expect last item in comes out first
-      expect(state.value).to.equal('third');
+      expect(state.value).toEqual('third');
       // etc for remaining items
       state.unarchiveValue();
-      expect(state.value).to.equal('second');
+      expect(state.value).toEqual('second');
       state.unarchiveValue();
-      expect(state.value).to.equal('first');
+      expect(state.value).toEqual('first');
     });
   });
 });

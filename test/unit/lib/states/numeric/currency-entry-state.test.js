@@ -1,6 +1,3 @@
-// test dependencies
-import { expect } from 'chai';
-// system under test
 import { CurrencyEntryState } from '../../../../../src/lib/states/numeric/currency-entry-state';
 
 describe('CurrencyEntryState', () => {
@@ -12,7 +9,7 @@ describe('CurrencyEntryState', () => {
       // When
       const result = currencyEntryState.unformatUnboxedValue(displayKey);
       // Then
-      expect(result).to.equal('123.45');
+      expect(result).toEqual('123.45');
     });
 
     it('Removes `,` characters', () => {
@@ -22,7 +19,7 @@ describe('CurrencyEntryState', () => {
       // When
       const result = currencyEntryState.unformatUnboxedValue(displayKey);
       // Then
-      expect(result).to.equal('123456');
+      expect(result).toEqual('123456');
     });
   });
 
@@ -34,7 +31,7 @@ describe('CurrencyEntryState', () => {
       // When
       const result = currencyEntryState.formatUnboxedValue(key);
       // Then
-      expect(result).to.equal('$123.45');
+      expect(result).toEqual('$123.45');
     });
 
     it('Formats number with thousands separator', () => {
@@ -44,7 +41,7 @@ describe('CurrencyEntryState', () => {
       // When
       const result = currencyEntryState.formatUnboxedValue(key);
       // Then
-      expect(result).to.equal('$123,456');
+      expect(result).toEqual('$123,456');
     });
 
     it('Returns original key when not a number', () => {
@@ -54,7 +51,7 @@ describe('CurrencyEntryState', () => {
       // When
       const result = currencyEntryState.formatUnboxedValue(key);
       // Then
-      expect(result).to.equal('abc');
+      expect(result).toEqual('abc');
     });
   });
 });

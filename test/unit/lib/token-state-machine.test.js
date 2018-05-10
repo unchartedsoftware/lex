@@ -1,6 +1,3 @@
-// test dependencies
-import { expect } from 'chai';
-// system under test
 import { TokenStateMachine } from '../../../src/lib/token-state-machine';
 import { OptionState, OptionStateOption } from '../../../src/lib/states/generic/option-state';
 import { NumericRelationState } from '../../../src/lib/states/numeric/numeric-relation-state';
@@ -28,9 +25,9 @@ describe('TokenStateMachine', () => {
       const tokenStateMachine = new TokenStateMachine(language.root);
 
       // Then verify expected root state
-      expect(tokenStateMachine.id).to.be.finite;
-      expect(tokenStateMachine.rootState.name).to.equal('Choose a field to search');
-      expect(tokenStateMachine.rootState.vkey).to.equal('field');
+      expect(tokenStateMachine.id).toBeDefined();
+      expect(tokenStateMachine.rootState.name).toEqual('Choose a field to search');
+      expect(tokenStateMachine.rootState.vkey).toEqual('field');
 
       // Given a valid initial state -> pick First Name option
       tokenStateMachine.rootState.options = [optFirstName, optLastName];
@@ -40,8 +37,8 @@ describe('TokenStateMachine', () => {
       tokenStateMachine.transition();
 
       // Then verify current state
-      expect(tokenStateMachine.state.name).to.equal('Enter a value');
-      expect(tokenStateMachine.state.vkey).to.equal('value');
+      expect(tokenStateMachine.state.name).toEqual('Enter a value');
+      expect(tokenStateMachine.state.vkey).toEqual('value');
 
       // Given a value is entered
       tokenStateMachine.state.value = {key: 'Joe'};
@@ -50,9 +47,9 @@ describe('TokenStateMachine', () => {
       tokenStateMachine.transition();
 
       // Then expect to be in terminal state
-      expect(tokenStateMachine.state.isTerminal).to.be.true;
-      expect(tokenStateMachine.value.field.key).to.equal('First Name');
-      expect(tokenStateMachine.value.value.key).to.equal('Joe');
+      expect(tokenStateMachine.state.isTerminal).toBe(true);
+      expect(tokenStateMachine.value.field.key).toEqual('First Name');
+      expect(tokenStateMachine.value.value.key).toEqual('Joe');
     });
 
     it('Walks a tree with branches', () => {
@@ -75,9 +72,9 @@ describe('TokenStateMachine', () => {
       const tokenStateMachine = new TokenStateMachine(language.root);
 
       // Then verify expected root state
-      expect(tokenStateMachine.id).to.be.finite;
-      expect(tokenStateMachine.rootState.name).to.equal('Choose a field to search');
-      expect(tokenStateMachine.rootState.vkey).to.equal('field');
+      expect(tokenStateMachine.id).toBeDefined();
+      expect(tokenStateMachine.rootState.name).toEqual('Choose a field to search');
+      expect(tokenStateMachine.rootState.vkey).toEqual('field');
 
       // Given a valid initial state -> pick Height option
       tokenStateMachine.rootState.options = [optAge, optHeight];
@@ -87,8 +84,8 @@ describe('TokenStateMachine', () => {
       tokenStateMachine.transition();
 
       // Then verify current state
-      expect(tokenStateMachine.state.name).to.equal('Choose a numeric relation');
-      expect(tokenStateMachine.state.vkey).to.equal('relation');
+      expect(tokenStateMachine.state.name).toEqual('Choose a numeric relation');
+      expect(tokenStateMachine.state.vkey).toEqual('relation');
 
       // Given a relation has been chosen
       tokenStateMachine.state.options = [{key: 'between', shortKey: 'between'}, {key: 'equals', shortKey: '='}];
@@ -98,8 +95,8 @@ describe('TokenStateMachine', () => {
       tokenStateMachine.transition();
 
       // Then verify current state
-      expect(tokenStateMachine.state.name).to.equal('Enter a value');
-      expect(tokenStateMachine.state.vkey).to.equal('value');
+      expect(tokenStateMachine.state.name).toEqual('Enter a value');
+      expect(tokenStateMachine.state.vkey).toEqual('value');
 
       // Given a value is entered
       tokenStateMachine.state.value = {key: 60};
@@ -108,8 +105,8 @@ describe('TokenStateMachine', () => {
       tokenStateMachine.transition();
 
       // Then verify current state
-      expect(tokenStateMachine.state.name).to.equal('Enter a value');
-      expect(tokenStateMachine.state.vkey).to.equal('secondaryValue');
+      expect(tokenStateMachine.state.name).toEqual('Enter a value');
+      expect(tokenStateMachine.state.vkey).toEqual('secondaryValue');
 
       // Given a secondary value is entered
       tokenStateMachine.state.value = {key: 65};
@@ -118,11 +115,11 @@ describe('TokenStateMachine', () => {
       tokenStateMachine.transition();
 
       // Then expect to be in terminal state
-      expect(tokenStateMachine.state.isTerminal).to.be.true;
-      expect(tokenStateMachine.value.field.key).to.equal('Height');
-      expect(tokenStateMachine.value.relation.key).to.equal('between');
-      expect(tokenStateMachine.value.value.key).to.equal(60);
-      expect(tokenStateMachine.value.secondaryValue.key).to.equal(65);
+      expect(tokenStateMachine.state.isTerminal).toBe(true);
+      expect(tokenStateMachine.value.field.key).toEqual('Height');
+      expect(tokenStateMachine.value.relation.key).toEqual('between');
+      expect(tokenStateMachine.value.value.key).toEqual(60);
+      expect(tokenStateMachine.value.secondaryValue.key).toEqual(65);
     });
 
     it('Transitions to terminal state for terminal option', () => {
@@ -143,9 +140,9 @@ describe('TokenStateMachine', () => {
       const tokenStateMachine = new TokenStateMachine(language.root);
 
       // Then verify expected root state
-      expect(tokenStateMachine.id).to.be.finite;
-      expect(tokenStateMachine.rootState.name).to.equal('Choose a field to search');
-      expect(tokenStateMachine.rootState.vkey).to.equal('field');
+      expect(tokenStateMachine.id).toBeDefined();
+      expect(tokenStateMachine.rootState.name).toEqual('Choose a field to search');
+      expect(tokenStateMachine.rootState.vkey).toEqual('field');
 
       // Given a valid initial state -> pick Terminal option
       tokenStateMachine.rootState.options = [optName, optTerminal];
@@ -155,9 +152,9 @@ describe('TokenStateMachine', () => {
       tokenStateMachine.transition();
 
       // Then expect to be in terminal state
-      expect(tokenStateMachine.state.isTerminal).to.be.true;
-      expect(tokenStateMachine.value.field.key).to.equal('Terminal');
-      expect(tokenStateMachine.value.value).to.be.undefined;
+      expect(tokenStateMachine.state.isTerminal).toBe(true);
+      expect(tokenStateMachine.value.field.key).toEqual('Terminal');
+      expect(tokenStateMachine.value.value).toBeUndefined();
     });
 
     it('Does not transition when in an invalid state', () => {
@@ -173,9 +170,9 @@ describe('TokenStateMachine', () => {
       const tokenStateMachine = new TokenStateMachine(language.root);
 
       // Then verify expected root state
-      expect(tokenStateMachine.id).to.be.finite;
-      expect(tokenStateMachine.rootState.name).to.equal('Choose a field to search');
-      expect(tokenStateMachine.rootState.vkey).to.equal('field');
+      expect(tokenStateMachine.id).toBeDefined();
+      expect(tokenStateMachine.rootState.name).toEqual('Choose a field to search');
+      expect(tokenStateMachine.rootState.vkey).toEqual('field');
 
       // Given a valid initial state -> pick First Name option
       tokenStateMachine.rootState.options = [optAge];
@@ -185,14 +182,14 @@ describe('TokenStateMachine', () => {
       tokenStateMachine.transition();
 
       // Then verify current state
-      expect(tokenStateMachine.state.name).to.equal('Enter a value');
-      expect(tokenStateMachine.state.vkey).to.equal('value');
+      expect(tokenStateMachine.state.name).toEqual('Enter a value');
+      expect(tokenStateMachine.state.vkey).toEqual('value');
 
       // Given an invalid value is entered
       tokenStateMachine.state.value = {key: 'not a number'};
 
       // Then will fail to transition
-      expect(tokenStateMachine.transition.bind(tokenStateMachine)).to.throw(StateTransitionError);
+      expect(tokenStateMachine.transition.bind(tokenStateMachine)).toThrow(StateTransitionError);
     });
   });
 
@@ -228,9 +225,9 @@ describe('TokenStateMachine', () => {
       tokenStateMachine.rewind();
 
       // Then we're back on Enter a value state with previous value of 5 preserved
-      expect(tokenStateMachine.state.name).to.equal('Enter a value');
-      expect(tokenStateMachine.state.vkey).to.equal('value');
-      expect(tokenStateMachine.state.value.key).to.equal(5);
+      expect(tokenStateMachine.state.name).toEqual('Enter a value');
+      expect(tokenStateMachine.state.vkey).toEqual('value');
+      expect(tokenStateMachine.state.value.key).toEqual(5);
     });
 
     it('Returns to previous state even when current state is invalid', () => {
@@ -258,15 +255,15 @@ describe('TokenStateMachine', () => {
       tokenStateMachine.state.value = {key: 'between'};
       tokenStateMachine.transition();
       tokenStateMachine.state.value = {key: 'foo'};
-      expect(tokenStateMachine.state.isValid).to.be.false;
+      expect(tokenStateMachine.state.isValid).toBe(false);
 
       // When
       tokenStateMachine.rewind();
 
       // Then we're back on Choose a numeric value with previous value of `between` preserved
-      expect(tokenStateMachine.state.name).to.equal('Choose a numeric relation');
-      expect(tokenStateMachine.state.vkey).to.equal('relation');
-      expect(tokenStateMachine.state.value.key).to.equal('between');
+      expect(tokenStateMachine.state.name).toEqual('Choose a numeric relation');
+      expect(tokenStateMachine.state.vkey).toEqual('relation');
+      expect(tokenStateMachine.state.value.key).toEqual('between');
     });
   });
 });

@@ -1,6 +1,3 @@
-// test dependencies
-import { expect } from 'chai';
-// system under test
 import { TextEntryState } from '../../../../../src/lib/states/text/text-entry-state';
 
 describe('TextEntryState', () => {
@@ -12,7 +9,7 @@ describe('TextEntryState', () => {
       // When
       textEntryState.value = {key: 'foo'};
       // Then
-      expect(textEntryState.isValid).to.be.true;
+      expect(textEntryState.isValid).toBe(true);
     });
 
     it('Returns false if value does not contain a `key` property', () => {
@@ -22,7 +19,7 @@ describe('TextEntryState', () => {
       // When
       textEntryState.value = {something: 'foo'};
       // Then
-      expect(textEntryState.isValid).to.be.false;
+      expect(textEntryState.isValid).toBe(false);
     });
 
     it('Returns false if value `key` property is not a string', () => {
@@ -32,7 +29,7 @@ describe('TextEntryState', () => {
       // When
       textEntryState.value = {key: 42};
       // Then
-      expect(textEntryState.isValid).to.be.false;
+      expect(textEntryState.isValid).toBe(false);
     });
 
     it('Returns false if value `key` property is an empty string', () => {
@@ -42,7 +39,7 @@ describe('TextEntryState', () => {
       // When
       textEntryState.value = {key: ''};
       // Then
-      expect(textEntryState.isValid).to.be.false;
+      expect(textEntryState.isValid).toBe(false);
     });
 
     it('Returns false if value `key` property is null', () => {
@@ -52,7 +49,7 @@ describe('TextEntryState', () => {
       // When
       textEntryState.value = {key: null};
       // Then
-      expect(textEntryState.isValid).to.be.false;
+      expect(textEntryState.isValid).toBe(false);
     });
   });
 });

@@ -1,6 +1,3 @@
-// test dependencies
-import { expect } from 'chai';
-// system under test
 import { OptionState, OptionStateOption } from '../../../../../src/lib/states/generic/option-state';
 
 describe('OptionState', () => {
@@ -13,7 +10,7 @@ describe('OptionState', () => {
       // When
       const result = optionState.unboxValue(option);
       // Then
-      expect(result).to.equal('First Name');
+      expect(result).toEqual('First Name');
     });
 
     it('Returns null when option is undefined', () => {
@@ -23,7 +20,7 @@ describe('OptionState', () => {
       // When
       const result = optionState.unboxValue();
       // Then
-      expect(result).to.be.null;
+      expect(result).toBe(null);
     });
 
     it('Returns null when option is null', () => {
@@ -34,7 +31,7 @@ describe('OptionState', () => {
       // When
       const result = optionState.unboxValue(option);
       // Then
-      expect(result).to.be.null;
+      expect(result).toBe(null);
     });
   });
 
@@ -51,8 +48,8 @@ describe('OptionState', () => {
       // When
       const result = optionState.boxValue(key);
       // Then
-      expect(result).to.be.an.instanceof(OptionStateOption);
-      expect(result.key).to.equal(key);
+      expect(result).toBeInstanceOf(OptionStateOption);
+      expect(result.key).toEqual(key);
     });
 
     it('Returns an empty OptionStateOption when no options match and allowUnknown is true', () => {
@@ -69,8 +66,8 @@ describe('OptionState', () => {
       // When
       const result = optionState.boxValue(key);
       // Then
-      expect(result).to.be.an.instanceof(OptionStateOption);
-      expect(result.key).to.equal('Age');
+      expect(result).toBeInstanceOf(OptionStateOption);
+      expect(result.key).toEqual('Age');
     });
 
     it('Throws error when no options match and allowUnknown is false', () => {
@@ -79,7 +76,7 @@ describe('OptionState', () => {
       const optionState = new OptionState(config);
       const key = 'Age';
       // Then
-      expect(optionState.boxValue.bind(optionState, key)).to.throw();
+      expect(optionState.boxValue.bind(optionState, key)).toThrow();
     });
 
     // Doesn't throw because `this.options.length` !== 0 but should it?
@@ -93,7 +90,7 @@ describe('OptionState', () => {
     //   ];
     //   const key = 'Age';
     //   // Then
-    //   expect(optionState.boxValue.bind(optionState, key)).to.throw();
+    //   expect(optionState.boxValue.bind(optionState, key)).toThrow();
     // });
   });
 
@@ -112,7 +109,7 @@ describe('OptionState', () => {
       const unboxed = optionState.unboxValue(boxed);
       const result = optionState.boxValue(unboxed);
       // Then
-      expect(result).to.deep.equal(boxed);
+      expect(result).toEqual(boxed);
     });
 
     it('unbox -> box -> unbox returns first unboxed result', () => {
@@ -131,7 +128,7 @@ describe('OptionState', () => {
       const boxed = optionState.boxValue(unboxed);
       const result = optionState.unboxValue(boxed);
       // Then
-      expect(result).to.deep.equal(unboxed);
+      expect(result).toEqual(unboxed);
     });
   });
 
@@ -143,7 +140,7 @@ describe('OptionState', () => {
       };
       const optionState = new OptionState(config);
       // Then
-      expect(optionState.isValid).to.be.false;
+      expect(optionState.isValid).toBe(false);
     });
 
     it('Using default validation, returns false when value is null', () => {
@@ -152,7 +149,7 @@ describe('OptionState', () => {
       const optionState = new OptionState(config);
       optionState.value = null;
       // Then
-      expect(optionState.isValid).to.be.false;
+      expect(optionState.isValid).toBe(false);
     });
 
     it('Using default validation, returns false when value is undefined', () => {
@@ -161,7 +158,7 @@ describe('OptionState', () => {
       const optionState = new OptionState(config);
       optionState.value = undefined;
       // Then
-      expect(optionState.isValid).to.be.false;
+      expect(optionState.isValid).toBe(false);
     });
 
     it('Using default validation, returns false when value already exists in archive', () => {
@@ -177,7 +174,7 @@ describe('OptionState', () => {
       // When a value is set that is already in the archive
       optionState.value = new OptionStateOption('First Name');
       // Then it should be considered invalid
-      expect(optionState.isValid).to.be.false;
+      expect(optionState.isValid).toBe(false);
     });
 
     it('Using default validation, returns true when allowUknown is true and value is defined and not already in archive', () => {
@@ -188,7 +185,7 @@ describe('OptionState', () => {
       const optionState = new OptionState(config);
       optionState.value = new OptionStateOption('Age');
       // Then
-      expect(optionState.isValid).to.be.true;
+      expect(optionState.isValid).toBe(true);
     });
 
     it('Using default validation, returns true when value matches an option by key', () => {
@@ -201,7 +198,7 @@ describe('OptionState', () => {
       ];
       optionState.value = new OptionStateOption('First Name');
       // Then
-      expect(optionState.isValid).to.be.true;
+      expect(optionState.isValid).toBe(true);
     });
 
     it('Using default validation, returns false when value does not match an option by key and allowUknown is false', () => {
@@ -214,7 +211,7 @@ describe('OptionState', () => {
       ];
       optionState.value = new OptionStateOption('Age');
       // Then
-      expect(optionState.isValid).to.be.false;
+      expect(optionState.isValid).toBe(false);
     });
   });
 });

@@ -1,6 +1,3 @@
-// test dependencies
-import { expect } from 'chai';
-// system under test
 import { DateTimeEntryState } from '../../../../../src/lib/states/temporal/datetime-entry-state';
 
 describe('DateTimeEntryState', () => {
@@ -13,7 +10,7 @@ describe('DateTimeEntryState', () => {
       // When
       const result = dateTimeEntryState.unboxValue(dateobj);
       // Then
-      expect(result).to.be.null;
+      expect(result).toBe(null);
     });
 
     it('Returns null when not given a date object', () => {
@@ -23,7 +20,7 @@ describe('DateTimeEntryState', () => {
       // When
       const result = dateTimeEntryState.unboxValue();
       // Then
-      expect(result).to.be.null;
+      expect(result).toBe(null);
     });
 
     it('Returns a default formatted date for the default timezone', () => {
@@ -34,7 +31,7 @@ describe('DateTimeEntryState', () => {
       // When
       const result = dateTimeEntryState.unboxValue(dateobj);
       // Then
-      expect(result).to.equal('2018/12/17');
+      expect(result).toEqual('2018/12/17');
     });
 
     it('Returns a custom formatted date for the default timezone', () => {
@@ -47,7 +44,7 @@ describe('DateTimeEntryState', () => {
       // When
       const result = dateTimeEntryState.unboxValue(dateobj);
       // Then
-      expect(result).to.equal('2018-Dec-17');
+      expect(result).toEqual('2018-Dec-17');
     });
 
     // Should we expect a different result than default timezone?
@@ -62,7 +59,7 @@ describe('DateTimeEntryState', () => {
       // When
       const result = dateTimeEntryState.unboxValue(dateobj);
       // Then
-      expect(result).to.equal('2018-Dec-17');
+      expect(result).toEqual('2018-Dec-17');
     });
   });
 
@@ -75,10 +72,10 @@ describe('DateTimeEntryState', () => {
       // When
       const result = dateTimeEntryState.boxValue(datestring);
       // Then
-      expect(typeof result).to.equal('object');
-      expect(result.getUTCFullYear()).to.equal(2018);
-      expect(result.getUTCMonth()).to.equal(11); // js months Jan to Dec -> 0 to 11
-      expect(result.getUTCDate()).to.equal(17);
+      expect(typeof result).toEqual('object');
+      expect(result.getUTCFullYear()).toEqual(2018);
+      expect(result.getUTCMonth()).toEqual(11); // js months Jan to Dec -> 0 to 11
+      expect(result.getUTCDate()).toEqual(17);
     });
 
     it('Returns null when date string does not match default format', () => {
@@ -89,7 +86,7 @@ describe('DateTimeEntryState', () => {
       // When
       const result = dateTimeEntryState.boxValue(datestring);
       // Then
-      expect(result).to.be.null;
+      expect(result).toBe(null);
     });
   });
 
@@ -104,7 +101,7 @@ describe('DateTimeEntryState', () => {
       const unboxed = dateTimeEntryState.unboxValue(boxed);
       const result = dateTimeEntryState.boxValue(unboxed);
       // Then
-      expect(result).to.deep.equal(boxed);
+      expect(result).toEqual(boxed);
     });
 
     it('unbox -> box -> unbox returns first unboxed result', () => {
@@ -117,7 +114,7 @@ describe('DateTimeEntryState', () => {
       const boxed = dateTimeEntryState.boxValue(unboxed);
       const result = dateTimeEntryState.unboxValue(boxed);
       // Then
-      expect(result).to.equal(unboxed);
+      expect(result).toEqual(unboxed);
     });
   });
 
@@ -129,7 +126,7 @@ describe('DateTimeEntryState', () => {
       // When
       dateTimeEntryState.value = null;
       // Then
-      expect(dateTimeEntryState.isValid).to.be.false;
+      expect(dateTimeEntryState.isValid).toBe(false);
     });
 
     it('Default validation returns true when value is a date', () => {
@@ -139,18 +136,18 @@ describe('DateTimeEntryState', () => {
       // When
       dateTimeEntryState.value = new Date('2018-12-17');
       // Then
-      expect(dateTimeEntryState.isValid).to.be.true;
+      expect(dateTimeEntryState.isValid).toBe(true);
     });
 
     // console warning from moment about not RFC date but validation still returns true
-    it('Default validation returns true when value is a date', () => {
+    it('Default validation returns true when value is not a date', () => {
       // Given
       const config = {};
       const dateTimeEntryState = new DateTimeEntryState(config);
       // When
       dateTimeEntryState.value = 'foo';
       // Then
-      expect(dateTimeEntryState.isValid).to.be.true;
+      expect(dateTimeEntryState.isValid).toBe(true);
     });
   });
 });

@@ -1,18 +1,10 @@
 {
-  "extends": "../.eslintrc.json",
+  "extends": ["plugin:jest/recommended"],
+  "plugins": ["jest"],
   "globals": {
-    "describe":   false,
-    "beforeAll":  false,
-    "afterAll":   false,
-    "beforeEach": false,
-    "afterEach":  false,
-    "it":         false,
     "require":    false,
     "module":     false,
     "sleep":      false,
-    "expect":     false,
-    "click":      false,
-    "type":      false,
     "wait":       false
   },
   "rules": {
