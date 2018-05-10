@@ -147,4 +147,27 @@ describe('State', () => {
       expect(state.archiveValue).to.throw(Error);
     });
   });
+
+  describe('archiveValue -> unarchiveValue interaction', () => {
+    it('unarchive returns elements in LIFO order', () => {
+      // Given a state with 3 archived values
+      const config = {};
+      const state = new State(config);
+      state.value = 'first';
+      state.archiveValue();
+      state.value = 'second';
+      state.archiveValue();
+      state.value = 'third';
+      state.archiveValue();
+      // When
+      state.unarchiveValue();
+      // Then expect last item in comes out first
+      expect(state.value).to.equal('third');
+      // etc for remaining items
+      state.unarchiveValue();
+      expect(state.value).to.equal('second');
+      state.unarchiveValue();
+      expect(state.value).to.equal('first');
+    });
+  });
 });
