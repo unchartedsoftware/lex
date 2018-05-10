@@ -16,6 +16,7 @@
     "wait":       false
   },
   "rules": {
-    "no-unused-expressions": "off"
+    "no-unused-expressions": "off",
+    "no-console": "warn"
   }
 }
