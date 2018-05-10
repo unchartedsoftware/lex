@@ -52,7 +52,7 @@ describe('OptionState', () => {
       const result = optionState.boxValue(key);
       // Then
       expect(result).to.be.an.instanceof(OptionStateOption);
-      expect(result.key).to.equal('Last Name');
+      expect(result.key).to.equal(key);
     });
 
     it('Returns an empty OptionStateOption when no options match and allowUnknown is true', () => {
