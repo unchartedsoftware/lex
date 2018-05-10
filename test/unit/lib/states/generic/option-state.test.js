@@ -146,17 +146,6 @@ describe('OptionState', () => {
       expect(optionState.isValid).to.be.false;
     });
 
-    // Fails, should it be working?
-    // it('Returns true when validation function provided via config returns true', () => {
-    //   // Given
-    //   const config = {
-    //     validate: (value, archive) => true // eslint-disable-line no-unused-vars
-    //   };
-    //   const optionState = new OptionState(config);
-    //   // Then
-    //   expect(optionState.isValid).to.be.true;
-    // });
-
     it('Using default validation, returns false when value is null', () => {
       // Given
       const config = {};
