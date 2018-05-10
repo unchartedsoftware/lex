@@ -97,11 +97,11 @@ const lex = new Lex({
 });
 
 lex.render(document.getElementById('LexContainer'));
-lex.on('query changed', (...args) => console.log('query changed', ...args));
-lex.on('suggestions changed', (...args) => console.log('suggestions changed', ...args));
-lex.on('validity changed', (...args) => console.log('validity changed', ...args));
-lex.on('token start', (...args) => console.log('token start', ...args));
-lex.on('token end', (...args) => console.log('token end', ...args));
+lex.on('query changed', (...args) => console.log('query changed', ...args)); // eslint-disable-line no-console
+lex.on('suggestions changed', (...args) => console.log('suggestions changed', ...args)); // eslint-disable-line no-console
+lex.on('validity changed', (...args) => console.log('validity changed', ...args)); // eslint-disable-line no-console
+lex.on('token start', (...args) => console.log('token start', ...args)); // eslint-disable-line no-console
+lex.on('token end', (...args) => console.log('token end', ...args)); // eslint-disable-line no-console
 
 // Hooks for demo buttons
 window.clearQuery = function () {
@@ -120,8 +120,8 @@ window.setQuery = async function () {
     //   {field: options[1], relation: new OptionStateOption('equals'), value: new OptionStateOption('12')}
     // ]);
   } catch (err) {
-    console.log('Something went wrong');
-    console.error(err);
+    console.log('Something went wrong'); // eslint-disable-line no-console
+    console.error(err); // eslint-disable-line no-console
   }
 };
 window.setSuggestions = function () {
