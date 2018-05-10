@@ -72,9 +72,14 @@ describe('State', () => {
         defaultValue: 'foo',
         validate: (value, archive) => false // eslint-disable-line no-unused-vars
       };
+      const validateSpy = jest.spyOn(config, 'validate');
       const state = new State(config);
       // Then
       expect(state.isValid).toBe(false);
+      expect(validateSpy).toHaveBeenCalled();
+      // Cleanup
+      validateSpy.mockReset();
+      validateSpy.mockRestore();
     });
 
     it('Throws error if provided validation function throws an error', () => {
