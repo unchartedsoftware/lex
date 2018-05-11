@@ -72,14 +72,14 @@ describe('State', () => {
         defaultValue: 'foo',
         validate: (value, archive) => false // eslint-disable-line no-unused-vars
       };
-      const validateSpy = jest.spyOn(config, 'validate');
+      spyOn(config, 'validate').and.callThrough();
       const state = new State(config);
       // Then
       expect(state.isValid).toBe(false);
-      expect(validateSpy).toHaveBeenCalled();
-      // Cleanup
-      validateSpy.mockReset();
-      validateSpy.mockRestore();
+      // Verify provided validation function was called with value and archive
+      expect(config.validate).toHaveBeenCalled();
+      expect(config.validate.calls.argsFor(0)[0]).toEqual('foo');
+      expect(config.validate.calls.argsFor(0)[1]).toEqual([]);
     });
 
     it('Throws error if provided validation function throws an error', () => {
@@ -106,16 +106,16 @@ describe('State', () => {
       spyOn(state, 'emit');
       // When
       state.archiveValue();
-      // Then events emitted...
-      expect(state.emit.calls.argsFor(0)[0]).toEqual('value changed');
-      expect(state.emit.calls.argsFor(1)[0]).toEqual('preview value changed');
-      expect(state.emit.calls.argsFor(2)[0]).toEqual('value changed');
-      expect(state.emit.calls.argsFor(3)[0]).toEqual('value archived');
-      // ...and archive value
+      // Then
       const archive = state.archive;
       expect(archive).toHaveLength(1);
       expect(archive[0]).toEqual(someVal);
       expect(state.value).toBe(null);
+      // Verify events emitted
+      expect(state.emit.calls.argsFor(0)[0]).toEqual('value changed');
+      expect(state.emit.calls.argsFor(1)[0]).toEqual('preview value changed');
+      expect(state.emit.calls.argsFor(2)[0]).toEqual('value changed');
+      expect(state.emit.calls.argsFor(3)[0]).toEqual('value archived');
     });
 
     it('Maintains multiple items in archive', () => {
