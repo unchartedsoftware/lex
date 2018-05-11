@@ -168,7 +168,12 @@ describe('State', () => {
       state.value = 'third';
       state.archiveValue();
       // When
+      spyOn(state, 'emit');
       state.unarchiveValue();
+      // Verify events emitted
+      expect(state.emit.calls.argsFor(0)[0]).toEqual('value changed');
+      expect(state.emit.calls.argsFor(1)[0]).toEqual('value changed');
+      expect(state.emit.calls.argsFor(2)[0]).toEqual('value unarchived');
       // Then expect last item in comes out first
       expect(state.value).toEqual('third');
       // etc for remaining items
