@@ -130,6 +130,47 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.value.secondaryValue.key).toEqual(65);
     });
 
+    it('Skips over readonly state', () => {
+      // Given a language with a LabelState (which is readonly)
+      const optHeight = new OptionStateOption('Height');
+      const language = lexFrom('field', OptionState, {
+        name: 'Choose a field to search',
+        options: [optHeight]
+      })
+        .to('heightFeet', NumericEntryState, {units: "'"})
+        .to(LabelState, {label: 'and'})
+        .to('heightInches', NumericEntryState, {units: "'"});
+
+      // When machine is initialized with language root
+      const tokenStateMachine = new TokenStateMachine(language.root);
+
+      // Then verify expected root state
+      expect(tokenStateMachine.id).toBeDefined();
+      expect(tokenStateMachine.rootState.name).toEqual('Choose a field to search');
+      expect(tokenStateMachine.rootState.vkey).toEqual('field');
+
+      // Given a valid initial state -> pick Height option
+      tokenStateMachine.rootState.options = [optHeight];
+      tokenStateMachine.rootState.value = optHeight;
+
+      // When transition is invoked
+      tokenStateMachine.transition();
+
+      // Then verify current state
+      expect(tokenStateMachine.state.name).toEqual('Enter a value');
+      expect(tokenStateMachine.state.vkey).toEqual('heightFeet');
+
+      // Given a value is entered
+      tokenStateMachine.state.value = {key: 5};
+
+      // When another transition is invoked
+      tokenStateMachine.transition();
+
+      // Then verify next state is also value entry (i.e. skipped over Label)
+      expect(tokenStateMachine.state.name).toEqual('Enter a value');
+      expect(tokenStateMachine.state.vkey).toEqual('heightInches');
+    });
+
     it('Transitions to terminal state for terminal option', () => {
       // Given a language with a terminal option
       const optName = new OptionStateOption('Name', {type: 'string'});
