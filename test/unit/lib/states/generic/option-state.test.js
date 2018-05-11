@@ -132,6 +132,30 @@ describe('OptionState', () => {
     });
   });
 
+  describe('format', () => {
+    it('unformatUnboxedValue returns displayKey', () => {
+      // Given
+      const config = {};
+      const optionState = new OptionState(config);
+      const displayKey = 'foo';
+      // When
+      const result = optionState.unformatUnboxedValue(displayKey);
+      // Then
+      expect(result).toEqual(displayKey);
+    });
+
+    it('formatUnboxedValue returns key', () => {
+      // Given
+      const config = {};
+      const optionState = new OptionState(config);
+      const key = 'bar';
+      // When
+      const result = optionState.formatUnboxedValue(key);
+      // Then
+      expect(result).toEqual(key);
+    });
+  });
+
   describe('isValid', () => {
     it('Returns false when validation function provided via config returns false', () => {
       // Given
