@@ -23,6 +23,7 @@ describe('TokenStateMachine', () => {
 
       // When machine is initialized with language root
       const tokenStateMachine = new TokenStateMachine(language.root);
+      spyOn(tokenStateMachine, 'emit');
 
       // Then verify expected root state
       expect(tokenStateMachine.id).toBeDefined();
@@ -35,6 +36,10 @@ describe('TokenStateMachine', () => {
 
       // When transition is invoked
       tokenStateMachine.transition();
+
+      // Then verify state change events
+      expect(tokenStateMachine.emit.calls.argsFor(0)[0]).toEqual('before state change');
+      expect(tokenStateMachine.emit.calls.argsFor(1)[0]).toEqual('state changed');
 
       // Then verify current state
       expect(tokenStateMachine.state.name).toEqual('Enter a value');
@@ -50,6 +55,9 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.state.isTerminal).toBe(true);
       expect(tokenStateMachine.value.field.key).toEqual('First Name');
       expect(tokenStateMachine.value.value.key).toEqual('Joe');
+
+      // Verify last event emitted is for terminal state
+      expect(tokenStateMachine.emit.calls.mostRecent().args[0]).toEqual('end');
     });
 
     it('Walks a tree with branches', () => {
@@ -168,6 +176,7 @@ describe('TokenStateMachine', () => {
 
       // When machine is initialized with language root
       const tokenStateMachine = new TokenStateMachine(language.root);
+      spyOn(tokenStateMachine, 'emit');
 
       // Then verify expected root state
       expect(tokenStateMachine.id).toBeDefined();
@@ -190,6 +199,7 @@ describe('TokenStateMachine', () => {
 
       // Then will fail to transition
       expect(tokenStateMachine.transition.bind(tokenStateMachine)).toThrow(StateTransitionError);
+      expect(tokenStateMachine.emit.calls.mostRecent().args[0]).toEqual('state change failed');
     });
   });
 
@@ -212,6 +222,7 @@ describe('TokenStateMachine', () => {
 
       // Given entry of: Age between 5 and
       const tokenStateMachine = new TokenStateMachine(language.root);
+      spyOn(tokenStateMachine, 'emit');
       tokenStateMachine.rootState.options = [optAge, optHeight];
       tokenStateMachine.rootState.value = optAge;
       tokenStateMachine.transition();
@@ -223,6 +234,7 @@ describe('TokenStateMachine', () => {
 
       // When
       tokenStateMachine.rewind();
+      expect(tokenStateMachine.emit.calls.mostRecent().args[0]).toEqual('state changed');
 
       // Then we're back on Enter a value state with previous value of 5 preserved
       expect(tokenStateMachine.state.name).toEqual('Enter a value');
