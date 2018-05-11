@@ -2,6 +2,7 @@
   "extends": ["plugin:jest/recommended"],
   "plugins": ["jest"],
   "globals": {
+    "spyOn":      false,
     "require":    false,
     "module":     false,
     "sleep":      false,

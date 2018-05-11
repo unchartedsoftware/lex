@@ -103,18 +103,19 @@ describe('State', () => {
       const state = new State(config);
       const someVal = 'bar';
       state.value = someVal;
-      const emitSpy = jest.spyOn(state, 'emit');
+      spyOn(state, 'emit');
       // When
       state.archiveValue();
-      // Then
+      // Then events emitted...
+      expect(state.emit.calls.argsFor(0)[0]).toEqual('value changed');
+      expect(state.emit.calls.argsFor(1)[0]).toEqual('preview value changed');
+      expect(state.emit.calls.argsFor(2)[0]).toEqual('value changed');
+      expect(state.emit.calls.argsFor(3)[0]).toEqual('value archived');
+      // ...and archive value
       const archive = state.archive;
       expect(archive).toHaveLength(1);
       expect(archive[0]).toEqual(someVal);
       expect(state.value).toBe(null);
-      expect(emitSpy).toHaveBeenCalled();
-      // Cleanup
-      emitSpy.mockReset();
-      emitSpy.mockRestore();
     });
 
     it('Maintains multiple items in archive', () => {
