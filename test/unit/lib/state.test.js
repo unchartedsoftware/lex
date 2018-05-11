@@ -183,4 +183,40 @@ describe('State', () => {
       expect(state.value).toEqual('first');
     });
   });
+
+  describe('value', () => {
+    it('Emits event when value is changed', () => {
+      // Given
+      const config = {};
+      const state = new State(config);
+      const newVal = 'foo';
+      spyOn(state, 'emit');
+      // When
+      state.value = newVal;
+      // Then
+      expect(state.value).toEqual(newVal);
+      expect(state.emit.calls.argsFor(0)[0]).toEqual('value changed');
+      expect(state.emit.calls.argsFor(0)[1]).toEqual('foo');
+    });
+  });
+
+  describe('removeArchivedValue', () => {
+    it('Removes item from archive', () => {
+      // Given some archived values
+      const config = {};
+      const state = new State(config);
+      state.value = 'first';
+      state.archiveValue();
+      state.value = 'second';
+      state.archiveValue();
+      expect(state.archive).toHaveLength(2);
+      // When
+      spyOn(state, 'emit');
+      state.removeArchivedValue();
+      // Then
+      expect(state.archive).toHaveLength(1);
+      expect(state.emit.calls.argsFor(0)[0]).toEqual('value changed');
+      expect(state.emit.calls.argsFor(1)[0]).toEqual('value unarchived');
+    });
+  });
 });
