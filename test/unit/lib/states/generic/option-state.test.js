@@ -214,4 +214,21 @@ describe('OptionState', () => {
       expect(optionState.isValid).toBe(false);
     });
   });
+
+  describe('options', () => {
+    it('Sets new options', () => {
+      // Given
+      const config = {};
+      const optionState = new OptionState(config);
+      const newOptions = [
+        new OptionStateOption('foo'),
+        new OptionStateOption('bar')
+      ];
+      spyOn(optionState, 'emit');
+      // When
+      optionState.options = newOptions;
+      // Then
+      expect(optionState.emit.calls.argsFor(0)[0]).toEqual('options changed');
+    });
+  });
 });
