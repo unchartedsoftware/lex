@@ -242,6 +242,33 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.transition.bind(tokenStateMachine)).toThrow(StateTransitionError);
       expect(tokenStateMachine.emit.calls.mostRecent().args[0]).toEqual('state change failed');
     });
+
+    it('Fails if parent state is valid but there is no child state to transition to', () => {
+      // Given a contrived language where the only child does not allow transitioning into
+      const optFirstName = new OptionStateOption('First Name');
+      const language = lexFrom('field', OptionState, {
+        name: 'Choose a field to search',
+        options: [optFirstName]
+      })
+        .to('value', TextEntryState, {
+          transition: () => false
+        });
+
+        // When machine is initialized with language root
+      const tokenStateMachine = new TokenStateMachine(language.root);
+
+      // Then verify expected root state
+      expect(tokenStateMachine.id).toBeDefined();
+      expect(tokenStateMachine.rootState.name).toEqual('Choose a field to search');
+      expect(tokenStateMachine.rootState.vkey).toEqual('field');
+
+      // Given a valid initial state -> pick First Name option
+      tokenStateMachine.rootState.options = [optFirstName];
+      tokenStateMachine.rootState.value = optFirstName;
+
+      // Then expect state transition error on attempting to transition
+      expect(tokenStateMachine.transition.bind(tokenStateMachine)).toThrow(StateTransitionError);
+    });
   });
 
   describe('rewind', () => {
