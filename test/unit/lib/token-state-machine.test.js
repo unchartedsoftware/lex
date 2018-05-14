@@ -1,13 +1,16 @@
 import { TokenStateMachine } from '../../../src/lib/token-state-machine';
-import { Lex } from '../../../src/lex';
-import { OptionState, OptionStateOption } from '../../../src/lib/states/generic/option-state';
-import { NumericRelationState } from '../../../src/lib/states/numeric/numeric-relation-state';
-import { NumericEntryState } from '../../../src/lib/states/numeric/numeric-entry-state';
-import { TextEntryState } from '../../../src/lib/states/text/text-entry-state';
-import { TransitionFactory } from '../../../src/lib/transition-factory';
-import { LabelState } from '../../../src/lib/states/generic/label-state';
-import { TerminalState } from '../../../src/lib/states/generic/terminal-state';
-import { StateTransitionError } from '../../../src/lib/errors';
+import {
+  LabelState,
+  Lex,
+  NumericEntryState,
+  NumericRelationState,
+  OptionState,
+  OptionStateOption,
+  StateTransitionError,
+  TerminalState,
+  TextEntryState,
+  TransitionFactory
+} from '../../../src/lex';
 
 describe('TokenStateMachine', () => {
   describe('transition', () => {
