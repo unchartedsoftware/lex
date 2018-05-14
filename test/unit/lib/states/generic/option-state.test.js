@@ -36,14 +36,16 @@ describe('OptionState', () => {
   });
 
   describe('boxValue', () => {
-    it('Returns matching OptionStateOption', () => {
+    it('Returns matching OptionStateOption', async () => {
       // Given
-      const config = {};
+      const config = {
+        options: [
+          new OptionStateOption('First Name'),
+          new OptionStateOption('Last Name')
+        ]
+      };
       const optionState = new OptionState(config);
-      optionState.options = [
-        new OptionStateOption('First Name'),
-        new OptionStateOption('Last Name')
-      ];
+      await optionState.initialize();
       const key = 'Last Name';
       // When
       const result = optionState.boxValue(key);
@@ -52,16 +54,17 @@ describe('OptionState', () => {
       expect(result.key).toEqual(key);
     });
 
-    it('Returns an empty OptionStateOption when no options match and allowUnknown is true', () => {
+    it('Returns an empty OptionStateOption when no options match and allowUnknown is true', async () => {
       // Given
       const config = {
-        allowUnknown: true
+        allowUnknown: true,
+        options: [
+          new OptionStateOption('First Name'),
+          new OptionStateOption('Last Name')
+        ]
       };
       const optionState = new OptionState(config);
-      optionState.options = [
-        new OptionStateOption('First Name'),
-        new OptionStateOption('Last Name')
-      ];
+      await optionState.initialize();
       const key = 'Age';
       // When
       const result = optionState.boxValue(key);
@@ -95,14 +98,16 @@ describe('OptionState', () => {
   });
 
   describe('box unbox interactions', () => {
-    it('box -> unbox -> box returns first boxed result', () => {
+    it('box -> unbox -> box returns first boxed result', async () => {
       // Given
-      const config = {};
+      const config = {
+        options: [
+          new OptionStateOption('First Name'),
+          new OptionStateOption('Last Name')
+        ]
+      };
       const optionState = new OptionState(config);
-      optionState.options = [
-        new OptionStateOption('First Name'),
-        new OptionStateOption('Last Name')
-      ];
+      await optionState.initialize();
       const key = 'Last Name';
       // When
       const boxed = optionState.boxValue(key);
@@ -112,14 +117,16 @@ describe('OptionState', () => {
       expect(result).toEqual(boxed);
     });
 
-    it('unbox -> box -> unbox returns first unboxed result', () => {
+    it('unbox -> box -> unbox returns first unboxed result', async () => {
       // Given
-      const config = {};
+      const config = {
+        options: [
+          new OptionStateOption('First Name'),
+          new OptionStateOption('Last Name')
+        ]
+      };
       const optionState = new OptionState(config);
-      optionState.options = [
-        new OptionStateOption('First Name'),
-        new OptionStateOption('Last Name')
-      ];
+      await optionState.initialize();
       const option = {
         key: 'First Name'
       };
@@ -185,14 +192,16 @@ describe('OptionState', () => {
       expect(optionState.isValid).toBe(false);
     });
 
-    it('Using default validation, returns false when value already exists in archive', () => {
+    it('Using default validation, returns false when value already exists in archive', async () => {
       // Given a state with one value in archive
-      const config = {};
+      const config = {
+        options: [
+          new OptionStateOption('First Name'),
+          new OptionStateOption('Last Name')
+        ]
+      };
       const optionState = new OptionState(config);
-      optionState.options = [
-        new OptionStateOption('First Name'),
-        new OptionStateOption('Last Name')
-      ];
+      await optionState.initialize();
       optionState.value = new OptionStateOption('First Name');
       optionState.archiveValue();
       // When a value is set that is already in the archive
@@ -212,27 +221,31 @@ describe('OptionState', () => {
       expect(optionState.isValid).toBe(true);
     });
 
-    it('Using default validation, returns true when value matches an option by key', () => {
+    it('Using default validation, returns true when value matches an option by key', async () => {
       // Given
-      const config = {};
+      const config = {
+        options: [
+          new OptionStateOption('First Name'),
+          new OptionStateOption('Last Name')
+        ]
+      };
       const optionState = new OptionState(config);
-      optionState.options = [
-        new OptionStateOption('First Name'),
-        new OptionStateOption('Last Name')
-      ];
+      await optionState.doInitialize();
       optionState.value = new OptionStateOption('First Name');
       // Then
       expect(optionState.isValid).toBe(true);
     });
 
-    it('Using default validation, returns false when value does not match an option by key and allowUknown is false', () => {
+    it('Using default validation, returns false when value does not match an option by key and allowUknown is false', async () => {
       // Given
-      const config = {};
+      const config = {
+        options: [
+          new OptionStateOption('First Name'),
+          new OptionStateOption('Last Name')
+        ]
+      };
       const optionState = new OptionState(config);
-      optionState.options = [
-        new OptionStateOption('First Name'),
-        new OptionStateOption('Last Name')
-      ];
+      await optionState.doInitialize();
       optionState.value = new OptionStateOption('Age');
       // Then
       expect(optionState.isValid).toBe(false);
