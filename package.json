@@ -103,7 +103,7 @@
     "moment-timezone": "0.5.14",
     "node-sass": "4.7.2",
     "npm-run-all": "4.1.2",
-    "preact": "8.2.8",
+    "preact": "8.2.9",
     "preact-compat": "3.18.0",
     "preact-portal": "1.1.x",
     "preact-test-utils": "0.1.3",

@@ -1,9 +1,9 @@
 import { TokenStateMachine } from '../../../src/lib/token-state-machine';
+import { Lex } from '../../../src/lex';
 import { OptionState, OptionStateOption } from '../../../src/lib/states/generic/option-state';
 import { NumericRelationState } from '../../../src/lib/states/numeric/numeric-relation-state';
 import { NumericEntryState } from '../../../src/lib/states/numeric/numeric-entry-state';
 import { TextEntryState } from '../../../src/lib/states/text/text-entry-state';
-import { lexFrom } from '../../../src/lib/lex-util';
 import { TransitionFactory } from '../../../src/lib/transition-factory';
 import { LabelState } from '../../../src/lib/states/generic/label-state';
 import { TerminalState } from '../../../src/lib/states/generic/terminal-state';
@@ -15,7 +15,7 @@ describe('TokenStateMachine', () => {
       // Given a simple language
       const optFirstName = new OptionStateOption('First Name');
       const optLastName = new OptionStateOption('Last Name');
-      const language = lexFrom('field', OptionState, {
+      const language = Lex.from('field', OptionState, {
         name: 'Choose a field to search',
         options: [optFirstName, optLastName]
       })
@@ -64,15 +64,15 @@ describe('TokenStateMachine', () => {
       // Given a language with branches
       const optAge = new OptionStateOption('Age');
       const optHeight = new OptionStateOption('Height');
-      const language = lexFrom('field', OptionState, {
+      const language = Lex.from('field', OptionState, {
         name: 'Choose a field to search',
         options: [optAge, optHeight]
       })
         .branch(
-          lexFrom('relation', NumericRelationState)
+          Lex.from('relation', NumericRelationState)
             .branch(
-              lexFrom('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
-              lexFrom('value', NumericEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', NumericEntryState)
+              Lex.from('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
+              Lex.from('value', NumericEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', NumericEntryState)
             )
         );
 
@@ -133,7 +133,7 @@ describe('TokenStateMachine', () => {
     it('Skips over readonly state', () => {
       // Given a language with a LabelState (which is readonly)
       const optHeight = new OptionStateOption('Height');
-      const language = lexFrom('field', OptionState, {
+      const language = Lex.from('field', OptionState, {
         name: 'Choose a field to search',
         options: [optHeight]
       })
@@ -175,14 +175,14 @@ describe('TokenStateMachine', () => {
       // Given a language with a terminal option
       const optName = new OptionStateOption('Name', {type: 'string'});
       const optTerminal = new OptionStateOption('Terminal', {type: 'terminal'});
-      const language = lexFrom('field', OptionState, {
+      const language = Lex.from('field', OptionState, {
         name: 'Choose a field to search',
         // One option will immediately end the token, the other will not.
         options: [optName, optTerminal]
       })
         .branch(
-          lexFrom('value', TextEntryState, TransitionFactory.optionMetaCompare({type: 'string'})),
-          lexFrom('terminal', TerminalState, TransitionFactory.optionMetaCompare({type: 'terminal'}))
+          Lex.from('value', TextEntryState, TransitionFactory.optionMetaCompare({type: 'string'})),
+          Lex.from('terminal', TerminalState, TransitionFactory.optionMetaCompare({type: 'terminal'}))
         );
 
       // When machine is initialized with language root
@@ -209,7 +209,7 @@ describe('TokenStateMachine', () => {
     it('Does not transition when in an invalid state', () => {
       // Given a language with a numeric option
       const optAge = new OptionStateOption('Age');
-      const language = lexFrom('field', OptionState, {
+      const language = Lex.from('field', OptionState, {
         name: 'Choose a field to search',
         options: [optAge]
       })
@@ -246,7 +246,7 @@ describe('TokenStateMachine', () => {
     it('Fails if parent state is valid but there is no child state to transition to', () => {
       // Given a contrived language where the only child does not allow transitioning into
       const optFirstName = new OptionStateOption('First Name');
-      const language = lexFrom('field', OptionState, {
+      const language = Lex.from('field', OptionState, {
         name: 'Choose a field to search',
         options: [optFirstName]
       })
@@ -276,15 +276,15 @@ describe('TokenStateMachine', () => {
       // Given a language with branches
       const optAge = new OptionStateOption('Age');
       const optHeight = new OptionStateOption('Height');
-      const language = lexFrom('field', OptionState, {
+      const language = Lex.from('field', OptionState, {
         name: 'Choose a field to search',
         options: [optAge, optHeight]
       })
         .branch(
-          lexFrom('relation', NumericRelationState)
+          Lex.from('relation', NumericRelationState)
             .branch(
-              lexFrom('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
-              lexFrom('value', NumericEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', NumericEntryState)
+              Lex.from('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
+              Lex.from('value', NumericEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', NumericEntryState)
             )
         );
 
@@ -314,15 +314,15 @@ describe('TokenStateMachine', () => {
       // Given a language with branches
       const optAge = new OptionStateOption('Age');
       const optHeight = new OptionStateOption('Height');
-      const language = lexFrom('field', OptionState, {
+      const language = Lex.from('field', OptionState, {
         name: 'Choose a field to search',
         options: [optAge, optHeight]
       })
         .branch(
-          lexFrom('relation', NumericRelationState)
+          Lex.from('relation', NumericRelationState)
             .branch(
-              lexFrom('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
-              lexFrom('value', NumericEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', NumericEntryState)
+              Lex.from('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
+              Lex.from('value', NumericEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', NumericEntryState)
             )
         );
 
