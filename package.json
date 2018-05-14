@@ -61,6 +61,12 @@
     },
     "collectCoverageFrom": [
       "src/**/*.{js,jsx}"
+    ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "html"
     ]
   },
   "devDependencies": {

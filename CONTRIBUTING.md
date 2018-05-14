@@ -26,4 +26,6 @@ $ npm install
 
 - `npm test`: Run tests with coverage
 
+- `open coverage/index.html`: View interactive coverage report (given that `npm test` has been run)
+
 - `npm run tdd`: Run tests in watch mode
