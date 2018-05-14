@@ -157,7 +157,7 @@ export class OptionBuilder extends Builder {
 
   @Bind
   onBlur (e) {
-    this.commitTypedValue();
+    try { this.commitTypedValue(); } catch (err) { /* do nothing */ }
     this.requestBlur(e);
   }
 
