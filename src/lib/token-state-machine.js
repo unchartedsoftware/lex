@@ -176,7 +176,7 @@ export class TokenStateMachine extends EventEmitter {
       this.emit('state change failed', err);
       throw err;
     } else {
-      this.state.archiveValue();
+      this.state.archiveValue(this.boxedValue);
       this.emit('state changed', this.state, this.state);
     }
   }
@@ -186,7 +186,7 @@ export class TokenStateMachine extends EventEmitter {
    */
   unarchive () {
     if (this.state.archive.length > 0) {
-      this.state.unarchiveValue();
+      this.state.unarchiveValue(this.boxedValue);
       this.emit('state changed', this.state, this.state);
     } else {
       const err = new ValueArchiveError('Cannot unarchive from an empty archive');
@@ -202,7 +202,7 @@ export class TokenStateMachine extends EventEmitter {
    */
   removeArchivedValue (idx) {
     if (this.state.archive.length > idx) {
-      this.state.removeArchivedValue(idx);
+      this.state.removeArchivedValue(idx, this.boxedValue);
       this.emit('state changed', this.state, this.state);
     } else {
       const err = new ValueArchiveError(`Cannot remove value ${idx} from archive with length ${this.state.archive.length}`);
