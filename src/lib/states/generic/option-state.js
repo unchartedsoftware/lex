@@ -198,6 +198,7 @@ export class OptionState extends State {
 
   archiveValue (context) {
     super.archiveValue(context);
+    this.options = [...this.options, this.archive[this.archive.length - 1]];
     this.refreshSuggestions('', context);
   }
 
@@ -279,7 +280,7 @@ export class OptionState extends State {
         return new OptionStateOption(key, {});
       }
     } else {
-      if (!this.allowUnknown && this.options.length === 0) throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
+      if (!this.allowUnknown && this.options.length === 0 && this.suggestions.length === 0) throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
       return null;
     }
   }
@@ -316,6 +317,7 @@ export class OptionState extends State {
   reset () {
     super.reset();
     _options.set(this, []);
+    _suggestions.set(this, []);
   }
 
   /**

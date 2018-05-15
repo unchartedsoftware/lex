@@ -1,4 +1,5 @@
 import EventEmitter from 'wolfy87-eventemitter';
+import { ValueArchiveError } from './errors';
 
 // StateTemplate private members
 const _klass = new WeakMap();
@@ -516,8 +517,10 @@ export class State extends EventEmitter {
    * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    */
   archiveValue (context) { // eslint-disable-line no-unused-vars
-    if (this.multivalueLimit && this.archive.length === this.multivalueLimit) {
-      throw new Error(`Multivalue size limit reached for state ${this.name}`);
+    if (!this.isValid) {
+      throw new ValueArchiveError(`Cannot archive invalid value for current state: ${this.value}`);
+    } else if (this.multivalueLimit && this.archive.length === this.multivalueLimit) {
+      throw new ValueArchiveError(`Multivalue size limit reached for state ${this.name}`);
     }
     const oldVal = this.value;
     const oldUnboxedVal = this.unboxedValue;
@@ -534,6 +537,9 @@ export class State extends EventEmitter {
    * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    */
   unarchiveValue (context) { // eslint-disable-line no-unused-vars
+    if (this.archive.length === 0) {
+      throw new ValueArchiveError('Cannot unarchive from an empty archive');
+    }
     const oldVal = this.value;
     const oldUnboxedVal = this.unboxedValue;
     this.value = this.archive.pop();
@@ -548,6 +554,9 @@ export class State extends EventEmitter {
    * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    */
   removeArchivedValue (idx, context) { // eslint-disable-line no-unused-vars
+    if (this.archive.length <= idx) {
+      throw new ValueArchiveError(`Cannot remove value ${idx} from archive with length ${this.state.archive.length}`);
+    }
     this.archive.splice(idx, 1);
     this.emit('value changed', this.value, this.value, this.unboxedValue, this.unboxedValue);
     this.emit('value unarchived');

@@ -1,5 +1,5 @@
 import EventEmitter from 'wolfy87-eventemitter';
-import { StateTransitionError, ValueArchiveError } from './errors';
+import { StateTransitionError } from './errors';
 
 const _rootState = new WeakMap();
 const _currentState = new WeakMap();
@@ -171,13 +171,12 @@ export class TokenStateMachine extends EventEmitter {
    * and save the current one in the `State`'s archive.
    */
   archive () {
-    if (!this.state.isValid) {
-      const err = new ValueArchiveError(`Cannot archive invalid value for current state: ${this.state.value}`);
-      this.emit('state change failed', err);
-      throw err;
-    } else {
+    try {
       this.state.archiveValue(this.boxedValue);
       this.emit('state changed', this.state, this.state);
+    } catch (err) {
+      this.emit('state change failed', err);
+      throw err;
     }
   }
 
@@ -185,11 +184,10 @@ export class TokenStateMachine extends EventEmitter {
    * Inverse of `archive()`, overwriting the current value with one from the archive.
    */
   unarchive () {
-    if (this.state.archive.length > 0) {
+    try {
       this.state.unarchiveValue(this.boxedValue);
       this.emit('state changed', this.state, this.state);
-    } else {
-      const err = new ValueArchiveError('Cannot unarchive from an empty archive');
+    } catch (err) {
       this.emit('state change failed', err);
       throw err;
     }
@@ -201,11 +199,10 @@ export class TokenStateMachine extends EventEmitter {
    * @param {number} idx - An archive index.
    */
   removeArchivedValue (idx) {
-    if (this.state.archive.length > idx) {
+    try {
       this.state.removeArchivedValue(idx, this.boxedValue);
       this.emit('state changed', this.state, this.state);
-    } else {
-      const err = new ValueArchiveError(`Cannot remove value ${idx} from archive with length ${this.state.archive.length}`);
+    } catch (err) {
       this.emit('state change failed', err);
       throw err;
     }
