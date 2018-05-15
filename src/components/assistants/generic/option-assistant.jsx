@@ -14,16 +14,8 @@ import { UP_ARROW, DOWN_ARROW, TAB, ENTER, normalizeKey } from '../../../lib/key
 export class OptionAssistant extends Assistant {
   constructor () {
     super();
-    this.state.options = [];
-    this.state.activeOption = -1;
+    this.state.activeSuggestion = -1;
     this.state.suggestions = [];
-  }
-
-  getSuggestions (options = this.machineState.options) {
-    // create lookup table for archive
-    const lookup = new Map();
-    this.archive.forEach(a => lookup.set(a.key));
-    return options.filter(o => !o.hidden && !lookup.has(o.key)).slice(0, this.machineState.suggestionLimit);
   }
 
   cleanupListeners () {
@@ -43,30 +35,26 @@ export class OptionAssistant extends Assistant {
   @Bind
   onValueUnarchived () {
     if (this.machineState) {
-      setTimeout(() => this.machineState.refreshOptions('', this.machine.boxedValue));
+      setTimeout(() => this.machineState.refreshSuggestions('', this.machine.boxedValue));
     }
   }
 
   @Bind
-  onOptionsChanged (newOptions) {
+  onSuggestionsChanged (newSuggestions) {
     this.setState({
-      options: newOptions,
-      activeOption: -1,
-      suggestions: this.getSuggestions(newOptions)
+      activeSuggestion: -1,
+      suggestions: newSuggestions
     });
   }
 
   @Bind
-  onOptionSelected (option) {
-    this.machineState.unboxedValue = option.key;
+  onSuggestionSelected (suggestion) {
+    this.machineState.unboxedValue = suggestion.key;
     if (this.machineState.isMultivalue) {
       const result = this.requestArchive();
       if (result) {
         this.machineState.unboxedValue = null;
-        this.machineState.refreshOptions('', this.machine.boxedValue);
-        this.setState({
-          suggestions: this.getSuggestions()
-        });
+        this.machineState.refreshSuggestions('', this.machine.boxedValue);
       }
     } else {
       this.requestTransition();
@@ -74,30 +62,26 @@ export class OptionAssistant extends Assistant {
   }
 
   @Bind
-  onOptionHover (idx) {
-    this.setState({activeOption: idx});
+  onSuggestionHover (idx) {
+    this.setState({activeSuggestion: idx});
   }
 
   @Bind
   onArchivedRemoved (idx) {
     this.requestRemoveArchivedValue(idx);
-    this.setState({
-      suggestions: this.getSuggestions()
-    });
   }
 
   processProps (props) {
     const oldMachineState = this.machineState;
-    if (oldMachineState) oldMachineState.removeListener('options changed', this.onOptionsChanged);
+    if (oldMachineState) oldMachineState.removeListener('suggestions changed', this.onSuggestionsChanged);
     super.processProps(props);
     if (this.machineState !== oldMachineState) {
       this.setState({
-        options: this.machineState.options,
-        activeOption: -1,
-        suggestions: this.getSuggestions()
+        activeSuggestion: -1,
+        suggestions: this.machineState.suggestions
       });
     }
-    if (this.machineState) this.machineState.on('options changed', this.onOptionsChanged);
+    if (this.machineState) this.machineState.on('suggestions changed', this.onSuggestionsChanged);
   }
 
   delegateEvent (e) {
@@ -106,28 +90,28 @@ export class OptionAssistant extends Assistant {
     switch (normalizedKey) {
       // Fallthrough case to handle IE
       case UP_ARROW:
-        this.setState({activeOption: Math.max(this.state.activeOption - 1, 0)});
-        this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
+        this.setState({activeSuggestion: Math.max(this.state.activeSuggestion - 1, 0)});
+        this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
         setTimeout(() => this.fixListScrollPosition());
         break;
       // Fallthrough case to handle IE
       case DOWN_ARROW:
-        this.setState({activeOption: Math.min(this.state.activeOption + 1, this.state.suggestions.length - 1)});
-        this.machineState.previewValue = this.state.suggestions[this.state.activeOption];
+        this.setState({activeSuggestion: Math.min(this.state.activeSuggestion + 1, this.state.suggestions.length - 1)});
+        this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
         setTimeout(() => this.fixListScrollPosition());
         break;
       case this.state.multivalueDelimiter:
         if (this.machineState.isMultivalue) {
           consumed = true;
-          this.machineState.value = this.state.suggestions[this.state.activeOption];
+          this.machineState.value = this.state.suggestions[this.state.activeSuggestion];
           this.requestArchive();
         }
         break;
       case ENTER:
       case TAB:
-        const activeOption = this.state.suggestions[this.state.activeOption];
-        if (activeOption) {
-          this.machineState.value = activeOption;
+        const activeSuggestion = this.state.suggestions[this.state.activeSuggestion];
+        if (activeSuggestion) {
+          this.machineState.value = activeSuggestion;
           this.requestTransition({nextToken: normalizedKey === TAB});
         } else if (this.state.suggestions.length === 1 && !this.machineState.allowUnknown) {
           this.machineState.value = this.state.suggestions[0];
@@ -172,15 +156,15 @@ export class OptionAssistant extends Assistant {
     }
   }
 
-  renderAssistantBody (props, {activeOption, suggestions}) {
-    if (this.machineState.isMultivalue || this.machineState.options.length > 0) {
+  renderAssistantBody (props, {activeSuggestion, suggestions}) {
+    if (this.machineState.isMultivalue || this.machineState.suggestions.length > 0) {
       return (
         <div className='assistant-body'>
           <div className={this.machineState.isMultivalue ? 'assistant-left' : ''}>
             { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
             <ul ref={(n) => { this.suggestionContainer = n; }}>
               {
-                (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onOptionSelected(o)} onMouseOver={() => this.onOptionHover(idx)} className={idx === activeOption ? 'selectable active' : 'selectable'}>{this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)}</li>))
+                (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onSuggestionSelected(o)} onMouseOver={() => this.onSuggestionHover(idx)} className={idx === activeSuggestion ? 'selectable active' : 'selectable'}>{this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)}</li>))
               }
               { (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
               { this.machineState.isMultivalue && !this.machineState.canArchiveValue && <li><em className='text-muted anim-flash'>Maximum number of values reached. <button className='btn btn-xs btn-default' onMouseDown={this.requestTransition}>{this.state.machine.state.isTerminal ? 'Finish' : 'Next'}?</button></em></li> }

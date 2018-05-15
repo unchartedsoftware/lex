@@ -512,8 +512,10 @@ export class State extends EventEmitter {
 
   /**
    * Moves the current value to the archive, and resets the current value.
+   *
+   * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    */
-  archiveValue () {
+  archiveValue (context) { // eslint-disable-line no-unused-vars
     if (this.multivalueLimit && this.archive.length === this.multivalueLimit) {
       throw new Error(`Multivalue size limit reached for state ${this.name}`);
     }
@@ -528,8 +530,10 @@ export class State extends EventEmitter {
 
   /**
    * Moves the top value from the archive back to the current value, overwriting it.
+   *
+   * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    */
-  unarchiveValue () {
+  unarchiveValue (context) { // eslint-disable-line no-unused-vars
     const oldVal = this.value;
     const oldUnboxedVal = this.unboxedValue;
     this.value = this.archive.pop();
@@ -541,8 +545,9 @@ export class State extends EventEmitter {
    * Remove a specific value from the archive, by index.
    *
    * @param {number} idx - The index of the archived value to remove.
+   * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    */
-  removeArchivedValue (idx) {
+  removeArchivedValue (idx, context) { // eslint-disable-line no-unused-vars
     this.archive.splice(idx, 1);
     this.emit('value changed', this.value, this.value, this.unboxedValue, this.unboxedValue);
     this.emit('value unarchived');

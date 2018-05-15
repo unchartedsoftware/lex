@@ -13,7 +13,7 @@ const options = [
   new OptionStateOption('GeoHash', {type: 'geohash'}, {hidden: true})
 ];
 
-function fetchSpecificOptions (query) {
+function fetchOptions (query) {
   return new Promise((resolve) => {
     const lookup = new Map();
     query.forEach(v => lookup.set(v.toLowerCase(), true));
@@ -34,8 +34,8 @@ function searchOptions (hint) {
 
 const language = Lex.from('field', OptionState, {
   name: 'Choose a field to search',
-  options: searchOptions,
-  fetchOptions: fetchSpecificOptions,
+  options: fetchOptions,
+  refreshSuggestions: searchOptions,
   icon: (value) => {
     if (!value) return '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>';
     switch (value.key) {

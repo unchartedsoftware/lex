@@ -12,15 +12,9 @@ import { ENTER, TAB, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
  * lex.registerBuilder(OptionState, OptionBuilder)
  */
 export class OptionBuilder extends Builder {
-  constructor () {
-    super();
-    this.state.options = [];
-  }
-
   cleanupListeners () {
     super.cleanupListeners();
     if (this.machineState) {
-      this.machineState.removeListener('options changed', this.onOptionsChanged);
       this.machineState.removeListener('value changed', this.onValueChanged);
       this.machineState.removeListener('preview value changed', this.onPreviewValueChanged);
     }
@@ -29,7 +23,6 @@ export class OptionBuilder extends Builder {
   connectListeners () {
     super.connectListeners();
     if (this.machineState) {
-      this.machineState.on('options changed', this.onOptionsChanged);
       this.machineState.on('value changed', this.onValueChanged);
       this.machineState.on('preview value changed', this.onPreviewValueChanged);
     }
@@ -100,7 +93,7 @@ export class OptionBuilder extends Builder {
   @Debounce(250) // 250ms debounce
   handleKeyUp (e) {
     const boxed = this.machine.boxedValue;
-    this.machineState.refreshOptions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed);
+    this.machineState.refreshSuggestions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed);
   }
 
   focus () {
@@ -126,11 +119,6 @@ export class OptionBuilder extends Builder {
         this.requestUnarchive();
       }
     }
-  }
-
-  @Bind
-  onOptionsChanged (newOptions) {
-    this.setState({options: newOptions});
   }
 
   @Bind
