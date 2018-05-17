@@ -151,8 +151,9 @@ export class OptionAssistant extends Assistant {
       const archives = this.machineState.archive;
       return (
         <div className='assistant-right'>
-          <div className='removable assistant-header'>Entered Values{limitCounter}
-            { archives.length ? <span onClick={() => this.onArchivedAll()}>(click to remove all)</span> : '' }
+          <div className='removable assistant-header'>
+            <span>Entered Values{limitCounter}</span>
+            { archives.length ? <span tabIndex='0' className='selectable' onClick={() => this.onArchivedAll()}>(click to remove all)</span> : '' }
           </div>
           <ul>
             {

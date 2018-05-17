@@ -217,11 +217,16 @@ div.lex-assistant-box {
     color: $lex-assistant-header-color;
     background-color: $lex-assistant-header-background;
     border-bottom: 1px solid $lex-assistant-border-color;
-    display:block;
+    display:flex;
+    justify-content: space-between;
     min-height: 2.5rem;
     padding: 0.5rem 1rem;
     .assistant-menu {
       margin-top: -1px;
+    }
+
+    span.selectable {
+      cursor: pointer;
     }
   }
 
