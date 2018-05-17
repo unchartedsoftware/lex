@@ -160,6 +160,7 @@ export class SearchBar extends Component {
         requestArchive={this.archive}
         requestUnarchive={this.unarchive}
         requestRemoveArchivedValue={this.removeArchivedValue}
+        requestRemoveArchivedValues={this.removeArchivedValues}
         requestRewind={this.rewind}
         requestRemoval={this.removeToken}
         onEndToken={this.onEndToken}
@@ -199,6 +200,7 @@ export class SearchBar extends Component {
               requestArchive={this.archive}
               requestUnarchive={this.unarchive}
               requestRemoveArchivedValue={this.removeArchivedValue}
+              requestRemoveArchivedValues={this.removeArchivedValues}
               requestRewind={this.rewind}
               requestRemoval={this.removeToken}
               onEndToken={this.onEndToken}
@@ -296,6 +298,21 @@ export class SearchBar extends Component {
   removeArchivedValue (idx) {
     try {
       this.state.activeMachine.removeArchivedValue(idx, this.state.activeMachine.boxedValue);
+      return true;
+    } catch (err) {
+      if (err instanceof ValueArchiveError) {
+        console.error(err.message); // eslint-disable-line no-console
+        return false;
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  @Bind
+  removeArchivedValues () {
+    try {
+      this.state.activeMachine.removeArchivedValues();
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {

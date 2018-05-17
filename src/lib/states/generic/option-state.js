@@ -212,6 +212,11 @@ export class OptionState extends State {
     this.refreshSuggestions('', context);
   }
 
+  removeArchivedValues () {
+    super.removeArchivedValues();
+    this.refreshSuggestions();
+  }
+
   /**
    * @returns {boolean} - Whether or not this option selector allows the creation of unknown options.
    */
