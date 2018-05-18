@@ -179,6 +179,7 @@ export class State extends EventEmitter {
   constructor (config) {
     const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon} = config;
     super();
+    this._id = Math.random();
     _parent.set(this, parent);
     _name.set(this, name);
     _vkey.set(this, vkey);
@@ -194,6 +195,10 @@ export class State extends EventEmitter {
     _value.set(this, _defaultValue.get(this));
     _previewValue.set(this, null);
     _archive.set(this, []);
+  }
+
+  get id () {
+    return this._id;
   }
 
   get isReadOnly () {

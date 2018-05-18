@@ -69,6 +69,7 @@ export class Builder extends Component {
   processProps (props) {
     propsToState(this, props, [
       {k: 'valid', default: true},
+      {k: 'focused', default: false},
       {k: 'editing', default: false},
       {k: 'readOnly', default: false},
       {k: 'tokenActive', default: false},
@@ -95,9 +96,6 @@ export class Builder extends Component {
       {k: 'requestCancel', default: () => true},
       {k: 'validityChanged', default: () => true}
     ]);
-    if (props.focused) {
-      setTimeout(() => { this.focus(); });
-    }
   }
 
   @Bind

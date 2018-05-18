@@ -82,7 +82,7 @@ export class Token extends Component {
     this.setState({
       stateArray: result
     });
-    this.setState({focused: true});
+    // this.setState({focused: true});
     this.state.requestFocus();
   }
 
@@ -144,7 +144,8 @@ export class Token extends Component {
   }
 
   focus () {
-    this.setState({focused: true});
+    // this.setState({focused: true});
+    setTimeout(() => { if (this.activeBuilder) this.activeBuilder.focus(); }, 10);
   }
 
   @Bind
@@ -155,7 +156,7 @@ export class Token extends Component {
 
   @Bind
   requestBlur () {
-    this.setState({focused: false});
+    // this.setState({focused: false});
     this.state.requestBlur();
   }
 
@@ -193,13 +194,14 @@ export class Token extends Component {
     }
   }
 
-  render (props, {active, flash, suggestion, machine, focused, multivalueDelimiter, multivaluePasteDelimiter}) {
+  render (props, {active, flash, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
       <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''}`} onMouseDown={this.requestEdit}>
         {this.icon}
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.constructor);
           return (<Builder
+            key={s.id}
             machine={machine}
             machineState={s}
             requestTransition={this.state.requestTransition}
@@ -214,7 +216,8 @@ export class Token extends Component {
             validityChanged={this.state.onValidityChanged}
             readOnly={!active || s !== machine.state}
             blank={this.isBlank}
-            focused={active && s === machine.state && focused}
+            // focused={active && s === machine.state && focused}
+            ref={(b) => { if (active && s === machine.state) this.activeBuilder = b; }}
             tokenActive={active}
             multivalueDelimiter={multivalueDelimiter}
             multivaluePasteDelimiter={multivaluePasteDelimiter}

@@ -106,9 +106,11 @@ export class OptionBuilder extends Builder {
 
   @Bind
   clearPreview () {
-    this.setState({
-      previewText: ''
-    });
+    if (typeof this.state.previewText === 'string' && this.state.previewText.length > 0) {
+      this.setState({
+        previewText: ''
+      });
+    }
   }
 
   @Bind

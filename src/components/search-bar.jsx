@@ -129,8 +129,9 @@ export class SearchBar extends Component {
   @Bind
   activate () {
     const wasActive = this.state.active;
-    this.setState({active: true});
     if (!wasActive) {
+      this.setState({active: true});
+      setTimeout(() => this.tokenBuilder.focus(), 10);
       this.state.activeMachine.reset();
       this.state.onStartToken();
     }
@@ -456,7 +457,7 @@ export class SearchBar extends Component {
         { !active && placeholder !== undefined && tokenValues.length === 0 && suggestions.length === 0 ? <div className='text-muted lex-placeholder'>{ placeholder }</div> : '' }
         {
           tokenValues.map((v, i) => {
-            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} focused={false} />;
+            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} />;
           })
         }
         {
