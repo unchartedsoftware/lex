@@ -11,7 +11,7 @@ export class CurrencyEntryState extends OptionState {
     if (config.name === undefined) config.name = 'Enter a value';
     if (config.validate === undefined) {
       config.validate = (val) => {
-        return !isNaN(val.key);
+        return val !== null && val !== undefined && !isNaN(val.key);
       };
     }
     config.allowUnknown = true;
