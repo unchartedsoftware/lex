@@ -561,4 +561,13 @@ export class State extends EventEmitter {
     this.emit('value changed', this.value, this.value, this.unboxedValue, this.unboxedValue);
     this.emit('value unarchived');
   }
+
+  /**
+   * Remove all values from the archive.
+   */
+  removeArchivedValues () {
+    this.archive.splice(0, this.archive.length);
+    this.emit('value changed', this.value, this.value, this.unboxedValue, this.unboxedValue);
+    this.emit('value unarchived'); // TODO should probably implement an 'archive changed' event at some point, but this will work for now.
+  }
 }

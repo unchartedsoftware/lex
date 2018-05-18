@@ -88,6 +88,7 @@ export class Builder extends Component {
       {k: 'requestArchive', default: () => true},
       {k: 'requestUnarchive', default: () => true},
       {k: 'requestRemoveArchivedValue', default: () => true},
+      {k: 'requestRemoveArchivedValues', default: () => true},
       {k: 'requestRewind', default: () => true},
       {k: 'requestFocus', default: () => true},
       {k: 'requestBlur', default: () => true},
@@ -161,6 +162,14 @@ export class Builder extends Component {
    */
   requestRemoveArchivedValue (idx) {
     return this.state.requestRemoveArchivedValue(idx);
+  }
+
+  @Bind
+  /**
+   * Call from a subclass to request the state machine for the containing token to attempt removal of all values from the archive.
+   */
+  requestRemoveArchivedValues () {
+    return this.state.requestRemoveArchivedValues();
   }
 
   @Bind

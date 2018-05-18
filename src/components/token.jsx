@@ -206,6 +206,7 @@ export class Token extends Component {
             requestArchive={this.state.requestArchive}
             requestUnarchive={this.state.requestUnarchive}
             requestRemoveArchivedValue={this.state.requestRemoveArchivedValue}
+            requestRemoveArchivedValues={this.state.requestRemoveArchivedValues}
             requestRewind={this.state.requestRewind}
             requestFocus={this.requestFocus}
             requestBlur={this.requestBlur}

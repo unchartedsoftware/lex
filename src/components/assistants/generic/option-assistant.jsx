@@ -71,6 +71,15 @@ export class OptionAssistant extends Assistant {
     this.requestRemoveArchivedValue(idx);
   }
 
+  @Bind
+  onRemoveArchivedValues (e) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    this.requestRemoveArchivedValues();
+  }
+
   processProps (props) {
     const oldMachineState = this.machineState;
     if (oldMachineState) oldMachineState.removeListener('suggestions changed', this.onSuggestionsChanged);
@@ -143,12 +152,18 @@ export class OptionAssistant extends Assistant {
   renderArchive () {
     if (this.machineState.isMultivalue) {
       const limitCounter = this.machineState.multivalueLimit !== undefined ? ` (${this.machineState.archive.length}/${this.machineState.multivalueLimit})` : '';
+      const archive = this.machineState.archive;
       return (
         <div className='assistant-right'>
-          <div className='assistant-header'>Entered Values{limitCounter}</div>
+          <div className='removable assistant-header'>
+            <span>Entered Values{limitCounter}</span>
+            <div className='assistant-menu pull-right'>
+              { archive.length ? <a tabIndex='0' className='btn btn-xs btn-default' onClick={this.onRemoveArchivedValues}>Clear All</a> : '' }
+            </div>
+          </div>
           <ul>
             {
-              this.machineState.archive.map((o, idx) => <li tabIndex='0' className='removable clearfix' onClick={() => this.onArchivedRemoved(idx)}><span className='pull-left'>{this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)}</span><em className='pull-right'>(click to remove)</em></li>)
+              archive.map((o, idx) => <li tabIndex='0' className='removable clearfix' onClick={() => this.onArchivedRemoved(idx)}><span className='pull-left'>{this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)}</span><em className='pull-right'>(click to remove)</em></li>)
             }
           </ul>
         </div>
