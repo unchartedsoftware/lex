@@ -566,12 +566,8 @@ export class State extends EventEmitter {
    * Remove all values from the archive.
    */
   removeArchivedValues () {
-    if (!this.archive.length) {
-      throw new ValueArchiveError(`Cannot remove values from archive with length ${this.state.archive.length}`);
-    }
     this.archive.splice(0, this.archive.length);
-    // TODO: either change events or emit multiple events
     this.emit('value changed', this.value, this.value, this.unboxedValue, this.unboxedValue);
-    this.emit('value unarchived');
+    this.emit('value unarchived'); // TODO should probably implement an 'archive changed' event at some point, but this will work for now.
   }
 }
