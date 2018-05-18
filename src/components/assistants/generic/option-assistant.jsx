@@ -87,6 +87,7 @@ export class OptionAssistant extends Assistant {
       e.preventDefault();
     }
     if (this.machineState) {
+      // via https://hackernoon.com/copying-text-to-clipboard-with-javascript-df4d4988697f
       const el = document.createElement('textarea');
       el.value = this.machineState.archive.map((o) => this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)).join(this.state.multivaluePasteDelimiter);
       el.setAttribute('readonly', '');
