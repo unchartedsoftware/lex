@@ -228,6 +228,10 @@ export class State extends EventEmitter {
     return typeof this.vkey === 'string' ? `token-vkey-${this.vkey.toLowerCase().replace(/\s/g, '-')}` : '';
   }
 
+  get rewindableClass () {
+    return !this.isReadOnly && !this.isBindOnly ? 'rewindable' : '';
+  }
+
   get defaultValue () {
     return _defaultValue.get(this);
   }
