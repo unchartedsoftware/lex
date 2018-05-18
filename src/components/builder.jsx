@@ -186,7 +186,7 @@ export class Builder extends Component {
    * this builder
    */
   requestRewindTo (e) {
-    if (!this.state.tokenActive) return;
+    if (!this.state.tokenActive || this.state.machineState.isReadOnly || this.state.machineState.isBindOnly) return;
     if (e !== undefined) {
       e.preventDefault();
       e.stopPropagation();
@@ -245,7 +245,7 @@ export class Builder extends Component {
    */
   renderReadOnly (props, state) {
     return (
-      <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass}`} onMouseDown={this.requestRewindTo}>
+      <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass} ${state.machineState.rewindableClass}`} onMouseDown={this.requestRewindTo}>
         {this.unboxedValue}
       </span>
     );
