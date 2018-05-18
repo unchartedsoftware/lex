@@ -234,7 +234,7 @@ export class TokenStateMachine extends EventEmitter {
     while (this.state !== target) {
       if (!this.state.parent) break;
       const oldState = this.state;
-      // oldState.reset();
+      if (target.resetOnRewind) oldState.reset();
       _currentState.set(this, this.state.parent);
       this.emit('state changed', this.state, oldState);
     }
