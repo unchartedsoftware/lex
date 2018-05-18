@@ -21,6 +21,7 @@ const _children = new WeakMap();
 const _value = new WeakMap();
 const _archive = new WeakMap();
 const _icon = new WeakMap();
+const _resetOnRewind = new WeakMap();
 
 /**
  * A factory for a `State`, which can be used to produce instances
@@ -157,6 +158,7 @@ export class StateTemplate {
  * @param {boolean} config.multivalue - Whether or not this state supports multi-value entry.
  * @param {number | undefined} config.multivalueLimit - An optional limit on the number of values this state can contain.
  * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
+ * @param {boolean} config.resetOnRewind - This state should reset child states when rewound to during a token edit. False by default.
  * @example
  * class MyCustomState extends State {
  *   constructor (config) {
@@ -177,7 +179,7 @@ export class StateTemplate {
  */
 export class State extends EventEmitter {
   constructor (config) {
-    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon} = config;
+    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon, resetOnRewind} = config;
     super();
     this._id = Math.random();
     _parent.set(this, parent);
@@ -192,6 +194,7 @@ export class State extends EventEmitter {
     _bindOnly.set(this, bindOnly !== undefined ? bindOnly : false);
     _children.set(this, []);
     _icon.set(this, icon);
+    _resetOnRewind.set(this, resetOnRewind);
     _value.set(this, _defaultValue.get(this));
     _previewValue.set(this, null);
     _archive.set(this, []);
@@ -251,6 +254,10 @@ export class State extends EventEmitter {
 
   get multivalueLimit () {
     return _multivalueLimit.get(this);
+  }
+
+  get resetOnRewind () {
+    return _resetOnRewind.get(this);
   }
 
   get isRoot () {
