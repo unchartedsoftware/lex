@@ -80,6 +80,33 @@ export class OptionAssistant extends Assistant {
     this.requestRemoveArchivedValues();
   }
 
+  @Bind
+  onCopyArchivedValues (e) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    if (this.machineState) {
+      const el = document.createElement('textarea');
+      el.value = this.machineState.archive.map((o) => this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)).join(this.state.multivaluePasteDelimiter);
+      el.setAttribute('readonly', '');
+      el.style.position = 'absolute';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      const selected =
+        document.getSelection().rangeCount > 0
+          ? document.getSelection().getRangeAt(0)
+          : false;
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      if (selected) {
+        document.getSelection().removeAllRanges();
+        document.getSelection().addRange(selected);
+      }
+    }
+  }
+
   processProps (props) {
     const oldMachineState = this.machineState;
     if (oldMachineState) oldMachineState.removeListener('suggestions changed', this.onSuggestionsChanged);
@@ -153,17 +180,28 @@ export class OptionAssistant extends Assistant {
     if (this.machineState.isMultivalue) {
       const limitCounter = this.machineState.multivalueLimit !== undefined ? ` (${this.machineState.archive.length}/${this.machineState.multivalueLimit})` : '';
       const archive = this.machineState.archive;
+      const keys = archive.map((o) => this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue));
+      let menu = '';
+      if (archive.length > 0) {
+        menu = (
+          <div className='assistant-menu pull-right'>
+            <span className='btn-group'>
+              <button className='btn btn-xs btn-default' onClick={this.onCopyArchivedValues}>Copy All</button>
+              <button className='btn btn-xs btn-default' onClick={this.onRemoveArchivedValues}>Clear All</button>
+            </span>
+          </div>
+        );
+      }
+
       return (
         <div className='assistant-right'>
           <div className='removable assistant-header'>
             <span>Entered Values{limitCounter}</span>
-            <div className='assistant-menu pull-right'>
-              { archive.length ? <a tabIndex='0' className='btn btn-xs btn-default' onClick={this.onRemoveArchivedValues}>Clear All</a> : '' }
-            </div>
+            {menu}
           </div>
           <ul>
             {
-              archive.map((o, idx) => <li tabIndex='0' className='removable clearfix' onClick={() => this.onArchivedRemoved(idx)}><span className='pull-left'>{this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)}</span><em className='pull-right'>(click to remove)</em></li>)
+              keys.map((key, idx) => <li tabIndex='0' className='removable clearfix' onClick={() => this.onArchivedRemoved(idx)}><span className='pull-left'>{key}</span><em className='pull-right'>(click to remove)</em></li>)
             }
           </ul>
         </div>
