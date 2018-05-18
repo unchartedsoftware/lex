@@ -119,6 +119,7 @@ export class DateTimeEntryBuilder extends Builder {
     });
   }
 
+
   @Bind
   beforeTransition () {
     this.commitTypedValue();
@@ -144,6 +145,18 @@ export class DateTimeEntryBuilder extends Builder {
       this.setState({
         previewText: newUnboxedPreviewValue
       });
+    }
+  }
+
+  @Bind
+  onBlur (e) {
+    if (this.machine.state === this.machineState) {
+      const assistantBox = document.getElementById('lex-assistant-box');
+      if (!e.relatedTarget || assistantBox === null || (!assistantBox.contains(e.relatedTarget) && !e.relatedTarget.getAttribute('data-date'))) {
+        this.requestCancel();
+      }
+    } else {
+      this.requestBlur(e);
     }
   }
 
@@ -178,6 +191,7 @@ export class DateTimeEntryBuilder extends Builder {
             placeholder={machineState.format}
             onInput={this.handleInput}
             onFocus={this.requestFocus}
+            onFocusOut={this.onBlur}
             onPaste={this.onPaste}
             ref={(input) => { this.textInput = input; }}
             disabled={readOnly} />

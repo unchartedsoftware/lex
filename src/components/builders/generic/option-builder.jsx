@@ -148,7 +148,14 @@ export class OptionBuilder extends Builder {
   @Bind
   onBlur (e) {
     try { this.commitTypedValue(); } catch (err) { /* do nothing */ }
-    this.requestBlur(e);
+    if (this.machine.state === this.machineState) {
+      const assistantBox = document.getElementById('lex-assistant-box');
+      if (!e.relatedTarget || assistantBox === null || !assistantBox.contains(e.relatedTarget)) {
+        this.requestCancel();
+      }
+    } else {
+      this.requestBlur(e);
+    }
   }
 
   @Bind
