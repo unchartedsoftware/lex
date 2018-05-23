@@ -280,7 +280,7 @@ describe('TokenStateMachine', () => {
   });
 
   describe('rewind', () => {
-    it('Returns to previous state', () => {
+    it('Returns to previous state', async () => {
       // Given a language with branches
       const optAge = new OptionStateOption('Age');
       const optHeight = new OptionStateOption('Height');
@@ -298,11 +298,12 @@ describe('TokenStateMachine', () => {
 
       // Given entry of: Age between 5 and
       const tokenStateMachine = new TokenStateMachine(language.root);
+      tokenStateMachine.reset();
+      await wait();
       spyOn(tokenStateMachine, 'emit');
-      tokenStateMachine.rootState.options = [optAge, optHeight];
       tokenStateMachine.rootState.value = optAge;
       tokenStateMachine.transition();
-      tokenStateMachine.state.options = [{key: 'between', shortKey: 'between'}, {key: 'equals', shortKey: '='}];
+      await wait();
       tokenStateMachine.state.value = {key: 'between'};
       tokenStateMachine.transition();
       tokenStateMachine.state.value = {key: 5};
@@ -318,7 +319,7 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.state.value.key).toEqual(5);
     });
 
-    it('Returns to previous state even when current state is invalid', () => {
+    it('Returns to previous state even when current state is invalid', async () => {
       // Given a language with branches
       const optAge = new OptionStateOption('Age');
       const optHeight = new OptionStateOption('Height');
@@ -336,10 +337,11 @@ describe('TokenStateMachine', () => {
 
       // Given entry of: Age between foo (invalid)
       const tokenStateMachine = new TokenStateMachine(language.root);
-      tokenStateMachine.rootState.options = [optAge, optHeight];
+      tokenStateMachine.reset();
+      await wait();
       tokenStateMachine.rootState.value = optAge;
       tokenStateMachine.transition();
-      tokenStateMachine.state.options = [{key: 'between', shortKey: 'between'}, {key: 'equals', shortKey: '='}];
+      await wait();
       tokenStateMachine.state.value = {key: 'between'};
       tokenStateMachine.transition();
       tokenStateMachine.state.value = {key: 'foo'};
