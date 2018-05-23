@@ -14,7 +14,7 @@ import {
 
 describe('TokenStateMachine', () => {
   describe('transition', () => {
-    it('Walks a simple tree', () => {
+    it('Walks a simple tree', async () => {
       // Given a simple language
       const optFirstName = new OptionStateOption('First Name');
       const optLastName = new OptionStateOption('Last Name');
@@ -26,6 +26,8 @@ describe('TokenStateMachine', () => {
 
       // When machine is initialized with language root
       const tokenStateMachine = new TokenStateMachine(language.root);
+      tokenStateMachine.reset();
+      await wait();
       spyOn(tokenStateMachine, 'emit');
 
       // Then verify expected root state
@@ -33,8 +35,7 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.rootState.name).toEqual('Choose a field to search');
       expect(tokenStateMachine.rootState.vkey).toEqual('field');
 
-      // Given a valid initial state -> pick First Name option
-      tokenStateMachine.rootState.options = [optFirstName, optLastName];
+      // Select First Name option
       tokenStateMachine.rootState.value = optFirstName;
 
       // When transition is invoked
@@ -63,7 +64,7 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.emit.calls.mostRecent().args[0]).toEqual('end');
     });
 
-    it('Walks a tree with branches', () => {
+    it('Walks a tree with branches', async () => {
       // Given a language with branches
       const optAge = new OptionStateOption('Age');
       const optHeight = new OptionStateOption('Height');
@@ -81,25 +82,26 @@ describe('TokenStateMachine', () => {
 
       // When machine is initialized with language root
       const tokenStateMachine = new TokenStateMachine(language.root);
+      tokenStateMachine.reset();
+      await wait();
 
       // Then verify expected root state
       expect(tokenStateMachine.id).toBeDefined();
       expect(tokenStateMachine.rootState.name).toEqual('Choose a field to search');
       expect(tokenStateMachine.rootState.vkey).toEqual('field');
 
-      // Given a valid initial state -> pick Height option
-      tokenStateMachine.rootState.options = [optAge, optHeight];
+      // Given height option has been selected
       tokenStateMachine.rootState.value = optHeight;
 
       // When transition is invoked
       tokenStateMachine.transition();
+      await wait();
 
       // Then verify current state
       expect(tokenStateMachine.state.name).toEqual('Choose a numeric relation');
       expect(tokenStateMachine.state.vkey).toEqual('relation');
 
       // Given a relation has been chosen
-      tokenStateMachine.state.options = [{key: 'between', shortKey: 'between'}, {key: 'equals', shortKey: '='}];
       tokenStateMachine.state.value = {key: 'between'};
 
       // When another transition is invoked
@@ -133,7 +135,7 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.value.secondaryValue.key).toEqual(65);
     });
 
-    it('Skips over readonly state', () => {
+    it('Skips over readonly state', async () => {
       // Given a language with a LabelState (which is readonly)
       const optHeight = new OptionStateOption('Height');
       const language = Lex.from('field', OptionState, {
@@ -146,14 +148,15 @@ describe('TokenStateMachine', () => {
 
       // When machine is initialized with language root
       const tokenStateMachine = new TokenStateMachine(language.root);
+      tokenStateMachine.reset();
+      await wait();
 
       // Then verify expected root state
       expect(tokenStateMachine.id).toBeDefined();
       expect(tokenStateMachine.rootState.name).toEqual('Choose a field to search');
       expect(tokenStateMachine.rootState.vkey).toEqual('field');
 
-      // Given a valid initial state -> pick Height option
-      tokenStateMachine.rootState.options = [optHeight];
+      // Given Height option is selected
       tokenStateMachine.rootState.value = optHeight;
 
       // When transition is invoked
@@ -174,13 +177,12 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.state.vkey).toEqual('heightInches');
     });
 
-    it('Transitions to terminal state for terminal option', () => {
+    it('Transitions to terminal state for terminal option', async () => {
       // Given a language with a terminal option
       const optName = new OptionStateOption('Name', {type: 'string'});
       const optTerminal = new OptionStateOption('Terminal', {type: 'terminal'});
       const language = Lex.from('field', OptionState, {
         name: 'Choose a field to search',
-        // One option will immediately end the token, the other will not.
         options: [optName, optTerminal]
       })
         .branch(
@@ -190,14 +192,15 @@ describe('TokenStateMachine', () => {
 
       // When machine is initialized with language root
       const tokenStateMachine = new TokenStateMachine(language.root);
+      tokenStateMachine.reset();
+      await wait();
 
       // Then verify expected root state
       expect(tokenStateMachine.id).toBeDefined();
       expect(tokenStateMachine.rootState.name).toEqual('Choose a field to search');
       expect(tokenStateMachine.rootState.vkey).toEqual('field');
 
-      // Given a valid initial state -> pick Terminal option
-      tokenStateMachine.rootState.options = [optName, optTerminal];
+      // Given that Terminal option is selected
       tokenStateMachine.rootState.value = optTerminal;
 
       // When transition is invoked
@@ -209,7 +212,7 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.value.value).toBeUndefined();
     });
 
-    it('Does not transition when in an invalid state', () => {
+    it('Does not transition when in an invalid state', async () => {
       // Given a language with a numeric option
       const optAge = new OptionStateOption('Age');
       const language = Lex.from('field', OptionState, {
@@ -221,14 +224,15 @@ describe('TokenStateMachine', () => {
       // When machine is initialized with language root
       const tokenStateMachine = new TokenStateMachine(language.root);
       spyOn(tokenStateMachine, 'emit');
+      tokenStateMachine.reset();
+      await wait();
 
       // Then verify expected root state
       expect(tokenStateMachine.id).toBeDefined();
       expect(tokenStateMachine.rootState.name).toEqual('Choose a field to search');
       expect(tokenStateMachine.rootState.vkey).toEqual('field');
 
-      // Given a valid initial state -> pick First Name option
-      tokenStateMachine.rootState.options = [optAge];
+      // Given First Name option is selected
       tokenStateMachine.rootState.value = optAge;
 
       // When transition is invoked
@@ -246,7 +250,7 @@ describe('TokenStateMachine', () => {
       expect(tokenStateMachine.emit.calls.mostRecent().args[0]).toEqual('state change failed');
     });
 
-    it('Fails if parent state is valid but there is no child state to transition to', () => {
+    it('Fails if parent state is valid but there is no child state to transition to', async () => {
       // Given a contrived language where the only child does not allow transitioning into
       const optFirstName = new OptionStateOption('First Name');
       const language = Lex.from('field', OptionState, {
@@ -257,16 +261,17 @@ describe('TokenStateMachine', () => {
           transition: () => false
         });
 
-        // When machine is initialized with language root
+      // When machine is initialized with language root
       const tokenStateMachine = new TokenStateMachine(language.root);
+      tokenStateMachine.reset();
+      await wait();
 
       // Then verify expected root state
       expect(tokenStateMachine.id).toBeDefined();
       expect(tokenStateMachine.rootState.name).toEqual('Choose a field to search');
       expect(tokenStateMachine.rootState.vkey).toEqual('field');
 
-      // Given a valid initial state -> pick First Name option
-      tokenStateMachine.rootState.options = [optFirstName];
+      // Given First Name option is selected
       tokenStateMachine.rootState.value = optFirstName;
 
       // Then expect state transition error on attempting to transition
