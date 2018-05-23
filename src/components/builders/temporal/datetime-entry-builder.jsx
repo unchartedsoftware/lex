@@ -2,6 +2,7 @@ import { h } from 'preact';
 import { Bind } from 'lodash-decorators';
 import { Builder } from '../../builder';
 import { TAB, ENTER, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
+import { propsToState } from '../../../lib/util';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -34,12 +35,9 @@ export class DateTimeEntryBuilder extends Builder {
   }
 
   processProps (props) {
-    const { machineState } = props;
-    if (machineState !== this.state.machineState) {
-      this.setState({
-        typedText: machineState.unboxedValue
-      });
-    }
+    propsToState(this, props, [
+      {k: 'machineState', sk: 'typedText', transform: (v) => v.unboxedValue}
+    ]);
     return super.processProps(props);
   }
 
@@ -121,6 +119,7 @@ export class DateTimeEntryBuilder extends Builder {
     });
   }
 
+
   @Bind
   beforeTransition () {
     this.commitTypedValue();
@@ -149,15 +148,27 @@ export class DateTimeEntryBuilder extends Builder {
     }
   }
 
+  @Bind
+  onBlur (e) {
+    if (this.machine.state === this.machineState) {
+      const assistantBox = document.getElementById('lex-assistant-box');
+      if (!e.relatedTarget || assistantBox === null || (!assistantBox.contains(e.relatedTarget) && !e.relatedTarget.getAttribute('data-date'))) {
+        this.requestCancel();
+      }
+    } else {
+      this.requestBlur(e);
+    }
+  }
+
   renderReadOnly (props, state) {
     if (this.machineState.value) {
       if (this.machineState.isMultivalue && this.archive.length > 0) {
         return (
-          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass}`} onMouseDown={this.requestRewindTo}>{this.machineState.unboxedValue} & {this.archive.length} others</span>
+          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass} ${state.machineState.rewindableClass}`} onMouseDown={this.requestRewindTo}>{this.machineState.unboxedValue} & {this.archive.length} others</span>
         );
       } else {
         return (
-          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass}`} onMouseDown={this.requestRewindTo}>{this.machineState.unboxedValue}</span>
+          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass} ${state.machineState.rewindableClass}`} onMouseDown={this.requestRewindTo}>{this.machineState.unboxedValue}</span>
         );
       }
     } else {
@@ -180,6 +191,7 @@ export class DateTimeEntryBuilder extends Builder {
             placeholder={machineState.format}
             onInput={this.handleInput}
             onFocus={this.requestFocus}
+            onFocusOut={this.onBlur}
             onPaste={this.onPaste}
             ref={(input) => { this.textInput = input; }}
             disabled={readOnly} />

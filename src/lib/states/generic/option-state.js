@@ -45,10 +45,12 @@ export class OptionStateOption {
 
 const _initialOptions = new WeakMap();
 const _options = new WeakMap();
-const _refreshOptions = new WeakMap();
+const _suggestions = new WeakMap();
+const _refreshSuggestions = new WeakMap();
 const _fetchOptions = new WeakMap();
 const _lastRefresh = new WeakMap();
 const _allowUnknown = new WeakMap();
+const _onUnknownOption = new WeakMap();
 const _units = new WeakMap();
 const _suggestionLimit = new WeakMap();
 
@@ -62,11 +64,13 @@ const _suggestionLimit = new WeakMap();
  *
  * This class is an `EventEmitter` and exposes the following events (in addition to `State`'s events):
  * - `on('options changed', (newOptions, oldOptions) => {})` when the internal list of options changes.
+ * - `on('suggestions changed', (newOptions, oldOptions) => {})` when the internal list of suggestions changes.
  *
  * @param {Object} config - A configuration object. Inherits all options from `State`, and adds the following:
- * @param {OptionStateOption[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that generates them. If a function is supplied (`async (hint, context) => OptionStateOption[]`), it will execute in the scope of this `OptionState`, allowing access to its instance methods.
- * @param {AsyncFunction | undefined} config.fetchOptions - An optional function which can be supplied as a mechanism for fetching specific options more efficiently than fetching via a hint. Function signature is identical to config.options, but takes an array of unformatted unboxed values instead of a hint (`async (unformattedUnboxedValues, context) => OptionStateOption[]`)
+ * @param {OptionStateOption[] | AsyncFunction} config.options - The list of options to select from, or an `async` function that efficiently fetches a specific list of `OptionStateOption`s for validation purposes. (`async (unformattedUnboxedValues, context) => OptionStateOption[]`), executing in the scope of this `OptionState`, allowing access to its instance methods.
+ * @param {AsyncFunction | undefined} config.refreshSuggestions - An optional function which can be supplied as a mechanism for fetching suggestions via a hint (required if config.options is not an array). `async (hint, context) => OptionStateOption[]`, executing in the scope of this `OptionState`, allowing access to its instance methods.
  * @param {boolean | undefined} config.allowUnknown - Allow user to enter unknown options by entering custom values. Defaults to false.
+ * @param {Function | undefined} config.onUnknownOption - Optional hook (`(OptionStateOption) => OptionStateOption`) which, when a user enters an unknown `OptionStateOption`, allows for augmentation with things like metadata. Must return a new `OptionStateOption`, since `OptionStateOption` is immutable.
  * @param {number | undefined} config.suggestionLimit - A limit on the number of options that will be shown at one time. Defaults to 10.
  * @param {string} config.units - A textual label which represents "units" for the option state (will display to the right of the builder)
  */
@@ -82,8 +86,8 @@ export class OptionState extends State {
       if (thisArchive.map(e => e.key === thisVal.key).reduce((l, r) => l || r, false)) return false;
       // if we allow unknown values, then return true
       if (this.allowUnknown) return true;
-      // otherwise, return whether or not the entered value matches a suggestion
-      return this.options.filter(o => o.key === thisVal.key).length === 1;
+      // otherwise, return whether or not the entered value matches a known option or suggestion
+      return this.options.filter(o => o.key === thisVal.key).length === 1 || this.suggestions.filter(o => o.key === thisVal.key).length === 1;
     };
     if (config.name === undefined) config.name = config.multivalue ? 'Select from the following options' : 'Choose an option';
     if (config.options === undefined) config.options = [];
@@ -91,10 +95,12 @@ export class OptionState extends State {
     if (config.suggestionLimit === undefined) config.suggestionLimit = 10;
     super(config);
 
+    _suggestions.set(this, []);
     _options.set(this, []);
+    // if config.options is an array, then we have a predefined set of options
     if (Array.isArray(config.options)) {
       _initialOptions.set(this, config.options);
-      _refreshOptions.set(this, (hint = '') => {
+      _refreshSuggestions.set(this, (hint = '') => {
         return _initialOptions.get(this).filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) === 0);
       });
       _fetchOptions.set(this, (unformattedUnboxedValues = []) => {
@@ -105,22 +111,22 @@ export class OptionState extends State {
         });
       });
     } else {
-      _refreshOptions.set(this, async (hint = '', context = []) => {
+      _fetchOptions.set(this, async (unformattedUnboxedValues = [], context = []) => {
         try {
-          return config.options.call(this, hint, context);
+          return config.options.call(this, unformattedUnboxedValues, context);
         } catch (err) {
-          console.error('Could not refresh list of options.'); // eslint-disable-line no-console
+          console.error(`Could not fetch list of options for unboxed values ${unformattedUnboxedValues.join(',')}`); // eslint-disable-line no-console
           throw err;
         }
       });
-      if (!config.fetchOptions) {
-        throw new Error('Async options supplied to OptionState without a fetchOptions function (which is required).');
+      if (!config.refreshSuggestions) {
+        throw new Error('Async options supplied to OptionState without a refreshSuggestions function (which is required in this case).');
       } else {
-        _fetchOptions.set(this, async (unformattedUnboxedValues = [], context = []) => {
+        _refreshSuggestions.set(this, async (hint = '', context = []) => {
           try {
-            return config.fetchOptions.call(this, unformattedUnboxedValues, context);
+            return config.refreshSuggestions.call(this, hint, context);
           } catch (err) {
-            console.error('Could not fetch list of supplied options for validation.'); // eslint-disable-line no-console
+            console.error(`Could not refresh list of suggestions for hint ${hint}.`); // eslint-disable-line no-console
             throw err;
           }
         });
@@ -128,6 +134,11 @@ export class OptionState extends State {
     }
     _units.set(this, config.units);
     _allowUnknown.set(this, config.allowUnknown);
+    if (_allowUnknown.get(this) && typeof config.onUnknownOption === 'function') {
+      _onUnknownOption.set(this, config.onUnknownOption);
+    } else if (config.onUnknownOption !== undefined) {
+      throw new Error(`Cannot specify config.onUnknownOption in state ${this.name} when config.allowUnknown is false.`);
+    }
     _suggestionLimit.set(this, config.suggestionLimit);
   }
 
@@ -156,6 +167,54 @@ export class OptionState extends State {
       }
       if (changed) this.emit('options changed', newOptions, oldOptions);
     }
+  }
+
+  /**
+   * Getter for `suggestions`.
+   *
+   * @returns {Array[OptionStateOption]} - The list of suggestions to select from.
+   */
+  get suggestions () {
+    return _suggestions.get(this);
+  }
+
+  /**
+   * Setter for `suggestions`.
+   *
+   * @param {OptionStateOption[]} newSuggestions - A new set of suggestions for this selector.
+   */
+  set suggestions (newSuggestions) {
+    if (this.suggestions !== newSuggestions) {
+      const oldSuggestions = this.suggestions;
+      _suggestions.set(this, newSuggestions);
+      // only emit change event if the options actually changed
+      let changed = oldSuggestions.length !== newSuggestions.length;
+      for (let i = 0; !changed && i < oldSuggestions.length; i++) {
+        changed = oldSuggestions[i].key !== newSuggestions[i].key;
+      }
+      if (changed) this.emit('suggestions changed', newSuggestions, oldSuggestions);
+    }
+  }
+
+  archiveValue (context) {
+    super.archiveValue(context);
+    this.options = [...this.options, this.archive[this.archive.length - 1]];
+    this.refreshSuggestions('', context);
+  }
+
+  unarchiveValue (context) {
+    super.unarchiveValue(context);
+    this.refreshSuggestions(this.unformatUnboxedValue(this.unboxedValue), context);
+  }
+
+  removeArchivedValue (idx, context) {
+    super.removeArchivedValue(idx, context);
+    this.refreshSuggestions('', context);
+  }
+
+  removeArchivedValues () {
+    super.removeArchivedValues();
+    this.refreshSuggestions();
   }
 
   /**
@@ -213,13 +272,20 @@ export class OptionState extends State {
    * @returns {OptionStateOption} An `OptionStateOption` instance.
    */
   boxValue (key) {
-    const matches = this.options.filter(o => o.key.toLowerCase() === String(key).toLowerCase());
+    const matches = [
+      ...this.options.filter(o => o.key.toLowerCase() === String(key).toLowerCase()),
+      ...this.suggestions.filter(o => o.key.toLowerCase() === String(key).toLowerCase())
+    ];
     if (matches.length > 0) {
       return matches[0];
     } else if (this.allowUnknown) {
-      return new OptionStateOption(key, {});
+      if (_onUnknownOption.has(this)) {
+        return _onUnknownOption.get(this).call(this, new OptionStateOption(key, {}));
+      } else {
+        return new OptionStateOption(key, {});
+      }
     } else {
-      if (!this.allowUnknown && this.options.length === 0) throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
+      if (!this.allowUnknown && this.options.length === 0 && this.suggestions.length === 0) throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
       return null;
     }
   }
@@ -244,54 +310,49 @@ export class OptionState extends State {
    */
   async initialize (context = {}, initialUnboxedValues = []) {
     await super.initialize();
-    if (initialUnboxedValues.length > 0) {
-      await this.fetchOptions(initialUnboxedValues.map(v => this.unformatUnboxedValue(v)), context);
-      if (!this.allowUnknown && this.options.length !== initialUnboxedValues.length) {
-        throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but could not fetch matching options for initial values: [${initialUnboxedValues.join(',')}].`);
-      }
-    } else {
-      await this.refreshOptions('', context);
-      if (!this.allowUnknown && this.options.length === 0) {
-        throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any options.`);
-      }
+    // fetch initial options for validiation
+    this.options = await _fetchOptions.get(this)(initialUnboxedValues.map(v => this.unformatUnboxedValue(v)), context);
+    // fetch initial suggestions
+    await this.refreshSuggestions('', context);
+    if (!this.allowUnknown && this.suggestions.length === 0) {
+      throw new Error(`OptionState ${this.name} cannot accept user-supplied values, but does not have any suggestions.`);
     }
   }
 
   reset () {
     super.reset();
     _options.set(this, []);
-  }
-
-  async fetchOptions (unformattedUnboxedValues = [], context = {}) {
-    const newOptions = await _fetchOptions.get(this)(unformattedUnboxedValues, context);
-    this.options = newOptions;
+    _suggestions.set(this, []);
   }
 
   /**
-   * Can be called by a child class to trigger a refresh of options based on a hint (what the
-   * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.options`.
+   * Can be called by a child class to trigger a refresh of suggestions based on a hint (what the
+   * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.refreshSuggestions`.
    *
    * @param {string | undefined} hint - What the user has typed, if anything, converted to a key by unformatUnboxedValue.
    * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    * @returns {Promise} Resolves with the new list of options.
    */
-  async refreshOptions (hint = '', context = {}) {
+  async refreshSuggestions (hint = '', context = {}) {
     if (hint === null) console.error('hint cannot be null in refreshOptions - perhaps unformatUnboxedValue returned null?'); // eslint-disable-line no-console
-    if (_refreshOptions.has(this)) {
+    if (_refreshSuggestions.has(this)) {
       // start lookup
       _lastRefresh.set(this, hint);
-      const newOptions = await _refreshOptions.get(this)(hint, context);
+      const newSuggestions = await _refreshSuggestions.get(this)(hint, context);
       if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
       // If user-created values are allowed, and this is a multi-value state,
       // then add in an option for what the user has typed as long as what
       // they've typed isn't identical to an existing option.
-      if (Array.isArray(newOptions) && this.allowUnknown && this.isMultivalue && hint.length > 0) {
-        if (!newOptions.map(o => o.key === hint).reduce((l, r) => l || r, false)) {
-          newOptions.unshift(this.boxValue(hint));
+      if (Array.isArray(newSuggestions) && this.allowUnknown && this.isMultivalue && hint.length > 0) {
+        if (!newSuggestions.map(o => o.key === hint).reduce((l, r) => l || r, false)) {
+          newSuggestions.unshift(this.boxValue(hint));
         }
       }
-      this.options = newOptions;
-      return this.options;
+      // create lookup table for archive
+      const lookup = new Map();
+      this.archive.forEach(a => lookup.set(a.key));
+      this.suggestions = newSuggestions.filter(o => !o.hidden && !lookup.has(o.key)).slice(0, this.suggestionLimit);
+      return this.suggestions;
     }
   }
 }

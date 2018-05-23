@@ -12,15 +12,9 @@ import { ENTER, TAB, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
  * lex.registerBuilder(OptionState, OptionBuilder)
  */
 export class OptionBuilder extends Builder {
-  constructor () {
-    super();
-    this.state.options = [];
-  }
-
   cleanupListeners () {
     super.cleanupListeners();
     if (this.machineState) {
-      this.machineState.removeListener('options changed', this.onOptionsChanged);
       this.machineState.removeListener('value changed', this.onValueChanged);
       this.machineState.removeListener('preview value changed', this.onPreviewValueChanged);
     }
@@ -29,7 +23,6 @@ export class OptionBuilder extends Builder {
   connectListeners () {
     super.connectListeners();
     if (this.machineState) {
-      this.machineState.on('options changed', this.onOptionsChanged);
       this.machineState.on('value changed', this.onValueChanged);
       this.machineState.on('preview value changed', this.onPreviewValueChanged);
     }
@@ -100,7 +93,7 @@ export class OptionBuilder extends Builder {
   @Debounce(250) // 250ms debounce
   handleKeyUp (e) {
     const boxed = this.machine.boxedValue;
-    this.machineState.refreshOptions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed);
+    this.machineState.refreshSuggestions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed);
   }
 
   focus () {
@@ -113,9 +106,11 @@ export class OptionBuilder extends Builder {
 
   @Bind
   clearPreview () {
-    this.setState({
-      previewText: ''
-    });
+    if (typeof this.state.previewText === 'string' && this.state.previewText.length > 0) {
+      this.setState({
+        previewText: ''
+      });
+    }
   }
 
   @Bind
@@ -126,11 +121,6 @@ export class OptionBuilder extends Builder {
         this.requestUnarchive();
       }
     }
-  }
-
-  @Bind
-  onOptionsChanged (newOptions) {
-    this.setState({options: newOptions});
   }
 
   @Bind
@@ -157,8 +147,15 @@ export class OptionBuilder extends Builder {
 
   @Bind
   onBlur (e) {
-    this.commitTypedValue();
-    this.requestBlur(e);
+    try { this.commitTypedValue(); } catch (err) { /* do nothing */ }
+    if (this.machine.state === this.machineState) {
+      const assistantBox = document.getElementById('lex-assistant-box');
+      if (!e.relatedTarget || assistantBox === null || !assistantBox.contains(e.relatedTarget)) {
+        this.requestCancel();
+      }
+    } else {
+      this.requestBlur(e);
+    }
   }
 
   @Bind
@@ -187,11 +184,11 @@ export class OptionBuilder extends Builder {
       const shortKey = this.machineState.value.shortKey !== undefined ? this.machineState.value.shortKey : this.machineState.formatUnboxedValue(this.machineState.value.key, this.machine.boxedValue);
       if (this.machineState.isMultivalue && this.archive.length > 0) {
         return (
-          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass}`} onMouseDown={this.requestRewindTo}>{shortKey}{units} & {this.archive.length} others</span>
+          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass} ${state.machineState.rewindableClass}`} onMouseDown={this.requestRewindTo}>{shortKey}{units} & {this.archive.length} others</span>
         );
       } else {
         return (
-          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass}`} onMouseDown={this.requestRewindTo}>{shortKey}{units}</span>
+          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass} ${state.machineState.rewindableClass}`} onMouseDown={this.requestRewindTo}>{shortKey}{units}</span>
         );
       }
     } else {

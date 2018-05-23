@@ -9,7 +9,7 @@ const options = [
   new OptionStateOption('Last Name')
 ];
 
-function fetchSpecificOptions (query) {
+function fetchOptions (query) {
   return new Promise((resolve) => {
     const lookup = new Map();
     query.forEach(v => lookup.set(v.toLowerCase()), true);
@@ -42,8 +42,8 @@ const language = Lex
     name: 'Choose a field to search',
     // This is our list of options we are providing to the user to select from
     // we can return a promise from this method as well to support network requests
-    options: searchOptions,
-    fetchOptions: fetchSpecificOptions,
+    options: fetchOptions,
+    fetchSuggestions: searchOptions,
     icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
   })
   // Now that we have selected an option from the available list we need to provide target

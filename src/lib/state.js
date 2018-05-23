@@ -1,4 +1,5 @@
 import EventEmitter from 'wolfy87-eventemitter';
+import { ValueArchiveError } from './errors';
 
 // StateTemplate private members
 const _klass = new WeakMap();
@@ -20,6 +21,7 @@ const _children = new WeakMap();
 const _value = new WeakMap();
 const _archive = new WeakMap();
 const _icon = new WeakMap();
+const _resetOnRewind = new WeakMap();
 
 /**
  * A factory for a `State`, which can be used to produce instances
@@ -156,6 +158,7 @@ export class StateTemplate {
  * @param {boolean} config.multivalue - Whether or not this state supports multi-value entry.
  * @param {number | undefined} config.multivalueLimit - An optional limit on the number of values this state can contain.
  * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
+ * @param {boolean} config.resetOnRewind - This state should reset child states when rewound to during a token edit. False by default.
  * @example
  * class MyCustomState extends State {
  *   constructor (config) {
@@ -176,8 +179,9 @@ export class StateTemplate {
  */
 export class State extends EventEmitter {
   constructor (config) {
-    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon} = config;
+    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon, resetOnRewind} = config;
     super();
+    this._id = Math.random();
     _parent.set(this, parent);
     _name.set(this, name);
     _vkey.set(this, vkey);
@@ -190,9 +194,14 @@ export class State extends EventEmitter {
     _bindOnly.set(this, bindOnly !== undefined ? bindOnly : false);
     _children.set(this, []);
     _icon.set(this, icon);
+    _resetOnRewind.set(this, resetOnRewind);
     _value.set(this, _defaultValue.get(this));
     _previewValue.set(this, null);
     _archive.set(this, []);
+  }
+
+  get id () {
+    return this._id;
   }
 
   get isReadOnly () {
@@ -227,6 +236,10 @@ export class State extends EventEmitter {
     return typeof this.vkey === 'string' ? `token-vkey-${this.vkey.toLowerCase().replace(/\s/g, '-')}` : '';
   }
 
+  get rewindableClass () {
+    return !this.isReadOnly && !this.isBindOnly ? 'rewindable' : '';
+  }
+
   get defaultValue () {
     return _defaultValue.get(this);
   }
@@ -241,6 +254,10 @@ export class State extends EventEmitter {
 
   get multivalueLimit () {
     return _multivalueLimit.get(this);
+  }
+
+  get resetOnRewind () {
+    return _resetOnRewind.get(this);
   }
 
   get isRoot () {
@@ -512,10 +529,14 @@ export class State extends EventEmitter {
 
   /**
    * Moves the current value to the archive, and resets the current value.
+   *
+   * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    */
-  archiveValue () {
-    if (this.multivalueLimit && this.archive.length === this.multivalueLimit) {
-      throw new Error(`Multivalue size limit reached for state ${this.name}`);
+  archiveValue (context) { // eslint-disable-line no-unused-vars
+    if (!this.isValid) {
+      throw new ValueArchiveError(`Cannot archive invalid value for current state: ${this.value}`);
+    } else if (this.multivalueLimit && this.archive.length === this.multivalueLimit) {
+      throw new ValueArchiveError(`Multivalue size limit reached for state ${this.name}`);
     }
     const oldVal = this.value;
     const oldUnboxedVal = this.unboxedValue;
@@ -528,8 +549,13 @@ export class State extends EventEmitter {
 
   /**
    * Moves the top value from the archive back to the current value, overwriting it.
+   *
+   * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    */
-  unarchiveValue () {
+  unarchiveValue (context) { // eslint-disable-line no-unused-vars
+    if (this.archive.length === 0) {
+      throw new ValueArchiveError('Cannot unarchive from an empty archive');
+    }
     const oldVal = this.value;
     const oldUnboxedVal = this.unboxedValue;
     this.value = this.archive.pop();
@@ -541,10 +567,23 @@ export class State extends EventEmitter {
    * Remove a specific value from the archive, by index.
    *
    * @param {number} idx - The index of the archived value to remove.
+   * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    */
-  removeArchivedValue (idx) {
+  removeArchivedValue (idx, context) { // eslint-disable-line no-unused-vars
+    if (this.archive.length <= idx) {
+      throw new ValueArchiveError(`Cannot remove value ${idx} from archive with length ${this.state.archive.length}`);
+    }
     this.archive.splice(idx, 1);
     this.emit('value changed', this.value, this.value, this.unboxedValue, this.unboxedValue);
     this.emit('value unarchived');
+  }
+
+  /**
+   * Remove all values from the archive.
+   */
+  removeArchivedValues () {
+    this.archive.splice(0, this.archive.length);
+    this.emit('value changed', this.value, this.value, this.unboxedValue, this.unboxedValue);
+    this.emit('value unarchived'); // TODO should probably implement an 'archive changed' event at some point, but this will work for now.
   }
 }

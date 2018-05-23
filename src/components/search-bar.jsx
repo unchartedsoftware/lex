@@ -6,6 +6,7 @@ import { StateTransitionError, ValueArchiveError } from '../lib/errors';
 import { Token } from './token';
 import { normalizeKey, COMMA } from '../lib/keys';
 import ElementResizeDetector from 'element-resize-detector';
+import { propsToState } from '../lib/util';
 
 const _erd = new WeakMap();
 
@@ -13,150 +14,45 @@ const _erd = new WeakMap();
  * @private
  */
 export class SearchBar extends Component {
-  constructor () {
-    super();
-    this.state = {
-      placeholder: undefined,
-      tokenValues: [],
-      suggestions: [],
-      builders: undefined,
-      machineTemplate: undefined,
-      machines: undefined,
-      active: false,
-      editing: false,
-      focused: false,
-      flashActive: false,
-      tokenXIcon: '&times',
-      cssClass: [],
-      multivalueDelimiter: COMMA,
-      multivaluePasteDelimiter: ',',
-      onQueryChanged: () => {},
-      onSuggestionsChanged: () => {},
-      onAcceptSuggestion: (s) => s,
-      onRejectSuggestion: () => true,
-      onValidityChanged: () => {},
-      onStartToken: () => {},
-      onEndToken: () => {},
-      proxiedEvents: new Map()
-    };
-  }
-
   processProps (props) {
-    const {
-      placeholder,
-      machineTemplate,
-      builders,
-      value = [],
-      suggestions = [],
-      proxiedEvents,
-      tokenXIcon = '&times;',
-      cssClass = [],
-      multivalueDelimiter = COMMA,
-      multivaluePasteDelimiter = ',',
-      onQueryChanged = () => {},
-      onSuggestionsChanged = () => {},
-      onAcceptSuggestion = (s) => s,
-      onRejectSuggestion = () => true,
-      onValidityChanged = () => {},
-      onStartToken = () => {},
-      onEndToken = () => {}
-    } = props;
-    if (placeholder !== this.state.placeholder) {
-      this.setState({
-        placeholder: placeholder
-      });
-    }
-    if (machineTemplate !== this.state.machineTemplate) {
-      this.cleanupListeners();
-      this.setState({
-        machineTemplate: machineTemplate,
-        activeMachine: new TokenStateMachine(machineTemplate)
-      });
-      this.connectListeners();
-    }
-    if (builders !== this.state.builders) {
-      this.setState({
-        builders: builders
-      });
-    }
-    if (value !== this.state.tokenValues) {
-      this.setState({
-        tokenValues: value.map(v => {
-          const m = new TokenStateMachine(this.state.machineTemplate);
-          m.bindValues(v);
-          return m;
-        }) // box incoming values
-      });
-    }
-    if (suggestions !== this.state.suggestions) {
-      this.setState({
-        suggestions: suggestions.map(v => {
-          const m = new TokenStateMachine(this.state.machineTemplate);
-          m.bindValues(v);
-          return m;
-        }) // box incoming values
-      });
-    }
-    if (onAcceptSuggestion !== this.state.onAcceptSuggestion) {
-      this.setState({
-        onAcceptSuggestion: onAcceptSuggestion
-      });
-    }
-    if (onRejectSuggestion !== this.state.onRejectSuggestion) {
-      this.setState({
-        onRejectSuggestion: onRejectSuggestion
-      });
-    }
-    if (onQueryChanged !== this.state.onQueryChanged) {
-      this.setState({
-        onQueryChanged: onQueryChanged
-      });
-    }
-    if (onSuggestionsChanged !== this.state.onSuggestionsChanged) {
-      this.setState({
-        onSuggestionsChanged: onSuggestionsChanged
-      });
-    }
-    if (onValidityChanged !== this.state.onValidityChanged) {
-      this.setState({
-        onValidityChanged: onValidityChanged
-      });
-    }
-    if (proxiedEvents !== this.state.proxiedEvents) {
-      this.setState({
-        proxiedEvents: proxiedEvents
-      });
-    }
-    if (tokenXIcon !== this.state.tokenXIcon) {
-      this.setState({
-        tokenXIcon: tokenXIcon
-      });
-    }
-    if (cssClass !== this.state.cssClass) {
-      this.setState({
-        cssClass: cssClass
-      });
-    }
-    if (multivalueDelimiter !== this.state.multivalueDelimiter) {
-      this.setState({
-        multivalueDelimiter: multivalueDelimiter
-      });
-    }
-    if (multivaluePasteDelimiter !== this.state.multivaluePasteDelimiter) {
-      this.setState({
-        multivaluePasteDelimiter: multivaluePasteDelimiter
-      });
-    }
-    if (onStartToken !== this.state.onStartToken) {
-      this.setState({
-        onStartToken: onStartToken
-      });
-    }
-    if (onEndToken !== this.state.onEndToken) {
-      this.setState({
-        onEndToken: onEndToken
-      });
-    }
+    propsToState(this, props, [
+      {k: 'placeholder', default: ''},
+      {
+        k: 'machineTemplate',
+        before: () => this.cleanupListeners,
+        after: (machineTemplate) => {
+          this.setState({
+            activeMachine: new TokenStateMachine(machineTemplate)
+          }, () => this.connectListeners);
+        }
+      },
+      {k: 'builders'},
+      {k: 'value', default: []},
+      {k: 'value', sk: 'tokenValues', default: []},
+      {
+        k: 'suggestions',
+        default: [],
+        transform: (iv) => {
+          return iv.map(v => {
+            const m = new TokenStateMachine(this.state.machineTemplate);
+            m.bindValues(v);
+            return m;
+          });
+        }
+      },
+      {k: 'onAcceptSuggestion', default: (s) => s},
+      {k: 'onRejectSuggestion', default: () => true},
+      {k: 'onQueryChanged', default: () => undefined},
+      {k: 'onSuggestionsChanged', default: () => undefined},
+      {k: 'onValidityChanged', default: () => undefined},
+      {k: 'proxiedEvents'},
+      {k: 'tokenXIcon', default: '&times'},
+      {k: 'cssClass', default: []},
+      {k: 'multivalueDelimiter', default: COMMA},
+      {k: 'multivaluePasteDelimiter', default: ','},
+      {k: 'onStartToken', default: () => undefined},
+      {k: 'onEndToken', default: () => undefined}
+    ]);
   }
 
   async setValue (newValue, shouldFireChangeEvent = true) {
@@ -233,8 +129,9 @@ export class SearchBar extends Component {
   @Bind
   activate () {
     const wasActive = this.state.active;
-    this.setState({active: true});
     if (!wasActive) {
+      this.setState({active: true});
+      setTimeout(() => this.tokenBuilder && this.tokenBuilder.focus(), 10);
       this.state.activeMachine.reset();
       this.state.onStartToken();
     }
@@ -264,6 +161,7 @@ export class SearchBar extends Component {
         requestArchive={this.archive}
         requestUnarchive={this.unarchive}
         requestRemoveArchivedValue={this.removeArchivedValue}
+        requestRemoveArchivedValues={this.removeArchivedValues}
         requestRewind={this.rewind}
         requestRemoval={this.removeToken}
         onEndToken={this.onEndToken}
@@ -303,6 +201,7 @@ export class SearchBar extends Component {
               requestArchive={this.archive}
               requestUnarchive={this.unarchive}
               requestRemoveArchivedValue={this.removeArchivedValue}
+              requestRemoveArchivedValues={this.removeArchivedValues}
               requestRewind={this.rewind}
               requestRemoval={this.removeToken}
               onEndToken={this.onEndToken}
@@ -369,7 +268,7 @@ export class SearchBar extends Component {
   @Bind
   archive () {
     try {
-      this.state.activeMachine.archive();
+      this.state.activeMachine.archive(this.state.activeMachine.boxedValue);
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
@@ -384,7 +283,7 @@ export class SearchBar extends Component {
   @Bind
   unarchive () {
     try {
-      this.state.activeMachine.unarchive();
+      this.state.activeMachine.unarchive(this.state.activeMachine.boxedValue);
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
@@ -399,7 +298,22 @@ export class SearchBar extends Component {
   @Bind
   removeArchivedValue (idx) {
     try {
-      this.state.activeMachine.removeArchivedValue(idx);
+      this.state.activeMachine.removeArchivedValue(idx, this.state.activeMachine.boxedValue);
+      return true;
+    } catch (err) {
+      if (err instanceof ValueArchiveError) {
+        console.error(err.message); // eslint-disable-line no-console
+        return false;
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  @Bind
+  removeArchivedValues () {
+    try {
+      this.state.activeMachine.removeArchivedValues();
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
@@ -446,7 +360,7 @@ export class SearchBar extends Component {
         this.queryChanged(oldQueryValues, nextToken);
         this.state.onEndToken();
         if (nextToken) {
-          this.state.onStartToken();
+          setTimeout(() => this.activate());
         } else {
           setTimeout(() => this.blur());
         }
@@ -527,14 +441,14 @@ export class SearchBar extends Component {
   queryChanged (oldQueryValues = [], nextToken = false) {
     const newUnboxedValues = this.state.tokenValues.map(bv => bv.unboxedValue);
     const oldUnboxedValues = oldQueryValues.map(bv => bv.unboxedValue);
-    this.state.onQueryChanged(this.state.tokenValues.map(t => t.value), oldQueryValues, newUnboxedValues, oldUnboxedValues, nextToken);
+    this.state.onQueryChanged(this.state.tokenValues.map(t => t.value), oldQueryValues.map(t => t.value), newUnboxedValues, oldUnboxedValues, nextToken);
   }
 
   @Bind
   suggestionsChanged (oldSuggestionValues = []) {
     const newUnboxedValues = this.state.suggestions.map(bv => bv.unboxedValue);
     const oldUnboxedValues = oldSuggestionValues.map(bv => bv.unboxedValue);
-    this.state.onSuggestionsChanged(this.state.suggestions, oldSuggestionValues, newUnboxedValues, oldUnboxedValues);
+    this.state.onSuggestionsChanged(this.state.suggestions.map(t => t.value), oldSuggestionValues.map(t => t.value), newUnboxedValues, oldUnboxedValues);
   }
 
   render (props, {placeholder, active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, cssClass, multivalueDelimiter, multivaluePasteDelimiter}) {
@@ -543,7 +457,7 @@ export class SearchBar extends Component {
         { !active && placeholder !== undefined && tokenValues.length === 0 && suggestions.length === 0 ? <div className='text-muted lex-placeholder'>{ placeholder }</div> : '' }
         {
           tokenValues.map((v, i) => {
-            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} focused={false} />;
+            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} />;
           })
         }
         {
