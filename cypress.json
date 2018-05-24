@@ -1,0 +1,6 @@
+{
+  "fixturesFolder": "test/e2e/fixtures",
+  "integrationFolder": "test/e2e/integration",
+  "screenshotsFolder": "test/e2e/screenshots",
+  "testFiles": "**/*.spec.js"
+}
