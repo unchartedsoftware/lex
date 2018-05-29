@@ -88,6 +88,7 @@ const lex = new Lex({
   placeholder: 'Start typing to search...',
   defaultValue: [],
   tokenXIcon: '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>',
+  cancelOnBlur: true,
   onAcceptSuggestion: (s) => {
     return s;
   },

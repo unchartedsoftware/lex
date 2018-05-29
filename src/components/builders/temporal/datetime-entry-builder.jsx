@@ -150,7 +150,7 @@ export class DateTimeEntryBuilder extends Builder {
 
   @Bind
   onBlur (e) {
-    if (this.machine.state === this.machineState) {
+    if (this.machine.state === this.machineState && this.cancelOnBlur) {
       const assistantBox = document.getElementById('lex-assistant-box');
       if (!e.relatedTarget || assistantBox === null || (!assistantBox.contains(e.relatedTarget) && !e.relatedTarget.getAttribute('data-date'))) {
         this.requestCancel();

@@ -34,6 +34,7 @@ const _tokenXIcon = new WeakMap();
 const _multivalueDelimiterKey = new WeakMap();
 const _multivaluePasteDelimiter = new WeakMap();
 const _cssClass = new WeakMap();
+const _cancelOnBlur = new WeakMap();
 const _onAcceptSuggestion = new WeakMap();
 const _onRejectSuggestion = new WeakMap();
 
@@ -56,6 +57,7 @@ const _onRejectSuggestion = new WeakMap();
  * @param {number} config.multivalueDelimiterKey - The JS key code of the delimiter which will notionally 'separate' multiple values in any visual representation of a multivalue state. 188 (',') by default.
  * @param {string[]} config.multivaluePasteDelimiter - The characters which are supported as delimiters text which is pasted into a multivalue state. ',' by default.
  * @param {string[]} config.cssClass - Add unique classes to the lex search bar and associated assistant
+ * @param {boolean} config.cancelOnBlur - Whether or not to cancel token creation/editing on blur. True by default.
  * @param {function | undefined} config.onAcceptSuggestion - A callback called when the user presses "add" on a suggestion. A no-op by default (`(s, idx) => s`) but, if supplied, can be used to transform the incoming boxed suggestion, perform additional actions, etc. Return `null` to stop Lex from updating suggestions and query automatically, or return the suggestion (or a transformed version) to allow Lex to handle the rest.
  * @param {function | undefined} config.onRejectSuggestion - A callback called when the user presses "x" on a suggestion. A no-op by default (`(s, idx) => true`) but, if supplied, can be used to perform additional actions or stop Lex from auto-updating the suggestions and query (by returning `false`)
  * @example
@@ -78,6 +80,7 @@ class Lex extends EventEmitter {
       multivalueDelimiterKey = KEYS.COMMA,
       multivaluePasteDelimiter = ',',
       cssClass = [],
+      cancelOnBlur = true,
       onAcceptSuggestion = (s) => s,
       onRejectSuggestion = () => true
     } = config;
@@ -104,6 +107,7 @@ class Lex extends EventEmitter {
     }
     proxiedEvents.forEach(e => _proxiedEvents.get(this).set(e, true));
     _cssClass.set(this, cssClass);
+    _cancelOnBlur.set(this, cancelOnBlur);
     _onAcceptSuggestion.set(this, onAcceptSuggestion);
     _onRejectSuggestion.set(this, onRejectSuggestion);
   }
@@ -181,6 +185,7 @@ class Lex extends EventEmitter {
         proxiedEvents={_proxiedEvents.get(this)}
         tokenXIcon={_tokenXIcon.get(this)}
         cssClass={_cssClass.get(this)}
+        cancelOnBlur={_cancelOnBlur.get(this)}
         multivalueDelimiter={_multivalueDelimiterKey.get(this)}
         multivaluePasteDelimiter={_multivaluePasteDelimiter.get(this)}
         onQueryChanged={(...args) => this.emit('query changed', ...args)}

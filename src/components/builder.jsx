@@ -73,6 +73,7 @@ export class Builder extends Component {
       {k: 'editing', default: false},
       {k: 'readOnly', default: false},
       {k: 'tokenActive', default: false},
+      {k: 'cancelOnBlur', default: true},
       {
         k: 'machine',
         before: () => this.cleanupListeners,
@@ -280,6 +281,15 @@ export class Builder extends Component {
   render (props, state) {
     const {readOnly, machineState} = state;
     return readOnly || machineState.isReadOnly ? this.renderReadOnly(props, state) : this.renderInteractive(props, state);
+  }
+
+  /**
+   * Getter for `this.cancelOnBlur`.
+   *
+   * @readonly
+   */
+  get cancelOnBlur () {
+    return this.state.cancelOnBlur;
   }
 
   /**
