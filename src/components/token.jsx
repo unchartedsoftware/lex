@@ -18,6 +18,7 @@ export class Token extends Component {
       {k: 'multivalueDelimiter', default: COMMA},
       {k: 'multivaluePasteDelimiter', default: ','},
       {k: 'stateArray', default: []},
+      {k: 'cancelOnBlur', default: true},
       {k: 'requestTransition', default: () => true},
       {k: 'requestArchive', default: () => true},
       {k: 'requestUnarchive', default: () => true},
@@ -194,7 +195,7 @@ export class Token extends Component {
     }
   }
 
-  render (props, {active, flash, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter}) {
+  render (props, {active, flash, cancelOnBlur, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
       <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''}`} onMouseDown={this.requestEdit}>
         {this.icon}
@@ -204,6 +205,7 @@ export class Token extends Component {
             key={s.id}
             machine={machine}
             machineState={s}
+            cancelOnBlur={cancelOnBlur}
             requestTransition={this.state.requestTransition}
             requestArchive={this.state.requestArchive}
             requestUnarchive={this.state.requestUnarchive}
