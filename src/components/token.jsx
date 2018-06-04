@@ -196,7 +196,7 @@ export class Token extends Component {
 
   render (props, {active, flash, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
-      <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''}`} onMouseDown={this.requestEdit}>
+      <div data-test='token-container' className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''}`} onMouseDown={this.requestEdit}>
         {this.icon}
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.constructor);

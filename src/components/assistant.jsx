@@ -30,7 +30,7 @@ export class Assistant extends Builder {
     const instructions = this.renderAssistantInstructions(props, state);
     return (
       <div className='assistant' data-test='assistant'>
-        <div className='assistant-header'>
+        <div className='assistant-header' data-test='assistant-header'>
           {instructions}
           <span className='pull-right assistant-menu'>
             {menu}
