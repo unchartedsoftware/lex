@@ -453,7 +453,7 @@ export class SearchBar extends Component {
 
   render (props, {placeholder, active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, cssClass, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
-      <div className={`lex-box form-control ${cssClass.join(' ')}` + (active ? ' active' : '') + (focused ? ' focused' : '')} onKeyDown={this.onKeyDown} onMouseDown={this.activate} onFocus={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
+      <div data-test='lex-container' className={`lex-box form-control ${cssClass.join(' ')}` + (active ? ' active' : '') + (focused ? ' focused' : '')} onKeyDown={this.onKeyDown} onMouseDown={this.activate} onFocus={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         { !active && placeholder !== undefined && tokenValues.length === 0 && suggestions.length === 0 ? <div className='text-muted lex-placeholder'>{ placeholder }</div> : '' }
         {
           tokenValues.map((v, i) => {
