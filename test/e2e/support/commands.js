@@ -23,3 +23,14 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('verifyAssistantOptions', (inList, notInList) => {
+  inList.forEach(inItem => {
+    cy.get('[data-test=assistant-suggestion]').should('contain', inItem);
+  });
+  if (notInList) {
+    notInList.forEach(notInItem => {
+      cy.get('[data-test=assistant-suggestion]').should('not.contain', notInItem);
+    });
+  }
+});
