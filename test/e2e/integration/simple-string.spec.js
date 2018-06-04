@@ -8,5 +8,7 @@ describe('Simple String', () => {
 
     // Typing a matching value should filter the dropdown list
     cy.get('[data-test=lex-container] input').type('F');
+    cy.get('[data-test=assistant-suggestion]').should('contain', 'First Name');
+    cy.get('[data-test=assistant-suggestion]').should('not.contain', 'Last Name');
   });
 });
