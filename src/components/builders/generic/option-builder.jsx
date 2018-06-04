@@ -211,7 +211,8 @@ export class OptionBuilder extends Builder {
             value={typedText}
             onInput={this.handleInput}
             onFocus={this.requestFocus}
-            onFocusOut={this.onBlur}
+            // temporary to inspect DOM for e2e tests, uncomment before submitting PR
+            // onFocusOut={this.onBlur}
             onPaste={this.onPaste}
             ref={(input) => { this.textInput = input; }}
             disabled={readOnly || (machineState.isMultivalue && !machineState.canArchiveValue)} />
