@@ -14,15 +14,6 @@ describe('Simple String', () => {
     // Enter a value
     cy.get('[data-test=option-input]').type('Joe{enter}');
 
-    // Verify token
-    cy.get('[data-test=token-input]').each(($el, index) => {
-      cy.log(index);
-      if (index === 0) {
-        expect($el.text()).to.contain('First Name');
-      }
-      if (index === 1) {
-        expect($el.text()).to.contain('Joe');
-      }
-    });
+    cy.verifyToken(['First Name', 'Joe']);
   });
 });

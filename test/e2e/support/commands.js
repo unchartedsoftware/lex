@@ -34,3 +34,9 @@ Cypress.Commands.add('verifyAssistantOptions', (inList, notInList) => {
     });
   }
 });
+
+Cypress.Commands.add('verifyToken', (values) => {
+  cy.get('[data-test=token-input]').each(($el, index) => {
+    expect($el.text()).to.contain(values[index]);
+  });
+});
