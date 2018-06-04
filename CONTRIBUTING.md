@@ -23,3 +23,5 @@ $ npm install
 - `npm run build`: Production-ready build
 
 - `npm run lint`: Pass JavaScript files using ESLint
+
+- `npm run cypress:open`: Run end-to-end tests interactively
