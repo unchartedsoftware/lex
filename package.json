@@ -27,7 +27,8 @@
     "prepublishOnly": "npm run build",
     "docs": "documentation build --config documentation.yml src/lex.jsx -f html -o docs",
     "serve-docs": "documentation serve --config documentation.yml --watch src/lex.jsx",
-    "cypress:open": "cypress open"
+    "e2e:int": "cypress open",
+    "e2e:cli": "cypress run"
   },
   "main": "dist/lex.js",
   "style": "dist/lex.css",

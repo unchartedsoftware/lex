@@ -24,4 +24,6 @@ $ npm install
 
 - `npm run lint`: Pass JavaScript files using ESLint
 
-- `npm run cypress:open`: Run end-to-end tests interactively
+- `npm run e2e:int`: Run end-to-end tests in interactive mode (demo must be running)
+
+- `npm run e2e:cli`: Run end-to-end tests at command line using Electron, headless (demo must be running)
