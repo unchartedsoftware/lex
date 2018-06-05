@@ -35,8 +35,14 @@ Cypress.Commands.add('verifyAssistantOptions', (inList, notInList) => {
   }
 });
 
-Cypress.Commands.add('verifyToken', (values) => {
-  cy.get('[data-test=token-input]').each(($el, index) => {
-    expect($el.text()).to.contain(values[index]);
+Cypress.Commands.add('verifyToken', (oneBasedIndex, values) => {
+  cy.get(`[data-test=token-container]:nth-child(${oneBasedIndex})`).within(() => {
+    cy.get('[data-test=token-input]').each(($el, index) => {
+      expect($el.text()).to.contain(values[index]);
+    });
   });
+});
+
+Cypress.Commands.add('enterValue', (value) => {
+  cy.get('[data-test=option-input]').type(`${value}{enter}`);
 });

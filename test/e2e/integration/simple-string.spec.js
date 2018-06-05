@@ -11,9 +11,18 @@ describe('Simple String', () => {
     cy.get('[data-test=assistant-suggestion]').click();
     cy.get('[data-test=assistant-header]').should('contain', 'Enter a value');
 
-    // Enter a value
-    cy.get('[data-test=option-input]').type('Joe{enter}');
+    cy.enterValue('Joe');
+    cy.verifyToken(1, ['First Name', 'Joe']);
 
-    cy.verifyToken(['First Name', 'Joe']);
+    // Click search bar to get option to enter another token
+    cy.get('[data-test=lex-container]').click();
+    // This time use arrow keys to select Last Name suggestion
+    cy.get('[data-test=lex-container] input').type('{downarrow}{downarrow}');
+    // Last Name suggestion should be highlighted
+    cy.get('[data-test=assistant-suggestion].active').should('contain', 'Last Name');
+    // Select Last Name suggestion
+    cy.get('[data-test=assistant-suggestion].active').click();
+    cy.enterValue('Smith');
+    cy.verifyToken(2, ['Last Name', 'Smith']);
   });
 });
