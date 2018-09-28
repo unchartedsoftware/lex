@@ -17,6 +17,7 @@ export class SearchBar extends Component {
   processProps (props) {
     propsToState(this, props, [
       {k: 'placeholder', default: ''},
+      {k: 'container', default: 'body'},
       {
         k: 'machineTemplate',
         before: () => this.cleanupListeners,
@@ -173,21 +174,22 @@ export class SearchBar extends Component {
     }
   }
 
-  renderAssistant (activeMachine) {
+  renderAssistant (activeMachine, container) {
     try {
       if (!this.state.editing && (!this.state.active || !this.state.focused)) return;
       const Assistant = this.state.builders.getAssistant(activeMachine.state.constructor);
       const rect = this.searchBox.getBoundingClientRect();
       const pos = {
-        left: rect.left,
-        top: rect.top + rect.height,
+        left: !container ? rect.left : 0,
+        top: !container ? rect.top + rect.height : 0,
         'min-width': rect.width,
         'max-width': rect.width
       };
+      const renderInto = !!container ? container : 'body';
       // See portal bug workaround for why we have a ref that we dont use
       // https://github.com/developit/preact-portal/issues/2
       return (
-        <Portal into='body' ref={(r) => { this._portal = r; }}>
+        <Portal into={renderInto} ref={(r) => { this._portal = r; }}>
           <div id='lex-assistant-box' className={`lex-assistant-box ${this.state.cssClass.join(' ')}`} style={pos} ref={(r) => { this._portalAssistant = r; }}>
             <Assistant
               editing={this.state.editing}
@@ -453,7 +455,7 @@ export class SearchBar extends Component {
     this.state.onSuggestionsChanged(this.state.suggestions.map(t => t.value), oldSuggestionValues.map(t => t.value), newUnboxedValues, oldUnboxedValues);
   }
 
-  render (props, {placeholder, active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, cssClass, cancelOnBlur, multivalueDelimiter, multivaluePasteDelimiter}) {
+  render (props, {placeholder, container, active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, cssClass, cancelOnBlur, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
       <div className={`lex-box form-control ${cssClass.join(' ')}` + (active ? ' active' : '') + (focused ? ' focused' : '')} onKeyDown={this.onKeyDown} onMouseDown={this.activate} onFocus={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         { !active && placeholder !== undefined && tokenValues.length === 0 && suggestions.length === 0 ? <div className='text-muted lex-placeholder'>{ placeholder }</div> : '' }
@@ -468,7 +470,7 @@ export class SearchBar extends Component {
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }
-        { this.renderAssistant(activeMachine) }
+        { this.renderAssistant(activeMachine, container) }
       </div>
     );
   }
