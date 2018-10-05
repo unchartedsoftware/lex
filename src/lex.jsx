@@ -27,7 +27,7 @@ import * as KEYS from './lib/keys';
 
 const _language = new WeakMap();
 const _placeholder = new WeakMap();
-const _container = new WeakMap();
+const _popupContainer = new WeakMap();
 const _builders = new WeakMap();
 const _proxiedEvents = new WeakMap();
 const _defaultValue = new WeakMap();
@@ -91,7 +91,7 @@ class Lex extends EventEmitter {
     if (language.getInstance().root.isBindOnly) throw new Error('Root StateTemplate of language cannot be bind-only.');
     _language.set(this, language.root);
     _placeholder.set(this, placeholder);
-    _container.set(this, container);
+    _popupContainer.set(this, container);
     _builders.set(this, new StateBuilderFactory());
     _defaultValue.set(this, defaultQuery);
     _builders.get(this).registerBuilder(OptionState, OptionBuilder)
@@ -182,7 +182,7 @@ class Lex extends EventEmitter {
     this.root = render((
       <SearchBar
         placeholder={_placeholder.get(this)}
-        container={_container.get(this)}
+        popupContainer={_popupContainer.get(this)}
         value={_defaultValue.get(this)}
         builders={_builders.get(this)}
         machineTemplate={_language.get(this)}

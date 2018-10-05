@@ -18,7 +18,7 @@ export class SearchBar extends Component {
     propsToState(this, props, [
       {k: 'enabled', default: true},
       {k: 'placeholder', default: ''},
-      {k: 'container', default: 'body'},
+      {k: 'popupContainer', default: 'body'},
       {
         k: 'machineTemplate',
         before: () => this.cleanupListeners,
@@ -175,18 +175,20 @@ export class SearchBar extends Component {
     }
   }
 
-  renderAssistant (activeMachine, container) {
+  renderAssistant (activeMachine, popupContainer) {
     try {
       if (!this.state.editing && (!this.state.active || !this.state.focused)) return;
       const Assistant = this.state.builders.getAssistant(activeMachine.state.constructor);
       const rect = this.searchBox.getBoundingClientRect();
+      const popupContainerElem = typeof popupContainer === 'string' ? document.querySelector(popupContainer) : popupContainer;
+      const popupRect = popupContainerElem.getBoundingClientRect();
       const pos = {
-        left: !container ? rect.left : 0,
-        top: !container ? rect.top + rect.height : 0,
+        left: !popupContainer ? rect.left : rect.left - popupRect.left,
+        top: !popupContainer ? rect.top + rect.height : rect.top + rect.height - popupRect.top,
         'min-width': rect.width,
         'max-width': rect.width
       };
-      const renderInto = !!container ? container : 'body';
+      const renderInto = !!popupContainer ? popupContainer : 'body';
       // See portal bug workaround for why we have a ref that we dont use
       // https://github.com/developit/preact-portal/issues/2
       return (
@@ -466,7 +468,7 @@ export class SearchBar extends Component {
     this.state.onSuggestionsChanged(this.state.suggestions.map(t => t.value), oldSuggestionValues.map(t => t.value), newUnboxedValues, oldUnboxedValues);
   }
 
-  render (props, {placeholder, container, active, focused, enabled, tokenValues, suggestions, builders, activeMachine, tokenXIcon, cssClass, cancelOnBlur, multivalueDelimiter, multivaluePasteDelimiter}) {
+  render (props, {placeholder, popupContainer, active, focused, enabled, tokenValues, suggestions, builders, activeMachine, tokenXIcon, cssClass, cancelOnBlur, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
       <div className={`lex-box form-control ${cssClass.join(' ')}` + (active && enabled ? ' active' : '') + (focused && enabled ? ' focused' : '') + (!enabled ? ' disabled' : '')} onKeyDown={this.onKeyDown} onMouseDown={this.activate} onFocus={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         { !active && placeholder !== undefined && tokenValues.length === 0 && suggestions.length === 0 ? <div className='text-muted lex-placeholder'>{ placeholder }</div> : '' }
@@ -481,7 +483,7 @@ export class SearchBar extends Component {
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }
-        { this.renderAssistant(activeMachine, container) }
+        { this.renderAssistant(activeMachine, popupContainer) }
       </div>
     );
   }
