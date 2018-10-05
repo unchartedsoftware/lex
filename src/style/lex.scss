@@ -145,6 +145,8 @@ div.lex-box div.token  {
     width: 150px;
     min-width: 150px;
     padding-left: 0.2em;
+    vertical-align: middle;
+    
     // Remove IE "clear" button, its confusing to have both that and the remove X
     // since they appear right beside each other
     &::-ms-clear {
