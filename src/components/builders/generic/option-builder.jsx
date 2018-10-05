@@ -31,7 +31,8 @@ export class OptionBuilder extends Builder {
   processProps (props) {
     const { machine, machineState } = props;
     this.setState({
-      typedText: machineState.unboxedValue ? machineState.formatUnboxedValue(machineState.unboxedValue, machine.boxedValue) : ''
+      typedText: machineState.unboxedValue ? machineState.formatUnboxedValue(machineState.unboxedValue, machine.boxedValue) : '',
+      previewText: machineState.previewValue
     });
 
     return super.processProps(props);
@@ -85,7 +86,7 @@ export class OptionBuilder extends Builder {
       e.preventDefault();
     } else {
       // if we didn't consume the key, it must be text so clear the preview value
-      this.machineState.previewValue = undefined;
+      this.machineState.previewValue = null;
     }
   }
 
@@ -108,7 +109,7 @@ export class OptionBuilder extends Builder {
   clearPreview () {
     if (typeof this.state.previewText === 'string' && this.state.previewText.length > 0) {
       this.setState({
-        previewText: ''
+        previewText: null
       });
     }
   }
@@ -196,6 +197,10 @@ export class OptionBuilder extends Builder {
     }
   }
 
+  captureInputRef = (ref) => {
+    this.textInput = ref;
+  };
+
   renderInteractive (props, {valid, readOnly, typedText, previewText, machineState}) {
     const inputClass = `token-input ${valid ? 'active' : 'invalid'}`;
     return (
@@ -213,7 +218,7 @@ export class OptionBuilder extends Builder {
             onFocus={this.requestFocus}
             onFocusOut={this.onBlur}
             onPaste={this.onPaste}
-            ref={(input) => { this.textInput = input; }}
+            ref={this.captureInputRef}
             disabled={readOnly || (machineState.isMultivalue && !machineState.canArchiveValue)} />
           { machineState.units !== undefined ? <span className='token-input token-input-units text-muted'>{ machineState.units }</span> : '' }
         </span>
