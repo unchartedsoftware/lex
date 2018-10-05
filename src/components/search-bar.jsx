@@ -16,6 +16,7 @@ const _erd = new WeakMap();
 export class SearchBar extends Component {
   processProps (props) {
     propsToState(this, props, [
+      {k: 'enabled', default: true},
       {k: 'placeholder', default: ''},
       {k: 'container', default: 'body'},
       {
@@ -217,6 +218,16 @@ export class SearchBar extends Component {
     } catch (err) {
       // do nothing if there is no assistant.
     }
+  }
+
+  @Bind
+  setEnabled (enabled) {
+    if (!enabled) {
+      this.blur();
+    }
+    this.setState({
+      enabled: enabled
+    });
   }
 
   @Bind
@@ -455,9 +466,9 @@ export class SearchBar extends Component {
     this.state.onSuggestionsChanged(this.state.suggestions.map(t => t.value), oldSuggestionValues.map(t => t.value), newUnboxedValues, oldUnboxedValues);
   }
 
-  render (props, {placeholder, container, active, focused, tokenValues, suggestions, builders, activeMachine, tokenXIcon, cssClass, cancelOnBlur, multivalueDelimiter, multivaluePasteDelimiter}) {
+  render (props, {placeholder, container, active, focused, enabled, tokenValues, suggestions, builders, activeMachine, tokenXIcon, cssClass, cancelOnBlur, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
-      <div className={`lex-box form-control ${cssClass.join(' ')}` + (active ? ' active' : '') + (focused ? ' focused' : '')} onKeyDown={this.onKeyDown} onMouseDown={this.activate} onFocus={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
+      <div className={`lex-box form-control ${cssClass.join(' ')}` + (active && enabled ? ' active' : '') + (focused && enabled ? ' focused' : '') + (!enabled ? ' disabled' : '')} onKeyDown={this.onKeyDown} onMouseDown={this.activate} onFocus={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         { !active && placeholder !== undefined && tokenValues.length === 0 && suggestions.length === 0 ? <div className='text-muted lex-placeholder'>{ placeholder }</div> : '' }
         {
           tokenValues.map((v, i) => {

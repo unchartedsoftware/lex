@@ -1,4 +1,5 @@
 $lex-background: revert !default;
+$lex-disabled-background: #eee !default;
 $lex-border-color: revert !default;
 $lex-border-radius-base: 3px !default;
 $lex-highlight-color: #0097a7 !default;
@@ -31,7 +32,7 @@ div.lex-box {
   border-color: $lex-border-color;
   line-height: $lex-line-height;
 
-  &.active, &.focused {
+  &.active, &.focused, &.disabled {
     outline: 0;
   }
 
@@ -45,6 +46,11 @@ div.lex-box {
     border-color: $lex-highlight-color;
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px darken($lex-highlight-color, 10%);
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px darken($lex-highlight-color, 10%);
+  }
+
+  &.disabled {
+    background-color: $lex-disabled-background;
+    pointer-events: none;
   }
 }
 
@@ -99,7 +105,7 @@ div.lex-box div.token  {
     width: auto;
     padding: 0 $lex-token-value-spacing 0 0;
     margin: 0;
-    vertical-align: baseline;
+    vertical-align: middle;
     box-shadow: none;
     outline: 0;
     &.active {
@@ -145,6 +151,8 @@ div.lex-box div.token  {
     width: 150px;
     min-width: 150px;
     padding-left: 0.2em;
+    min-height: 26px;
+
     // Remove IE "clear" button, its confusing to have both that and the remove X
     // since they appear right beside each other
     &::-ms-clear {
@@ -187,6 +195,12 @@ div.lex-box div.token  {
       font-size: 1em;
       line-height: 1em;
     }
+  }
+}
+
+div.lex-box.disabled div.token {
+  button {
+    opacity: 0.5;
   }
 }
 
