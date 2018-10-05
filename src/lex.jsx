@@ -245,6 +245,17 @@ class Lex extends EventEmitter {
   }
 
   /**
+   * Enable or disable the search box.
+   *
+   * @param {boolean} enabled - True iff this Lex should be enabled (default true).
+   */
+  setEnabled (enabled = true) {
+    if (this.searchBar) {
+      this.searchBar.setEnabled(enabled);
+    }
+  }
+
+  /**
    * Rewrite the query.
    *
    * @param {Object[]} query - One or more token values (an array of objects of boxed or unboxed values) to display to overwrite the current query with.

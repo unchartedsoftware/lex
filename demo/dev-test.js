@@ -131,5 +131,10 @@ window.setSuggestions = function () {
 window.focusSearchBar = function () {
   lex.focus();
 };
+let enabled = true;
+window.toggleEnabled = function () {
+  enabled = !enabled;
+  lex.setEnabled(enabled);
+};
 // for debugging purposes only
 require('preact/devtools');
