@@ -150,6 +150,22 @@ export class Token extends Component {
   }
 
   @Bind
+  compileBuilderClassHints () {
+    let defaultClass = [];
+    if (this.state.machine) {
+      let st = this.state.machine.state;
+      while (st !== undefined) {
+        const klassSuggestion = st.suggestCssClass();
+        if (Array.isArray(klassSuggestion)) {
+          defaultClass = defaultClass.concat(klassSuggestion);
+        }
+        st = st.parent;
+      }
+    }
+    return defaultClass.join(' ');
+  }
+
+  @Bind
   requestFocus () {
     this.focus();
     this.state.requestFocus();
@@ -197,7 +213,7 @@ export class Token extends Component {
 
   render (props, {active, flash, cancelOnBlur, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
-      <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''}`} onMouseDown={this.requestEdit}>
+      <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''} ${this.compileBuilderClassHints()}`} onMouseDown={this.requestEdit}>
         {this.icon}
         {this.state.stateArray.map(s => {
           const Builder = this.state.builders.getBuilder(s.constructor);
