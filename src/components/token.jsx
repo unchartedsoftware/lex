@@ -211,6 +211,37 @@ export class Token extends Component {
     }
   }
 
+  get actions () {
+    const {active, machine, cancelOnBlur, multivalueDelimiter, multivaluePasteDelimiter} = this.state;
+    if (machine && machine.state.actions) {
+      return machine.state.actions
+        .map((s) => {
+          const Builder = this.state.builders.getBuilder(s.constructor);
+          return (<Builder
+            key={s.id}
+            machine={machine}
+            machineState={s}
+            cancelOnBlur={cancelOnBlur}
+            requestTransition={this.state.requestTransition}
+            requestArchive={this.state.requestArchive}
+            requestUnarchive={this.state.requestUnarchive}
+            requestRemoveArchivedValue={this.state.requestRemoveArchivedValue}
+            requestRemoveArchivedValues={this.state.requestRemoveArchivedValues}
+            requestRewind={this.state.requestRewind}
+            requestFocus={this.requestFocus}
+            requestBlur={this.requestBlur}
+            requestCancel={this.state.requestCancel}
+            validityChanged={this.state.onValidityChanged}
+            readOnly={!active}
+            blank={this.isBlank}
+            tokenActive={active}
+            multivalueDelimiter={multivalueDelimiter}
+            multivaluePasteDelimiter={multivaluePasteDelimiter}
+          />);
+        });
+    }
+  }
+
   render (props, {active, flash, cancelOnBlur, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
       <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''} ${this.compileBuilderClassHints()}`} onMouseDown={this.requestEdit}>
@@ -241,6 +272,7 @@ export class Token extends Component {
             multivaluePasteDelimiter={multivaluePasteDelimiter}
           />);
         })}
+        {this.actions}
         {this.addButton}
         <button type='button' onMouseDown={this.requestRemoval} className='btn btn-xs btn-link token-remove' aria-label='Close'>
           {this.xicon}

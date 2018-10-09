@@ -23,6 +23,8 @@ import { OptionBuilder } from './components/builders/generic/option-builder';
 import { OptionAssistant } from './components/assistants/generic/option-assistant';
 import { DateTimeEntryBuilder } from './components/builders/temporal/datetime-entry-builder';
 import { DateTimeEntryAssistant } from './components/assistants/temporal/datetime-entry-assistant';
+import { ActionBuilder } from './components/builders/generic/action-builder';
+import { ActionState } from './lib/states/generic/action-state';
 import * as KEYS from './lib/keys';
 
 const _language = new WeakMap();
@@ -98,6 +100,7 @@ class Lex extends EventEmitter {
       .registerBuilder(DateTimeEntryState, DateTimeEntryBuilder)
       .registerBuilder(LabelState, LabelBuilder)
       .registerBuilder(TerminalState, TerminalBuilder)
+      .registerBuilder(ActionState, ActionBuilder)
       .registerAssistant(OptionState, OptionAssistant)
       .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant);
     _proxiedEvents.set(this, new Map());
@@ -294,11 +297,13 @@ export {
   CurrencyEntryState,
   NumericEntryState,
   DateTimeEntryState,
+  ActionState,
   // UI components
   OptionBuilder,
   OptionAssistant,
   DateTimeEntryBuilder,
   DateTimeEntryAssistant,
+  ActionBuilder,
   // Constants
   KEYS
 };
