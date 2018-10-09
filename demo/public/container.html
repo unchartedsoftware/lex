@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Lex Relational String</title>
+    <style>
+      html {
+        max-width: 700px;
+        margin: 0 auto;
+      }
+      .scrollable {
+        height: 300px;
+        border: 1px solid gray;
+        overflow: scroll;
+      }
+      #LexSearchPopupContainer {
+        position: relative;
+        margin-bottom: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Lex Container</h1>
+    <p>The goal of this example is to show attaching to scrolling container instead of the body</p>
+    <div class="scrollable">
+      <div id="LexSearchPopupContainer">
+        <div id="LexContainer">
+      </div>
+    </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>
+    <script type="application/javascript" src="container.js"></script>
+  </body>
+</html>
