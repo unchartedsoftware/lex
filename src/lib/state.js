@@ -21,6 +21,7 @@ const _children = new WeakMap();
 const _value = new WeakMap();
 const _archive = new WeakMap();
 const _icon = new WeakMap();
+const _cssClasses = new WeakMap();
 const _resetOnRewind = new WeakMap();
 
 /**
@@ -158,6 +159,7 @@ export class StateTemplate {
  * @param {boolean} config.multivalue - Whether or not this state supports multi-value entry.
  * @param {number | undefined} config.multivalueLimit - An optional limit on the number of values this state can contain.
  * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
+ * @param {string[]} config.cssClasses - One or more CSS classes which, when this `State` is transitioned to, will be applied to the containing `Token`. They will be removed if the machine is rewound before this `State`.
  * @param {boolean} config.resetOnRewind - This state should reset child states when rewound to during a token edit. False by default.
  * @example
  * class MyCustomState extends State {
@@ -179,7 +181,7 @@ export class StateTemplate {
  */
 export class State extends EventEmitter {
   constructor (config) {
-    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon, resetOnRewind} = config;
+    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon, cssClasses, resetOnRewind} = config;
     super();
     this._id = Math.random();
     _parent.set(this, parent);
@@ -194,6 +196,7 @@ export class State extends EventEmitter {
     _bindOnly.set(this, bindOnly !== undefined ? bindOnly : false);
     _children.set(this, []);
     _icon.set(this, icon);
+    _cssClasses.set(this, Array.isArray(cssClasses) ? cssClasses : []);
     _resetOnRewind.set(this, resetOnRewind);
     _value.set(this, _defaultValue.get(this));
     _previewValue.set(this, null);
@@ -335,6 +338,14 @@ export class State extends EventEmitter {
     } else {
       return iconFn(this.value);
     }
+  }
+
+  /*
+   * @private
+   * @returns {string[]} A list of CSS classes to hint to the containing token.
+   */
+  suggestCssClass () {
+    return _cssClasses.get(this);
   }
 
   get isDefault () { return this.value === this.defaultValue; }
