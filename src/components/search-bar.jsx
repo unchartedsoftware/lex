@@ -175,19 +175,42 @@ export class SearchBar extends Component {
     }
   }
 
+  assistantContainerElem (popupContainer) {
+    if (popupContainer === false) {
+      // It wasn't set. Use body tag.
+      return document.querySelector('body');
+    } else if (typeof popupContainer === 'string') {
+      // Container was set. If it's a string, assume we should query for it.
+      return document.querySelector(popupContainer);
+    } else {
+      // Container was set. If it's not a string, assume it's a dom element
+      return popupContainer;
+    }
+  }
+
+  assistantPosition (popupContainer) {
+    const rect = this.searchBox.getBoundingClientRect();
+    const relativeToContainer = popupContainer && popupContainer !== 'body';
+    const pos = {
+      left: rect.left,
+      top: rect.top + rect.height,
+      'min-width': rect.width,
+      'max-width': rect.width
+    };
+    if (relativeToContainer) {
+      const popupContainerElem = this.assistantContainerElem(popupContainer);
+      const popupRect = popupContainerElem.getBoundingClientRect();
+      pos.left = pos.left - popupRect.left;
+      pos.top = pos.top - popupRect.top;
+    }
+    return pos;
+  }
+
   renderAssistant (activeMachine, popupContainer) {
     try {
       if (!this.state.editing && (!this.state.active || !this.state.focused)) return;
       const Assistant = this.state.builders.getAssistant(activeMachine.state.constructor);
-      const rect = this.searchBox.getBoundingClientRect();
-      const popupContainerElem = typeof popupContainer === 'string' ? document.querySelector(popupContainer) : popupContainer;
-      const popupRect = popupContainerElem.getBoundingClientRect();
-      const pos = {
-        left: !popupContainer ? rect.left : rect.left - popupRect.left,
-        top: !popupContainer ? rect.top + rect.height : rect.top + rect.height - popupRect.top,
-        'min-width': rect.width,
-        'max-width': rect.width
-      };
+      const pos = this.assistantPosition(popupContainer);
       const renderInto = !!popupContainer ? popupContainer : 'body';
       // See portal bug workaround for why we have a ref that we dont use
       // https://github.com/developit/preact-portal/issues/2
