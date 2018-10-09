@@ -4,6 +4,9 @@ import 'moment-timezone';
 
 const _dateFormat = new WeakMap();
 const _timeZone = new WeakMap();
+const _minDate = new WeakMap();
+const _maxDate = new WeakMap();
+const _hilightedDate = new WeakMap();
 
 /**
  * This state supports the entry of a Date/Time value, with support for a custom acceptable format
@@ -20,13 +23,24 @@ export class DateTimeEntryState extends State {
     if (config.timezone === undefined) config.timezone = 'Etc/UTC';
     if (config.validate === undefined) {
       config.validate = (val) => {
-        return val !== null; // all good as long as the boxed value isn't null. If it was invalid, moment would have returned null.
+        // all good as long as the boxed value isn't null. If it was invalid, moment would have returned null.
+        let isValid = val !== null;
+        if (isValid && config.minDate) {
+          isValid = moment(val).isSameOrAfter(config.minDate);
+        }
+        if (isValid && config.maxDate) {
+          isValid = moment(val).isSameOrBefore(config.maxDate);
+        }
+        return isValid;
       };
     }
     if (moment.tz.zone(config.timezone) === null) throw new Error(`Timezone ${config.timezone} does not exist.`);
     super(config);
     _dateFormat.set(this, config.format);
     _timeZone.set(this, config.timeZone);
+    _minDate.set(this, config.minDate);
+    _maxDate.set(this, config.maxDate);
+    _hilightedDate.set(this, config.hilightedDate);
   }
 
   /**
@@ -45,6 +59,33 @@ export class DateTimeEntryState extends State {
    */
   get timezone () {
     return _timeZone.get(this);
+  }
+
+  /**
+   * Getter for `minDate`.
+   *
+   * @returns {Date} - The mininum date the picker will allow to be selected
+   */
+  get minDate () {
+    return _minDate.get(this);
+  }
+
+  /**
+   * Getter for `maxDate`.
+   *
+   * @returns {Date} - The maximum date the picker will allow to be selected
+   */
+  get maxDate () {
+    return _maxDate.get(this);
+  }
+
+  /**
+   * Getter for `hilightedDate`.
+   *
+   * @returns {Date} - The date that the picker will initialize with as hilighted
+   */
+  get hilightedDate () {
+    return _hilightedDate.get(this);
   }
 
   /**
