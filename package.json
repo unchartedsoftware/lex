@@ -1,7 +1,7 @@
 {
   "name": "@uncharted/lex",
   "description": "A preact framework for building token-based search bars",
-  "version": "0.18.3",
+  "version": "0.18.4",
   "publishConfig": {
     "registry": "nexus.uncharted.software"
   },
