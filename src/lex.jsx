@@ -52,6 +52,7 @@ const _onRejectSuggestion = new WeakMap();
  * @param {object} config - The configuration for this instance of `Lex`.
  * @param {StateTemplate} config.language - The root state of the search language this bar will support.
  * @param {string|undefined} config.placeholder - Placeholder text for the search bar (optional).
+ * @param {string|DOMNode} config.container - Container for Lex popups, such as `Assistants`.
  * @param {string[]} config.proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any). `['ArrowUp', 'ArrowDown', 'Tab', 'Enter']` by default.
  * @param {Object[]} config.defaultQuery - The default search state for this search box. Can either be an array of arrays of boxed or unboxed (basic type) values.
  * @param {string} config.tokenXIcon - The default X icon for tokens (DOM string).
@@ -82,7 +83,7 @@ class Lex extends EventEmitter {
       multivaluePasteDelimiter = ',',
       cssClass = [],
       cancelOnBlur = true,
-      container = false,
+      container = 'body',
       onAcceptSuggestion = (s) => s,
       onRejectSuggestion = () => true
     } = config;
