@@ -52,12 +52,12 @@ export class DateTimeEntryAssistant extends Assistant {
   get localizedMinMaxDates () {
     let minDate, maxDate;
 
-    if (this.machineState.minDate) {
+    if (this.machineState.minDate && this.machineState.minDate instanceof Date) {
       const stringDate = moment.tz(this.machineState.minDate, this.timezone).format(this.format); // get incoming date as a string
       minDate = moment(stringDate, this.format).toDate();
     }
 
-    if (this.machineState.maxDate) {
+    if (this.machineState.maxDate && this.machineState.maxDate instanceof Date) {
       const stringDate = moment.tz(this.machineState.maxDate, this.timezone).format(this.format); // get incoming date as a string
       maxDate = moment(stringDate, this.format).toDate();
     }
@@ -103,8 +103,6 @@ export class DateTimeEntryAssistant extends Assistant {
   componentDidMount () {
     if (super.componentDidMount) super.componentDidMount();
     if (!this.dateInput) {
-      let creationErr;
-
       try {
         const localizedMinMaxDates = this.localizedMinMaxDates;
         let minDate = localizedMinMaxDates && localizedMinMaxDates.minDate ? moment(localizedMinMaxDates.minDate) : null;
@@ -130,12 +128,7 @@ export class DateTimeEntryAssistant extends Assistant {
           max: maxDate ? maxDate.toDate() : null
         });
       } catch (err) {
-        // ignore irritating HTML error from date picker for now
-        creationErr = err;
-      }
-
-      if (!this.dateInput) {
-        throw new Error('Failed to create datepicker: ' + creationErr.toString());
+        throw new Error('Failed to create datepicker: ' + err.toString());
       }
 
       this.dateInput.on('statechange', (_, picker) => {

@@ -25,19 +25,28 @@ export class DateTimeEntryState extends State {
       config.validate = (val) => {
         // all good as long as the boxed value isn't null. If it was invalid, moment would have returned null.
         let isValid = val !== null;
-        if (isValid && config.minDate) {
-          isValid = moment(val).isSameOrAfter(config.minDate);
+        if (isValid) {
+          const stringDate = moment.tz(val, this.timezone).format(this.format); // get incoming date as a string
+          const dateVal = moment(stringDate, this.format).toDate();
+
+          if (this.minDate && this.minDate instanceof Date) {
+            const stringDate = moment.tz(this.minDate, this.timezone).format(this.format); // get incoming date as a string
+            isValid = isValid && moment(dateVal).isSameOrAfter(moment(stringDate, this.format));
+          }
+
+          if (this.maxDate && this.maxDate instanceof Date) {
+            const stringDate = moment.tz(this.maxDate, this.timezone).format(this.format); // get incoming date as a string
+            isValid = isValid && moment(dateVal).isSameOrBefore(moment(stringDate, this.format));
+          }
         }
-        if (isValid && config.maxDate) {
-          isValid = moment(val).isSameOrBefore(config.maxDate);
-        }
+
         return isValid;
       };
     }
     if (moment.tz.zone(config.timezone) === null) throw new Error(`Timezone ${config.timezone} does not exist.`);
     super(config);
     _dateFormat.set(this, config.format);
-    _timeZone.set(this, config.timeZone);
+    _timeZone.set(this, config.timezone);
     _minDate.set(this, config.minDate);
     _maxDate.set(this, config.maxDate);
     _hilightedDate.set(this, config.hilightedDate);
