@@ -23,6 +23,7 @@ const _archive = new WeakMap();
 const _icon = new WeakMap();
 const _cssClasses = new WeakMap();
 const _resetOnRewind = new WeakMap();
+const _actions = new WeakMap();
 
 /**
  * A factory for a `State`, which can be used to produce instances
@@ -40,6 +41,7 @@ export class StateTemplate {
     _klass.set(this, klass);
     _config.set(this, config);
     _children.set(this, []);
+    _actions.set(this, []);
   }
 
   get parent () {
@@ -58,6 +60,10 @@ export class StateTemplate {
     }
   }
 
+  get actions () {
+    return _actions.get(this);
+  }
+
   /**
    * Recursively clones this `StateTemplate` DAG, to retrieve an identical DAG of `State`s,
    * populated with their `defaultValue`s and ready to be traversed.
@@ -70,6 +76,7 @@ export class StateTemplate {
     const config = Object.assign({}, _config.get(this));
     config.parent = parent;
     const instance = new StateKlass(config);
+    _actions.set(instance, _actions.get(this).map(a => a.getInstance(instance)));
     const childInstances = _children.get(this).map(c => c.getInstance(instance));
     _children.set(instance, childInstances);
     return instance;
@@ -109,6 +116,15 @@ export class StateTemplate {
   branch (...branches) {
     const roots = branches.map(t => t.root);
     _children.set(this, roots);
+    return this;
+  }
+
+  withAction (StateKlass, config = {}) {
+    const child = new StateTemplate(StateKlass, config);
+    _parent.set(child, this);
+    _children.get(this).push(child);
+
+    _actions.get(this).push(child);
     return this;
   }
 }
@@ -161,6 +177,7 @@ export class StateTemplate {
  * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
  * @param {string[]} config.cssClasses - One or more CSS classes which, when this `State` is transitioned to, will be applied to the containing `Token`. They will be removed if the machine is rewound before this `State`.
  * @param {boolean} config.resetOnRewind - This state should reset child states when rewound to during a token edit. False by default.
+ * @param {Array[Class]} config.actions - Array of react UI components that will be appended to the token UI to support custom actions
  * @example
  * class MyCustomState extends State {
  *   constructor (config) {
@@ -181,7 +198,7 @@ export class StateTemplate {
  */
 export class State extends EventEmitter {
   constructor (config) {
-    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon, cssClasses, resetOnRewind} = config;
+    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon, cssClasses, resetOnRewind, actions} = config;
     super();
     this._id = Math.random();
     _parent.set(this, parent);
@@ -201,6 +218,7 @@ export class State extends EventEmitter {
     _value.set(this, _defaultValue.get(this));
     _previewValue.set(this, null);
     _archive.set(this, []);
+    _actions.set(this, actions !== undefined ? actions : []);
   }
 
   get id () {
@@ -249,6 +267,10 @@ export class State extends EventEmitter {
 
   get children () {
     return _children.get(this);
+  }
+
+  get actions () {
+    return _actions.get(this);
   }
 
   get isMultivalue () {
