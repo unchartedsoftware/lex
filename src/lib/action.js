@@ -107,8 +107,8 @@ export class Action extends EventEmitter {
   /*
    * @private
    */
-  async doInitialize (context = [], initialValue) {
-    const result = await this.initialize(context, initialValue);
+  async doInitialize (context = []) {
+    const result = await this.initialize(context);
     _initialized.set(this, true);
     return result;
   }
@@ -118,10 +118,9 @@ export class Action extends EventEmitter {
    * Override in subclasses to add asynchronous functionality to a `Action`.
    *
    * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s).
-   * @param {any | undefined} initialValue - The initial internal value which will be bound to this `Action`.
    * @returns {Promise} A `Promise` which resolves when initialize completes successfully, rejecting otherwise.
    */
-  async initialize (context = [], initialValue) { // eslint-disable-line no-unused-vars
+  async initialize (context = []) { // eslint-disable-line no-unused-vars
     // override
   }
 

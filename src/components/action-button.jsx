@@ -59,8 +59,7 @@ export class ActionButton extends Component {
    */
   processProps (props) {
     propsToState(this, props, [
-      {k: 'action'},
-      {k: 'onClick', default: () => true}
+      {k: 'action'}
     ]);
   }
 

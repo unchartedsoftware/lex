@@ -4,6 +4,7 @@ import { h, render } from 'preact';
 import EventEmitter from 'wolfy87-eventemitter';
 import { StateTransitionError, NoStateAssistantTypeError, NoStateBuilderTypeError } from './lib/errors';
 import { State, StateTemplate } from './lib/state';
+import { Action } from './lib/action';
 import { StateBuilderFactory } from './lib/state-builder-factory';
 import { TransitionFactory } from './lib/transition-factory';
 import { SearchBar } from './components/search-bar';
@@ -23,6 +24,7 @@ import { OptionBuilder } from './components/builders/generic/option-builder';
 import { OptionAssistant } from './components/assistants/generic/option-assistant';
 import { DateTimeEntryBuilder } from './components/builders/temporal/datetime-entry-builder';
 import { DateTimeEntryAssistant } from './components/assistants/temporal/datetime-entry-assistant';
+import { ActionButton } from './components/action-button';
 import * as KEYS from './lib/keys';
 
 const _language = new WeakMap();
@@ -100,7 +102,8 @@ class Lex extends EventEmitter {
       .registerBuilder(LabelState, LabelBuilder)
       .registerBuilder(TerminalState, TerminalBuilder)
       .registerAssistant(OptionState, OptionAssistant)
-      .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant);
+      .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant)
+      .registerActionButton(Action, ActionButton);
     _proxiedEvents.set(this, new Map());
     _tokenXIcon.set(this, tokenXIcon);
     _multivalueDelimiterKey.set(this, multivalueDelimiterKey);
@@ -137,6 +140,18 @@ class Lex extends EventEmitter {
    */
   registerAssistant (templateClass, assistantClass) {
     _builders.get(this).registerAssistant(templateClass, assistantClass);
+    return this;
+  }
+
+  /**
+   * Register a new component as the "action button" for a certain `ActionTemplate` type.
+   *
+   * @param {ActionTemplate} templateClass - A class extending `ActionTemplate`.
+   * @param {Component} actionButtonClass - A class extending `Component`, which can supply values to an `Action` created from the `ActionTemplate`.
+   * @returns {Lex} A reference to `this` for chaining.
+   */
+  registerActionButton (templateClass, actionButtonClass) {
+    _builders.get(this).registerActionButton(templateClass, actionButtonClass);
     return this;
   }
 
@@ -282,6 +297,7 @@ export {
   NoStateBuilderTypeError,
   // base classes
   State,
+  Action,
   TransitionFactory,
   // states
   LabelState,
@@ -300,6 +316,7 @@ export {
   OptionAssistant,
   DateTimeEntryBuilder,
   DateTimeEntryAssistant,
+  ActionButton,
   // Constants
   KEYS
 };

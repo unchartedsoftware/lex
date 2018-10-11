@@ -211,6 +211,18 @@ export class Token extends Component {
     }
   }
 
+  get actionButtons () {
+    // only show actions when the token is inactive
+    if (!this.state.active) {
+      return this.state.stateArray.map(s => {
+        s.actions.map(a => {
+          const ActionButton = this.state.builders.getActionButton(a.constructor);
+          return (<ActionButton action={a} />);
+        });
+      }).reduce((acc, val) => acc.concat(val), []);
+    }
+  }
+
   render (props, {active, flash, cancelOnBlur, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
       <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''} ${this.compileBuilderClassHints()}`} onMouseDown={this.requestEdit}>
@@ -242,6 +254,7 @@ export class Token extends Component {
           />);
         })}
         {this.addButton}
+        {this.actionButtons}
         <button type='button' onMouseDown={this.requestRemoval} className='btn btn-xs btn-link token-remove' aria-label='Close'>
           {this.xicon}
         </button>

@@ -23,6 +23,7 @@ const _archive = new WeakMap();
 const _icon = new WeakMap();
 const _cssClasses = new WeakMap();
 const _resetOnRewind = new WeakMap();
+const _impliedActions = new WeakMap();
 
 /**
  * A factory for a `State`, which can be used to produce instances
@@ -160,6 +161,7 @@ export class StateTemplate {
  * @param {number | undefined} config.multivalueLimit - An optional limit on the number of values this state can contain.
  * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
  * @param {string[]} config.cssClasses - One or more CSS classes which, when this `State` is transitioned to, will be applied to the containing `Token`. They will be removed if the machine is rewound before this `State`.
+ * @param {ActionTemplate} config.actions - One or more `ActionTemplate`s which, if a completed `Token` contains this `State`, will be used to show `Action`s on the `Token`.
  * @param {boolean} config.resetOnRewind - This state should reset child states when rewound to during a token edit. False by default.
  * @example
  * class MyCustomState extends State {
@@ -181,11 +183,12 @@ export class StateTemplate {
  */
 export class State extends EventEmitter {
   constructor (config) {
-    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon, cssClasses, resetOnRewind} = config;
+    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon, cssClasses, resetOnRewind, actions} = config;
     super();
     this._id = Math.random();
     _parent.set(this, parent);
     _name.set(this, name);
+    if (vkey === 'actionValues') throw new Error('"actionValues" is a reserved word and cannot be used as a vkey');
     _vkey.set(this, vkey);
     _transitionFunction.set(this, transition !== undefined ? transition : () => true);
     _validate.set(this, validate !== undefined ? validate : () => true);
@@ -201,6 +204,7 @@ export class State extends EventEmitter {
     _value.set(this, _defaultValue.get(this));
     _previewValue.set(this, null);
     _archive.set(this, []);
+    _impliedActions.set(this, Array.isArray(actions) ? actions.map(a => a.getInstance()) : []);
   }
 
   get id () {
@@ -275,11 +279,24 @@ export class State extends EventEmitter {
     return _initialized.get(this) || true;
   }
 
+  get actions () {
+    return _impliedActions.get(this);
+  }
+
+  set actionValues (newValues = {}) {
+    _impliedActions.get(this).forEach(a => {
+      a.value = newValues[a.vkey];
+    });
+  }
+
   /*
    * @private
    */
   async doInitialize (context = [], initialValue) {
     const result = await this.initialize(context, initialValue);
+    // initialize actions
+    await Promise.all(_impliedActions.get(this).map(a => a.doInitialize(context)));
+    // done
     _initialized.set(this, true);
     return result;
   }
@@ -304,6 +321,7 @@ export class State extends EventEmitter {
     this.value = this.defaultValue;
     this.previewValue = undefined;
     _archive.set(this, []);
+    _impliedActions.get(this).forEach(a => a.reset());
   }
 
   /**
