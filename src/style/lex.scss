@@ -79,7 +79,7 @@ div.lex-box div.token  {
     background: transparentize($lex-highlight-color, 0.85);
   }
 
-  .token-action-add-suggestion {
+  .tokken-action, .token-action-add-suggestion {
     font-size: .85em;
     font-weight: 700;
     text-transform: uppercase;

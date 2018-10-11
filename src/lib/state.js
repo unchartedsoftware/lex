@@ -147,7 +147,7 @@ export class StateTemplate {
  * - `on('preview value changed', (newVal, oldVal) => {})` when the internal preview value changes.
  * - `on('unboxed value change attempted', (newUnboxedVal, oldUnboxedVal))` when a user attempts to change the unboxed value. If it cannot be boxed, it may not trigger `value changed`.
  *
- * @param {object} config - Options for `State` `klass`.
+ * @param {object} config - Options for `State` class.
  * @param {State | undefined} config.parent - The parent state. `undefined` if this is a root.
  * @param {string} config.name - A useful label for this state - used for display purposes.
  * @param {string} config.vkey - A key used to enter the value of this state into the value object of the containing machine.
@@ -342,7 +342,7 @@ export class State extends EventEmitter {
 
   /*
    * @private
-   * @returns {string[]} A list of CSS classes to hint to the containing token.
+   * @returns {string[]} A list of CSS classes to hint to the containing `Token`.
    */
   suggestCssClass () {
     return _cssClasses.get(this);
