@@ -118,6 +118,7 @@ export class Action extends EventEmitter {
    * Called by associated `Component` whenever this `Action` is triggered.
    */
   onAction () {
+    // TODO class changes should work because query changed should fire!
     _onAction.get(this).call(this, this.value);
   }
 }

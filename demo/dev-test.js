@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, Action } from '../src/lex';
+import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, Action, ActionButton } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import '../node_modules/tiny-date-picker/tiny-date-picker.css';
 
@@ -30,6 +30,29 @@ function searchOptions (hint) {
       resolve(options.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
     }, 25);
   });
+}
+
+class PinAction extends Action {
+  onAction () {
+    super.onAction();
+    this.value = !this.value;
+  }
+  suggestCssClass () {
+    if (this.value) {
+      return ['token-pinned'];
+    } else {
+      return [];
+    }
+  }
+}
+class PinActionButton extends ActionButton {
+  render (_, {action}) { // eslint-disable-line no-unused-vars
+    if (action.value === true) {
+      return <button className='token-action' onClick={this.onClick}>UNPIN</button>;
+    } else {
+      return <button className='token-action' onClick={this.onClick}>PIN</button>;
+    }
+  }
 }
 
 const language = Lex.from('field', OptionState, {
@@ -84,13 +107,9 @@ const language = Lex.from('field', OptionState, {
     bindOnly: true, // this state can only be transitioned to programmatically, not interactively
     ...TransitionFactory.optionMetaCompare({type: 'geohash'}),
     actions: [
-      new Action({
-        name: 'count',
-        vkey: 'count-action',
-        onAction: function () {
-          this.value === undefined ? this.value = 0 : this.value += 1;
-          alert(this.value); // eslint-disable-line no-undef
-        }
+      new PinAction({
+        name: 'pin token',
+        vkey: 'pinned'
       })
     ]
   })
@@ -109,7 +128,7 @@ const lex = new Lex({
     return true;
   }
 });
-
+lex.registerActionButton(PinAction, PinActionButton);
 lex.render(document.getElementById('LexContainer'));
 lex.on('query changed', (...args) => console.log('query changed', ...args));
 lex.on('suggestions changed', (...args) => console.log('suggestions changed', ...args));

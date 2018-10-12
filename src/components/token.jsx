@@ -159,6 +159,13 @@ export class Token extends Component {
         if (Array.isArray(klassSuggestion)) {
           defaultClass = defaultClass.concat(klassSuggestion);
         }
+        // add in action suggestions
+        st.actions.map(a => {
+          const actionKlassSuggestion = a.suggestCssClass();
+          if (Array.isArray(actionKlassSuggestion)) {
+            defaultClass = defaultClass.concat();
+          }
+        });
         st = st.parent;
       }
     }
