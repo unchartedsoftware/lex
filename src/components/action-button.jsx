@@ -91,6 +91,6 @@ export class ActionButton extends Component {
    */
   render (props, state) { // eslint-disable-line no-unused-vars
     const {action} = state;
-    return <button className='token-action' onClick={this.onClick}>${action.name}</button>;
+    return <button className='token-action' onClick={this.onClick}>{action.name}</button>;
   }
 }

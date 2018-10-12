@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState } from '../src/lex';
+import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, Action } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import '../node_modules/tiny-date-picker/tiny-date-picker.css';
 
@@ -82,7 +82,17 @@ const language = Lex.from('field', OptionState, {
   ),
   Lex.from('value', TextEntryState, {
     bindOnly: true, // this state can only be transitioned to programmatically, not interactively
-    ...TransitionFactory.optionMetaCompare({type: 'geohash'})
+    ...TransitionFactory.optionMetaCompare({type: 'geohash'}),
+    actions: [
+      new Action({
+        name: 'count',
+        vkey: 'count-action',
+        onAction: function () {
+          this.value === undefined ? this.value = 0 : this.value += 1;
+          alert(this.value); // eslint-disable-line no-undef
+        }
+      })
+    ]
   })
 );
 

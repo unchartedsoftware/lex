@@ -161,7 +161,7 @@ export class StateTemplate {
  * @param {number | undefined} config.multivalueLimit - An optional limit on the number of values this state can contain.
  * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
  * @param {string[]} config.cssClasses - One or more CSS classes which, when this `State` is transitioned to, will be applied to the containing `Token`. They will be removed if the machine is rewound before this `State`.
- * @param {ActionTemplate} config.actions - One or more `ActionTemplate`s which, if a completed `Token` contains this `State`, will be used to show `Action`s on the `Token`.
+ * @param {Action} config.actions - One or more `Action`s which, if a completed `Token` contains this `State`, will be used to show `Action`s on the `Token`.
  * @param {boolean} config.resetOnRewind - This state should reset child states when rewound to during a token edit. False by default.
  * @example
  * class MyCustomState extends State {
@@ -204,7 +204,7 @@ export class State extends EventEmitter {
     _value.set(this, _defaultValue.get(this));
     _previewValue.set(this, null);
     _archive.set(this, []);
-    _impliedActions.set(this, Array.isArray(actions) ? actions.map(a => a.getInstance()) : []);
+    _impliedActions.set(this, Array.isArray(actions) ? actions : []);
   }
 
   get id () {

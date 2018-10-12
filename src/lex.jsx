@@ -144,10 +144,10 @@ class Lex extends EventEmitter {
   }
 
   /**
-   * Register a new component as the "action button" for a certain `ActionTemplate` type.
+   * Register a new component as the "action button" for a certain `Action` type.
    *
-   * @param {ActionTemplate} templateClass - A class extending `ActionTemplate`.
-   * @param {Component} actionButtonClass - A class extending `Component`, which can supply values to an `Action` created from the `ActionTemplate`.
+   * @param {Action} templateClass - A class extending `Action`.
+   * @param {Component} actionButtonClass - A class extending `Component`, which can supply values to an `Action`.
    * @returns {Lex} A reference to `this` for chaining.
    */
   registerActionButton (templateClass, actionButtonClass) {

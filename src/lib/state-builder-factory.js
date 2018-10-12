@@ -86,10 +86,10 @@ export class StateBuilderFactory {
   }
 
   /**
-   * Register a new component as the "action button" for a certain `ActionTemplate` type.
+   * Register a new component as the "action button" for a certain `Action` type.
    *
-   * @param {*} templateClass - A class extending `ActionTemplate`.
-   * @param {*} actionButtonClass - A class extending `Component`, which can supply values to an `Action` created from the `ActionTemplate`.
+   * @param {*} templateClass - A class extending `Action`.
+   * @param {*} actionButtonClass - A class extending `Component`, which can supply values to an `Action`.
    * @returns {StateBuilderFactory} A reference to `this` for chaining.
    */
   registerActionButton (templateClass, actionButtonClass) {
@@ -98,9 +98,9 @@ export class StateBuilderFactory {
   }
 
   /**
-   * @param {*} templateClass - A class extending `ActionTemplate`.
-   * @returns {*} A class extending `Component`, which can supply values to an `Action` created from the `ActionTemplate`.
-   * @throws {NoActionActionButtonTypeError} If no action button `Component` is registered for the given `ActionTemplate` class or its super classes.
+   * @param {*} templateClass - A class extending `Action`.
+   * @returns {*} A class extending `Component`, which can supply values to an `Action`.
+   * @throws {NoActionActionButtonTypeError} If no action button `Component` is registered for the given `Action` class or its super classes.
    */
   getActionButton (templateClass) {
     const assistant = recursiveClassGet(_actionButtonMap.get(this), templateClass, Action);

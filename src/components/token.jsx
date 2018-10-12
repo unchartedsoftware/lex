@@ -214,12 +214,13 @@ export class Token extends Component {
   get actionButtons () {
     // only show actions when the token is inactive
     if (!this.state.active) {
-      return this.state.stateArray.map(s => {
-        s.actions.map(a => {
+      const actions = this.state.stateArray.filter(s => s.actions.length > 0).map(s => {
+        return s.actions.map(a => {
           const ActionButton = this.state.builders.getActionButton(a.constructor);
           return (<ActionButton action={a} />);
         });
-      }).reduce((acc, val) => acc.concat(val), []);
+      });
+      return actions.reduce((acc, val) => acc.concat(val), []);
     }
   }
 

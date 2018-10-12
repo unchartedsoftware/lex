@@ -1,8 +1,5 @@
 import EventEmitter from 'wolfy87-eventemitter';
 
-// ActionTemplate private members
-const _config = new WeakMap();
-const _klass = new WeakMap();
 // Action private members
 const _initialized = new WeakMap();
 const _name = new WeakMap();
@@ -10,33 +7,6 @@ const _vkey = new WeakMap();
 const _defaultValue = new WeakMap();
 const _value = new WeakMap();
 const _onAction = new WeakMap();
-
-/**
- * A factory for an `Action`, which can be used to produce instances
- * from the provided configuration object.
- *
- * @param {Class} klass - An `Action` class that this factory will produce.
- * @param {object} config - Options which will be applied to `Action` `klass` upon instantiation
- *
- */
-export class ActionTemplate {
-  constructor (klass, config = {}) {
-    _klass.set(this, klass);
-    _config.set(this, config);
-  }
-
-  /**
-   * Instantiates this `ActionTemplate`, to retrieve an `Action`
-   * with an identical config, but disconnected state.
-   *
-   * @returns {Action} An instance of this `ActionTemplate`.
-   */
-  getInstance () {
-    const ActionKlass = _klass.get(this);
-    const config = Object.assign({}, _config.get(this));
-    return new ActionKlass(config);
-  }
-}
 
 /**
  * A concrete `Action`, presented as a button only on completed `Token`s,
@@ -47,7 +17,7 @@ export class ActionTemplate {
  * @param {string} config.name - A name for this `Action`, used by default for display purposes.
  * @param {string} config.vkey - A key used to uniquely identify the value of this `Action` when returned alongside others from the same `Token`.
  * @param {object} config.defaultValue - The default internal value for this `Action`
- * @param {function|undefined} config.onAction - A callback called when the `Action` is triggered, receiving the current value of the `Action` as an argument.
+ * @param {function|undefined} config.onAction - A callback called when the `Action` is triggered, receiving the current value of the `Action` as an argument. Can also affect `this.value` (if you don't pass an arrow function).
  */
 export class Action extends EventEmitter {
   constructor (config) {
@@ -143,10 +113,11 @@ export class Action extends EventEmitter {
 
   }
 
-  /**
+  /*
+   * @private
    * Called by associated `Component` whenever this `Action` is triggered.
    */
   onAction () {
-    _onAction.get(this)(this.value);
+    _onAction.get(this).call(this, this.value);
   }
 }
