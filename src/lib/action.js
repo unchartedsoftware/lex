@@ -6,7 +6,6 @@ const _name = new WeakMap();
 const _vkey = new WeakMap();
 const _defaultValue = new WeakMap();
 const _value = new WeakMap();
-const _onAction = new WeakMap();
 
 /**
  * A concrete `Action`, presented as a button only on completed `Token`s,
@@ -17,18 +16,16 @@ const _onAction = new WeakMap();
  * @param {string} config.name - A name for this `Action`, used by default for display purposes.
  * @param {string} config.vkey - A key used to uniquely identify the value of this `Action` when returned alongside others from the same `Token`.
  * @param {object} config.defaultValue - The default internal value for this `Action`
- * @param {function|undefined} config.onAction - A callback called when the `Action` is triggered, receiving the current value of the `Action` as an argument. Can also affect `this.value` (if you don't pass an arrow function).
  */
 export class Action extends EventEmitter {
   constructor (config) {
-    const {name, vkey, defaultValue, onAction} = config;
+    const {name, vkey, defaultValue} = config;
     super();
     this._id = Math.random();
     _name.set(this, name);
     _vkey.set(this, vkey);
     _defaultValue.set(this, defaultValue !== undefined ? defaultValue : {});
     _value.set(this, _defaultValue.get(this));
-    _onAction.set(this, onAction !== undefined ? onAction : () => {});
   }
 
   get id () {
@@ -116,9 +113,9 @@ export class Action extends EventEmitter {
   /*
    * @private
    * Called by associated `Component` whenever this `Action` is triggered.
+   * Override to implement custom functionality.
    */
   onAction () {
     // TODO class changes should work because query changed should fire!
-    _onAction.get(this).call(this, this.value);
   }
 }
