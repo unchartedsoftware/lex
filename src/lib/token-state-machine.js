@@ -62,6 +62,7 @@ export class TokenStateMachine extends EventEmitter {
       if (values !== undefined) {
         const actionValues = values.actionValues !== undefined ? Object.assign(Object.create(null), values.actionValues) : Object.create(null);
         const copy = Object.assign(Object.create(null), values);
+        delete copy.actionValues; // we don't need actionValues in copy.
         while (Object.keys(copy).length > 0) {
           const v = copy[this.state.vkey];
           if (v === undefined) {
