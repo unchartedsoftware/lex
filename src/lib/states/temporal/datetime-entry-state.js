@@ -73,7 +73,7 @@ export class DateTimeEntryState extends State {
   /**
    * Getter for `minDate`.
    *
-   * @returns {Date} - The mininum date the picker will allow to be selected
+   * @returns {Date} - The mininum date the picker will allow to be selected.
    */
   get minDate () {
     return _minDate.get(this);
@@ -82,7 +82,7 @@ export class DateTimeEntryState extends State {
   /**
    * Getter for `maxDate`.
    *
-   * @returns {Date} - The maximum date the picker will allow to be selected
+   * @returns {Date} - The maximum date the picker will allow to be selected.
    */
   get maxDate () {
     return _maxDate.get(this);
@@ -91,7 +91,7 @@ export class DateTimeEntryState extends State {
   /**
    * Getter for `hilightedDate`.
    *
-   * @returns {Date} - The date that the picker will initialize with as hilighted
+   * @returns {Date} - The date that the picker will initialize with as hilighted.
    */
   get hilightedDate () {
     return _hilightedDate.get(this);
