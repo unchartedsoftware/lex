@@ -497,7 +497,7 @@ export class SearchBar extends Component {
         }
         {
           suggestions.map((v, j) => {
-            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} requestRemoval={this.rejectSuggestion} requestAcceptSuggestion={this.acceptSuggestion} onActionValueChanged={this.onActionValueChanged(i)} idx={j} suggestion />;
+            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} requestRemoval={this.rejectSuggestion} requestAcceptSuggestion={this.acceptSuggestion} onActionValueChanged={this.onActionValueChanged(j)} idx={j} suggestion />;
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }
