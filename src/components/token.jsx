@@ -41,6 +41,13 @@ export class Token extends Component {
       this._emitter.removeListener('state changed', this.getStateArray);
       this._emitter.removeListener('end', this.endToken);
     }
+
+    // Remove all action listeners on clean up
+    this.state.stateArray.filter(s => s.actions.length > 0).forEach(s => {
+      return s.actions.forEach(a => {
+        a.removeAllListeners();
+      });
+    });
   }
 
   connectListeners () {
@@ -231,10 +238,10 @@ export class Token extends Component {
     if (!this.state.active) {
       const actions = this.state.stateArray.filter(s => s.actions.length > 0).map(s => {
         return s.actions.map(a => {
-          // TODO this is a bit of a hack... will probably leak listeners a bit.
+          // Note this is a bit of a hack... will maybe leak listeners a bit.
+          // See Token.cleanupListeners() for where we remove the final listener
           a.removeAllListeners();
           a.on('value changed', this.onActionValueChanged);
-          // TODO fix this ^
           const ActionButton = this.state.builders.getActionButton(a.constructor);
           return (<ActionButton action={a} />);
         });
