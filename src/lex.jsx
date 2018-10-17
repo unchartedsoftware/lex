@@ -4,6 +4,7 @@ import { h, render } from 'preact';
 import EventEmitter from 'wolfy87-eventemitter';
 import { StateTransitionError, NoStateAssistantTypeError, NoStateBuilderTypeError } from './lib/errors';
 import { State, StateTemplate } from './lib/state';
+import { Action } from './lib/action';
 import { StateBuilderFactory } from './lib/state-builder-factory';
 import { TransitionFactory } from './lib/transition-factory';
 import { SearchBar } from './components/search-bar';
@@ -23,6 +24,7 @@ import { OptionBuilder } from './components/builders/generic/option-builder';
 import { OptionAssistant } from './components/assistants/generic/option-assistant';
 import { DateTimeEntryBuilder } from './components/builders/temporal/datetime-entry-builder';
 import { DateTimeEntryAssistant } from './components/assistants/temporal/datetime-entry-assistant';
+import { ActionButton } from './components/action-button';
 import * as KEYS from './lib/keys';
 
 const _language = new WeakMap();
@@ -45,6 +47,7 @@ const _onRejectSuggestion = new WeakMap();
  * This class is an `EventEmitter` and exposes the following events:
  * - `on('token start', () => {})` when the user begins to create or edit a token.
  * - `on('token end', () => {})` when the user finishes creating or editing a token.
+ * - `on('token action', (tokenIdx, actionVkey, newModel, newUnboxedModel, oldActionVal) => {})` when the user triggers a token action.
  * - `on('query changed', (newModel, oldModel, newUnboxedModel, oldUnboxedModel, nextTokenStarted) => {})` when query model changes.
  * - `on('suggestions changed', (newModel, oldModel, newUnboxedModel, oldUnboxedModel) => {})` when suggestion model changes.
  * - `on('validity changed', (newValidity, oldValidity) => {})` when validity of an active builder changes.
@@ -52,6 +55,7 @@ const _onRejectSuggestion = new WeakMap();
  * @param {object} config - The configuration for this instance of `Lex`.
  * @param {StateTemplate} config.language - The root state of the search language this bar will support.
  * @param {string|undefined} config.placeholder - Placeholder text for the search bar (optional).
+ * @param {string|DOMNode} config.container - Container for Lex popups, such as `Assistants`.
  * @param {string[]} config.proxiedEvents - A list of keydown events to proxy from `Builder`s to `Assistant`s. If the active `Builder` does not consume said event, it will be sent to the active `Assistant` (if any). `['ArrowUp', 'ArrowDown', 'Tab', 'Enter']` by default.
  * @param {Object[]} config.defaultQuery - The default search state for this search box. Can either be an array of arrays of boxed or unboxed (basic type) values.
  * @param {string} config.tokenXIcon - The default X icon for tokens (DOM string).
@@ -82,7 +86,7 @@ class Lex extends EventEmitter {
       multivaluePasteDelimiter = ',',
       cssClass = [],
       cancelOnBlur = true,
-      container = false,
+      container = 'body',
       onAcceptSuggestion = (s) => s,
       onRejectSuggestion = () => true
     } = config;
@@ -99,7 +103,8 @@ class Lex extends EventEmitter {
       .registerBuilder(LabelState, LabelBuilder)
       .registerBuilder(TerminalState, TerminalBuilder)
       .registerAssistant(OptionState, OptionAssistant)
-      .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant);
+      .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant)
+      .registerActionButton(Action, ActionButton);
     _proxiedEvents.set(this, new Map());
     _tokenXIcon.set(this, tokenXIcon);
     _multivalueDelimiterKey.set(this, multivalueDelimiterKey);
@@ -136,6 +141,18 @@ class Lex extends EventEmitter {
    */
   registerAssistant (templateClass, assistantClass) {
     _builders.get(this).registerAssistant(templateClass, assistantClass);
+    return this;
+  }
+
+  /**
+   * Register a new component as the "action button" for a certain `Action` type.
+   *
+   * @param {Action} templateClass - A class extending `Action`.
+   * @param {Component} actionButtonClass - A class extending `Component`, which can supply values to an `Action`.
+   * @returns {Lex} A reference to `this` for chaining.
+   */
+  registerActionButton (templateClass, actionButtonClass) {
+    _builders.get(this).registerActionButton(templateClass, actionButtonClass);
     return this;
   }
 
@@ -199,6 +216,7 @@ class Lex extends EventEmitter {
         onValidityChanged={(...args) => this.emit('validity changed', ...args)}
         onStartToken={() => this.emit('token start')}
         onEndToken={() => this.emit('token end')}
+        onTokenAction={(...args) => this.emit('token action', ...args)}
         ref={(a) => { this.searchBar = a; }}
       />
     ), target, this.root);
@@ -281,6 +299,7 @@ export {
   NoStateBuilderTypeError,
   // base classes
   State,
+  Action,
   TransitionFactory,
   // states
   LabelState,
@@ -299,6 +318,7 @@ export {
   OptionAssistant,
   DateTimeEntryBuilder,
   DateTimeEntryAssistant,
+  ActionButton,
   // Constants
   KEYS
 };

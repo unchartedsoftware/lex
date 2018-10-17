@@ -31,7 +31,8 @@ export class Token extends Component {
       {k: 'requestRemoval', default: () => true},
       {k: 'requestAcceptSuggestion', default: () => true},
       {k: 'onEndToken', default: () => true},
-      {k: 'onValidityChanged', default: () => true}
+      {k: 'onValidityChanged', default: () => true},
+      {k: 'onActionValueChanged', default: () => true}
     ]);
   }
 
@@ -39,6 +40,15 @@ export class Token extends Component {
     if (this._emitter) {
       this._emitter.removeListener('state changed', this.getStateArray);
       this._emitter.removeListener('end', this.endToken);
+    }
+
+    // Remove all action listeners on clean up
+    if (Array.isArray(this.state.stateArray)) {
+      this.state.stateArray.filter(s => s.actions.length > 0).forEach(s => {
+        return s.actions.forEach(a => {
+          a.removeAllListeners();
+        });
+      });
     }
   }
 
@@ -70,6 +80,13 @@ export class Token extends Component {
   @Bind
   endToken (state, nextToken) {
     this.state.onEndToken(this.value, nextToken);
+  }
+
+  @Bind
+  onActionValueChanged (actionVkey, newVal, oldVal) {
+    this.state.onActionValueChanged(actionVkey, newVal, oldVal);
+    // redraw in case suggested classes changed
+    this.forceUpdate();
   }
 
   @Bind
@@ -159,6 +176,13 @@ export class Token extends Component {
         if (Array.isArray(klassSuggestion)) {
           defaultClass = defaultClass.concat(klassSuggestion);
         }
+        // add in action suggestions
+        st.actions.map(a => {
+          const actionKlassSuggestion = a.suggestCssClass();
+          if (Array.isArray(actionKlassSuggestion)) {
+            defaultClass = defaultClass.concat(actionKlassSuggestion);
+          }
+        });
         st = st.parent;
       }
     }
@@ -211,6 +235,23 @@ export class Token extends Component {
     }
   }
 
+  get actionButtons () {
+    // only show actions when the token is inactive
+    if (!this.state.active) {
+      const actions = this.state.stateArray.filter(s => s.actions.length > 0).map(s => {
+        return s.actions.map(a => {
+          // Note this is a bit of a hack... will maybe leak listeners a bit.
+          // See Token.cleanupListeners() for where we remove the final listener
+          a.removeAllListeners();
+          a.on('value changed', this.onActionValueChanged);
+          const ActionButton = this.state.builders.getActionButton(a.constructor);
+          return (<ActionButton action={a} />);
+        });
+      });
+      return actions.reduce((acc, val) => acc.concat(val), []);
+    }
+  }
+
   render (props, {active, flash, cancelOnBlur, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
       <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''} ${this.compileBuilderClassHints()}`} onMouseDown={this.requestEdit}>
@@ -242,6 +283,7 @@ export class Token extends Component {
           />);
         })}
         {this.addButton}
+        {this.actionButtons}
         <button type='button' onMouseDown={this.requestRemoval} className='btn btn-xs btn-link token-remove' aria-label='Close'>
           {this.xicon}
         </button>
