@@ -48,9 +48,9 @@ class PinAction extends Action {
 class PinActionButton extends ActionButton {
   render (_, {action}) { // eslint-disable-line no-unused-vars
     if (action.value === true) {
-      return <button className='token-action' onClick={this.onClick}>UNPIN</button>;
+      return <button className='token-action' onMouseDown={this.onClick}>UNPIN</button>;
     } else {
-      return <button className='token-action' onClick={this.onClick}>PIN</button>;
+      return <button className='token-action' onMouseDown={this.onClick}>PIN</button>;
     }
   }
 }
