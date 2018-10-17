@@ -108,7 +108,11 @@ const language = Lex.from('field', OptionState, {
     }).to(LabelState, {label: 'and'}).to('secondaryValue', CurrencyEntryState, { units: 'CAD' })
   ),
   Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime'})).branch(
-    Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIsNot('between')),
+    Lex.from('value', DateTimeEntryState, {
+      ...TransitionFactory.optionKeyIsNot('between'),
+      minDate: new Date(),
+      maxDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2)
+    }),
     Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
   ),
   Lex.from('value', TextEntryState, {

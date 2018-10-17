@@ -44,6 +44,29 @@ export class DateTimeEntryAssistant extends Assistant {
     return this.machineState.format;
   }
 
+  get localizedHilightedDate () {
+    const stringDate = moment.tz(this.machineState.hilightedDate, this.timezone).format(this.format); // get incoming date as a string
+    return moment(stringDate, this.format).toDate();
+  }
+
+  get localizedMinMaxDates () {
+    let minDate, maxDate;
+
+    if (this.machineState.minDate && this.machineState.minDate instanceof Date) {
+      const stringDate = moment.tz(this.machineState.minDate, this.timezone).format(this.format); // get incoming date as a string
+      minDate = moment(stringDate, this.format).toDate();
+    }
+
+    if (this.machineState.maxDate && this.machineState.maxDate instanceof Date) {
+      const stringDate = moment.tz(this.machineState.maxDate, this.timezone).format(this.format); // get incoming date as a string
+      maxDate = moment(stringDate, this.format).toDate();
+    }
+
+    return {
+      minDate, maxDate
+    };
+  }
+
   @Bind
   onValueChanged (newDate) {
     if (newDate) {
@@ -81,22 +104,42 @@ export class DateTimeEntryAssistant extends Assistant {
     if (super.componentDidMount) super.componentDidMount();
     if (!this.dateInput) {
       try {
+        const localizedMinMaxDates = this.localizedMinMaxDates;
+        let minDate = localizedMinMaxDates && localizedMinMaxDates.minDate ? moment(localizedMinMaxDates.minDate) : null;
+        let maxDate = localizedMinMaxDates && localizedMinMaxDates.maxDate ? moment(localizedMinMaxDates.maxDate) : null;
+
+        if (minDate && maxDate && minDate.isSameOrAfter(maxDate)) {
+          console.warn(`minDate ${minDate.toDate()} is after ${maxDate.toDate()}, no date filtering will be applied`);
+          minDate = null;
+          maxDate = null;
+        }
+
+        let localizedSelectedDate;
+        if (this.boxedValue) {
+          const stringDate = moment.tz(this.boxedValue, this.timezone).format(this.format); // get incoming date as a string
+          localizedSelectedDate = moment(stringDate, this.format);
+        }
+
         this.dateInput = TinyDatePicker(this.dateContainer, {
-          mode: 'dp-permanent'
+          mode: 'dp-permanent',
+          hilightedDate: localizedSelectedDate ? localizedSelectedDate.toDate() : this.localizedHilightedDate,
+          selectedDate: localizedSelectedDate ? localizedSelectedDate.toDate() : null,
+          min: minDate ? minDate.toDate() : null,
+          max: maxDate ? maxDate.toDate() : null
         });
       } catch (err) {
-        // ignore irritating HTML error from date picker for now
-      } finally {
-        this.dateInput.on('statechange', (_, picker) => {
-          const stringDate = moment(picker.state.selectedDate).format(this.format); // get selected date as a string
-          const stringBoxedValue = this.boxedValue === null ? null : moment.tz(this.boxedValue, this.timezone).format(this.format);
-          if (stringDate !== stringBoxedValue) {
-            this.boxedValue = moment.tz(stringDate, this.format, this.timezone).toDate(); // reinterpret as being in target timezone
-            if (this.boxedValue !== null && this.machineState.isMultivalue) this.requestArchive();
-            this.requestFocus();
-          }
-        });
+        throw new Error('Failed to create datepicker: ' + err.toString());
       }
+
+      this.dateInput.on('statechange', (_, picker) => {
+        const stringDate = moment(picker.state.selectedDate).format(this.format); // get selected date as a string
+        const stringBoxedValue = this.boxedValue === null ? null : moment.tz(this.boxedValue, this.timezone).format(this.format);
+        if (stringDate !== stringBoxedValue) {
+          this.boxedValue = moment.tz(stringDate, this.format, this.timezone).toDate(); // reinterpret as being in target timezone
+          if (this.boxedValue !== null && this.machineState.isMultivalue) this.requestArchive();
+          this.requestFocus();
+        }
+      });
     }
   }
 
