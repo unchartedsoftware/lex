@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState } from '../src/lex';
+import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, Action, ActionButton } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import '../node_modules/tiny-date-picker/tiny-date-picker.css';
 
@@ -32,6 +32,33 @@ function searchOptions (hint) {
   });
 }
 
+class PinAction extends Action {
+  initialize () {
+    super.initialize();
+    this.value = false;
+  }
+  onAction () {
+    super.onAction();
+    this.value = !this.value;
+  }
+  suggestCssClass () {
+    if (this.value) {
+      return ['token-pinned'];
+    } else {
+      return [];
+    }
+  }
+}
+class PinActionButton extends ActionButton {
+  render (_, {action}) { // eslint-disable-line no-unused-vars
+    if (action.value === true) {
+      return <button className='token-action' onMouseDown={this.onClick}>UNPIN</button>;
+    } else {
+      return <button className='token-action' onMouseDown={this.onClick}>PIN</button>;
+    }
+  }
+}
+
 const language = Lex.from('field', OptionState, {
   name: 'Choose a field to search',
   options: fetchOptions,
@@ -51,6 +78,10 @@ const language = Lex.from('field', OptionState, {
         return '<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>';
     }
   }
+}).impliesAction(PinAction, {
+  name: 'pin token',
+  vkey: 'pinned',
+  defaultValue: false
 }).branch(
   Lex.from('relation', TextRelationState, {
     cssClasses: ['token-text-entry'],
@@ -99,13 +130,14 @@ const lex = new Lex({
     return true;
   }
 });
-
+lex.registerActionButton(PinAction, PinActionButton);
 lex.render(document.getElementById('LexContainer'));
 lex.on('query changed', (...args) => console.log('query changed', ...args));
 lex.on('suggestions changed', (...args) => console.log('suggestions changed', ...args));
 lex.on('validity changed', (...args) => console.log('validity changed', ...args));
 lex.on('token start', (...args) => console.log('token start', ...args));
 lex.on('token end', (...args) => console.log('token end', ...args));
+lex.on('token action', (...args) => console.log('token action', ...args));
 
 // Hooks for demo buttons
 window.clearQuery = function () {

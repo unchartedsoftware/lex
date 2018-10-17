@@ -1,9 +1,11 @@
 import EventEmitter from 'wolfy87-eventemitter';
 import { ValueArchiveError } from './errors';
+import { ActionTemplate } from './action';
 
 // StateTemplate private members
 const _klass = new WeakMap();
 const _config = new WeakMap();
+const _impliedActionTemplates = new WeakMap();
 // State private members
 const _initialized = new WeakMap();
 const _parent = new WeakMap();
@@ -23,6 +25,7 @@ const _archive = new WeakMap();
 const _icon = new WeakMap();
 const _cssClasses = new WeakMap();
 const _resetOnRewind = new WeakMap();
+const _impliedActions = new WeakMap();
 
 /**
  * A factory for a `State`, which can be used to produce instances
@@ -33,13 +36,13 @@ const _resetOnRewind = new WeakMap();
  *
  * @param {Class} klass - A `State` class that this factory will produce.
  * @param {object} config - Options which will be applied to `State` `klass` upon instantiation
- *
  */
 export class StateTemplate {
   constructor (klass, config = {}) {
     _klass.set(this, klass);
     _config.set(this, config);
     _children.set(this, []);
+    _impliedActionTemplates.set(this, []);
   }
 
   get parent () {
@@ -72,7 +75,20 @@ export class StateTemplate {
     const instance = new StateKlass(config);
     const childInstances = _children.get(this).map(c => c.getInstance(instance));
     _children.set(instance, childInstances);
+    _impliedActions.set(instance, _impliedActionTemplates.get(this).map(t => t.getInstance()));
     return instance;
+  }
+
+  /**
+   * Add an `Action` implication to this `State`.
+   *
+   * @param {Action} ActionKlass - The `Action` type of this action.
+   * @param {Object} config - Construction parameters for the `Action` class.
+   * @returns {StateTemplate} A reference to the new child `State`, for chaining purposes.
+   */
+  impliesAction (ActionKlass, config = {}) {
+    _impliedActionTemplates.get(this).push(new ActionTemplate(ActionKlass, config));
+    return this;
   }
 
   /**
@@ -147,7 +163,7 @@ export class StateTemplate {
  * - `on('preview value changed', (newVal, oldVal) => {})` when the internal preview value changes.
  * - `on('unboxed value change attempted', (newUnboxedVal, oldUnboxedVal))` when a user attempts to change the unboxed value. If it cannot be boxed, it may not trigger `value changed`.
  *
- * @param {object} config - Options for `State` `klass`.
+ * @param {object} config - Options for `State` class.
  * @param {State | undefined} config.parent - The parent state. `undefined` if this is a root.
  * @param {string} config.name - A useful label for this state - used for display purposes.
  * @param {string} config.vkey - A key used to enter the value of this state into the value object of the containing machine.
@@ -186,6 +202,7 @@ export class State extends EventEmitter {
     this._id = Math.random();
     _parent.set(this, parent);
     _name.set(this, name);
+    if (vkey === 'actionValues') throw new Error('"actionValues" is a reserved word and cannot be used as a vkey');
     _vkey.set(this, vkey);
     _transitionFunction.set(this, transition !== undefined ? transition : () => true);
     _validate.set(this, validate !== undefined ? validate : () => true);
@@ -275,11 +292,24 @@ export class State extends EventEmitter {
     return _initialized.get(this) || true;
   }
 
+  get actions () {
+    return _impliedActions.get(this);
+  }
+
+  set actionValues (newValues = {}) {
+    _impliedActions.get(this).forEach(a => {
+      a.value = newValues[a.vkey];
+    });
+  }
+
   /*
    * @private
    */
   async doInitialize (context = [], initialValue) {
     const result = await this.initialize(context, initialValue);
+    // initialize actions
+    await Promise.all(_impliedActions.get(this).map(a => a.doInitialize(context)));
+    // done
     _initialized.set(this, true);
     return result;
   }
@@ -304,6 +334,7 @@ export class State extends EventEmitter {
     this.value = this.defaultValue;
     this.previewValue = undefined;
     _archive.set(this, []);
+    _impliedActions.get(this).forEach(a => a.reset());
   }
 
   /**
@@ -342,7 +373,7 @@ export class State extends EventEmitter {
 
   /*
    * @private
-   * @returns {string[]} A list of CSS classes to hint to the containing token.
+   * @returns {string[]} A list of CSS classes to hint to the containing `Token`.
    */
   suggestCssClass () {
     return _cssClasses.get(this);

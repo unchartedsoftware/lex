@@ -54,7 +54,8 @@ export class SearchBar extends Component {
       {k: 'multivalueDelimiter', default: COMMA},
       {k: 'multivaluePasteDelimiter', default: ','},
       {k: 'onStartToken', default: () => undefined},
-      {k: 'onEndToken', default: () => undefined}
+      {k: 'onEndToken', default: () => undefined},
+      {k: 'onTokenAction', default: () => undefined}
     ]);
   }
 
@@ -373,6 +374,14 @@ export class SearchBar extends Component {
   }
 
   @Bind
+  onActionValueChanged (idx) {
+    return (actionVkey, newVal, oldVal) => {
+      const newUnboxedValues = this.state.tokenValues.map(bv => bv.unboxedValue);
+      this.state.onTokenAction(idx, actionVkey, this.state.tokenValues.map(t => t.value), newUnboxedValues, oldVal);
+    };
+  }
+
+  @Bind
   onEndToken (v, nextToken) {
     const oldQueryValues = this.state.tokenValues;
     const newMachine = new TokenStateMachine(this.state.machineTemplate);
@@ -483,12 +492,12 @@ export class SearchBar extends Component {
         { !active && placeholder !== undefined && tokenValues.length === 0 && suggestions.length === 0 ? <div className='text-muted lex-placeholder'>{ placeholder }</div> : '' }
         {
           tokenValues.map((v, i) => {
-            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} requestRemoval={this.removeToken} requestEdit={this.editToken} idx={i} />;
+            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} requestRemoval={this.removeToken} requestEdit={this.editToken} onActionValueChanged={this.onActionValueChanged(i)} idx={i} />;
           })
         }
         {
           suggestions.map((v, j) => {
-            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} requestRemoval={this.rejectSuggestion} requestAcceptSuggestion={this.acceptSuggestion} idx={j} suggestion />;
+            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} requestRemoval={this.rejectSuggestion} requestAcceptSuggestion={this.acceptSuggestion} onActionValueChanged={this.onActionValueChanged(j)} idx={j} suggestion />;
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }

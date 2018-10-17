@@ -1,20 +1,22 @@
-import { NoStateBuilderTypeError, NoStateAssistantTypeError } from './errors';
+import { NoStateBuilderTypeError, NoStateAssistantTypeError, NoActionActionButtonTypeError } from './errors';
 import { State } from './state';
+import { Action } from './action';
 
 const _builderMap = new WeakMap();
 const _assistantMap = new WeakMap();
+const _actionButtonMap = new WeakMap();
 
 // Recursively search the given map for the given key (clazz)
 // if we don't have a value for clazz, check if its prototype
-// is an instance of StateTemplate and then retry the check
-function recursiveClassGet (map, clazz) {
+// is an instance of baseClazz and then retry the check
+function recursiveClassGet (map, clazz, baseClazz = State) {
   if (map.has(clazz)) {
     return map.get(clazz);
   }
 
   const prototype = Object.getPrototypeOf(clazz);
 
-  if (!State.isPrototypeOf(prototype)) {
+  if (!baseClazz.isPrototypeOf(prototype)) {
     return null;
   } else {
     return recursiveClassGet(map, prototype);
@@ -30,6 +32,7 @@ export class StateBuilderFactory {
   constructor () {
     _builderMap.set(this, new Map());
     _assistantMap.set(this, new Map());
+    _actionButtonMap.set(this, new Map());
   }
 
   /**
@@ -50,7 +53,7 @@ export class StateBuilderFactory {
    * @throws {NoStateBuilderTypeError} If no builder `Component` is registered for the given `StateTemplate` class or its super classes.
    */
   getBuilder (templateClass) {
-    const builder = recursiveClassGet(_builderMap.get(this), templateClass);
+    const builder = recursiveClassGet(_builderMap.get(this), templateClass, State);
     if (builder == null) {
       throw new NoStateBuilderTypeError(templateClass);
     }
@@ -75,9 +78,34 @@ export class StateBuilderFactory {
    * @throws {NoStateAssistantTypeError} If no assistant `Component` is registered for the given `StateTemplate` class or its super classes.
    */
   getAssistant (templateClass) {
-    const assistant = recursiveClassGet(_assistantMap.get(this), templateClass);
+    const assistant = recursiveClassGet(_assistantMap.get(this), templateClass, State);
     if (assistant == null) {
       throw new NoStateAssistantTypeError(templateClass);
+    }
+    return assistant;
+  }
+
+  /**
+   * Register a new component as the "action button" for a certain `Action` type.
+   *
+   * @param {*} templateClass - A class extending `Action`.
+   * @param {*} actionButtonClass - A class extending `Component`, which can supply values to an `Action`.
+   * @returns {StateBuilderFactory} A reference to `this` for chaining.
+   */
+  registerActionButton (templateClass, actionButtonClass) {
+    _actionButtonMap.get(this).set(templateClass, actionButtonClass);
+    return this;
+  }
+
+  /**
+   * @param {*} templateClass - A class extending `Action`.
+   * @returns {*} A class extending `Component`, which can supply values to an `Action`.
+   * @throws {NoActionActionButtonTypeError} If no action button `Component` is registered for the given `Action` class or its super classes.
+   */
+  getActionButton (templateClass) {
+    const assistant = recursiveClassGet(_actionButtonMap.get(this), templateClass, Action);
+    if (assistant == null) {
+      throw new NoActionActionButtonTypeError(templateClass);
     }
     return assistant;
   }

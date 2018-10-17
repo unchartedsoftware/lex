@@ -16,6 +16,15 @@ export class NoStateAssistantTypeError extends Error {
   }
 }
 
+export class NoActionActionButtonTypeError extends Error {
+  constructor (actionClass) {
+    super(`No action button for Action type: ${actionClass.name}`);
+    // a workaround to make `instanceof NoActionActionButtonTypeError` work in ES5
+    this.constructor = NoActionActionButtonTypeError;
+    this.__proto__ = NoActionActionButtonTypeError.prototype; // eslint-disable-line no-proto
+  }
+}
+
 export class StateTransitionError extends Error {
   constructor (...args) {
     super(...args);

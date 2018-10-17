@@ -60,7 +60,9 @@ export class TokenStateMachine extends EventEmitter {
     try {
       // bind to states
       if (values !== undefined) {
+        const actionValues = values.actionValues !== undefined ? Object.assign(Object.create(null), values.actionValues) : Object.create(null);
         const copy = Object.assign(Object.create(null), values);
+        delete copy.actionValues; // we don't need actionValues in copy.
         while (Object.keys(copy).length > 0) {
           const v = copy[this.state.vkey];
           if (v === undefined) {
@@ -88,7 +90,10 @@ export class TokenStateMachine extends EventEmitter {
             await this.state.doInitialize(this.boxedValue, [v]);
             this.state.unboxedValue = v;
           }
-          delete copy[this.state.vkey]; // we're done with this value
+          // set action values
+          this.state.actionValues = actionValues;
+          // now we're done with this state value
+          delete copy[this.state.vkey];
           // if there's more values, transition
           if (Object.keys(copy).length > 0 || finalTransition) {
             try {
@@ -269,15 +274,20 @@ export class TokenStateMachine extends EventEmitter {
   /**
    * Get the values (including archived values) bound to underlying states, up to the current state.
    *
-   * @returns {Object} An object of arrays of boxed values.
+   * @returns {Object} An object of arrays of boxed values, along with action values (under `.action`).
    */
   get value () {
     const result = Object.create(null);
+    const actionValues = Object.create(null);
     let current = this.state;
     while (current !== undefined) {
       if (!current.isReadOnly && current.vkey) result[current.vkey] = current.isMultivalue ? [...current.archive, current.value] : current.value;
+      current.actions.forEach(a => {
+        actionValues[a.vkey] = a.value;
+      });
       current = current.parent;
     }
+    if (Object.keys(actionValues).length > 0) result.actionValues = actionValues;
     return result;
   }
 
@@ -297,11 +307,16 @@ export class TokenStateMachine extends EventEmitter {
    */
   get unboxedValue () {
     const result = Object.create(null);
+    const actionValues = Object.create(null);
     let current = this.state;
     while (current !== undefined) {
       if (!current.isReadOnly && current.vkey) result[current.vkey] = current.isMultivalue ? [...current.unboxedArchive, current.unboxedValue] : current.unboxedValue;
+      current.actions.forEach(a => {
+        actionValues[a.vkey] = a.value;
+      });
       current = current.parent;
     }
+    if (Object.keys(actionValues).length > 0) result.actionValues = actionValues;
     return result;
   }
 }

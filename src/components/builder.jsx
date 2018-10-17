@@ -14,7 +14,7 @@ import { propsToState } from '../lib/util';
  */
 export class Builder extends Component {
   /**
-   * If overidden, must be called via `super.cleanupListeners()`.
+   * If overridden, must be called via `super.cleanupListeners()`.
    * Fires whenever the underlying machine or machine state changes.
    */
   cleanupListeners () {
@@ -26,7 +26,7 @@ export class Builder extends Component {
   }
 
   /**
-   * If overidden, must be called via `super.connectListeners()`.
+   * If overridden, must be called via `super.connectListeners()`.
    * Fires whenever the underlying machine or machine state changes.
    */
   connectListeners () {
@@ -38,14 +38,14 @@ export class Builder extends Component {
   }
 
   /**
-   * If overidden, must be called via `super.componentWillUnmount()`.
+   * If overridden, must be called via `super.componentWillUnmount()`.
    */
   componentWillUnmount () {
     this.cleanupListeners();
   }
 
   /**
-   * If overidden, must be called via `super.componentWillMount()`.
+   * If overridden, must be called via `super.componentWillMount()`.
    */
   componentWillMount () {
     this.processProps(this.props);
@@ -53,7 +53,7 @@ export class Builder extends Component {
   }
 
   /**
-   * If overidden, must be called via `super.componentWillReceiveProps(nextProps)`.
+   * If overridden, must be called via `super.componentWillReceiveProps(nextProps)`.
    *
    * @param {Object} nextProps - Incoming properties.
    */
@@ -62,7 +62,7 @@ export class Builder extends Component {
   }
 
   /**
-   * If overidden, must be called via `super.processProps(props)`.
+   * If overridden, must be called via `super.processProps(props)`.
    *
    * @param {Object} props - Incoming properties.
    */
