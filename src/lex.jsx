@@ -47,6 +47,7 @@ const _onRejectSuggestion = new WeakMap();
  * This class is an `EventEmitter` and exposes the following events:
  * - `on('token start', () => {})` when the user begins to create or edit a token.
  * - `on('token end', () => {})` when the user finishes creating or editing a token.
+ * - `on('token action', (tokenIdx, actionVkey, newModel, newUnboxedModel, oldActionVal) => {})` when the user triggers a token action.
  * - `on('query changed', (newModel, oldModel, newUnboxedModel, oldUnboxedModel, nextTokenStarted) => {})` when query model changes.
  * - `on('suggestions changed', (newModel, oldModel, newUnboxedModel, oldUnboxedModel) => {})` when suggestion model changes.
  * - `on('validity changed', (newValidity, oldValidity) => {})` when validity of an active builder changes.
@@ -215,6 +216,7 @@ class Lex extends EventEmitter {
         onValidityChanged={(...args) => this.emit('validity changed', ...args)}
         onStartToken={() => this.emit('token start')}
         onEndToken={() => this.emit('token end')}
+        onTokenAction={(...args) => this.emit('token action', ...args)}
         ref={(a) => { this.searchBar = a; }}
       />
     ), target, this.root);

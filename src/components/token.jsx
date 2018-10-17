@@ -31,13 +31,15 @@ export class Token extends Component {
       {k: 'requestRemoval', default: () => true},
       {k: 'requestAcceptSuggestion', default: () => true},
       {k: 'onEndToken', default: () => true},
-      {k: 'onValidityChanged', default: () => true}
+      {k: 'onValidityChanged', default: () => true},
+      {k: 'onActionValueChanged', default: () => true}
     ]);
   }
 
   cleanupListeners () {
     if (this._emitter) {
       this._emitter.removeListener('state changed', this.getStateArray);
+      this._emitter.removeListener('action value changed', this.onActionValueChanged);
       this._emitter.removeListener('end', this.endToken);
     }
   }
@@ -47,6 +49,7 @@ export class Token extends Component {
     if (this.state.machine) {
       this._emitter = this.state.machine;
       this._emitter.on('end', this.endToken);
+      this._emitter.on('action value changed', this.onActionValueChanged);
       this._emitter.on('state changed', this.onStateChanged);
     }
   }
@@ -70,6 +73,13 @@ export class Token extends Component {
   @Bind
   endToken (state, nextToken) {
     this.state.onEndToken(this.value, nextToken);
+  }
+
+  @Bind
+  onActionValueChanged (actionVkey, newVal, oldVal) {
+    this.state.onActionValueChanged(actionVkey, newVal, oldVal);
+    // redraw in case suggested classes changed
+    this.setState({});
   }
 
   @Bind
@@ -163,7 +173,7 @@ export class Token extends Component {
         st.actions.map(a => {
           const actionKlassSuggestion = a.suggestCssClass();
           if (Array.isArray(actionKlassSuggestion)) {
-            defaultClass = defaultClass.concat();
+            defaultClass = defaultClass.concat(actionKlassSuggestion);
           }
         });
         st = st.parent;

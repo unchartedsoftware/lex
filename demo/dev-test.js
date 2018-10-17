@@ -135,6 +135,7 @@ lex.on('suggestions changed', (...args) => console.log('suggestions changed', ..
 lex.on('validity changed', (...args) => console.log('validity changed', ...args));
 lex.on('token start', (...args) => console.log('token start', ...args));
 lex.on('token end', (...args) => console.log('token end', ...args));
+lex.on('token action', (...args) => console.log('token action', ...args));
 
 // Hooks for demo buttons
 window.clearQuery = function () {

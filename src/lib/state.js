@@ -292,10 +292,10 @@ export class State extends EventEmitter {
   /*
    * @private
    */
-  async doInitialize (context = [], initialValue) {
+  async doInitialize (context = [], initialValue, machine) {
     const result = await this.initialize(context, initialValue);
     // initialize actions
-    await Promise.all(_impliedActions.get(this).map(a => a.doInitialize(context)));
+    await Promise.all(_impliedActions.get(this).map(a => a.doInitialize(context, machine)));
     // done
     _initialized.set(this, true);
     return result;

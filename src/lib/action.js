@@ -6,6 +6,7 @@ const _name = new WeakMap();
 const _vkey = new WeakMap();
 const _defaultValue = new WeakMap();
 const _value = new WeakMap();
+const _emitter = new WeakMap();
 
 /**
  * A concrete `Action`, presented as a button only on completed `Token`s,
@@ -68,13 +69,15 @@ export class Action extends EventEmitter {
       const oldVal = this.value;
       _value.set(this, newVal);
       this.emit('value changed', newVal, oldVal);
+      _emitter.get(this).emit('action value changed', this.vkey, newVal, oldVal);
     }
   }
 
   /*
    * @private
    */
-  async doInitialize (context = []) {
+  async doInitialize (context = [], emitter) {
+    _emitter.set(this, emitter);
     const result = await this.initialize(context);
     _initialized.set(this, true);
     return result;

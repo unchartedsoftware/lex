@@ -65,13 +65,13 @@ export class TokenStateMachine extends EventEmitter {
         while (Object.keys(copy).length > 0) {
           const v = copy[this.state.vkey];
           if (v === undefined) {
-            await this.state.doInitialize(this.boxedValue);
+            await this.state.doInitialize(this.boxedValue, undefined, this);
             break; // we're missing a value for the current state, so break out.
           } else if (Array.isArray(v)) {
             if (v.length > 0 && typeof v[0] === 'object') {
-              await this.state.doInitialize(this.boxedValue, v.map(e => this.state.unboxValue(e)));
+              await this.state.doInitialize(this.boxedValue, v.map(e => this.state.unboxValue(e)), this);
             } else {
-              await this.state.doInitialize(this.boxedValue, v);
+              await this.state.doInitialize(this.boxedValue, v, this);
             }
             for (const x of v) {
               if (typeof x === 'object') {
@@ -83,10 +83,10 @@ export class TokenStateMachine extends EventEmitter {
             }
             this.state.unarchiveValue(); // make the last value the "active" one
           } else if (typeof v === 'object') {
-            await this.state.doInitialize(this.boxedValue, [this.state.unboxValue(v)]);
+            await this.state.doInitialize(this.boxedValue, [this.state.unboxValue(v)], this);
             this.state.value = v;
           } else {
-            await this.state.doInitialize(this.boxedValue, [v]);
+            await this.state.doInitialize(this.boxedValue, [v], this);
             this.state.unboxedValue = v;
           }
           // set action values
@@ -104,7 +104,7 @@ export class TokenStateMachine extends EventEmitter {
           }
         }
       } else {
-        await this.state.doInitialize(this.boxedValue);
+        await this.state.doInitialize(this.boxedValue, undefined, this);
       }
     } catch (bindErr) {
       bindErr.bindValues = values;
@@ -153,7 +153,7 @@ export class TokenStateMachine extends EventEmitter {
         while (next.isReadOnly && !next.isTerminal) {
           next = this.getFirstLegalTransition(next, ignoreBindOnly);
         }
-        next.doInitialize(this.boxedValue);
+        next.doInitialize(this.boxedValue, undefined, this);
         _currentState.set(this, next);
         this.emit('state changed', this.state, oldState);
         // if we ended on a read-only terminal state, transition one more time to finish token.
@@ -265,7 +265,7 @@ export class TokenStateMachine extends EventEmitter {
       s = s.parent;
     } while (s);
     _currentState.set(this, this.rootState);
-    this.state.doInitialize(this.boxedValue);
+    this.state.doInitialize(this.boxedValue, undefined, this);
     this.emit('state changed', this.state, oldState);
     return this.state;
   }
