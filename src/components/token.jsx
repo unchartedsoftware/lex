@@ -43,11 +43,13 @@ export class Token extends Component {
     }
 
     // Remove all action listeners on clean up
-    this.state.stateArray.filter(s => s.actions.length > 0).forEach(s => {
-      return s.actions.forEach(a => {
-        a.removeAllListeners();
+    if (Array.isArray(this.state.stateArray)) {
+      this.state.stateArray.filter(s => s.actions.length > 0).forEach(s => {
+        return s.actions.forEach(a => {
+          a.removeAllListeners();
+        });
       });
-    });
+    }
   }
 
   connectListeners () {
