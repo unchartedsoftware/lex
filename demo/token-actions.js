@@ -40,13 +40,13 @@ const language = Lex
       new OptionStateOption('First Name'),
       new OptionStateOption('Last Name')
     ],
-    icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>',
-    actions: [
-      new PinAction({
-        name: 'pin token',
-        vkey: 'pinned'
-      })
-    ]
+    icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
+  })
+  // add action to all tokens (since we're attaching it at the root state)
+  .impliesAction(PinAction, {
+    name: 'pin token',
+    vkey: 'pinned',
+    defaultValue: false
   })
   // Now that the user has selected an option from the available list, provide a
   // TextEntryState to allow the user to supply a value.

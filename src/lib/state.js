@@ -1,9 +1,11 @@
 import EventEmitter from 'wolfy87-eventemitter';
 import { ValueArchiveError } from './errors';
+import { ActionTemplate } from './action';
 
 // StateTemplate private members
 const _klass = new WeakMap();
 const _config = new WeakMap();
+const _impliedActionTemplates = new WeakMap();
 // State private members
 const _initialized = new WeakMap();
 const _parent = new WeakMap();
@@ -34,13 +36,13 @@ const _impliedActions = new WeakMap();
  *
  * @param {Class} klass - A `State` class that this factory will produce.
  * @param {object} config - Options which will be applied to `State` `klass` upon instantiation
- *
  */
 export class StateTemplate {
   constructor (klass, config = {}) {
     _klass.set(this, klass);
     _config.set(this, config);
     _children.set(this, []);
+    _impliedActionTemplates.set(this, []);
   }
 
   get parent () {
@@ -73,7 +75,20 @@ export class StateTemplate {
     const instance = new StateKlass(config);
     const childInstances = _children.get(this).map(c => c.getInstance(instance));
     _children.set(instance, childInstances);
+    _impliedActions.set(instance, _impliedActionTemplates.get(this).map(t => t.getInstance()));
     return instance;
+  }
+
+  /**
+   * Add an `Action` implication to this `State`.
+   *
+   * @param {Action} ActionKlass - The `Action` type of this action.
+   * @param {Object} config - Construction parameters for the `Action` class.
+   * @returns {StateTemplate} A reference to the new child `State`, for chaining purposes.
+   */
+  impliesAction (ActionKlass, config = {}) {
+    _impliedActionTemplates.get(this).push(new ActionTemplate(ActionKlass, config));
+    return this;
   }
 
   /**
@@ -161,7 +176,6 @@ export class StateTemplate {
  * @param {number | undefined} config.multivalueLimit - An optional limit on the number of values this state can contain.
  * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
  * @param {string[]} config.cssClasses - One or more CSS classes which, when this `State` is transitioned to, will be applied to the containing `Token`. They will be removed if the machine is rewound before this `State`.
- * @param {Action} config.actions - One or more `Action`s which, if a completed `Token` contains this `State`, will be used to show `Action`s on the `Token`.
  * @param {boolean} config.resetOnRewind - This state should reset child states when rewound to during a token edit. False by default.
  * @example
  * class MyCustomState extends State {
@@ -183,7 +197,7 @@ export class StateTemplate {
  */
 export class State extends EventEmitter {
   constructor (config) {
-    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon, cssClasses, resetOnRewind, actions} = config;
+    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon, cssClasses, resetOnRewind} = config;
     super();
     this._id = Math.random();
     _parent.set(this, parent);
@@ -204,7 +218,6 @@ export class State extends EventEmitter {
     _value.set(this, _defaultValue.get(this));
     _previewValue.set(this, null);
     _archive.set(this, []);
-    _impliedActions.set(this, Array.isArray(actions) ? actions : []);
   }
 
   get id () {

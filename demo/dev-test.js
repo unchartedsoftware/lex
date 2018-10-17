@@ -33,6 +33,10 @@ function searchOptions (hint) {
 }
 
 class PinAction extends Action {
+  initialize () {
+    super.initialize();
+    this.value = false;
+  }
   onAction () {
     super.onAction();
     this.value = !this.value;
@@ -73,13 +77,11 @@ const language = Lex.from('field', OptionState, {
       case 'GeoHash':
         return '<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>';
     }
-  },
-  actions: [
-    new PinAction({
-      name: 'pin token',
-      vkey: 'pinned'
-    })
-  ]
+  }
+}).impliesAction(PinAction, {
+  name: 'pin token',
+  vkey: 'pinned',
+  defaultValue: false
 }).branch(
   Lex.from('relation', TextRelationState, {
     cssClasses: ['token-text-entry'],
