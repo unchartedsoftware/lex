@@ -39,7 +39,6 @@ export class Token extends Component {
   cleanupListeners () {
     if (this._emitter) {
       this._emitter.removeListener('state changed', this.getStateArray);
-      this._emitter.removeListener('action value changed', this.onActionValueChanged);
       this._emitter.removeListener('end', this.endToken);
     }
   }
@@ -49,7 +48,6 @@ export class Token extends Component {
     if (this.state.machine) {
       this._emitter = this.state.machine;
       this._emitter.on('end', this.endToken);
-      this._emitter.on('action value changed', this.onActionValueChanged);
       this._emitter.on('state changed', this.onStateChanged);
     }
   }
@@ -79,7 +77,7 @@ export class Token extends Component {
   onActionValueChanged (actionVkey, newVal, oldVal) {
     this.state.onActionValueChanged(actionVkey, newVal, oldVal);
     // redraw in case suggested classes changed
-    this.setState({});
+    this.forceUpdate();
   }
 
   @Bind
@@ -233,6 +231,10 @@ export class Token extends Component {
     if (!this.state.active) {
       const actions = this.state.stateArray.filter(s => s.actions.length > 0).map(s => {
         return s.actions.map(a => {
+          // TODO this is a bit of a hack... will probably leak listeners a bit.
+          a.removeAllListeners();
+          a.on('value changed', this.onActionValueChanged);
+          // TODO fix this ^
           const ActionButton = this.state.builders.getActionButton(a.constructor);
           return (<ActionButton action={a} />);
         });

@@ -73,7 +73,13 @@ const language = Lex.from('field', OptionState, {
       case 'GeoHash':
         return '<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>';
     }
-  }
+  },
+  actions: [
+    new PinAction({
+      name: 'pin token',
+      vkey: 'pinned'
+    })
+  ]
 }).branch(
   Lex.from('relation', TextRelationState, {
     cssClasses: ['token-text-entry'],
@@ -105,13 +111,7 @@ const language = Lex.from('field', OptionState, {
   ),
   Lex.from('value', TextEntryState, {
     bindOnly: true, // this state can only be transitioned to programmatically, not interactively
-    ...TransitionFactory.optionMetaCompare({type: 'geohash'}),
-    actions: [
-      new PinAction({
-        name: 'pin token',
-        vkey: 'pinned'
-      })
-    ]
+    ...TransitionFactory.optionMetaCompare({type: 'geohash'})
   })
 );
 
