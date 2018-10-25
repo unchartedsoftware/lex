@@ -60,7 +60,7 @@
     "preact": "8.2.8",
     "moment": "2.20.1",
     "moment-timezone": "0.5.14",
-    "tiny-date-picker": "3.1.8",
+    "flatpickr": "4.5.2",
     "wolfy87-eventemitter": "5.2.4",
     "preact-portal": "1.1.x",
     "rimraf": "2.6.2",
@@ -84,7 +84,7 @@
     "preact": "8.x",
     "moment": "2.x",
     "moment-timezone": "0.5.x",
-    "tiny-date-picker": "3.x"
+    "flatpickr": "4.5.x"
   },
   "dependencies": {
     "lodash": "4.17.10",

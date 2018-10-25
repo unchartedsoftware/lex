@@ -7,6 +7,9 @@ const _timeZone = new WeakMap();
 const _minDate = new WeakMap();
 const _maxDate = new WeakMap();
 const _hilightedDate = new WeakMap();
+const _enableTime = new WeakMap();
+const _enableCalendar = new WeakMap();
+const _time24hr = new WeakMap();
 
 /**
  * This state supports the entry of a Date/Time value, with support for a custom acceptable format
@@ -15,12 +18,20 @@ const _hilightedDate = new WeakMap();
  *                          providing defaults for `name` and `validate`.
  * @param {string|undefined} config.format - The acceptable format for a typed date. Defaults to `'YYYY/MM/DD'`.
  * @param {string|undefined} config.timezone - The assumed timezone for a typed date. Defaults to `'Etc/UTC'`.
+ * @param {boolean} config.enableTime - If the date picker should display time picking UI.
+ * @param {boolean} config.enableCalendar - If the date picker should display the date picking UI.
+ * @param {Date} config.hilightedDate - The default selected date, defaults to today.
+ * @param {boolean} config.time24hr - If the date picker should display time picking UI in 24 hour format.
  */
 export class DateTimeEntryState extends State {
   constructor (config) {
     if (config.name === undefined) config.name = 'Enter a date';
     if (config.format === undefined) config.format = 'YYYY/MM/DD';
     if (config.timezone === undefined) config.timezone = 'Etc/UTC';
+    if (config.enableTime === undefined) config.enableTime = false;
+    if (config.enableCalendar === undefined) config.enableCalendar = true;
+    if (config.time24hr === undefined) config.time24hr = false;
+    if (config.hilightedDate === undefined) config.hilightedDate = new Date();
     if (config.validate === undefined) {
       config.validate = (val) => {
         // all good as long as the boxed value isn't null. If it was invalid, moment would have returned null.
@@ -45,11 +56,17 @@ export class DateTimeEntryState extends State {
     }
     if (moment.tz.zone(config.timezone) === null) throw new Error(`Timezone ${config.timezone} does not exist.`);
     super(config);
+    _enableTime.set(this, config.enableTime);
+    _enableCalendar.set(this, config.enableCalendar || config.enableTime === false);
+    _time24hr.set(this, config.time24hr);
     _dateFormat.set(this, config.format);
     _timeZone.set(this, config.timezone);
     _minDate.set(this, config.minDate);
     _maxDate.set(this, config.maxDate);
     _hilightedDate.set(this, config.hilightedDate);
+    if (config.multivalue && config.enableTime) {
+      throw new Error('Unsupported usage of multivalue with enableTime, the date picker doesn\'t currently support multivalue with time');
+    }
   }
 
   /**
@@ -86,6 +103,33 @@ export class DateTimeEntryState extends State {
    */
   get maxDate () {
     return _maxDate.get(this);
+  }
+
+  /**
+   * Getter for `enableTime`.
+   *
+   * @returns {boolean} - If this date picker should display time.
+   */
+  get enableTime () {
+    return _enableTime.get(this);
+  }
+
+  /**
+   * Getter for `enableCalendar`.
+   *
+   * @returns {boolean} - If this date picker should display a calendar.
+   */
+  get enableCalendar () {
+    return _enableCalendar.get(this);
+  }
+
+  /**
+   * Getter for `time24hr`.
+   *
+   * @returns {boolean} - If this date picker should display time in 24 hour format.
+   */
+  get time24hr () {
+    return _time24hr.get(this);
   }
 
   /**
