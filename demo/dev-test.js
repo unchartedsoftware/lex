@@ -9,11 +9,8 @@ const options = [
   new OptionStateOption('Name', {type: 'string'}),
   new OptionStateOption('Income', {type: 'currency'}),
   new OptionStateOption('Keywords', {type: 'multistring'}),
-  new OptionStateOption('Date', {type: 'date'}),
-  new OptionStateOption('Time', {type: 'time'}),
-  new OptionStateOption('DateTime', {type: 'datetime'}),
-  new OptionStateOption('DateTime24hr', {type: 'datetime24hr'}),
-  new OptionStateOption('GeoHash', {type: 'geohash'}, {hidden: true})
+  new OptionStateOption('GeoHash', {type: 'geohash'}),
+  new OptionStateOption('DateTime', {type: 'datetime'})
 ];
 
 function fetchOptions (query) {
@@ -75,10 +72,7 @@ const language = Lex.from('field', OptionState, {
         return '<span class="glyphicon glyphicon-usd" aria-hidden="true"></span>';
       case 'Keywords':
         return '<span class="glyphicon glyphicon-list" aria-hidden="true"></span>';
-      case 'Date':
       case 'DateTime':
-      case 'Time':
-      case 'DateTime24hr':
         return '<span class="glyphicon glyphicon-time" aria-hidden="true"></span>';
       case 'GeoHash':
         return '<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>';
@@ -111,46 +105,12 @@ const language = Lex.from('field', OptionState, {
       icon: () => '<span class="glyphicon glyphicon-usd" aria-hidden="true"></span><span class="glyphicon glyphicon-usd" aria-hidden="true"></span>',
       units: 'CAD',
       ...TransitionFactory.optionKeyIs('between')
-    }).to(LabelState, {label: 'and'}).to('secondaryValue', CurrencyEntryState, { units: 'CAD' })
-  ),
-  Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'date'})).branch(
-    Lex.from('value', DateTimeEntryState, {
-      ...TransitionFactory.optionKeyIsNot('between'),
-      minDate: new Date(),
-      maxDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2), // now + 2 days
-      format: 'YYYY/MM/DD'
-    }),
-    Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
-  ),
-  Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'time'})).branch(
-    Lex.from('value', DateTimeEntryState, {
-      ...TransitionFactory.optionKeyIsNot('between'),
-      minDate: new Date(),
-      maxDate: new Date(Date.now() + 1000 * 60 * 60 * 6), // now + 6 hours
-      enableTime: true,
-      enableCalendar: false,
-      format: 'HH:mm:ss'
-    }),
-    Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
+    }).to(LabelState, {label: 'and'}).to('secondaryValue', CurrencyEntryState, {units: 'CAD'})
   ),
   Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime'})).branch(
-    Lex.from('value', DateTimeEntryState, {
-      ...TransitionFactory.optionKeyIsNot('between'),
-      enableTime: true,
-      enableCalendar: true,
-      format: 'YYYY/MM/DD h:mm:ss a'
-    }),
-    Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
-  ),
-  Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime24hr'})).branch(
-    Lex.from('value', DateTimeEntryState, {
-      ...TransitionFactory.optionKeyIsNot('between'),
-      enableTime: true,
-      enableCalendar: true,
-      time24hr: true,
-      format: 'YYYY/MM/DD HH:mm:ss'
-    }),
-    Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
+    Lex.from('value', DateTimeEntryState, { ...TransitionFactory.optionKeyIsNot('between'), enableTime: true }),
+    Lex.from('value', DateTimeEntryState, { ...TransitionFactory.optionKeyIs('between'), enableTime: true })
+      .to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState, {enableTime: true})
   ),
   Lex.from('value', TextEntryState, {
     bindOnly: true, // this state can only be transitioned to programmatically, not interactively
