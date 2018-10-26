@@ -26,7 +26,26 @@ const _time24hr = new WeakMap();
 export class DateTimeEntryState extends State {
   constructor (config) {
     if (config.name === undefined) config.name = 'Enter a date';
-    if (config.format === undefined) config.format = 'YYYY/MM/DD';
+    if (config.format === undefined) {
+      if (config.enableTime && (config.enableCalendar || config.enableCalendar === undefined)) {
+        // Time and date
+        if (config.time24hr) {
+          config.format = 'YYYY/MM/DD HH:mm:ss';
+        } else {
+          config.format = 'YYYY/MM/DD h:mm:ss a';
+        }
+      } else if (config.enableTime) {
+        // Time only
+        if (config.time24hr) {
+          config.format = 'HH:mm:ss';
+        } else {
+          config.format = 'h:mm:ss a';
+        }
+      } else {
+        // Date only
+        config.format = 'YYYY/MM/DD';
+      }
+    }
     if (config.timezone === undefined) config.timezone = 'Etc/UTC';
     if (config.enableTime === undefined) config.enableTime = false;
     if (config.enableCalendar === undefined) config.enableCalendar = true;
