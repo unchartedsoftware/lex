@@ -106,9 +106,6 @@ export class DateTimeEntryAssistant extends Assistant {
       if (this.dateInput && moment(localizedDate).isValid()) {
         this.dateInput.setDate(localizedDate);
       }
-    } else {
-      // Use setDate here instead of clear because we can control if a change event is fired with setDate
-      this.dateInput.setDate(null);
     }
   }
 
@@ -134,7 +131,7 @@ export class DateTimeEntryAssistant extends Assistant {
       }
 
       let localizedSelectedDate;
-      if (this.boxedValue) {
+      if (this.boxedValue && moment(this.boxedValue).isValid()) {
         // We have a selected date
         // The date picker wants dates in local TZ, since our date is in our desired TZ we need to convert
         localizedSelectedDate = this._toLocalizedTz(this.boxedValue, this.format, this.timezone);
@@ -144,6 +141,14 @@ export class DateTimeEntryAssistant extends Assistant {
         this.boxedValue = this.hilightedDate;
         // The date picker wants dates in local TZ, since hilighted date is in our desired TZ we need to convert
         localizedSelectedDate = this._toLocalizedTz(this.hilightedDate, this.format, this.timezone);
+      }
+
+      const selectedDateMoment = moment(localizedSelectedDate);
+
+      if ((minDate && selectedDateMoment.isBefore(minDate)) || (maxDate && selectedDateMoment.isAfter(maxDate))) {
+        console.warn(`Selected date ${localizedSelectedDate} is after maxDate ${maxDate.toDate()} or before minDate ${minDate.toDate()}, defaulting to minDate/maxDate`);
+        localizedSelectedDate = (minDate || maxDate).toDate();
+        this.boxedValue = this._toDesiredTz(localizedSelectedDate, this.format, this.timezone);
       }
 
       this.dateInput = flatpickr(this.dateInputEl, {
