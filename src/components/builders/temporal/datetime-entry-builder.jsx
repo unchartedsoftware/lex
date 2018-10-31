@@ -36,7 +36,7 @@ export class DateTimeEntryBuilder extends Builder {
 
   processProps (props) {
     propsToState(this, props, [
-      {k: 'machineState', sk: 'typedText', transform: (v) => v.unboxedValue}
+      {k: 'machineState', sk: 'typedText', transform: (v) => v.unboxedValue || this.state.typedText}
     ]);
     return super.processProps(props);
   }
