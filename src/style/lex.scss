@@ -158,6 +158,11 @@ div.lex-box div.token  {
     &::-ms-clear {
       display: none;
     }
+
+    &.token-wide {
+      width: 250px;
+      min-width: 250px;
+    }
   }
 
   span.text-input {

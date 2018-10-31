@@ -119,7 +119,6 @@ export class DateTimeEntryBuilder extends Builder {
     });
   }
 
-
   @Bind
   beforeTransition () {
     this.commitTypedValue();
@@ -177,13 +176,21 @@ export class DateTimeEntryBuilder extends Builder {
   }
 
   renderInteractive (props, {valid, readOnly, typedText, previewText, machineState}) {
+    let className = 'token-input token-wide';
+
+    if (valid) {
+      className += ' active';
+    } else {
+      className += ' invalid';
+    }
+
     return (
       <span>
         {machineState.isMultivalue && <span className='badge'>{machineState.archive.length}</span>}
         <span className='text-input'>
           <span className='text-muted preview'>{previewText}</span>
           <input type='text'
-            className={valid ? 'token-input active' : 'token-input invalid'}
+            className={className}
             onKeyDown={this.handleKeyDown}
             onKeyUp={this.handleKeyUp}
             onMouseDown={this.clearPreview}
