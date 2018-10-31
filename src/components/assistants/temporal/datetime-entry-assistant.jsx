@@ -18,7 +18,8 @@ export class DateTimeEntryAssistant extends Assistant {
   constructor () {
     super();
     this.state = {
-      value: undefined
+      value: undefined,
+      isValid: true
     };
   }
 
@@ -101,11 +102,17 @@ export class DateTimeEntryAssistant extends Assistant {
       // incoming date is in the desired timezone, but the date picker wants the local timezone.
       const localizedDate = this._toLocalizedTz(newDate, this.format, this.timezone);
       this.setState({
-        value: newDate
+        value: newDate,
+        isValid: true
       });
       if (this.dateInput && moment(localizedDate).isValid()) {
         this.dateInput.setDate(localizedDate);
       }
+    } else {
+      this.setState({
+        value: null,
+        isValid: false
+      });
     }
   }
 
@@ -137,8 +144,6 @@ export class DateTimeEntryAssistant extends Assistant {
         localizedSelectedDate = this._toLocalizedTz(this.boxedValue, this.format, this.timezone);
       } else if (this.hilightedDate) {
         // We have no selected date, we should default to using the hilighted date
-        // Hilighted date is already in our desired TZ, use it as is
-        this.boxedValue = this.hilightedDate;
         // The date picker wants dates in local TZ, since hilighted date is in our desired TZ we need to convert
         localizedSelectedDate = this._toLocalizedTz(this.hilightedDate, this.format, this.timezone);
       }
@@ -195,8 +200,8 @@ export class DateTimeEntryAssistant extends Assistant {
     switch (normalizedKey) {
       case ENTER:
       case TAB:
-        // Use the currently "focused" date if we dont have a value
-        if (this.boxedValue == null && this.dateInput && this.dateInput.selectedDates && this.dateInput.selectedDates[0]) {
+        // Use the currently "focused" date if we dont have a value and havent attempted to enter a value
+        if (this.state.isValid && this.boxedValue == null && this.dateInput && this.dateInput.selectedDates && this.dateInput.selectedDates[0]) {
           // Our selectedDates are in the local timezone but we want to store the date in our desired timezone
           const newDesiredTzDate = this._toDesiredTz(this.dateInput.selectedDates[0], this.format, this.timezone);
           this.boxedValue = newDesiredTzDate;
