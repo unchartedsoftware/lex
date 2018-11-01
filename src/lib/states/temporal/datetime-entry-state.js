@@ -27,24 +27,19 @@ export class DateTimeEntryState extends State {
   constructor (config) {
     if (config.name === undefined) config.name = 'Enter a date';
     if (config.format === undefined) {
+      let format = '';
       if (config.enableTime && (config.enableCalendar || config.enableCalendar === undefined)) {
         // Time and date
-        if (config.time24hr) {
-          config.format = 'YYYY/MM/DD HH:mm:ss';
-        } else {
-          config.format = 'YYYY/MM/DD h:mm:ss a';
-        }
+        format = `YYYY/MM/DD HH:mm:ss ${config.time24hr ? '' : 'a'}`;
       } else if (config.enableTime) {
         // Time only
-        if (config.time24hr) {
-          config.format = 'HH:mm:ss';
-        } else {
-          config.format = 'h:mm:ss a';
-        }
+        format = `${config.time24hr ? 'HH' : 'h'}:mm:ss ${config.time24hr ? '' : 'a'}`;
       } else {
         // Date only
-        config.format = 'YYYY/MM/DD';
+        format = 'YYYY/MM/DD';
       }
+
+      config.format = format.trim();
     }
     if (config.timezone === undefined) config.timezone = 'Etc/UTC';
     if (config.enableTime === undefined) config.enableTime = false;
@@ -84,7 +79,7 @@ export class DateTimeEntryState extends State {
     _maxDate.set(this, config.maxDate);
     _hilightedDate.set(this, config.hilightedDate);
     if (config.multivalue && config.enableTime) {
-      throw new Error('Unsupported usage of multivalue with enableTime, the date picker doesn\'t currently support multivalue with time');
+      throw new Error('Unsupported usage of multivalue with enableTime, the date picker does not currently support multivalue with time');
     }
   }
 

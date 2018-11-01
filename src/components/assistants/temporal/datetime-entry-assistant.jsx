@@ -6,6 +6,25 @@ import moment from 'moment';
 import 'moment-timezone';
 import flatpickr from 'flatpickr';
 
+// Timezone logic
+// Dates coming from our state are in the desired timezone
+// our date picker only supports the local timezone
+// we must handle timezone changes when setting the date picker value
+// and timezone changes when extracting the date picker value
+function toLocalizedTz (date, format, timezone) {
+  // get incoming date as a string using the desired timezone
+  const stringDate = moment.tz(date, timezone).format(format);
+  // reformat datestring into a date using local timezone
+  return moment(stringDate, format).toDate();
+}
+
+function toDesiredTz (date, format, timezone) {
+  // get incoming date as a string using the local timezone
+  const stringDate = moment(date).format(format);
+  // reformat datestring into a date using desired timezone
+  return moment.tz(stringDate, format, timezone).toDate();
+}
+
 /**
  * A visual interaction mechanism for supplying values
  * to an `DateTimeEntryState`. By default, this is registered as
@@ -21,25 +40,6 @@ export class DateTimeEntryAssistant extends Assistant {
       value: undefined,
       isValid: true
     };
-  }
-
-  // Timezone logic
-  // Dates coming from our state are in the desired timezone
-  // our date picker only supports the local timezone
-  // we must handle timezone changes when setting the date picker value
-  // and timezone changes when extracting the date picker value
-  _toLocalizedTz (date, format, timezone) {
-    // get incoming date as a string using the desired timezone
-    const stringDate = moment.tz(date, timezone).format(format);
-    // reformat datestring into a date using local timezone
-    return moment(stringDate, format).toDate();
-  }
-
-  _toDesiredTz (date, format, timezone) {
-    // get incoming date as a string using the local timezone
-    const stringDate = moment(date).format(format);
-    // reformat datestring into a date using desired timezone
-    return moment.tz(stringDate, format, timezone).toDate();
   }
 
   cleanupListeners () {
@@ -84,11 +84,11 @@ export class DateTimeEntryAssistant extends Assistant {
     let minDate, maxDate;
 
     if (this.machineState.minDate && this.machineState.minDate instanceof Date) {
-      minDate = this._toLocalizedTz(this.machineState.minDate, this.format, this.timezone);
+      minDate = toLocalizedTz(this.machineState.minDate, this.format, this.timezone);
     }
 
     if (this.machineState.maxDate && this.machineState.maxDate instanceof Date) {
-      maxDate = this._toLocalizedTz(this.machineState.maxDate, this.format, this.timezone);
+      maxDate = toLocalizedTz(this.machineState.maxDate, this.format, this.timezone);
     }
 
     return {
@@ -100,7 +100,7 @@ export class DateTimeEntryAssistant extends Assistant {
   onValueChanged (newDate) {
     if (newDate) {
       // incoming date is in the desired timezone, but the date picker wants the local timezone.
-      const localizedDate = this._toLocalizedTz(newDate, this.format, this.timezone);
+      const localizedDate = toLocalizedTz(newDate, this.format, this.timezone);
       this.setState({
         value: newDate,
         isValid: true
@@ -141,11 +141,11 @@ export class DateTimeEntryAssistant extends Assistant {
       if (this.boxedValue && moment(this.boxedValue).isValid()) {
         // We have a selected date
         // The date picker wants dates in local TZ, since our date is in our desired TZ we need to convert
-        localizedSelectedDate = this._toLocalizedTz(this.boxedValue, this.format, this.timezone);
+        localizedSelectedDate = toLocalizedTz(this.boxedValue, this.format, this.timezone);
       } else if (this.hilightedDate) {
         // We have no selected date, we should default to using the hilighted date
         // The date picker wants dates in local TZ, since hilighted date is in our desired TZ we need to convert
-        localizedSelectedDate = this._toLocalizedTz(this.hilightedDate, this.format, this.timezone);
+        localizedSelectedDate = toLocalizedTz(this.hilightedDate, this.format, this.timezone);
       }
 
       const selectedDateMoment = moment(localizedSelectedDate);
@@ -153,7 +153,7 @@ export class DateTimeEntryAssistant extends Assistant {
       if ((minDate && selectedDateMoment.isBefore(minDate)) || (maxDate && selectedDateMoment.isAfter(maxDate))) {
         console.warn(`Selected date ${localizedSelectedDate} is after maxDate ${maxDate.toDate()} or before minDate ${minDate.toDate()}, defaulting to minDate/maxDate`);
         localizedSelectedDate = (minDate || maxDate).toDate();
-        this.boxedValue = this._toDesiredTz(localizedSelectedDate, this.format, this.timezone);
+        this.boxedValue = toDesiredTz(localizedSelectedDate, this.format, this.timezone);
       }
 
       this.dateInput = flatpickr(this.dateInputEl, {
@@ -177,7 +177,7 @@ export class DateTimeEntryAssistant extends Assistant {
         onChange: (selectedDates, dateStr) => {
           // Our selectedDates are in the local timezone but we want to store the date in our desired timezone
           const date = moment((selectedDates && selectedDates[0]) || dateStr, this.format);
-          const newDesiredTzDate = this._toDesiredTz(date.toDate(), this.format, this.timezone);
+          const newDesiredTzDate = toDesiredTz(date.toDate(), this.format, this.timezone);
           const currentDesiredTzDate = this.boxedValue;
           if (currentDesiredTzDate === null || currentDesiredTzDate.toString() !== newDesiredTzDate.toString()) {
             this.boxedValue = newDesiredTzDate;
@@ -203,7 +203,7 @@ export class DateTimeEntryAssistant extends Assistant {
         // Use the currently "focused" date if we dont have a value and havent attempted to enter a value
         if (this.state.isValid && this.boxedValue == null && this.dateInput && this.dateInput.selectedDates && this.dateInput.selectedDates[0]) {
           // Our selectedDates are in the local timezone but we want to store the date in our desired timezone
-          const newDesiredTzDate = this._toDesiredTz(this.dateInput.selectedDates[0], this.format, this.timezone);
+          const newDesiredTzDate = toDesiredTz(this.dateInput.selectedDates[0], this.format, this.timezone);
           this.boxedValue = newDesiredTzDate;
         }
 

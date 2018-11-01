@@ -176,21 +176,13 @@ export class DateTimeEntryBuilder extends Builder {
   }
 
   renderInteractive (props, {valid, readOnly, typedText, previewText, machineState}) {
-    let className = 'token-input token-wide';
-
-    if (valid) {
-      className += ' active';
-    } else {
-      className += ' invalid';
-    }
-
     return (
       <span>
         {machineState.isMultivalue && <span className='badge'>{machineState.archive.length}</span>}
         <span className='text-input'>
           <span className='text-muted preview'>{previewText}</span>
           <input type='text'
-            className={className}
+            className={`token-input token-wide ${valid ? 'active' : 'invalid'}`}
             onKeyDown={this.handleKeyDown}
             onKeyUp={this.handleKeyUp}
             onMouseDown={this.clearPreview}
