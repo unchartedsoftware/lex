@@ -36,7 +36,7 @@ export class DateTimeEntryBuilder extends Builder {
 
   processProps (props) {
     propsToState(this, props, [
-      {k: 'machineState', sk: 'typedText', transform: (v) => v.unboxedValue}
+      {k: 'machineState', sk: 'typedText', transform: (v) => v.unboxedValue || this.state.typedText}
     ]);
     return super.processProps(props);
   }
@@ -119,7 +119,6 @@ export class DateTimeEntryBuilder extends Builder {
     });
   }
 
-
   @Bind
   beforeTransition () {
     this.commitTypedValue();
@@ -183,7 +182,7 @@ export class DateTimeEntryBuilder extends Builder {
         <span className='text-input'>
           <span className='text-muted preview'>{previewText}</span>
           <input type='text'
-            className={valid ? 'token-input active' : 'token-input invalid'}
+            className={`token-input token-wide ${valid ? 'active' : 'invalid'}`}
             onKeyDown={this.handleKeyDown}
             onKeyUp={this.handleKeyUp}
             onMouseDown={this.clearPreview}

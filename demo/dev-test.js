@@ -2,15 +2,15 @@
 import { h } from 'preact';
 import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, Action, ActionButton } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
-import '../node_modules/tiny-date-picker/tiny-date-picker.css';
+import '../node_modules/flatpickr/dist/flatpickr.min.css';
 
 // This array and the following two functions are simulations of a back-end API for fetching options
 const options = [
   new OptionStateOption('Name', {type: 'string'}),
   new OptionStateOption('Income', {type: 'currency'}),
   new OptionStateOption('Keywords', {type: 'multistring'}),
-  new OptionStateOption('Date', {type: 'datetime'}),
-  new OptionStateOption('GeoHash', {type: 'geohash'}, {hidden: true})
+  new OptionStateOption('GeoHash', {type: 'geohash'}),
+  new OptionStateOption('DateTime', {type: 'datetime'})
 ];
 
 function fetchOptions (query) {
@@ -72,7 +72,7 @@ const language = Lex.from('field', OptionState, {
         return '<span class="glyphicon glyphicon-usd" aria-hidden="true"></span>';
       case 'Keywords':
         return '<span class="glyphicon glyphicon-list" aria-hidden="true"></span>';
-      case 'Date':
+      case 'DateTime':
         return '<span class="glyphicon glyphicon-time" aria-hidden="true"></span>';
       case 'GeoHash':
         return '<span class="glyphicon glyphicon-globe" aria-hidden="true"></span>';
@@ -105,15 +105,12 @@ const language = Lex.from('field', OptionState, {
       icon: () => '<span class="glyphicon glyphicon-usd" aria-hidden="true"></span><span class="glyphicon glyphicon-usd" aria-hidden="true"></span>',
       units: 'CAD',
       ...TransitionFactory.optionKeyIs('between')
-    }).to(LabelState, {label: 'and'}).to('secondaryValue', CurrencyEntryState, { units: 'CAD' })
+    }).to(LabelState, {label: 'and'}).to('secondaryValue', CurrencyEntryState, {units: 'CAD'})
   ),
   Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime'})).branch(
-    Lex.from('value', DateTimeEntryState, {
-      ...TransitionFactory.optionKeyIsNot('between'),
-      minDate: new Date(),
-      maxDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2)
-    }),
-    Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
+    Lex.from('value', DateTimeEntryState, { ...TransitionFactory.optionKeyIsNot('between'), enableTime: true }),
+    Lex.from('value', DateTimeEntryState, { ...TransitionFactory.optionKeyIs('between'), enableTime: true })
+      .to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState, {enableTime: true})
   ),
   Lex.from('value', TextEntryState, {
     bindOnly: true, // this state can only be transitioned to programmatically, not interactively

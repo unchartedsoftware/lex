@@ -16,7 +16,7 @@ The following co-requisites must be part of your JS build in order to use Lex:
 {
   "preact": "8.x", // developed against: "8.2.7",
   "moment": "2.x", // developed aginst: "2.20.1"
-  "tiny-date-picker": "3.x" // developed against: "3.1.8"
+  "flatpickr": "4.5.x" // developed against: "4.5.2"
 }
 ```
 
