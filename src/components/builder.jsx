@@ -1,7 +1,7 @@
 import { Bind } from 'lodash-decorators';
 import { h, Component } from 'preact';
 import { COMMA } from '../lib/keys';
-import { propsToState } from '../lib/util';
+import { propsToState, lexStillHasFocus } from '../lib/util';
 
 /**
  * An abstract superclass for a `Component` which can be
@@ -234,7 +234,7 @@ export class Builder extends Component {
    */
   requestBlur (e) {
     const assistantBox = document.getElementById('lex-assistant-box');
-    if (!e.relatedTarget || assistantBox === null || !assistantBox.contains(e.relatedTarget)) {
+    if (!lexStillHasFocus(e, assistantBox)) {
       this.state.requestBlur();
     }
   }
