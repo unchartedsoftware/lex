@@ -30,7 +30,7 @@ export class DateTimeEntryState extends State {
       let format = '';
       if (config.enableTime && (config.enableCalendar || config.enableCalendar === undefined)) {
         // Time and date
-        format = `YYYY/MM/DD HH:mm:ss ${config.time24hr ? '' : 'a'}`;
+        format = `YYYY/MM/DD ${config.time24hr ? 'HH' : 'h'}:mm:ss ${config.time24hr ? '' : 'a'}`;
       } else if (config.enableTime) {
         // Time only
         format = `${config.time24hr ? 'HH' : 'h'}:mm:ss ${config.time24hr ? '' : 'a'}`;

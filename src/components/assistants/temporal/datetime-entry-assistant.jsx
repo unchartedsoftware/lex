@@ -118,7 +118,7 @@ export class DateTimeEntryAssistant extends Assistant {
 
   componentWillUnmount () {
     if (super.componentWillUnmount) super.componentWillUnmount();
-    if (this.dateContainer && this.dateInput) {
+    if (this.dateInput) {
       this.dateInput.destroy();
       this.dateInput = undefined;
     }
