@@ -76,13 +76,13 @@ export class Builder extends Component {
       {k: 'cancelOnBlur', default: true},
       {
         k: 'machine',
-        before: () => this.cleanupListeners,
-        after: () => this.connectListeners
+        before: () => { this.cleanupListeners(); },
+        after: () => { this.connectListeners(); }
       },
       {
         k: 'machineState',
-        before: () => this.cleanupListeners,
-        after: () => this.connectListeners
+        before: () => { this.cleanupListeners(); },
+        after: () => { this.connectListeners(); }
       },
       {k: 'multivalueDelimiter', default: COMMA},
       {k: 'multivaluePasteDelimiter', default: ','},

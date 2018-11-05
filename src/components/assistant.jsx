@@ -1,6 +1,7 @@
 import { h } from 'preact';
 import { Builder } from './builder';
 import { Bind } from 'lodash-decorators';
+import { propsToState } from '../lib/util';
 
 /**
  * Richer interaction areas for building values.
@@ -14,6 +15,40 @@ import { Bind } from 'lodash-decorators';
  * // See OptionAssistant for an example implementation.
  */
 export class Assistant extends Builder {
+  /**
+   * If overridden, must be called via `super.processProps(props)`.
+   *
+   * @param {Object} props - Incoming properties.
+   */
+  processProps (props) {
+    propsToState(this, props, [
+      {
+        k: 'machineState',
+        before: () => {
+          this.cleanupListeners();
+          this.beforeChangeMachineState();
+        },
+        after: () => {
+          this.connectListeners();
+          this.afterChangeMachineState();
+        }
+      }
+    ]);
+    super.processProps(props);
+  }
+
+  /**
+   * Called just before the machineState prop changes.
+   */
+  beforeChangeMachineState () {
+  }
+
+  /**
+   * Called just after the machineState prop changes.
+   */
+  afterChangeMachineState () {
+  }
+
   /*!
    * @private
    */
