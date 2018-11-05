@@ -25,6 +25,8 @@ import { OptionAssistant } from './components/assistants/generic/option-assistan
 import { DateTimeEntryBuilder } from './components/builders/temporal/datetime-entry-builder';
 import { DateTimeEntryAssistant } from './components/assistants/temporal/datetime-entry-assistant';
 import { ActionButton } from './components/action-button';
+import { Builder } from './components/builder';
+import { Assistant } from './components/assistant';
 import * as KEYS from './lib/keys';
 
 const _language = new WeakMap();
@@ -313,6 +315,9 @@ export {
   CurrencyEntryState,
   NumericEntryState,
   DateTimeEntryState,
+  // Base UI components
+  Builder,
+  Assistant,
   // UI components
   OptionBuilder,
   OptionAssistant,
