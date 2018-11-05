@@ -31,3 +31,11 @@ export function propsToState (scope, incomingProps, toMigrate) {
     }
   }
 }
+
+export function lexStillHasFocus (event, assistantBoxEl) {
+  const relatedTarget = event.relatedTarget || // The default behaviour which works in modern browsers
+    event.explicitOriginalTarget || // FireFox fix :(
+    document.activeElement; // Fallback to what the browser says is currently focused
+
+  return relatedTarget != null && assistantBoxEl != null && assistantBoxEl.contains(relatedTarget);
+}

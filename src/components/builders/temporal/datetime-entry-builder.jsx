@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { Bind } from 'lodash-decorators';
 import { Builder } from '../../builder';
 import { TAB, ENTER, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
-import { propsToState } from '../../../lib/util';
+import { propsToState, lexStillHasFocus } from '../../../lib/util';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -151,7 +151,7 @@ export class DateTimeEntryBuilder extends Builder {
   onBlur (e) {
     if (this.machine.state === this.machineState && this.cancelOnBlur) {
       const assistantBox = document.getElementById('lex-assistant-box');
-      if (!e.relatedTarget || assistantBox === null || (!assistantBox.contains(e.relatedTarget) && !e.relatedTarget.getAttribute('data-date'))) {
+      if (!lexStillHasFocus(e, assistantBox)) {
         this.requestCancel();
       }
     } else {

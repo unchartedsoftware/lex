@@ -2,6 +2,7 @@ import { h } from 'preact';
 import { Bind, Debounce } from 'lodash-decorators';
 import { Builder } from '../../builder';
 import { ENTER, TAB, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
+import { lexStillHasFocus } from '../../../lib/util';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -151,7 +152,7 @@ export class OptionBuilder extends Builder {
     try { this.commitTypedValue(); } catch (err) { /* do nothing */ }
     if (this.machine.state === this.machineState && this.cancelOnBlur) {
       const assistantBox = document.getElementById('lex-assistant-box');
-      if (!e.relatedTarget || assistantBox === null || !assistantBox.contains(e.relatedTarget)) {
+      if (!lexStillHasFocus(e, assistantBox)) {
         this.requestCancel();
       }
     } else {
