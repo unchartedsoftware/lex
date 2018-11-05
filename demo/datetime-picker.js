@@ -69,7 +69,20 @@ const language = Lex.from('field', OptionState, {
       enableCalendar: false,
       timezone: 'America/Toronto'
     }),
-    Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
+    Lex.from('value', DateTimeEntryState, {
+      ...TransitionFactory.optionKeyIs('between'),
+      minDate: YESTERDAY_AT_MIDNIGHT,
+      maxDate: TODAY_AT_LUNCH,
+      enableTime: true,
+      enableCalendar: false,
+      timezone: 'America/Toronto'
+    }).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState, {
+      minDate: YESTERDAY_AT_MIDNIGHT,
+      maxDate: TODAY_AT_LUNCH,
+      enableTime: true,
+      enableCalendar: false,
+      timezone: 'America/Toronto'
+    })
   ),
   Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime'})).branch(
     // This example displays the functionality of the date + time picker in 12 hour format (default)
@@ -79,7 +92,16 @@ const language = Lex.from('field', OptionState, {
       enableCalendar: true,
       timezone: 'America/Toronto'
     }),
-    Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
+    Lex.from('value', DateTimeEntryState, {
+      ...TransitionFactory.optionKeyIs('between'),
+      enableTime: true,
+      enableCalendar: true,
+      timezone: 'America/Toronto'
+    }).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState, {
+      enableTime: true,
+      enableCalendar: true,
+      timezone: 'America/Toronto'
+    })
   ),
   Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime24hr'})).branch(
     // This example displays the functionality of the date + time picker in 24 hour format
@@ -90,7 +112,18 @@ const language = Lex.from('field', OptionState, {
       time24hr: true,
       timezone: 'America/Toronto'
     }),
-    Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
+    Lex.from('value', DateTimeEntryState, {
+      ...TransitionFactory.optionKeyIs('between'),
+      enableTime: true,
+      enableCalendar: true,
+      time24hr: true,
+      timezone: 'America/Toronto'
+    }).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState, {
+      enableTime: true,
+      enableCalendar: true,
+      time24hr: true,
+      timezone: 'America/Toronto'
+    })
   )
 );
 
