@@ -56,6 +56,14 @@ export class DateTimeEntryAssistant extends Assistant {
     }
   }
 
+  afterChangeMachineState () {
+    super.afterChangeMachineState();
+    if (this.machineState) {
+      // if the machineState prop changes, but we don't re-render, we may need to change our value
+      this.onValueChanged(this.machineState.value != null ? this.machineState.value : this.machineState.hilightedDate);
+    }
+  }
+
   get timezone () {
     return this.machineState.timezone;
   }

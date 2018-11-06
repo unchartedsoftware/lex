@@ -211,7 +211,7 @@ export class OptionAssistant extends Assistant {
   }
 
   renderAssistantBody (props, {activeSuggestion, suggestions}) {
-    if (this.machineState.isMultivalue || this.machineState.suggestions.length > 0) {
+    if (this.machineState.isMultivalue || (Array.isArray(this.machineState.suggestions) && this.machineState.suggestions.length > 0)) {
       return (
         <div className='assistant-body'>
           <div className={this.machineState.isMultivalue ? 'assistant-left' : ''}>

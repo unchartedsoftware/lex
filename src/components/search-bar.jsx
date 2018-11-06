@@ -21,7 +21,7 @@ export class SearchBar extends Component {
       {k: 'popupContainer', default: 'body'},
       {
         k: 'machineTemplate',
-        before: () => this.cleanupListeners,
+        before: () => { this.cleanupListeners(); },
         after: (machineTemplate) => {
           this.setState({
             activeMachine: new TokenStateMachine(machineTemplate)
