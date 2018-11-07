@@ -14,8 +14,8 @@ The following co-requisites must be part of your JS build in order to use Lex:
 
 ```js
 {
-  "preact": "8.x", // developed against: "8.2.7",
-  "moment": "2.x", // developed aginst: "2.20.1"
+  "preact": "8.x", // developed against: "8.3.1",
+  "moment": "2.x", // developed aginst: "2.22.2"
   "flatpickr": "4.5.x" // developed against: "4.5.2"
 }
 ```
