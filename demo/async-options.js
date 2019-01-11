@@ -43,7 +43,7 @@ const language = Lex
     // This is our list of options we are providing to the user to select from
     // we can return a promise from this method as well to support network requests
     options: fetchOptions,
-    fetchSuggestions: searchOptions,
+    refreshSuggestions: searchOptions,
     icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
   })
   // Now that we have selected an option from the available list we need to provide target
