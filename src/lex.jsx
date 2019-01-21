@@ -11,6 +11,7 @@ import { SearchBar } from './components/search-bar';
 import { LabelState } from './lib/states/generic/label-state';
 import { TerminalState } from './lib/states/generic/terminal-state';
 import { OptionStateOption, OptionState } from './lib/states/generic/option-state';
+import { RelationState } from './lib/states/generic/relation-state';
 import { TextRelationState } from './lib/states/text/text-relation-state';
 import { NumericRelationState } from './lib/states/numeric/numeric-relation-state';
 import { DateTimeRelationState } from './lib/states/temporal/datetime-relation-state';
@@ -308,6 +309,7 @@ export {
   TerminalState,
   OptionState,
   OptionStateOption,
+  RelationState,
   TextRelationState,
   NumericRelationState,
   DateTimeRelationState,
