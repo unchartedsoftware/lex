@@ -84,6 +84,8 @@ const language = Lex.from('field', OptionState, {
   defaultValue: false
 }).branch(
   Lex.from('relation', TextRelationState, {
+    defaultValue: new OptionStateOption('is', {}, {shortKey: '='}),
+    autoAdvanceDefault: true,
     cssClasses: ['token-text-entry'],
     ...TransitionFactory.optionMetaCompare({type: 'string'})
   }).to('value', TextEntryState),

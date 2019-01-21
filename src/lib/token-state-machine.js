@@ -149,16 +149,16 @@ export class TokenStateMachine extends EventEmitter {
     } else {
       try {
         const oldState = this.state;
-        // Find the first legal transition to a non-read-only, non-bind-only child, if possible
+        // Find the first legal transition to a non-read-only, non-bind-only, non-auto-advance-default child if possible
         let next = this.getFirstLegalTransition(this.state, ignoreBindOnly);
-        while (next.isReadOnly && !next.isTerminal) {
+        while ((next.isReadOnly || next.autoAdvanceDefault) && !next.isTerminal) {
           next = this.getFirstLegalTransition(next, ignoreBindOnly);
         }
         next.doInitialize(this.boxedValue);
         _currentState.set(this, next);
         this.emit('state changed', this.state, oldState);
-        // if we ended on a read-only terminal state, transition one more time to finish token.
-        if (next.isReadOnly && next.isTerminal) {
+        // if we ended on a terminal read-only or auto-advance state, transition one more time to finish token.
+        if ((next.isReadOnly || next.autoAdvanceDefault) && next.isTerminal) {
           return this.transition(arguments);
         } else {
           // otherwise, we're finished.
