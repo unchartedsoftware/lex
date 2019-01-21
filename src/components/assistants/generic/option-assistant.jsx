@@ -41,8 +41,15 @@ export class OptionAssistant extends Assistant {
 
   @Bind
   onSuggestionsChanged (newSuggestions) {
+    let activeSuggestion = newSuggestions.length === 1 ? 0 : -1;
+    for (let i=0;i<newSuggestions.length;i++) {
+      if (newSuggestions[i].highlighted) {
+        activeSuggestion = i;
+        break;
+      }
+    }
     this.setState({
-      activeSuggestion: -1,
+      activeSuggestion: activeSuggestion,
       suggestions: newSuggestions
     });
   }

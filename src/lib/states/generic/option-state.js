@@ -4,6 +4,7 @@ const _key = new WeakMap();
 const _shortKey = new WeakMap();
 const _meta = new WeakMap();
 const _hidden = new WeakMap();
+const _highlighted = new WeakMap();
 
 /**
  * An option within a list of options
@@ -13,6 +14,7 @@ const _hidden = new WeakMap();
  * @param {object} config - Additional configuration for this `OptionStateOption`.
  * @param {boolean} config.hidden - If true, this `OptionStateOption` will never be suggested to the user.
  * @param {string|undefined} config.shortKey - A shorter representation of `key` displayed in read-only mode. Optional.
+ * @param {boolean} config.highlighted - Whether or not this `OptionStateOption` is "highlighted" to the user. No more than one `OptionStateOption` should be highlighted within an `OptionState`.
  */
 export class OptionStateOption {
   constructor (key, meta, config = {}) {
@@ -20,6 +22,7 @@ export class OptionStateOption {
     _meta.set(this, meta);
     _shortKey.set(this, config.shortKey);
     _hidden.set(this, config.hidden && true);
+    _highlighted.set(this, config.highlighted && true);
   }
 
   /**
@@ -41,6 +44,11 @@ export class OptionStateOption {
    * @returns {any} The metadata associated with this option.
    */
   get meta () { return _meta.get(this); }
+
+  /*
+   * @returns {boolean} Whether or not this option should be highlighted for the user.
+   */
+  get highlighted () { return _highlighted.get(this); }
 }
 
 const _initialOptions = new WeakMap();
@@ -190,7 +198,8 @@ export class OptionState extends State {
       // only emit change event if the options actually changed
       let changed = oldSuggestions.length !== newSuggestions.length;
       for (let i = 0; !changed && i < oldSuggestions.length; i++) {
-        changed = oldSuggestions[i].key !== newSuggestions[i].key;
+        changed = oldSuggestions[i].key !== newSuggestions[i].key ||
+          oldSuggestions[i].highlighted !== newSuggestions[i].highlighted;
       }
       if (changed) this.emit('suggestions changed', newSuggestions, oldSuggestions);
     }
