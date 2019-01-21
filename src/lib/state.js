@@ -16,6 +16,7 @@ const _transitionFunction = new WeakMap();
 const _readOnly = new WeakMap();
 const _bindOnly = new WeakMap();
 const _defaultValue = new WeakMap();
+const _autoAdvanceDefault = new WeakMap();
 const _previewValue = new WeakMap();
 const _multivalue = new WeakMap();
 const _multivalueLimit = new WeakMap();
@@ -170,6 +171,7 @@ export class StateTemplate {
  * @param {Function | undefined} config.transition - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
  * @param {Function | undefined} config.validation - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
  * @param {any} config.defaultValue - The default boxed value for this state before it has been touched. Can be undefined. Should not be an `Array` (but can be an `object`).
+ * @param {boolean} config.autoAdvanceDefault - If a `defaultValue` is set and `autoAdvanceDefault` is true, this `State` auto-transition to the next `State` using its `defaultValue`.
  * @param {boolean} config.readOnly - This state is read only (for display purposes only) and should be skipped by the state machine. False by default.
  * @param {boolean} config.bindOnly - This state is bind only (can be created programatically, but not by a user). False by default.
  * @param {boolean} config.multivalue - Whether or not this state supports multi-value entry.
@@ -197,7 +199,7 @@ export class StateTemplate {
  */
 export class State extends EventEmitter {
   constructor (config) {
-    const {parent, name, vkey, transition, validate, defaultValue, readOnly, bindOnly, multivalue, multivalueLimit, icon, cssClasses, resetOnRewind} = config;
+    const {parent, name, vkey, transition, validate, defaultValue, autoAdvanceDefault, readOnly, bindOnly, multivalue, multivalueLimit, icon, cssClasses, resetOnRewind} = config;
     super();
     this._id = Math.random();
     _parent.set(this, parent);
@@ -207,6 +209,7 @@ export class State extends EventEmitter {
     _transitionFunction.set(this, transition !== undefined ? transition : () => true);
     _validate.set(this, validate !== undefined ? validate : () => true);
     _defaultValue.set(this, defaultValue !== undefined ? defaultValue : null);
+    _autoAdvanceDefault.set(this, defaultValue !== undefined && autoAdvanceDefault);
     _multivalue.set(this, multivalue !== undefined ? multivalue : false);
     _multivalueLimit.set(this, multivalueLimit);
     _readOnly.set(this, readOnly !== undefined ? readOnly : false);
@@ -262,6 +265,10 @@ export class State extends EventEmitter {
 
   get defaultValue () {
     return _defaultValue.get(this);
+  }
+
+  get autoAdvanceDefault () {
+    return _autoAdvanceDefault.get(this);
   }
 
   get children () {
