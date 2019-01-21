@@ -97,7 +97,7 @@ export class TokenStateMachine extends EventEmitter {
           // if there's more values, transition
           if (Object.keys(copy).length > 0 || finalTransition) {
             try {
-              this.transition({ignoreBindOnly: true}); // ignore bind-only states
+              this.transition({ignoreBindOnly: true, ignoreAutoAdvance: true}); // ignore bind-only states
             } catch (err) {
               console.error(err); // eslint-disable-line no-console
               throw err; // the value for this state is invalid, so break out.
@@ -136,7 +136,7 @@ export class TokenStateMachine extends EventEmitter {
    * @throws {StateTransitionError} If this state is invalid, or if there is no valid child transition given the current state's value.
    * @returns {State} The new current state.
    */
-  transition ({ignoreBindOnly, nextToken} = {ignoreBindOnly: false, nextToken: true}) {
+  transition ({ignoreBindOnly, nextToken, ignoreAutoAdvance} = {ignoreBindOnly: false, nextToken: true, ignoreAutoAdvance: false}) {
     this.emit('before state change', this.state);
     // validate current state value
     if (!this.state.isValid) {
@@ -152,13 +152,15 @@ export class TokenStateMachine extends EventEmitter {
         // Find the first legal transition to a non-read-only, non-bind-only, non-auto-advance-default child if possible
         let next = this.getFirstLegalTransition(this.state, ignoreBindOnly);
         while ((next.isReadOnly || next.autoAdvanceDefault) && !next.isTerminal) {
+          if (next.autoAdvanceDefault && ignoreAutoAdvance) break;
+          if (next.autoAdvanceDefault) next.doInitialize(next.defaultValue);
           next = this.getFirstLegalTransition(next, ignoreBindOnly);
         }
         next.doInitialize(this.boxedValue);
         _currentState.set(this, next);
         this.emit('state changed', this.state, oldState);
         // if we ended on a terminal read-only or auto-advance state, transition one more time to finish token.
-        if ((next.isReadOnly || next.autoAdvanceDefault) && next.isTerminal) {
+        if ((next.isReadOnly || (!ignoreAutoAdvance && next.autoAdvanceDefault)) && next.isTerminal) {
           return this.transition(arguments);
         } else {
           // otherwise, we're finished.
