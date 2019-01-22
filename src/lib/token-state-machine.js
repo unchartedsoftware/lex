@@ -132,7 +132,10 @@ export class TokenStateMachine extends EventEmitter {
    * Transition to the first viable child state, iff the current state is valid. If this is a terminal state, this will
    * trigger an 'end' event.
    *
-   * @param {boolean} ignoreBindOnly - All bind-only states are illegal transitions unless `ignoreBindOnly` is true.
+   * @param {Object} conf - Transition configuration.
+   * @param {boolean} conf.ignoreBindOnly - All bind-only states are illegal transitions unless `ignoreBindOnly` is true.
+   * @param {boolean} conf.nextToken - Whether or not to move to the next `Token` in the `Lex` bar, if this `Token` is complete.
+   * @param {boolean} conf.ignoreAutoAdvance - Do not perform auto-advancements, even if `State` is configured as such.
    * @throws {StateTransitionError} If this state is invalid, or if there is no valid child transition given the current state's value.
    * @returns {State} The new current state.
    */
