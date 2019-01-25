@@ -142,8 +142,7 @@ export class OptionBuilder extends Builder {
   onPreviewValueChanged (_1, _2, newUnboxedPreviewValue) {
     if (newUnboxedPreviewValue !== this.state.previewText) {
       this.setState({
-        previewText: newUnboxedPreviewValue,
-        typedText: newUnboxedPreviewValue
+        previewText: newUnboxedPreviewValue
       });
     }
   }
@@ -204,7 +203,8 @@ export class OptionBuilder extends Builder {
   };
 
   renderInteractive (props, {valid, readOnly, typedText, previewText, machineState}) {
-    const inputClass = `token-input ${valid ? 'active' : 'invalid'}`;
+    const hasPreview = typeof previewText === 'string' && previewText.trim().length > 0;
+    const inputClass = `token-input ${valid ? 'active' : 'invalid'} ${hasPreview ? 'has-preview' : ''}`;
     return (
       <span>
         {machineState.isMultivalue && <span className='badge'>{machineState.archive.length}</span>}
