@@ -10,6 +10,12 @@ import {OptionStateOption, OptionState} from '../generic/option-state';
 export class RelationState extends OptionState {
   constructor (config) {
     if (config.name === undefined) config.name = 'Choose a relation';
+    if (Array.isArray(config.options)) {
+      const opts = config.options;
+      config.options = function () {
+        return opts;
+      };
+    }
     config.refreshSuggestions = function (hint) {
       return config.options().map(o => {
         return o.key.toLowerCase().indexOf(hint.toLowerCase()) === 0
