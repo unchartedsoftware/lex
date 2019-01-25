@@ -176,7 +176,8 @@ div.lex-box div.token  {
       padding-right: 5px;
       pointer-events: none;
       user-select: none;
-      max-width: 150px;
+      max-width: 145px;
+      min-width: 145px;
       overflow: hidden;
       text-overflow: ellipsis;
     }
