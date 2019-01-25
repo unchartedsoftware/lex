@@ -142,7 +142,8 @@ export class OptionBuilder extends Builder {
   onPreviewValueChanged (_1, _2, newUnboxedPreviewValue) {
     if (newUnboxedPreviewValue !== this.state.previewText) {
       this.setState({
-        previewText: newUnboxedPreviewValue
+        previewText: newUnboxedPreviewValue,
+        typedText: newUnboxedPreviewValue
       });
     }
   }
