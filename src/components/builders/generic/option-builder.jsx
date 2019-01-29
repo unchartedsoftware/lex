@@ -211,6 +211,7 @@ export class OptionBuilder extends Builder {
         <span className='text-input'>
           <span className='text-muted preview'>{previewText}</span>
           <input type='text'
+            spellCheck='false'
             className={inputClass}
             onKeyDown={this.handleKeyDown}
             onKeyUp={this.handleKeyUp}

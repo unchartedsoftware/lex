@@ -165,7 +165,8 @@ div.lex-box div.token  {
     }
     
     &.has-preview {
-      color: transparent;
+      color: transparent; // Make the text transparent so we dont see it when we have a preview value
+      text-indent: -9999em; // Shift the text offscreen so we dont see any cursors when we have a preview value
     }
   }
 
