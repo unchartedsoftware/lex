@@ -70,7 +70,11 @@ export class OptionAssistant extends Assistant {
 
   @Bind
   onSuggestionHover (idx) {
-    this.setState({activeSuggestion: idx});
+    this.setState({
+      activeSuggestion: idx
+    });
+    this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
+    setTimeout(() => this.fixListScrollPosition());
   }
 
   @Bind
