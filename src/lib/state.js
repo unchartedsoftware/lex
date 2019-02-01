@@ -169,7 +169,7 @@ export class StateTemplate {
  * @param {string} config.name - A useful label for this state - used for display purposes.
  * @param {string} config.vkey - A key used to enter the value of this state into the value object of the containing machine.
  * @param {Function | undefined} config.transition - A function which returns true if this state is the next child to transition to, given the value of its parent. Undefined if this is root.
- * @param {Function | undefined} config.validation - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
+ * @param {Function | undefined} config.validate - A function which returns true iff this state has a valid value. Should throw an exception otherwise.
  * @param {any} config.defaultValue - The default boxed value for this state before it has been touched. Can be undefined. Should not be an `Array` (but can be an `object`).
  * @param {boolean} config.autoAdvanceDefault - If a `defaultValue` is set and `autoAdvanceDefault` is true, this `State` auto-transition to the next `State` using its `defaultValue`.
  * @param {boolean} config.readOnly - This state is read only (for display purposes only) and should be skipped by the state machine. False by default.
