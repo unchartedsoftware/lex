@@ -35,7 +35,15 @@ export class ValueBuilder extends Builder {
     if (this.machineState.previewValue) {
       this.machineState.value = this.machineState.previewValue;
     } else if (this.state.typedText && this.state.typedText.length > 0) {
-      this.unboxedValue = this.machineState.unformatUnboxedValue(this.state.typedText, this.machine.boxedValue);
+      const unformatted = this.machineState.unformatUnboxedValue(this.state.typedText, this.machine.boxedValue);
+      if (!this.machineState.allowUnknown && Array.isArray(this.machineState.suggestions) && this.machineState.suggestions.length > 0) {
+        this.value = this.machineState.suggestions[0];
+      } else if (!this.machineState.allowUnknown) {
+        // set value to null, since we can't create values and no suggestions match what was typed
+        this.value = null;
+      } else {
+        this.unboxedValue = unformatted;
+      }
     }
   }
 
@@ -46,8 +54,11 @@ export class ValueBuilder extends Builder {
     switch (normalizedKey) {
       case ENTER:
       case TAB:
-        this.commitTypedValue();
-        consumed = this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
+        consumed = true;
+        this.machineState.currentFetch.then(() => {
+          this.commitTypedValue();
+          this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
+        });
         break;
       case BACKSPACE:
         if (nothingEntered) {
@@ -79,8 +90,9 @@ export class ValueBuilder extends Builder {
   }
 
   focus () {
+    if (document.activeElement === this.textInput) return; // prevent focus loops
     if (this.textInput) {
-      this.textInput.focus();
+      this.textInput.focus(); // don't loop focus
       // move cursor to end of input
       this.textInput.selectionStart = this.textInput.selectionEnd = this.textInput.value.length;
     }

@@ -28,6 +28,7 @@ export class ValueStateValue {
 
 const _suggestions = new WeakMap();
 const _lastRefresh = new WeakMap();
+const _lastRefreshPromise = new WeakMap();
 const _fetchSuggestions = new WeakMap();
 const _allowUnknown = new WeakMap();
 const _onUnknownValue = new WeakMap();
@@ -222,6 +223,14 @@ export class ValueState extends State {
     _suggestions.set(this, []);
   }
 
+  get currentFetch () {
+    if (_lastRefreshPromise.has(this)) {
+      return _lastRefreshPromise.get(this);
+    } else {
+      return Promise.resolve();
+    }
+  }
+
   /**
    * Can be called by a child class to trigger a refresh of suggestions based on a hint (what the
    * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.refreshSuggestions`.
@@ -234,8 +243,10 @@ export class ValueState extends State {
     if (hint === null) console.error('hint cannot be null in fetchSuggestions - perhaps unformatUnboxedValue returned null?'); // eslint-disable-line no-console
     // start lookup
     _lastRefresh.set(this, hint);
-    const newSuggestions = await _fetchSuggestions.get(this)(hint, context);
+    _lastRefreshPromise.set(this, _fetchSuggestions.get(this)(hint, context));
+    const newSuggestions = await _lastRefreshPromise.get(this);
     if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
+    _lastRefresh.delete(this);
     // If user-created values are allowed, and this is a multi-value state,
     // then add in a suggestion for what the user has typed as long as what
     // they've typed isn't identical to an existing suggestion.

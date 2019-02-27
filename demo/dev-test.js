@@ -28,7 +28,7 @@ function searchOptions (hint) {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(options.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
-    }, 25);
+    }, 250);
   });
 }
 
