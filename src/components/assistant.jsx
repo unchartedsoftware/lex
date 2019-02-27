@@ -141,16 +141,4 @@ export class Assistant extends Builder {
   renderAssistantBody (props, state) { // eslint-disable-line no-unused-vars
     // do nothing
   }
-
-  /**
-   * Receives `keydown` events from the associated `Builder`, proxied to this component so
-   * that users can interact with this `Assistant` via keyboard controls without losing
-   * focus on their `Builder`.
-   *
-   * @param {Event} e - The incoming event.
-   * @returns {boolean} - Returns `true` iff the event was consumed by this `Assistant`.
-   */
-  delegateEvent (e) { // eslint-disable-line no-unused-vars
-    // override in subclass - keyDown events coming from search-box. Return true if the event was consumed.
-  }
 }

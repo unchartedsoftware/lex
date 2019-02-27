@@ -368,8 +368,9 @@ export class SearchBar extends Component {
   onKeyDown (e) {
     this.unboxedValue = e.target.value;
     const code = normalizeKey(e);
-    if (this.assistant && this.state.proxiedEvents.get(code) === true) {
-      this.assistant.delegateEvent(e);
+    if (this.state.proxiedEvents.get(code) === true) {
+      const consumed = this.assistant && this.assistant.delegateEvent(e);
+      if (!consumed) this.tokenBuilder.delegateEvent(e);
     }
   }
 

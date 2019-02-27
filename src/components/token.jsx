@@ -252,6 +252,10 @@ export class Token extends Component {
     }
   }
 
+  delegateEvent (e) {
+    return this.activeBuilder && this.activeBuilder.delegateEvent(e);
+  }
+
   render (props, {active, flash, cancelOnBlur, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
       <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''} ${this.compileBuilderClassHints()}`} onMouseDown={this.requestEdit}>

@@ -1,28 +1,28 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, Action, ActionButton } from '../src/lex';
+import { Lex, TransitionFactory, ValueState, ValueStateValue, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, Action, ActionButton } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import '../node_modules/flatpickr/dist/flatpickr.min.css';
 
 // This array and the following two functions are simulations of a back-end API for fetching options
 const options = [
-  new OptionStateOption('Name', {type: 'string'}),
-  new OptionStateOption('Income', {type: 'currency'}),
-  new OptionStateOption('Keywords', {type: 'multistring'}),
-  new OptionStateOption('GeoHash', {type: 'geohash'}),
-  new OptionStateOption('DateTime', {type: 'datetime'})
+  new ValueStateValue('Name', {type: 'string'}),
+  new ValueStateValue('Income', {type: 'currency'}),
+  new ValueStateValue('Keywords', {type: 'multistring'}),
+  new ValueStateValue('GeoHash', {type: 'geohash'}),
+  new ValueStateValue('DateTime', {type: 'datetime'})
 ];
 
-function fetchOptions (query) {
-  return new Promise((resolve) => {
-    const lookup = new Map();
-    query.forEach(v => lookup.set(v.toLowerCase(), true));
-    // This simulates a network call for options (your API should filter based on the hint/context)
-    setTimeout(() => {
-      resolve(options.filter(o => lookup.has(o.key.toLowerCase())));
-    }, 25);
-  });
-}
+// function fetchOptions (query) {
+//   return new Promise((resolve) => {
+//     const lookup = new Map();
+//     query.forEach(v => lookup.set(v.toLowerCase(), true));
+//     // This simulates a network call for options (your API should filter based on the hint/context)
+//     setTimeout(() => {
+//       resolve(options.filter(o => lookup.has(o.key.toLowerCase())));
+//     }, 25);
+//   });
+// }
 
 function searchOptions (hint) {
   return new Promise((resolve) => {
@@ -59,10 +59,9 @@ class PinActionButton extends ActionButton {
   }
 }
 
-const language = Lex.from('field', OptionState, {
+const language = Lex.from('field', ValueState, {
   name: 'Choose a field to search',
-  options: fetchOptions,
-  refreshSuggestions: searchOptions,
+  fetchSuggestions: searchOptions,
   icon: (value) => {
     if (!value) return '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>';
     switch (value.key) {

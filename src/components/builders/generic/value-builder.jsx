@@ -39,8 +39,7 @@ export class ValueBuilder extends Builder {
     }
   }
 
-  @Bind
-  handleKeyDown (e) {
+  delegateEvent (e) {
     let consumed = true;
     const nothingEntered = e.target.value === undefined || e.target.value === null || e.target.value.length === 0;
     const normalizedKey = normalizeKey(e);
@@ -98,7 +97,6 @@ export class ValueBuilder extends Builder {
 
   @Bind
   beforeTransition () {
-    this.commitTypedValue();
     if (this.state.typedText === undefined || this.state.typedText === null || this.state.typedText.length === 0) {
       if (this.archive.length > 0) {
         this.requestUnarchive();
@@ -126,6 +124,12 @@ export class ValueBuilder extends Builder {
         previewText: newUnboxedPreviewValue
       });
     }
+  }
+
+  @Bind
+  requestFocus () {
+    this.machineState.fetchSuggestions('', this.machine.boxedValue);
+    return super.requestFocus();
   }
 
   @Bind
@@ -194,7 +198,6 @@ export class ValueBuilder extends Builder {
           <input type='text'
             spellCheck='false'
             className={inputClass}
-            onKeyDown={this.handleKeyDown}
             onKeyUp={this.handleKeyUp}
             onMouseDown={this.clearPreview}
             value={typedText}

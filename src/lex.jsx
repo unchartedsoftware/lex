@@ -10,6 +10,7 @@ import { TransitionFactory } from './lib/transition-factory';
 import { SearchBar } from './components/search-bar';
 import { LabelState } from './lib/states/generic/label-state';
 import { TerminalState } from './lib/states/generic/terminal-state';
+import { ValueStateValue, ValueState } from './lib/states/generic/value-state';
 import { OptionStateOption, OptionState } from './lib/states/generic/option-state';
 import { RelationState } from './lib/states/generic/relation-state';
 import { TextRelationState } from './lib/states/text/text-relation-state';
@@ -21,7 +22,9 @@ import { CurrencyEntryState } from './lib/states/numeric/currency-entry-state';
 import { DateTimeEntryState } from './lib/states/temporal/datetime-entry-state';
 import { LabelBuilder } from './components/builders/generic/label-builder';
 import { TerminalBuilder } from './components/builders/generic/terminal-builder';
+import { ValueBuilder } from './components/builders/generic/value-builder';
 import { OptionBuilder } from './components/builders/generic/option-builder';
+import { ValueAssistant } from './components/assistants/generic/value-assistant';
 import { OptionAssistant } from './components/assistants/generic/option-assistant';
 import { DateTimeEntryBuilder } from './components/builders/temporal/datetime-entry-builder';
 import { DateTimeEntryAssistant } from './components/assistants/temporal/datetime-entry-assistant';
@@ -101,10 +104,13 @@ class Lex extends EventEmitter {
     _popupContainer.set(this, container);
     _builders.set(this, new StateBuilderFactory());
     _defaultValue.set(this, defaultQuery);
-    _builders.get(this).registerBuilder(OptionState, OptionBuilder)
+    _builders.get(this)
+      .registerBuilder(ValueState, ValueBuilder)
+      .registerBuilder(OptionState, OptionBuilder)
       .registerBuilder(DateTimeEntryState, DateTimeEntryBuilder)
       .registerBuilder(LabelState, LabelBuilder)
       .registerBuilder(TerminalState, TerminalBuilder)
+      .registerAssistant(ValueState, ValueAssistant)
       .registerAssistant(OptionState, OptionAssistant)
       .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant)
       .registerActionButton(Action, ActionButton);
@@ -307,6 +313,8 @@ export {
   // states
   LabelState,
   TerminalState,
+  ValueState,
+  ValueStateValue,
   OptionState,
   OptionStateOption,
   RelationState,
@@ -321,7 +329,9 @@ export {
   Builder,
   Assistant,
   // UI components
+  ValueBuilder,
   OptionBuilder,
+  ValueAssistant,
   OptionAssistant,
   DateTimeEntryBuilder,
   DateTimeEntryAssistant,

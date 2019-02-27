@@ -284,6 +284,18 @@ export class Builder extends Component {
   }
 
   /**
+   * Receives functionality-related `keydown` events, received at the search-bar level and
+   * proxied to this component so that users can interact with the `Assistant` via
+   * keyboard controls without losing focus on their `Builder`.
+   *
+   * @param {Event} e - The incoming event.
+   * @returns {boolean} - Returns `true` iff the event was consumed by this `Assistant`.
+   */
+  delegateEvent (e) { // eslint-disable-line no-unused-vars
+    // override in subclass - keyDown events coming from search-box. Return true if the event was consumed.
+  }
+
+  /**
    * Getter for `this.cancelOnBlur`.
    *
    * @readonly
