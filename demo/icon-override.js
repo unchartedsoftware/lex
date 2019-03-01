@@ -35,7 +35,7 @@ const language = Lex
       .from('relation', NumericRelationState, TransitionFactory.optionMetaCompare({type: 'number'}))
       .branch(
         // When the option is not "between" we just use a simple numeric entry
-        Lex.from('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
+        Lex.from('value', NumericEntryState, TransitionFactory.valueKeyIsNot('between')),
         // When the option is "between" we want to go deeper to provide a better result token
         Lex
           .from('value', NumericEntryState, {
@@ -46,7 +46,7 @@ const language = Lex
                 <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
               `;
             },
-            ...TransitionFactory.optionKeyIs('between')
+            ...TransitionFactory.valueKeyIs('between')
           })
           // Once we have the first value lets add a label "and" to make the token more readable
           .to(LabelState, {label: 'and'})

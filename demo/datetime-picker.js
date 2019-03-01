@@ -51,18 +51,18 @@ const language = Lex.from('field', OptionState, {
   Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'date'})).branch(
     // This example displays the functionality of minDay, maxDate, and hilightedDate
     Lex.from('value', DateTimeEntryState, {
-      ...TransitionFactory.optionKeyIsNot('between'),
+      ...TransitionFactory.valueKeyIsNot('between'),
       minDate: new Date(Date.now() - 30 * DAYS),
       hilightedDate: new Date(Date.now() - 30 * DAYS),
       maxDate: new Date(Date.now() + 2 * DAYS),
       timezone: 'America/Toronto'
     }),
-    Lex.from('value', DateTimeEntryState, TransitionFactory.optionKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
+    Lex.from('value', DateTimeEntryState, TransitionFactory.valueKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
   ),
   Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'time'})).branch(
     // This example displays the functionality of minDate, and maxDate as it applies to the time picker
     Lex.from('value', DateTimeEntryState, {
-      ...TransitionFactory.optionKeyIsNot('between'),
+      ...TransitionFactory.valueKeyIsNot('between'),
       minDate: YESTERDAY_AT_MIDNIGHT,
       maxDate: TODAY_AT_LUNCH,
       enableTime: true,
@@ -70,7 +70,7 @@ const language = Lex.from('field', OptionState, {
       timezone: 'America/Toronto'
     }),
     Lex.from('value', DateTimeEntryState, {
-      ...TransitionFactory.optionKeyIs('between'),
+      ...TransitionFactory.valueKeyIs('between'),
       minDate: YESTERDAY_AT_MIDNIGHT,
       maxDate: TODAY_AT_LUNCH,
       enableTime: true,
@@ -87,13 +87,13 @@ const language = Lex.from('field', OptionState, {
   Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime'})).branch(
     // This example displays the functionality of the date + time picker in 12 hour format (default)
     Lex.from('value', DateTimeEntryState, {
-      ...TransitionFactory.optionKeyIsNot('between'),
+      ...TransitionFactory.valueKeyIsNot('between'),
       enableTime: true,
       enableCalendar: true,
       timezone: 'America/Toronto'
     }),
     Lex.from('value', DateTimeEntryState, {
-      ...TransitionFactory.optionKeyIs('between'),
+      ...TransitionFactory.valueKeyIs('between'),
       enableTime: true,
       enableCalendar: true,
       timezone: 'America/Toronto'
@@ -106,14 +106,14 @@ const language = Lex.from('field', OptionState, {
   Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime24hr'})).branch(
     // This example displays the functionality of the date + time picker in 24 hour format
     Lex.from('value', DateTimeEntryState, {
-      ...TransitionFactory.optionKeyIsNot('between'),
+      ...TransitionFactory.valueKeyIsNot('between'),
       enableTime: true,
       enableCalendar: true,
       time24hr: true,
       timezone: 'America/Toronto'
     }),
     Lex.from('value', DateTimeEntryState, {
-      ...TransitionFactory.optionKeyIs('between'),
+      ...TransitionFactory.valueKeyIs('between'),
       enableTime: true,
       enableCalendar: true,
       time24hr: true,

@@ -2,7 +2,7 @@ import { State } from '../../state';
 
 /**
  * A non-interactive, invisible state providing a mechanism for simulating an "optionally terminal" state.
- * For example, an OptionState where certain options terminate the machine, but others do not.
+ * For example, an ValueState where certain values terminate the machine, but others do not.
  *
  * @param {Object} config - A configuration object. Inherits all options from `State`.
  */

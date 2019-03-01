@@ -102,6 +102,9 @@ export class ValueState extends State {
 
     _suggestions.set(this, []);
     _fetchSuggestions.set(this, async (hint = '', context = []) => {
+      if (typeof config.fetchSuggestions !== 'function') {
+        return [];
+      }
       try {
         return config.fetchSuggestions.call(this, hint, context);
       } catch (err) {
