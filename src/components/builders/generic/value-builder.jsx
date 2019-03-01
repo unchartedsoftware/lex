@@ -32,12 +32,23 @@ export class ValueBuilder extends Builder {
   }
 
   commitTypedValue () {
+    if (this.machine.currentState != this.machineState) return; // don't do anything if our state is not active
     if (this.machineState.previewValue) {
       this.machineState.value = this.machineState.previewValue;
     } else if (this.state.typedText && this.state.typedText.length > 0) {
       const unformatted = this.machineState.unformatUnboxedValue(this.state.typedText, this.machine.boxedValue);
       if (!this.machineState.allowUnknown && Array.isArray(this.machineState.suggestions) && this.machineState.suggestions.length > 0) {
-        this.value = this.machineState.suggestions[0];
+        let set = false;
+        for (const s of this.machineState.suggestions) {
+          if (s.highlighted) {
+            set = true;
+            this.value = s;
+            break;
+          }
+        }
+        if (!set) {
+          this.value = this.machineState.suggestions[0];
+        }
       } else if (!this.machineState.allowUnknown) {
         // set value to null, since we can't create values and no suggestions match what was typed
         this.value = null;
