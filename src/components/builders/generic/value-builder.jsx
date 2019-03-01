@@ -32,7 +32,7 @@ export class ValueBuilder extends Builder {
   }
 
   commitTypedValue () {
-    if (this.machine.currentState != this.machineState) return; // don't do anything if our state is not active
+    if (this.machine.currentState !== this.machineState) return; // don't do anything if our state is not active
     if (this.machineState.previewValue) {
       this.machineState.value = this.machineState.previewValue;
     } else if (this.state.typedText && this.state.typedText.length > 0) {
