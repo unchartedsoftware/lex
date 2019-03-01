@@ -23,7 +23,7 @@ export class ValueAssistant extends Assistant {
     if (this.machineState) {
       // this.machineState.removeListener('value unarchived', this.onValueUnarchived);
       this.machineState.removeListener('fetching suggestions', this.onFetchingSuggestions);
-      this.machineState.removeListener('fetching suggestions failed', this.onFetchSuggestionsFail);
+      this.machineState.removeListener('fetching suggestions finished', this.onFetchSuggestionsEnd);
       this.machineState.removeListener('suggestions changed', this.onSuggestionsChanged);
     }
   }
@@ -33,7 +33,7 @@ export class ValueAssistant extends Assistant {
     if (this.machineState) {
       // this.machineState.on('value unarchived', this.onValueUnarchived);
       this.machineState.on('fetching suggestions', this.onFetchingSuggestions);
-      this.machineState.on('fetching suggestions failed', this.onFetchSuggestionsFail);
+      this.machineState.on('fetching suggestions finished', this.onFetchSuggestionsEnd);
       this.machineState.on('suggestions changed', this.onSuggestionsChanged);
     }
   }
@@ -44,7 +44,7 @@ export class ValueAssistant extends Assistant {
   }
 
   @Bind
-  onFetchSuggestionsFail () {
+  onFetchSuggestionsEnd () {
     this.loading = false;
   }
 

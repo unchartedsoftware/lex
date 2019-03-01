@@ -45,7 +45,7 @@ const _units = new WeakMap();
  *
  * This class is an `EventEmitter` and exposes the following events (in addition to `State`'s events):
  * - `on('fetching suggestions', () => {})` when a fetch for suggestions is triggered.
- * - `on('fetching suggestions failed', (err) => {})` when a fetch for suggestions fails.
+ * - `on('fetching suggestions finished', (err) => {})` when a fetch for suggestions is finished, regardless of whether or not the suggestions changed. `err` may be defined if something went wrong.
  * - `on('suggestions changed', (newSuggestions, oldSuggestions) => {})` when the internal list of suggestions changes.
  *
  * @param {Object} config - A configuration object. Inherits all options from `State`, and adds the following:
@@ -123,22 +123,22 @@ export class ValueState extends State {
 
   archiveValue (context) {
     super.archiveValue(context);
-    this.refreshSuggestions('', context);
+    this.fetchSuggestions('', context);
   }
 
   unarchiveValue (context) {
     super.unarchiveValue(context);
-    this.refreshSuggestions(this.unformatUnboxedValue(this.unboxedValue), context);
+    this.fetchSuggestions(this.unformatUnboxedValue(this.unboxedValue), context);
   }
 
   removeArchivedValue (idx, context) {
     super.removeArchivedValue(idx, context);
-    this.refreshSuggestions('', context);
+    this.fetchSuggestions('', context);
   }
 
   removeArchivedValues () {
     super.removeArchivedValues();
-    this.refreshSuggestions();
+    this.fetchSuggestions();
   }
 
   /**
@@ -233,9 +233,14 @@ export class ValueState extends State {
     }
   }
 
+  // // override
+  // async initialize (context = [], initialUnboxedValue = '') {
+  //   return this.fetchSuggestions(initialUnboxedValue, context);
+  // }
+
   /**
    * Can be called by a child class to trigger a refresh of suggestions based on a hint (what the
-   * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.refreshSuggestions`.
+   * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.fetchSuggestions`.
    *
    * @param {string | undefined} hint - What the user has typed, if anything, converted to a key by unformatUnboxedValue.
    * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
@@ -249,6 +254,7 @@ export class ValueState extends State {
     _lastRefreshPromise.set(this, _fetchSuggestions.get(this)(hint, context));
     try {
       const newSuggestions = await _lastRefreshPromise.get(this);
+      this.emit('fetching suggestions finished');
       if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
       _lastRefresh.delete(this);
       // If user-created values are allowed, and this is a multi-value state,
@@ -265,7 +271,7 @@ export class ValueState extends State {
       this.suggestions = newSuggestions.filter(o => !lookup.has(o.key)).slice(0, this.suggestionLimit);
       return this.suggestions;
     } catch (err) {
-      this.emit('fetching suggestions failed', err);
+      this.emit('fetching suggestions finished', err);
       throw err;
     }
   }
