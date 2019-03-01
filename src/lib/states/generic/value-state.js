@@ -44,6 +44,7 @@ const _units = new WeakMap();
  * By default, this state (and any extending classes) can be visually represented by `ValueBuilder` and `ValueAssistant`.
  *
  * This class is an `EventEmitter` and exposes the following events (in addition to `State`'s events):
+ * - `on('fetching suggestions', () => {})` when a fetch for suggestions is triggered.
  * - `on('suggestions changed', (newSuggestions, oldSuggestions) => {})` when the internal list of suggestions changes.
  *
  * @param {Object} config - A configuration object. Inherits all options from `State`, and adds the following:
@@ -242,6 +243,7 @@ export class ValueState extends State {
   async fetchSuggestions (hint = '', context = {}) {
     if (hint === null) console.error('hint cannot be null in fetchSuggestions - perhaps unformatUnboxedValue returned null?'); // eslint-disable-line no-console
     // start lookup
+    this.emit('fetching suggestions');
     _lastRefresh.set(this, hint);
     _lastRefreshPromise.set(this, _fetchSuggestions.get(this)(hint, context));
     const newSuggestions = await _lastRefreshPromise.get(this);

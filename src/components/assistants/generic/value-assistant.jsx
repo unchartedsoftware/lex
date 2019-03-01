@@ -21,27 +21,29 @@ export class ValueAssistant extends Assistant {
   cleanupListeners () {
     super.cleanupListeners();
     if (this.machineState) {
-      this.machineState.removeListener('value unarchived', this.onValueUnarchived);
+      // this.machineState.removeListener('value unarchived', this.onValueUnarchived);
+      this.machineState.removeListener('fetching suggestions', this.onFetchingSuggestions);
+      this.machineState.removeListener('suggestions changed', this.onSuggestionsChanged);
     }
   }
 
   connectListeners () {
     super.connectListeners();
     if (this.machineState) {
-      this.machineState.on('value unarchived', this.onValueUnarchived);
+      // this.machineState.on('value unarchived', this.onValueUnarchived);
+      this.machineState.on('fetching suggestions', this.onFetchingSuggestions);
+      this.machineState.on('suggestions changed', this.onSuggestionsChanged);
     }
   }
 
   @Bind
-  onValueUnarchived () {
-    // TODO we want to remove this
-    // if (this.machineState) {
-    //   setTimeout(() => this.machineState.fetchSuggestions('', this.machine.boxedValue));
-    // }
+  onFetchingSuggestions () {
+    this.loading = true;
   }
 
   @Bind
   onSuggestionsChanged (newSuggestions) {
+    this.loading = false;
     const activeSuggestion = newSuggestions.length === 1 ? 0 : -1;
     this.setState({
       activeSuggestion: activeSuggestion,
@@ -116,7 +118,6 @@ export class ValueAssistant extends Assistant {
 
   processProps (props) {
     const oldMachineState = this.machineState;
-    if (oldMachineState) oldMachineState.removeListener('suggestions changed', this.onSuggestionsChanged);
     super.processProps(props);
     if (this.machineState !== oldMachineState) {
       this.setState({
@@ -124,7 +125,6 @@ export class ValueAssistant extends Assistant {
         suggestions: this.machineState.suggestions
       });
     }
-    if (this.machineState) this.machineState.on('suggestions changed', this.onSuggestionsChanged);
   }
 
   delegateEvent (e) {

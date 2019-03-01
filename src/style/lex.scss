@@ -24,6 +24,8 @@ $lex-assistant-header-background: $lex-token-background !default;
 $lex-assistant-header-color: #8d8d8d !default;
 $lex-assistant-list-height: 290px !default; // Approximately 10 items which is the default limit for option assistant
 
+@import './animation.scss';
+
 div.lex-box {
   min-height: 40px;
   cursor: text;
@@ -163,7 +165,7 @@ div.lex-box div.token  {
       width: 250px;
       min-width: 250px;
     }
-    
+
     &.has-preview {
       color: transparent; // Make the text transparent so we dont see it when we have a preview value
       text-indent: -9999em; // Shift the text offscreen so we dont see any cursors when we have a preview value
@@ -246,6 +248,11 @@ div.lex-assistant-box {
     padding: 0.5rem 1rem;
     .assistant-menu {
       margin-top: -1px;
+    }
+    .assistant-header-progress {
+      display: block;
+      margin: 5px -10px 0;
+      width: 100%;
     }
   }
 
@@ -332,7 +339,7 @@ div.lex-assistant-box {
     .lex-dp-input {
       display: none;
     }
-    
+
     .dp-permanent {
       width: 100%;
       max-width: 500px;

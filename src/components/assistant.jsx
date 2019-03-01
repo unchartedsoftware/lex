@@ -56,6 +56,15 @@ export class Assistant extends Builder {
     // do nothing
   }
 
+  /**
+   * Children may set loading in order to visually indicate that the Assistant is performing an async operation.
+   *
+   * @param {boolean} isLoading - Whether or not this Assistant is performing an async operation.
+   */
+  set loading (isLoading) {
+    this.setState({loading: isLoading});
+  }
+
   /*!
    * @private
    */
@@ -63,6 +72,13 @@ export class Assistant extends Builder {
     const menu = this.renderAssistantMenu(props, state);
     const body = this.renderAssistantBody(props, state);
     const instructions = this.renderAssistantInstructions(props, state);
+    const spinner = state.loading ? (
+      <div className='assistant-header-progress'>
+        <div className='line' />
+        <div className='subline inc' />
+        <div className='subline dec' />
+      </div>
+    ) : '';
     return (
       <div className='assistant'>
         <div className='assistant-header'>
@@ -70,6 +86,7 @@ export class Assistant extends Builder {
           <span className='pull-right assistant-menu'>
             {menu}
           </span>
+          {spinner}
         </div>
         {body}
       </div>
@@ -115,6 +132,7 @@ export class Assistant extends Builder {
    * @param {boolean} state.valid - True iff the value of the underlying `State` is valid.
    * @param {boolean} state.readOnly - True iff this `Builder` is in read-only mode (generally speaking, if the user has progressed past this `State` to a later one).
    * @param {State} state.machineState - The underlying `State`.
+   * @param {boolean} state.loading - Whether or not an async activity is taking place.
    * @returns {VNode} The menu content.
    */
   renderAssistantMenu (props, state) { // eslint-disable-line no-unused-vars
