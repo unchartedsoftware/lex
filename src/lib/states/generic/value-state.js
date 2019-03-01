@@ -45,6 +45,7 @@ const _units = new WeakMap();
  *
  * This class is an `EventEmitter` and exposes the following events (in addition to `State`'s events):
  * - `on('fetching suggestions', () => {})` when a fetch for suggestions is triggered.
+ * - `on('fetching suggestions failed', (err) => {})` when a fetch for suggestions fails.
  * - `on('suggestions changed', (newSuggestions, oldSuggestions) => {})` when the internal list of suggestions changes.
  *
  * @param {Object} config - A configuration object. Inherits all options from `State`, and adds the following:
@@ -246,21 +247,26 @@ export class ValueState extends State {
     this.emit('fetching suggestions');
     _lastRefresh.set(this, hint);
     _lastRefreshPromise.set(this, _fetchSuggestions.get(this)(hint, context));
-    const newSuggestions = await _lastRefreshPromise.get(this);
-    if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
-    _lastRefresh.delete(this);
-    // If user-created values are allowed, and this is a multi-value state,
-    // then add in a suggestion for what the user has typed as long as what
-    // they've typed isn't identical to an existing suggestion.
-    if (Array.isArray(newSuggestions) && this.allowUnknown && this.isMultivalue && hint.length > 0) {
-      if (!newSuggestions.map(o => o.key === hint).reduce((l, r) => l || r, false)) {
-        newSuggestions.unshift(this.boxValue(hint));
+    try {
+      const newSuggestions = await _lastRefreshPromise.get(this);
+      if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
+      _lastRefresh.delete(this);
+      // If user-created values are allowed, and this is a multi-value state,
+      // then add in a suggestion for what the user has typed as long as what
+      // they've typed isn't identical to an existing suggestion.
+      if (Array.isArray(newSuggestions) && this.allowUnknown && this.isMultivalue && hint.length > 0) {
+        if (!newSuggestions.map(o => o.key === hint).reduce((l, r) => l || r, false)) {
+          newSuggestions.unshift(this.boxValue(hint));
+        }
       }
+      // create lookup table for archive, preventing suggestions which have already been archived
+      const lookup = new Map();
+      this.archive.forEach(a => lookup.set(a.key));
+      this.suggestions = newSuggestions.filter(o => !lookup.has(o.key)).slice(0, this.suggestionLimit);
+      return this.suggestions;
+    } catch (err) {
+      this.emit('fetching suggestions failed', err);
+      throw err;
     }
-    // create lookup table for archive, preventing suggestions which have already been archived
-    const lookup = new Map();
-    this.archive.forEach(a => lookup.set(a.key));
-    this.suggestions = newSuggestions.filter(o => !lookup.has(o.key)).slice(0, this.suggestionLimit);
-    return this.suggestions;
   }
 }
