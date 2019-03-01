@@ -289,7 +289,7 @@ class Lex extends EventEmitter {
   /**
    * Rewrite the query.
    *
-   * @param {Object[]} query - One or more token values (an array of objects of boxed or unboxed values) to display to overwrite the current query with.
+   * @param {Object[]} query - One or more token values (an array of objects of boxed values) to display to overwrite the current query with.
    * @param {boolean} shouldFireChangeEvent - If false, suppresses associated `'query changed'` event. Defaults to true.
    * @returns {Promise} Resolves when the attempt to rewrite the query is finished. This is `async` due to the fact that `State`s such as `OptionState`s might retrieve their options asynchronously.
    */

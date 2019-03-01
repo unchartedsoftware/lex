@@ -180,14 +180,14 @@ export class ValueBuilder extends Builder {
   renderReadOnly (props, state) {
     const units = this.machineState.units !== undefined ? <span className='text-muted'> { this.machineState.units }</span> : '';
     if (this.machineState.value) {
-      const displayValue = this.machineState.formatUnboxedValue(this.machineState.value.key, this.machine.boxedValue);
+      const displayKey = this.machineState.value.displayKey !== undefined ? this.machineState.value.displayKey : this.machineState.formatUnboxedValue(this.machineState.value.key, this.machine.boxedValue);
       if (this.machineState.isMultivalue && this.archive.length > 0) {
         return (
-          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass} ${state.machineState.rewindableClass}`} onMouseDown={this.requestRewindTo}>{displayValue}{units} & {this.archive.length} others</span>
+          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass} ${state.machineState.rewindableClass}`} onMouseDown={this.requestRewindTo}>{displayKey}{units} & {this.archive.length} others</span>
         );
       } else {
         return (
-          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass} ${state.machineState.rewindableClass}`} onMouseDown={this.requestRewindTo}>{displayValue}{units}</span>
+          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass} ${state.machineState.rewindableClass}`} onMouseDown={this.requestRewindTo}>{displayKey}{units}</span>
         );
       }
     } else {

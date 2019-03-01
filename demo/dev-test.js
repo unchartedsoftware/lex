@@ -25,6 +25,7 @@ const options = [
 // }
 
 function searchOptions (hint) {
+  console.log(`Fetching options with hint ${hint}...`);
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(options.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
@@ -148,10 +149,10 @@ window.clearQuery = function () {
 window.setQuery = async function () {
   try {
     await lex.setQuery([
-      {field: 'Name', relation: 'is like', value: 'Sean'},
-      {field: 'Income', relation: 'equals', value: '12'},
-      {field: 'Keywords', value: ['Rob', 'Phil', 'two']},
-      {field: 'GeoHash', value: 'geohash things'}
+      {field: options[0], relation: TextRelationState.IS_LIKE, value: 'Sean'},
+      {field: options[1], relation: NumericRelationState.EQUALS, value: '12'},
+      {field: options[2], value: ['Rob', 'Phil', 'two'].map((k) => new OptionStateOption(k))},
+      {field: options[3], value: new OptionStateOption('geohash things')}
     ]);
     // await lex.setQuery([
     //   {field: options[0], relation: new OptionStateOption('is like'), value: new OptionStateOption('Sean')},
@@ -163,7 +164,7 @@ window.setQuery = async function () {
   }
 };
 window.setSuggestions = function () {
-  lex.setSuggestions([{field: 'Name', relation: 'is like', value: 'Sean'}]);
+  lex.setSuggestions([{field: options[0], relation: TextRelationState.IS_LIKE, value: new OptionStateOption('sean')}]);
 };
 window.focusSearchBar = function () {
   lex.focus();

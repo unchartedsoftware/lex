@@ -2,17 +2,27 @@ import { State } from '../../state';
 
 const _key = new WeakMap();
 const _meta = new WeakMap();
+const _displayKey = new WeakMap();
+const _hidden = new WeakMap();
+const _highlighted = new WeakMap();
 
 /**
  * A rich value, which might be an object (such as a Date) or a basic type, along with associated metadata.
  *
  * @param {string} key - A string representation for this value. If two ValueStateValues are equal, their keys are equal (so they keys should be unique).
  * @param {any} meta - Whatever you want.
+ * @param {object} config - Additional configuration for this `ValueStateValue`.
+ * @param {boolean} config.hidden - If true, this `ValueStateValue` will never be suggested to the user.
+ * @param {string|undefined} config.displayKey - A shorter representation of `key` displayed in read-only mode. Optional.
+ * @param {boolean} config.highlighted - Whether or not this `ValueStateValue` is "highlighted" to the user. No more than one `ValueStateValue` should be highlighted within an `ValueState`.
  */
 export class ValueStateValue {
-  constructor (key, meta) {
+  constructor (key, meta, config = {}) {
     _key.set(this, key);
     _meta.set(this, meta);
+    _displayKey.set(this, config.displayKey);
+    _hidden.set(this, config.hidden && true);
+    _highlighted.set(this, config.highlighted && true);
   }
 
   /**
@@ -21,9 +31,24 @@ export class ValueStateValue {
   get key () { return _key.get(this); }
 
   /**
+   * @returns {string} A display key for this value - an optional version of the key more suitable for display than the key itself.
+   */
+  get displayKey () { return _displayKey.get(this); }
+
+  /**
+   * @returns {boolean} Whether or not this value should be hidden from suggestions.
+   */
+  get hidden () { return _hidden.get(this); }
+
+  /**
    * @returns {any} The metadata associated with this value.
    */
   get meta () { return _meta.get(this); }
+
+  /*
+   * @returns {boolean} Whether or not this value should be highlighted for the user.
+   */
+  get highlighted () { return _highlighted.get(this); }
 }
 
 const _suggestions = new WeakMap();
@@ -115,7 +140,8 @@ export class ValueState extends State {
       // only emit change event if the Suggestions actually changed
       let changed = oldSuggestions.length !== newSuggestions.length;
       for (let i = 0; !changed && i < oldSuggestions.length; i++) {
-        changed = oldSuggestions[i].key !== newSuggestions[i].key;
+        changed = oldSuggestions[i].key !== newSuggestions[i].key ||
+          oldSuggestions[i].highlighted !== newSuggestions[i].highlighted;
       }
       if (changed) this.emit('suggestions changed', newSuggestions, oldSuggestions);
     }
@@ -268,7 +294,7 @@ export class ValueState extends State {
       // create lookup table for archive, preventing suggestions which have already been archived
       const lookup = new Map();
       this.archive.forEach(a => lookup.set(a.key));
-      this.suggestions = newSuggestions.filter(o => !lookup.has(o.key)).slice(0, this.suggestionLimit);
+      this.suggestions = newSuggestions.filter(o => !o.hidden && !lookup.has(o.key)).slice(0, this.suggestionLimit);
       return this.suggestions;
     } catch (err) {
       this.emit('fetching suggestions finished', err);

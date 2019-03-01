@@ -75,20 +75,13 @@ export class TokenStateMachine extends EventEmitter {
               await this.state.doInitialize(this.boxedValue, v);
             }
             for (const x of v) {
-              if (typeof x === 'object') {
-                this.state.value = x;
-              } else {
-                this.state.unboxedValue = x;
-              }
+              this.state.value = x;
               this.state.archiveValue();
             }
             this.state.unarchiveValue(); // make the last value the "active" one
-          } else if (typeof v === 'object') {
+          } else {
             await this.state.doInitialize(this.boxedValue, [this.state.unboxValue(v)]);
             this.state.value = v;
-          } else {
-            await this.state.doInitialize(this.boxedValue, [v]);
-            this.state.unboxedValue = v;
           }
           // set action values
           this.state.actionValues = actionValues;

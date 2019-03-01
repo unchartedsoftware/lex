@@ -51,7 +51,13 @@ export class ValueAssistant extends Assistant {
   @Bind
   onSuggestionsChanged (newSuggestions) {
     this.loading = false;
-    const activeSuggestion = newSuggestions.length === 1 ? 0 : -1;
+    let activeSuggestion = newSuggestions.length === 1 ? 0 : -1;
+    for (let i = 0; i < newSuggestions.length; i++) {
+      if (newSuggestions[i].highlighted) {
+        activeSuggestion = i;
+        break;
+      }
+    }
     this.setState({
       activeSuggestion: activeSuggestion,
       suggestions: newSuggestions
@@ -60,11 +66,11 @@ export class ValueAssistant extends Assistant {
 
   @Bind
   onSuggestionSelected (suggestion) {
-    this.machineState.unboxedValue = suggestion.key;
+    this.machineState.boxedValue = suggestion;
     if (this.machineState.isMultivalue) {
       const result = this.requestArchive();
       if (result) {
-        this.machineState.unboxedValue = null;
+        this.machineState.boxedValue = null;
         this.machineState.fetchSuggestions('', this.machine.boxedValue);
       }
     } else {
