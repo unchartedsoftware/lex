@@ -11,7 +11,6 @@ import { SearchBar } from './components/search-bar';
 import { LabelState } from './lib/states/generic/label-state';
 import { TerminalState } from './lib/states/generic/terminal-state';
 import { ValueStateValue, ValueState } from './lib/states/generic/value-state';
-import { OptionStateOption, OptionState } from './lib/states/generic/option-state';
 import { RelationState } from './lib/states/generic/relation-state';
 import { TextRelationState } from './lib/states/text/text-relation-state';
 import { NumericRelationState } from './lib/states/numeric/numeric-relation-state';
@@ -23,9 +22,7 @@ import { DateTimeEntryState } from './lib/states/temporal/datetime-entry-state';
 import { LabelBuilder } from './components/builders/generic/label-builder';
 import { TerminalBuilder } from './components/builders/generic/terminal-builder';
 import { ValueBuilder } from './components/builders/generic/value-builder';
-import { OptionBuilder } from './components/builders/generic/option-builder';
 import { ValueAssistant } from './components/assistants/generic/value-assistant';
-import { OptionAssistant } from './components/assistants/generic/option-assistant';
 import { DateTimeEntryBuilder } from './components/builders/temporal/datetime-entry-builder';
 import { DateTimeEntryAssistant } from './components/assistants/temporal/datetime-entry-assistant';
 import { ActionButton } from './components/action-button';
@@ -78,7 +75,7 @@ const _onRejectSuggestion = new WeakMap();
  * @example
  * // Override default builder/assistant associations
  * const lex = new Lex(language);
- * lex.registerBuilder(OptionState, MyCustomOptionBuilder);
+ * lex.registerBuilder(ValueState, MyCustomOptionBuilder);
  */
 class Lex extends EventEmitter {
   constructor (config) {
@@ -106,12 +103,10 @@ class Lex extends EventEmitter {
     _defaultValue.set(this, defaultQuery);
     _builders.get(this)
       .registerBuilder(ValueState, ValueBuilder)
-      .registerBuilder(OptionState, OptionBuilder)
       .registerBuilder(DateTimeEntryState, DateTimeEntryBuilder)
       .registerBuilder(LabelState, LabelBuilder)
       .registerBuilder(TerminalState, TerminalBuilder)
       .registerAssistant(ValueState, ValueAssistant)
-      .registerAssistant(OptionState, OptionAssistant)
       .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant)
       .registerActionButton(Action, ActionButton);
     _proxiedEvents.set(this, new Map());
@@ -174,11 +169,11 @@ class Lex extends EventEmitter {
    * @returns {StateTemplate} A reference to the new root `StateTemplate`, for chaining purposes to `.addChild()`.
    * @example
    * import { Lex } from 'lex';
-   * Lex.from('field', OptionState, {
+   * Lex.from('field', ValueState, {
    *   name: 'Choose a field to search',
    *   options:[
-   *     new OptionStateOption('Name', {type: 'string'}),
-   *     new OptionStateOption('Income', {type: 'number'})
+   *     new ValueStateValue('Name', {type: 'string'}),
+   *     new ValueStateValue('Income', {type: 'number'})
    *   ]
    * }).to(...).to(...) // to() has the same signature as from()
    */
@@ -258,7 +253,7 @@ class Lex extends EventEmitter {
    *
    * @param {Object[]} suggestions - One or more token values (an array of objects of boxed or unboxed values) to display as "suggestions" in the search bar. Will have different styling than a traditional token, and offer the user an "ADD" button they can use to lock the preview token into their query.
    * @param {boolean} shouldFireChangeEvent - If false, suppresses associated `'query changed'` event. Defaults to true.
-   * @returns {Promise} Resolves when the attempt to rewrite the query is finished. This is `async` due to the fact that `State`s such as `OptionState`s might retrieve their options asynchronously.
+   * @returns {Promise} Resolves when the attempt to rewrite the query is finished. This is `async` due to the fact that `State`s such as `ValueState`s might retrieve their suggestions asynchronously.
    */
   async setSuggestions (suggestions, shouldFireChangeEvent = true) {
     if (this.searchBar) {
@@ -291,7 +286,7 @@ class Lex extends EventEmitter {
    *
    * @param {Object[]} query - One or more token values (an array of objects of boxed values) to display to overwrite the current query with.
    * @param {boolean} shouldFireChangeEvent - If false, suppresses associated `'query changed'` event. Defaults to true.
-   * @returns {Promise} Resolves when the attempt to rewrite the query is finished. This is `async` due to the fact that `State`s such as `OptionState`s might retrieve their options asynchronously.
+   * @returns {Promise} Resolves when the attempt to rewrite the query is finished. This is `async` due to the fact that `State`s such as `ValueState`s might retrieve their suggestions asynchronously.
    */
   async setQuery (query, shouldFireChangeEvent = true) {
     if (this.searchBar) {
@@ -315,8 +310,6 @@ export {
   TerminalState,
   ValueState,
   ValueStateValue,
-  OptionState,
-  OptionStateOption,
   RelationState,
   TextRelationState,
   NumericRelationState,
@@ -330,9 +323,7 @@ export {
   Assistant,
   // UI components
   ValueBuilder,
-  OptionBuilder,
   ValueAssistant,
-  OptionAssistant,
   DateTimeEntryBuilder,
   DateTimeEntryAssistant,
   ActionButton,
