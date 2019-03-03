@@ -15,7 +15,8 @@ $lex-token-remove-button-color: lighten($lex-token-color, 45%) !default;
 $lex-token-remove-button-hover-color: darken($lex-token-remove-button-color, 15%) !default;
 $lex-token-border-color: darken($lex-token-background, 15%) !default;
 $lex-token-active-background: darken($lex-token-background, 15%) !default; // lighten for dark theme
-$lex-token-input-border-color: transparent !default;
+$lex-token-input-background-color: #fff !default; // lighten for dark theme
+$lex-token-input-border-color: $lex-token-background !default;
 $lex-token-invalid-background: #e2a4a4 !default; // lighten for dark theme
 $lex-assistant-background: #fff !default;
 $lex-assistant-text-color: #333 !default;
@@ -111,7 +112,8 @@ div.lex-box div.token  {
     box-shadow: none;
     outline: 0;
     &.active {
-      background: $lex-token-active-background;
+      background: $lex-token-input-background-color;
+      box-shadow: 0 0 0.5em $lex-token-active-background inset;
       @if $lex-token-input-border-color == 'transparent' {
         // Noop
       } @else {
@@ -129,9 +131,15 @@ div.lex-box div.token  {
     }
   }
 
-  &.active .token-input.rewindable:hover {
+  &.active .token-input.rewindable {
     cursor: text;
-    background: $lex-token-active-background;
+    margin: 0 0.1em;
+    padding: 0 0.5em;
+    box-shadow: 0 0 1em $lex-token-active-background inset;
+  }
+
+  &.active .token-input.rewindable:hover {
+    box-shadow: 0 0 1.1em $lex-token-active-background inset;
     @if $lex-token-input-border-color == 'transparent' {
       // Noop
     } @else {
@@ -177,9 +185,10 @@ div.lex-box div.token  {
     position: relative;
     span.preview {
       position: absolute;
-      background: darken($lex-token-background, 15%);
-      left: 2px;
-      line-height: 24px;
+      background: transparent;
+      top: 4px;
+      left: 3px;
+      line-height: 18px;
       padding-right: 5px;
       pointer-events: none;
       user-select: none;
