@@ -262,11 +262,6 @@ export class ValueState extends State {
     }
   }
 
-  // // override
-  // async initialize (context = [], initialUnboxedValue = '') {
-  //   return this.fetchSuggestions(initialUnboxedValue, context);
-  // }
-
   /**
    * Can be called by a child class to trigger a refresh of suggestions based on a hint (what the
    * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.fetchSuggestions`.
