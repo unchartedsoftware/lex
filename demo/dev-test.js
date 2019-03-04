@@ -9,7 +9,7 @@ const options = [
   new ValueStateValue('Name', {type: 'string'}),
   new ValueStateValue('Income', {type: 'currency'}),
   new ValueStateValue('Keywords', {type: 'multistring'}),
-  new ValueStateValue('GeoHash', {type: 'geohash'}),
+  new ValueStateValue('GeoHash', {type: 'geohash'}, {hidden: true}),
   new ValueStateValue('DateTime', {type: 'datetime'})
 ];
 
