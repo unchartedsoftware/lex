@@ -79,12 +79,20 @@ export class ValueAssistant extends Assistant {
   }
 
   @Bind
-  onSuggestionHover (idx) {
+  onSuggestionOver (idx) {
     this.setState({
       activeSuggestion: idx
     });
     this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
     setTimeout(() => this.fixListScrollPosition());
+  }
+
+  @Bind
+  onSuggestionOut () {
+    this.setState({
+      activeSuggestion: -1
+    });
+    this.machineState.previewValue = null;
   }
 
   @Bind
@@ -177,8 +185,10 @@ export class ValueAssistant extends Assistant {
       case this.state.multivalueDelimiter:
         if (this.machineState.isMultivalue) {
           consumed = true;
-          this.machineState.value = this.state.suggestions[this.state.activeSuggestion];
-          this.requestArchive();
+          this.machineState.nextFetch.then(() => {
+            this.machineState.value = this.state.suggestions[this.state.activeSuggestion];
+            this.requestArchive();
+          });
         }
         break;
       case ENTER:
@@ -268,7 +278,7 @@ export class ValueAssistant extends Assistant {
             { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
             <ul ref={(n) => { this.suggestionContainer = n; }}>
               {
-                (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onSuggestionSelected(o)} onMouseOver={() => this.onSuggestionHover(idx)} className={idx === activeSuggestion ? 'selectable active' : 'selectable'}>{this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)}</li>))
+                (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (suggestions.map((o, idx) => <li tabIndex='0' onClick={() => this.onSuggestionSelected(o)} onMouseOver={() => this.onSuggestionOver(idx)} onMouseOut={this.onSuggestionOut} className={idx === activeSuggestion ? 'selectable active' : 'selectable'}>{this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)}</li>))
               }
               { (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
               { this.machineState.isMultivalue && !this.machineState.canArchiveValue && <li><em className='text-muted anim-flash'>Maximum number of values reached. <button className='btn btn-xs btn-default' onMouseDown={this.requestTransition}>{this.state.machine.state.isTerminal ? 'Finish' : 'Next'}?</button></em></li> }

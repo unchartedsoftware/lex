@@ -54,6 +54,7 @@ export class ValueStateValue {
 const _suggestions = new WeakMap();
 const _lastRefresh = new WeakMap();
 const _lastRefreshPromise = new WeakMap();
+const _nextRefreshPromise = new WeakMap();
 const _fetchSuggestions = new WeakMap();
 const _allowUnknown = new WeakMap();
 const _onUnknownValue = new WeakMap();
@@ -263,6 +264,32 @@ export class ValueState extends State {
   }
 
   /**
+   * @private
+   */
+  setupNextFetchPromise () {
+    if (!_nextRefreshPromise.has(this)) {
+      const deferred = {
+        promise: null,
+        resolve: null,
+        reject: null
+      };
+      deferred.promise = new Promise((resolve, reject) => {
+        deferred.resolve = resolve;
+        deferred.reject = reject;
+      });
+      _nextRefreshPromise.set(this, deferred);
+    }
+    return _nextRefreshPromise.get(this);
+  }
+
+  get nextFetch () {
+    if (!_nextRefreshPromise.has(this)) {
+      this.setupNextFetchPromise();
+    }
+    return _nextRefreshPromise.get(this).promise;
+  }
+
+  /**
    * Can be called by a child class to trigger a refresh of suggestions based on a hint (what the
    * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.fetchSuggestions`.
    *
@@ -278,6 +305,8 @@ export class ValueState extends State {
     _lastRefreshPromise.set(this, _fetchSuggestions.get(this)(hint, context));
     try {
       const newSuggestions = await _lastRefreshPromise.get(this);
+      this.setupNextFetchPromise().resolve();
+      _nextRefreshPromise.delete(this);
       this.emit('fetching suggestions finished');
       if (_lastRefresh.get(this) !== hint) return; // prevent overwriting of new response by older, slower request
       _lastRefresh.delete(this);
@@ -296,7 +325,11 @@ export class ValueState extends State {
       return this.suggestions;
     } catch (err) {
       this.emit('fetching suggestions finished', err);
+      this.setupNextFetchPromise().reject(err);
+      _nextRefreshPromise.delete(this);
       throw err;
+    } finally {
+      this.setupNextFetchPromise();
     }
   }
 }
