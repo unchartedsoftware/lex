@@ -85,7 +85,7 @@ export class Assistant extends Builder {
         <div className='subline dec' />
       </div>
     ) : '';
-    if (body) {
+    if (body || state.loading) {
       return (
         <div className='assistant'>
           {spinner}
