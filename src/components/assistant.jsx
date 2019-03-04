@@ -77,7 +77,6 @@ export class Assistant extends Builder {
    * @private
    */
   renderInteractive (props, state) {
-    const menu = this.renderAssistantMenu(props, state);
     const body = this.renderAssistantBody(props, state);
     const instructions = this.renderAssistantInstructions(props, state);
     const spinner = state.loading ? (
@@ -91,9 +90,6 @@ export class Assistant extends Builder {
       <div className='assistant'>
         <div className='assistant-header'>
           {instructions}
-          <span className='pull-right assistant-menu'>
-            {menu}
-          </span>
           {spinner}
         </div>
         {body}
@@ -114,43 +110,6 @@ export class Assistant extends Builder {
    */
   renderAssistantInstructions (props, state) { // eslint-disable-line no-unused-vars
     return this.machineState.name;
-  }
-
-  @Bind
-  clickRewind () {
-    this.requestRewind();
-  }
-
-  @Bind
-  clickCancel () {
-    this.requestCancel();
-  }
-
-  @Bind
-  clickTransition () {
-    this.requestTransition();
-  }
-
-  /**
-   * Render the interactive menu of this `Assistant`. Will appear at the top-right of the `Assistant` in its navigation bar.
-   * Can override in subclasses.
-   *
-   * @param {Object} props - Properties.
-   * @param {Object} state - Component state (`this.state`).
-   * @param {boolean} state.valid - True iff the value of the underlying `State` is valid.
-   * @param {boolean} state.readOnly - True iff this `Builder` is in read-only mode (generally speaking, if the user has progressed past this `State` to a later one).
-   * @param {State} state.machineState - The underlying `State`.
-   * @param {boolean} state.loading - Whether or not an async activity is taking place.
-   * @returns {VNode} The menu content.
-   */
-  renderAssistantMenu (props, state) { // eslint-disable-line no-unused-vars
-    return (
-      <span className='btn-group'>
-        <button className='btn btn-xs btn-default' onClick={this.clickRewind} disabled={this.state.machine.state === this.state.machine.rootState}>&lt;&nbsp;Back</button>
-        <button className='btn btn-xs btn-default' onClick={this.clickCancel}>{this.state.editing ? 'Discard Changes' : 'Cancel'}</button>
-        <button className='btn btn-xs btn-default' onClick={this.clickTransition}>{this.state.machine.state.isTerminal ? 'Finish' : 'Next'}&nbsp;&gt;</button>
-      </span>
-    );
   }
 
   /**

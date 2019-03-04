@@ -120,6 +120,9 @@ export class ValueBuilder extends Builder {
 
   @Bind
   beforeTransition () {
+    if (this.machineState.value === null) {
+      this.commitTypedValue();
+    }
     if (this.state.typedText === undefined || this.state.typedText === null || this.state.typedText.length === 0) {
       if (this.archive.length > 0) {
         this.requestUnarchive();

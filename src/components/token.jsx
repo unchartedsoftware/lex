@@ -212,6 +212,13 @@ export class Token extends Component {
   }
 
   @Bind
+  requestTransition (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.state.requestTransition();
+  }
+
+  @Bind
   requestAcceptSuggestion (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -257,40 +264,45 @@ export class Token extends Component {
   }
 
   render (props, {active, flash, cancelOnBlur, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter}) {
+    const nextLabel = machine.state.isTerminal ? 'Finish' : 'Next';
     return (
-      <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''} ${this.compileBuilderClassHints()}`} onMouseDown={this.requestEdit}>
-        {this.icon}
-        {this.state.stateArray.map(s => {
-          const Builder = this.state.builders.getBuilder(s.constructor);
-          return (<Builder
-            key={s.id}
-            machine={machine}
-            machineState={s}
-            cancelOnBlur={cancelOnBlur}
-            requestTransition={this.state.requestTransition}
-            requestArchive={this.state.requestArchive}
-            requestUnarchive={this.state.requestUnarchive}
-            requestRemoveArchivedValue={this.state.requestRemoveArchivedValue}
-            requestRemoveArchivedValues={this.state.requestRemoveArchivedValues}
-            requestRewind={this.state.requestRewind}
-            requestFocus={this.requestFocus}
-            requestBlur={this.requestBlur}
-            requestCancel={this.state.requestCancel}
-            validityChanged={this.state.onValidityChanged}
-            readOnly={!active || s !== machine.state}
-            blank={this.isBlank}
-            // focused={active && s === machine.state && focused}
-            ref={(b) => { if (active && s === machine.state) this.activeBuilder = b; }}
-            tokenActive={active}
-            multivalueDelimiter={multivalueDelimiter}
-            multivaluePasteDelimiter={multivaluePasteDelimiter}
-          />);
-        })}
-        {this.addButton}
-        {this.actionButtons}
-        <button type='button' onMouseDown={this.requestRemoval} className='btn btn-xs btn-link token-remove' aria-label='Close'>
-          {this.xicon}
-        </button>
+      <div className='token-container'>
+        <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''} ${this.compileBuilderClassHints()}`} onMouseDown={this.requestEdit}>
+          {this.icon}
+          {this.state.stateArray.map(s => {
+            const Builder = this.state.builders.getBuilder(s.constructor);
+            return (<Builder
+              key={s.id}
+              machine={machine}
+              machineState={s}
+              cancelOnBlur={cancelOnBlur}
+              requestTransition={this.state.requestTransition}
+              requestArchive={this.state.requestArchive}
+              requestUnarchive={this.state.requestUnarchive}
+              requestRemoveArchivedValue={this.state.requestRemoveArchivedValue}
+              requestRemoveArchivedValues={this.state.requestRemoveArchivedValues}
+              requestRewind={this.state.requestRewind}
+              requestFocus={this.requestFocus}
+              requestBlur={this.requestBlur}
+              requestCancel={this.state.requestCancel}
+              validityChanged={this.state.onValidityChanged}
+              readOnly={!active || s !== machine.state}
+              blank={this.isBlank}
+              // focused={active && s === machine.state && focused}
+              ref={(b) => { if (active && s === machine.state) this.activeBuilder = b; }}
+              tokenActive={active}
+              multivalueDelimiter={multivalueDelimiter}
+              multivaluePasteDelimiter={multivaluePasteDelimiter}
+            />);
+          })}
+          {this.addButton}
+          {this.actionButtons}
+          {
+            active
+              ? (<button type='button' onMouseDown={this.requestTransition} className='btn btn-xs btn-default token-next' aria-label='Next'>{nextLabel} &gt;</button>)
+              : <button type='button' onMouseDown={this.requestRemoval} className='btn btn-xs btn-link token-remove' aria-label='Close'>{this.xicon}</button>
+          }
+        </div>
       </div>
     );
   }

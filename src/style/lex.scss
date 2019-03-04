@@ -64,6 +64,10 @@ div.lex-box div.lex-placeholder {
   padding: $lex-token-padding + 1px;
 }
 
+div.lex-box div.token-container {
+  display: inline-block;
+}
+
 div.lex-box div.token, ul.entered-values li.entered-value {
   color: $lex-token-color;
   display: inline-block;
@@ -76,6 +80,10 @@ div.lex-box div.token, ul.entered-values li.entered-value {
   white-space: nowrap;
   cursor: default;
   user-select: none;
+
+  &.active {
+    padding: $lex-token-padding ($lex-token-padding + 2px) $lex-token-padding ($lex-token-padding + 2px);
+  }
 
   &.suggestion {
     border: 1px solid $lex-highlight-color;
@@ -135,11 +143,11 @@ div.lex-box div.token, ul.entered-values li.entered-value {
     cursor: text;
     margin: 0 0.1em;
     padding: 0 0.5em;
-    box-shadow: 0 0 1em $lex-token-active-background inset;
+    box-shadow: 0 0 0.5em $lex-token-active-background inset;
   }
 
   &.active .token-input.rewindable:hover {
-    box-shadow: 0 0 1.1em $lex-token-active-background inset;
+    background: white;
     @if $lex-token-input-border-color == 'transparent' {
       // Noop
     } @else {
@@ -217,6 +225,10 @@ div.lex-box div.token, ul.entered-values li.entered-value {
       line-height: 1em;
     }
   }
+
+  button.token-next {
+    margin: 0 0 0 2px;
+  }
 }
 
 div.lex-box.disabled div.token {
@@ -255,9 +267,6 @@ div.lex-assistant-box {
     display:block;
     min-height: 2.5rem;
     padding: 0.5rem 1rem;
-    .assistant-menu {
-      margin-top: -1px;
-    }
     .assistant-header-progress {
       display: block;
       margin: 5px -10px 0;
