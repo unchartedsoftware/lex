@@ -213,6 +213,7 @@ export class ValueAssistant extends Assistant {
       const archive = this.machineState.archive;
       const keys = archive.map((o) => this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue));
       let menu = '';
+      let list = '';
       if (archive.length > 0) {
         menu = (
           <div className='assistant-content-menu text-right'>
@@ -222,10 +223,7 @@ export class ValueAssistant extends Assistant {
             </span>
           </div>
         );
-      }
-
-      return (
-        <div className='multivalue-list'>
+        list = (
           <ul className='entered-values'>
             {
               keys.map((key, idx) => {
@@ -240,6 +238,12 @@ export class ValueAssistant extends Assistant {
               })
             }
           </ul>
+        );
+      }
+
+      return (
+        <div className='multivalue-list'>
+          {list}
           {menu}
         </div>
       );
