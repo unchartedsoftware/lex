@@ -10,6 +10,7 @@ export class Token extends Component {
     propsToState(this, props, [
       {k: 'idx'},
       {k: 'active'},
+      {k: 'editing'},
       {k: 'flash'},
       {k: 'suggestion'},
       {k: 'machine', after: () => this.onStateChanged()},
@@ -197,8 +198,12 @@ export class Token extends Component {
 
   @Bind
   requestBlur () {
-    // this.setState({focused: false});
     this.state.requestBlur();
+  }
+
+  @Bind
+  requestCancel () {
+    this.state.requestCancel();
   }
 
   @Bind
@@ -215,7 +220,7 @@ export class Token extends Component {
   requestTransition (e) {
     e.preventDefault();
     e.stopPropagation();
-    this.state.requestTransition();
+    this.state.requestTransition({nextToken: !this.state.editing});
   }
 
   @Bind
@@ -259,12 +264,27 @@ export class Token extends Component {
     }
   }
 
+  get lifecycleButtons () {
+    const nextLabel = this.state.machine.state.isTerminal ? 'Finish' : 'Next';
+    if (!this.state.active) {
+      return (<button type='button' onMouseDown={this.requestRemoval} className='btn btn-xs btn-link token-remove' aria-label='Close'>{this.xicon}</button>);
+    } else if (this.state.editing) {
+      return (
+        <span className='button-group'>
+          <button type='button' onMouseDown={this.requestTransition} className='btn btn-xs btn-default token-next' aria-label='Next'>{nextLabel} &gt;</button>
+          <button type='button' onMouseDown={this.requestCancel} className='btn btn-xs btn-default token-next' aria-label='Discard Edits'>Discard</button>
+        </span>
+      );
+    } else {
+      return (<button type='button' onMouseDown={this.requestTransition} className='btn btn-xs btn-default token-next' aria-label='Next'>{nextLabel} &gt;</button>);
+    }
+  }
+
   delegateEvent (e) {
     return this.activeBuilder && this.activeBuilder.delegateEvent(e);
   }
 
   render (props, {active, flash, cancelOnBlur, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter}) {
-    const nextLabel = machine.state.isTerminal ? 'Finish' : 'Next';
     return (
       <div className='token-container'>
         <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''} ${this.compileBuilderClassHints()}`} onMouseDown={this.requestEdit}>
@@ -297,11 +317,7 @@ export class Token extends Component {
           })}
           {this.addButton}
           {this.actionButtons}
-          {
-            active
-              ? (<button type='button' onMouseDown={this.requestTransition} className='btn btn-xs btn-default token-next' aria-label='Next'>{nextLabel} &gt;</button>)
-              : <button type='button' onMouseDown={this.requestRemoval} className='btn btn-xs btn-link token-remove' aria-label='Close'>{this.xicon}</button>
-          }
+          {this.lifecycleButtons}
         </div>
       </div>
     );
