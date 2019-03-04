@@ -78,7 +78,6 @@ export class Assistant extends Builder {
    */
   renderInteractive (props, state) {
     const body = this.renderAssistantBody(props, state);
-    const instructions = this.renderAssistantInstructions(props, state);
     const spinner = state.loading ? (
       <div className='assistant-header-progress'>
         <div className='line' />
@@ -86,30 +85,14 @@ export class Assistant extends Builder {
         <div className='subline dec' />
       </div>
     ) : '';
-    return (
-      <div className='assistant'>
-        <div className='assistant-header'>
-          {instructions}
+    if (body) {
+      return (
+        <div className='assistant'>
           {spinner}
+          {body}
         </div>
-        {body}
-      </div>
-    );
-  }
-
-  /**
-   * Render the interactive instructions for this `Assistant`. Will appear at the top-left of the `Assistant` in its navigation bar.
-   * Can override in subclasses.
-   *
-   * @param {Object} props - Properties.
-   * @param {Object} state - Component state (`this.state`).
-   * @param {boolean} state.valid - True iff the value of the underlying `State` is valid.
-   * @param {boolean} state.readOnly - True iff this `Builder` is in read-only mode (generally speaking, if the user has progressed past this `State` to a later one).
-   * @param {State} state.machineState - The underlying `State`.
-   * @returns {string} The instructions string.
-   */
-  renderAssistantInstructions (props, state) { // eslint-disable-line no-unused-vars
-    return this.machineState.name;
+      );
+    }
   }
 
   /**

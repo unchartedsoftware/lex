@@ -21,7 +21,7 @@ $lex-token-invalid-background: #e2a4a4 !default; // lighten for dark theme
 $lex-assistant-background: #fff !default;
 $lex-assistant-text-color: #333 !default;
 $lex-assistant-border-color: $lex-token-border-color !default;
-$lex-assistant-header-background: $lex-token-background !default;
+$lex-assistant-header-background: #fff !default;
 $lex-assistant-header-color: #8d8d8d !default;
 $lex-assistant-list-height: 290px !default; // Approximately 10 items which is the default limit for option assistant
 
@@ -260,19 +260,18 @@ div.lex-assistant-box {
     display: none;
   }
 
+  .assistant-header-progress {
+    display: block;
+    width: 100%;
+    z-index: 1;
+  }
+
   div.assistant-header {
     color: $lex-assistant-header-color;
     background-color: $lex-assistant-header-background;
-    border-bottom: 1px solid $lex-assistant-border-color;
+    border-top: 1px solid $lex-assistant-border-color;
     display:block;
-    min-height: 2.5rem;
     padding: 0.5rem 1rem;
-    .assistant-header-progress {
-      display: block;
-      margin: 5px -10px 0;
-      width: 100%;
-      z-index: 1;
-    }
   }
 
   ul {

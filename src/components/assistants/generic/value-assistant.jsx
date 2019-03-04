@@ -93,6 +93,15 @@ export class ValueAssistant extends Assistant {
   }
 
   @Bind
+  onRemoveArchivedValue (e, idx) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    this.requestRemoveArchivedValue(idx);
+  }
+
+  @Bind
   onRemoveArchivedValues (e) {
     if (e) {
       e.stopPropagation();
@@ -230,7 +239,7 @@ export class ValueAssistant extends Assistant {
                 return (
                   <li tabIndex='0' id={`lex-multivalue-${idx}`} className='entered-value'>
                     {key}
-                    <button type='button' onMouseDown={() => this.onArchivedRemoved(idx)} className='btn btn-xs btn-link token-remove' aria-label='Close'>
+                    <button type='button' onMouseDown={(e) => this.onRemoveArchivedValue(e, idx)} className='btn btn-xs btn-link token-remove' aria-label='Close'>
                       {this.xicon}
                     </button>
                   </li>
