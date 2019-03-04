@@ -13,13 +13,13 @@ const options = [
   new ValueStateValue('DateTime', {type: 'datetime'})
 ];
 
-function searchOptionsFactory (options) {
+function searchOptionsFactory (options, delay = 0) {
   return function (hint) {
     console.log(`Fetching options with hint ${hint}...`);
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(options.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
-      }, 250);
+      }, delay);
     });
   };
 }
@@ -53,7 +53,7 @@ class PinActionButton extends ActionButton {
 
 const language = Lex.from('field', ValueState, {
   name: 'Choose a field to search',
-  fetchSuggestions: searchOptionsFactory(options),
+  fetchSuggestions: searchOptionsFactory(options, 250),
   icon: (value) => {
     if (!value) return '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>';
     switch (value.key) {

@@ -182,25 +182,24 @@ export class ValueAssistant extends Assistant {
         consumed = true;
         setTimeout(() => this.fixListScrollPosition());
         break;
-      case this.state.multivalueDelimiter:
-        if (this.machineState.isMultivalue) {
-          consumed = true;
-          this.machineState.nextFetch.then(() => {
-            this.machineState.value = this.state.suggestions[this.state.activeSuggestion];
-            this.requestArchive();
-          });
-        }
-        break;
       case ENTER:
       case TAB:
         const activeSuggestion = this.state.suggestions[this.state.activeSuggestion];
         if (activeSuggestion) {
           this.machineState.value = activeSuggestion;
-          this.requestTransition({nextToken: normalizedKey === TAB});
+          if (this.machineState.canArchiveValue) {
+            this.requestArchive();
+          } else {
+            this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
+          }
           consumed = true;
         } else if (this.state.suggestions.length === 1 && !this.machineState.allowUnknown) {
           this.machineState.value = this.state.suggestions[0];
-          this.requestTransition({nextToken: normalizedKey === TAB});
+          if (this.machineState.canArchiveValue) {
+            this.requestArchive();
+          } else {
+            this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
+          }
           consumed = true;
         }
         break;

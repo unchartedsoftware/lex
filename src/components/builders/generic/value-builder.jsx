@@ -68,7 +68,11 @@ export class ValueBuilder extends Builder {
         consumed = true;
         this.machineState.currentFetch.then(() => {
           this.commitTypedValue();
-          this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
+          if (this.machineState.canArchiveValue) {
+            this.requestArchive();
+          } else {
+            this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
+          }
         });
         break;
       case BACKSPACE:
@@ -163,7 +167,7 @@ export class ValueBuilder extends Builder {
     try { this.commitTypedValue(); } catch (err) { /* do nothing */ }
     if (this.machine.state === this.machineState && this.cancelOnBlur) {
       const assistantBox = document.getElementById('lex-assistant-box');
-      if (!lexStillHasFocus(e, assistantBox)) {
+      if ((!this.machineState.isMultivalue || this.machineState.canArchiveValue) && !lexStillHasFocus(e, assistantBox)) {
         this.requestCancel();
       }
     } else {
