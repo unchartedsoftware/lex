@@ -140,6 +140,13 @@ export class ValueAssistant extends Assistant {
     }
   }
 
+  /*
+   * @private
+   */
+  get xicon () {
+    return <span dangerouslySetInnerHTML={{__html: this.state.tokenXIcon}} />;
+  }
+
   delegateEvent (e) {
     let consumed = false;
     const normalizedKey = normalizeKey(e);
@@ -202,32 +209,38 @@ export class ValueAssistant extends Assistant {
 
   renderArchive () {
     if (this.machineState.isMultivalue) {
-      const limitCounter = this.machineState.multivalueLimit !== undefined ? ` (${this.machineState.archive.length}/${this.machineState.multivalueLimit})` : '';
+      // const limitCounter = this.machineState.multivalueLimit !== undefined ? ` (${this.machineState.archive.length}/${this.machineState.multivalueLimit})` : '';
       const archive = this.machineState.archive;
       const keys = archive.map((o) => this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue));
       let menu = '';
       if (archive.length > 0) {
         menu = (
-          <div className='assistant-menu pull-right'>
+          <div className='assistant-content-menu text-right'>
             <span className='btn-group'>
-              <button className='btn btn-xs btn-default' onClick={this.onCopyArchivedValues}>Copy All</button>
-              <button className='btn btn-xs btn-default' onClick={this.onRemoveArchivedValues}>Clear All</button>
+              <button className='btn btn-sm btn-default' onClick={this.onCopyArchivedValues}>Copy All</button>
+              <button className='btn btn-sm btn-default' onClick={this.onRemoveArchivedValues}>Clear All</button>
             </span>
           </div>
         );
       }
 
       return (
-        <div className='assistant-right'>
-          <div className='removable assistant-header'>
-            <span>Entered Values{limitCounter}</span>
-            {menu}
-          </div>
-          <ul>
+        <div className='multivalue-list'>
+          <ul className='entered-values'>
             {
-              keys.map((key, idx) => <li tabIndex='0' className='removable clearfix' onClick={() => this.onArchivedRemoved(idx)}><span className='pull-left'>{key}</span><em className='pull-right'>(click to remove)</em></li>)
+              keys.map((key, idx) => {
+                return (
+                  <li tabIndex='0' id={`lex-multivalue-${idx}`} className='entered-value'>
+                    {key}
+                    <button type='button' onMouseDown={() => this.onArchivedRemoved(idx)} className='btn btn-xs btn-link token-remove' aria-label='Close'>
+                      {this.xicon}
+                    </button>
+                  </li>
+                );
+              })
             }
           </ul>
+          {menu}
         </div>
       );
     }
@@ -237,7 +250,8 @@ export class ValueAssistant extends Assistant {
     if (this.machineState.isMultivalue || (Array.isArray(this.machineState.suggestions) && this.machineState.suggestions.length > 0)) {
       return (
         <div className='assistant-body'>
-          <div className={this.machineState.isMultivalue ? 'assistant-left' : ''}>
+          {this.renderArchive(props)}
+          <div className=''>
             { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
             <ul ref={(n) => { this.suggestionContainer = n; }}>
               {
@@ -247,7 +261,6 @@ export class ValueAssistant extends Assistant {
               { this.machineState.isMultivalue && !this.machineState.canArchiveValue && <li><em className='text-muted anim-flash'>Maximum number of values reached. <button className='btn btn-xs btn-default' onMouseDown={this.requestTransition}>{this.state.machine.state.isTerminal ? 'Finish' : 'Next'}?</button></em></li> }
             </ul>
           </div>
-          {this.renderArchive(props)}
         </div>
       );
     }

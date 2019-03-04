@@ -154,13 +154,6 @@ export class Token extends Component {
     return <span className='token-icon' dangerouslySetInnerHTML={{__html: defaultIcon}} />;
   }
 
-  /*
-   * @private
-   */
-  get xicon () {
-    return <span dangerouslySetInnerHTML={{__html: this.state.tokenXIcon}} />;
-  }
-
   focus () {
     // this.setState({focused: true});
     setTimeout(() => { if (this.activeBuilder) this.activeBuilder.focus(); }, 10);

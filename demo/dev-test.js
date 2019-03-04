@@ -13,13 +13,15 @@ const options = [
   new ValueStateValue('DateTime', {type: 'datetime'})
 ];
 
-function searchOptions (hint) {
-  console.log(`Fetching options with hint ${hint}...`);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(options.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
-    }, 250);
-  });
+function searchOptionsFactory (options) {
+  return function (hint) {
+    console.log(`Fetching options with hint ${hint}...`);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(options.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
+      }, 250);
+    });
+  };
 }
 
 class PinAction extends Action {
@@ -51,7 +53,7 @@ class PinActionButton extends ActionButton {
 
 const language = Lex.from('field', ValueState, {
   name: 'Choose a field to search',
-  fetchSuggestions: searchOptions,
+  fetchSuggestions: searchOptionsFactory(options),
   icon: (value) => {
     if (!value) return '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>';
     switch (value.key) {
@@ -81,12 +83,12 @@ const language = Lex.from('field', ValueState, {
   Lex.from('value', TextEntryState, {
     multivalue: true,
     multivalueLimit: 3,
-    options: [
+    fetchSuggestions: searchOptionsFactory([
       'lex',
       'multi-value',
       'entry',
       'text'
-    ].map(t => new ValueStateValue(t)),
+    ].map(t => new ValueStateValue(t))),
     ...TransitionFactory.optionMetaCompare({type: 'multistring'})
   }),
   Lex.from('relation', NumericRelationState, TransitionFactory.optionMetaCompare({type: 'currency'})).branch(

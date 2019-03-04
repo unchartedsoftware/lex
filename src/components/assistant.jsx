@@ -32,7 +32,8 @@ export class Assistant extends Builder {
           this.connectListeners();
           this.afterChangeMachineState();
         }
-      }
+      },
+      {k: 'tokenXIcon', default: '&times'}
     ]);
     super.processProps(props);
   }
@@ -47,6 +48,13 @@ export class Assistant extends Builder {
    * Called just after the machineState prop changes.
    */
   afterChangeMachineState () {
+  }
+
+  /*
+   * Get the configured DOM to represent 'X' icons
+   */
+  get xicon () {
+    return <span dangerouslySetInnerHTML={{__html: this.state.tokenXIcon}} />;
   }
 
   /*!

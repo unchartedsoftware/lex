@@ -208,6 +208,7 @@ export class SearchBar extends Component {
               editing={this.state.editing}
               machine={activeMachine}
               machineState={activeMachine.state}
+              tokenXIcon={this.state.tokenXIcon}
               ref={(a) => { this.assistant = a; }}
               multivalueDelimiter={this.state.multivalueDelimiter}
               multivaluePasteDelimiter={this.searchBox.multivaluePasteDelimiter}
