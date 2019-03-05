@@ -148,19 +148,28 @@ export class SearchBar extends Component {
 
   get assistantPosition () {
     const rect = this.searchBox.getBoundingClientRect();
+    const builderRect = this.tokenBuilder.base.getBoundingClientRect();
+    const width = Math.min(rect.width, 600);
     const pos = {
-      left: rect.left,
-      top: rect.top + rect.height,
-      'min-width': rect.width,
-      'max-width': rect.width
+      top: builderRect.top + builderRect.height - 2,
+      'min-width': width,
+      'max-width': width
     };
+    let containerLeft = 0;
+    let containerWidth = window.innerWidth;
     if (this.state.popupContainer !== 'body') {
       const popupContainerElem = typeof this.state.popupContainer === 'string'
         ? document.querySelector(this.state.popupContainer)
         : this.state.popupContainer;
-      const popupRect = popupContainerElem.getBoundingClientRect();
-      pos.left = pos.left - popupRect.left;
-      pos.top = pos.top - popupRect.top;
+      const containerRect = popupContainerElem.getBoundingClientRect();
+      containerLeft = containerRect.left;
+      containerWidth = containerRect.width;
+      pos.top = pos.top - containerRect.top;
+    }
+    if ((builderRect.left + width - containerLeft) > containerWidth) {
+      pos.left = builderRect.right - containerLeft - width - 9;
+    } else {
+      pos.left = builderRect.left - containerLeft;
     }
     return pos;
   }
