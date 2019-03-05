@@ -89,6 +89,8 @@ export class ValueState extends State {
       if (origValidate !== undefined && !origValidate(thisVal, thisArchive)) return false;
       // don't allow null values
       if (thisVal === null || thisVal === undefined) return false;
+      // don't allow empty keys
+      if (thisVal.key.length === 0) return false;
       // don't allow duplicates
       if (thisArchive.map(e => e.key === thisVal.key).reduce((l, r) => l || r, false)) return false;
       // if we allow unknown values, then return true

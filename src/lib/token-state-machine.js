@@ -226,6 +226,22 @@ export class TokenStateMachine extends EventEmitter {
   }
 
   /**
+   * Replaces an existing archived value with a new one.
+   *
+   * @param {number} idx - The index of the value to replace.
+   * @param {Object} newBoxedValue - The new boxed value to replace the specified archived value with.
+   */
+  updateArchivedValue (idx, newBoxedValue) {
+    try {
+      this.state.updateArchivedValue(idx, newBoxedValue);
+      this.emit('state changed', this.state, this.state);
+    } catch (err) {
+      this.emit('state change failed', err);
+      throw err;
+    }
+  }
+
+  /**
    * Transitions to the parent state (or target ancestor state) from the current state, regardless of whether or
    * not the current state is valid, or has a parent. Leaves the value of the current state as-is,
    * permitting a potential transition back to this state after editing a previous one.

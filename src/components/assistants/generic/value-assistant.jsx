@@ -15,6 +15,7 @@ export class ValueAssistant extends Assistant {
   constructor () {
     super();
     this.state.activeSuggestion = -1;
+    this.state.archiveValueEditIndex = -1;
     this.state.suggestions = [];
   }
 
@@ -116,6 +117,43 @@ export class ValueAssistant extends Assistant {
       e.preventDefault();
     }
     this.requestRemoveArchivedValues();
+  }
+
+  @Bind
+  requestEditArchivedValue (e, idx) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    if (!this.machineState.allowUnknown) return; // can't edit when allowUnknown is false
+    this.setState({
+      archiveValueEditIndex: idx
+    });
+    setTimeout(() => {
+      if (this._editArchivedValueRef) {
+        this._editArchivedValueRef.focus();
+      }
+    }, 10);
+  }
+
+  @Bind
+  cancelEditArchivedValue (e) {
+    return this.requestEditArchivedValue(e, -1);
+  }
+
+  @Bind
+  onUpdateArchivedValue (e) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    if (!this._editArchivedValueRef) return;
+    const unformatted = this.machineState.unformatUnboxedValue(this._editArchivedValueRef.value, this.machine.boxedValue);
+    const newBoxedValue = this.machineState.boxValue(unformatted);
+    const success = this.requestUpdateArchivedValue(this.state.archiveValueEditIndex, newBoxedValue);
+    if (success) {
+      this.cancelEditArchivedValue();
+    }
   }
 
   @Bind
@@ -225,6 +263,11 @@ export class ValueAssistant extends Assistant {
     }
   }
 
+  @Bind
+  captureEditArchivedValueInputRef (ref) {
+    this._editArchivedValueRef = ref;
+  }
+
   renderArchive () {
     if (this.machineState.isMultivalue) {
       // const limitCounter = this.machineState.multivalueLimit !== undefined ? ` (${this.machineState.archive.length}/${this.machineState.multivalueLimit})` : '';
@@ -245,14 +288,26 @@ export class ValueAssistant extends Assistant {
           <ul className='entered-values'>
             {
               keys.map((key, idx) => {
-                return (
-                  <li tabIndex='0' id={`lex-multivalue-${idx}`} className='entered-value'>
-                    {key}
-                    <button type='button' onMouseDown={(e) => this.onRemoveArchivedValue(e, idx)} className='btn btn-xs btn-link token-remove' aria-label='Close'>
-                      {this.xicon}
-                    </button>
-                  </li>
-                );
+                if (idx === this.state.archiveValueEditIndex) {
+                  return (
+                    <li tabIndex='0' id={`lex-multivalue-${idx}`} className='entered-value active'>
+                      <input type='text' className={`token-input active ${this.state.valid ? '' : 'invalid'}`} autoFocus onBlur={this.cancelEditArchivedValue} value={key} ref={this.captureEditArchivedValueInputRef} />
+                      <span className='btn-group'>
+                        <button type='button' onMouseDown={this.onUpdateArchivedValue} className='btn btn-xs btn-primary token-next' aria-label='Save'>Save</button>
+                        <button type='button' onMouseDown={this.cancelEditArchivedValue} className='btn btn-xs btn-default token-next' aria-label='Cancel'>Cancel</button>
+                      </span>
+                    </li>
+                  );
+                } else {
+                  return (
+                    <li tabIndex='0' id={`lex-multivalue-${idx}`} className='entered-value'>
+                      <span onClick={(e) => this.requestEditArchivedValue(e, idx)}>{key}</span>
+                      <button type='button' onMouseDown={(e) => this.onRemoveArchivedValue(e, idx)} className='btn btn-xs btn-link token-remove' aria-label='Close'>
+                        {this.xicon}
+                      </button>
+                    </li>
+                  );
+                }
               })
             }
           </ul>

@@ -309,8 +309,12 @@ div.lex-assistant-box {
 
     &.entered-values {
       padding: 10px;
-      li {
+      li.entered-value {
         display: inline-block;
+        cursor: text;
+        &:hover {
+          box-shadow: 0 0 5px $lex-token-border-color;
+        }
       }
     }
   }

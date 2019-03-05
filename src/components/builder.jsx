@@ -91,6 +91,7 @@ export class Builder extends Component {
       {k: 'requestUnarchive', default: () => true},
       {k: 'requestRemoveArchivedValue', default: () => true},
       {k: 'requestRemoveArchivedValues', default: () => true},
+      {k: 'requestUpdateArchivedValue', default: () => true},
       {k: 'requestRewind', default: () => true},
       {k: 'requestFocus', default: () => true},
       {k: 'requestBlur', default: () => true},
@@ -158,6 +159,8 @@ export class Builder extends Component {
   @Bind
   /**
    * Call from a subclass to request the state machine for the containing token to attempt removal of a specific value from the archive.
+   *
+   * @param {number} idx - The index of the value to remove.
    */
   requestRemoveArchivedValue (idx) {
     return this.state.requestRemoveArchivedValue(idx);
@@ -169,6 +172,17 @@ export class Builder extends Component {
    */
   requestRemoveArchivedValues () {
     return this.state.requestRemoveArchivedValues();
+  }
+
+  @Bind
+  /**
+   * Call from a subclass to request the state machine for the containing token to attempt replacement of a specific archived value.
+   *
+   * @param {number} idx - The index of the value to replace.
+   * @param {Object} newBoxedValue - The new boxed value to replace the specified archived value with.
+   */
+  requestUpdateArchivedValue (idx, newBoxedVal) {
+    return this.state.requestUpdateArchivedValue(idx, newBoxedVal);
   }
 
   @Bind

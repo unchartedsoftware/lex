@@ -24,6 +24,8 @@ export class Token extends Component {
       {k: 'requestArchive', default: () => true},
       {k: 'requestUnarchive', default: () => true},
       {k: 'requestRemoveArchivedValue', default: () => true},
+      {k: 'requestRemoveArchivedValues', default: () => true},
+      {k: 'requestUpdateArchivedValue', default: () => true},
       {k: 'requestRewind', default: () => true},
       {k: 'requestFocus', default: () => true},
       {k: 'requestBlur', default: () => true},
@@ -301,6 +303,7 @@ export class Token extends Component {
               requestUnarchive={this.state.requestUnarchive}
               requestRemoveArchivedValue={this.state.requestRemoveArchivedValue}
               requestRemoveArchivedValues={this.state.requestRemoveArchivedValues}
+              requestUpdateArchivedValue={this.state.requestUpdateArchivedValue}
               requestRewind={this.state.requestRewind}
               requestFocus={this.requestFocus}
               requestBlur={this.requestBlur}
