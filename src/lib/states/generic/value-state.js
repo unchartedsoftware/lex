@@ -155,22 +155,14 @@ export class ValueState extends State {
 
   archiveValue (context) {
     super.archiveValue(context);
-    this.fetchSuggestions('', context);
-  }
-
-  unarchiveValue (context) {
-    super.unarchiveValue(context);
-    this.fetchSuggestions(this.unformatUnboxedValue(this.unboxedValue), context);
   }
 
   removeArchivedValue (idx, context) {
     super.removeArchivedValue(idx, context);
-    this.fetchSuggestions('', context);
   }
 
   removeArchivedValues () {
     super.removeArchivedValues();
-    this.fetchSuggestions();
   }
 
   /**

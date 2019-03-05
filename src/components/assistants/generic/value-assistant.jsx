@@ -39,6 +39,12 @@ export class ValueAssistant extends Assistant {
     }
   }
 
+  fetchSuggestions (hint) {
+    if (this.machineState) {
+      this.machineState.fetchSuggestions(hint, this.machine.value);
+    }
+  }
+
   @Bind
   onFetchingSuggestions () {
     this.loading = true;
@@ -99,6 +105,7 @@ export class ValueAssistant extends Assistant {
   @Bind
   onArchivedRemoved (idx) {
     this.requestRemoveArchivedValue(idx);
+    setTimeout(() => this.machineState.fetchSuggestions('', this.machine.value), 10);
   }
 
   @Bind
@@ -108,6 +115,7 @@ export class ValueAssistant extends Assistant {
       e.preventDefault();
     }
     this.requestRemoveArchivedValue(idx);
+    setTimeout(() => this.machineState.fetchSuggestions('', this.machine.value), 10);
   }
 
   @Bind
@@ -117,6 +125,7 @@ export class ValueAssistant extends Assistant {
       e.preventDefault();
     }
     this.requestRemoveArchivedValues();
+    setTimeout(() => this.machineState.fetchSuggestions('', this.machine.value), 10);
   }
 
   @Bind
