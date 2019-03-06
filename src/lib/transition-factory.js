@@ -3,32 +3,32 @@
  */
 export class TransitionFactory {
   /**
-   * Transition to this state if the selected option from the parent state has one of the given keys.
+   * Transition to this state if the selected value from the parent state has one of the given keys.
    *
-   * @param {...string} optionKeys - The list of valid `OptionStateOption` keys.
+   * @param {...string} valueKeys - The list of valid `ValueStateValue` keys.
    * @returns {Object} A config object with key `transition` and the intended transition function, to be used directly or further customized.
    * @example
    * // Transition to this child state if the parent option key is 'is', 'is like' or 'equals'
-   * TransitionFactory.optionKeyIs('is', 'is like', 'equals')
+   * TransitionFactory.valueKeyIs('is', 'is like', 'equals')
    */
-  static optionKeyIs (...optionKeys) {
+  static valueKeyIs (...valueKeys) {
     return {
-      transition: (parentVal) => parentVal && optionKeys.indexOf(parentVal.key) >= 0
+      transition: (parentVal) => parentVal && valueKeys.indexOf(parentVal.key) >= 0
     };
   }
 
   /**
    * Transition to this state if the selected option from the parent state does not match one of the given keys.
    *
-   * @param {...string} optionKeys - The list of invalid `OptionStateOption` keys.
+   * @param {...string} valueKeys - The list of invalid `ValueStateValue` keys.
    * @returns {Object} A config object with key `transition` and the intended transition function, to be used directly or further customized.
    * @example
    * // Transition to this child state if the parent option key is not 'between'
-   * TransitionFactory.optionKeyIsNot('between')
+   * TransitionFactory.valueKeyIsNot('between')
    */
-  static optionKeyIsNot (...optionKeys) {
+  static valueKeyIsNot (...valueKeys) {
     return {
-      transition: (parentVal) => parentVal && optionKeys.indexOf(parentVal.key) < 0
+      transition: (parentVal) => parentVal && valueKeys.indexOf(parentVal.key) < 0
     };
   }
 

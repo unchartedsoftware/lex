@@ -635,4 +635,29 @@ export class State extends EventEmitter {
     this.emit('value changed', this.value, this.value, this.unboxedValue, this.unboxedValue);
     this.emit('value unarchived'); // TODO should probably implement an 'archive changed' event at some point, but this will work for now.
   }
+
+  /**
+   * Replaces an existing archived value with a new one.
+   *
+   * @param {number} idx - The index of the value to replace.
+   * @param {Object} newBoxedValue - The new boxed value to replace the specified archived value with.
+   */
+  updateArchivedValue (idx, newBoxedValue) {
+    if (this.archive.length <= idx) {
+      throw new ValueArchiveError('Cannot replace archived value that does not exist');
+    }
+    try {
+      const tempArchive = [...this.archive];
+      tempArchive.splice(idx, 1);
+      const isValid = _validate.get(this)(newBoxedValue, tempArchive);
+      if (!isValid) {
+        throw new Error(`Value ${newBoxedValue.key} is invalid`);
+      }
+      this.archive[idx] = newBoxedValue;
+      this.emit('value changed', this.value, this.value, this.unboxedValue, this.unboxedValue);
+      this.emit('value unarchived'); // TODO should probably implement an 'archive changed' event at some point, but this will work for now.
+    } catch (err) {
+      throw new ValueArchiveError(`Cannot replace unarchived value with new invalid value: ${err.message}`);
+    }
+  }
 }

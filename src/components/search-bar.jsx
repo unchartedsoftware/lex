@@ -148,19 +148,28 @@ export class SearchBar extends Component {
 
   get assistantPosition () {
     const rect = this.searchBox.getBoundingClientRect();
+    const builderRect = this.tokenBuilder.base.getBoundingClientRect();
+    const width = Math.min(rect.width, 600);
     const pos = {
-      left: rect.left,
-      top: rect.top + rect.height,
-      'min-width': rect.width,
-      'max-width': rect.width
+      top: builderRect.top + builderRect.height - 2,
+      'min-width': width,
+      'max-width': width
     };
+    let containerLeft = 0;
+    let containerWidth = window.innerWidth;
     if (this.state.popupContainer !== 'body') {
       const popupContainerElem = typeof this.state.popupContainer === 'string'
         ? document.querySelector(this.state.popupContainer)
         : this.state.popupContainer;
-      const popupRect = popupContainerElem.getBoundingClientRect();
-      pos.left = pos.left - popupRect.left;
-      pos.top = pos.top - popupRect.top;
+      const containerRect = popupContainerElem.getBoundingClientRect();
+      containerLeft = containerRect.left;
+      containerWidth = containerRect.width;
+      pos.top = pos.top - containerRect.top;
+    }
+    if ((builderRect.left + width - containerLeft) > containerWidth) {
+      pos.left = builderRect.right - containerLeft - width - 9;
+    } else {
+      pos.left = builderRect.left - containerLeft;
     }
     return pos;
   }
@@ -186,6 +195,7 @@ export class SearchBar extends Component {
         requestUnarchive={this.unarchive}
         requestRemoveArchivedValue={this.removeArchivedValue}
         requestRemoveArchivedValues={this.removeArchivedValues}
+        requestUpdateArchivedValue={this.updateArchivedValue}
         requestRewind={this.rewind}
         requestRemoval={this.removeToken}
         onEndToken={this.onEndToken}
@@ -208,6 +218,7 @@ export class SearchBar extends Component {
               editing={this.state.editing}
               machine={activeMachine}
               machineState={activeMachine.state}
+              tokenXIcon={this.state.tokenXIcon}
               ref={(a) => { this.assistant = a; }}
               multivalueDelimiter={this.state.multivalueDelimiter}
               multivaluePasteDelimiter={this.searchBox.multivaluePasteDelimiter}
@@ -219,6 +230,7 @@ export class SearchBar extends Component {
               requestUnarchive={this.unarchive}
               requestRemoveArchivedValue={this.removeArchivedValue}
               requestRemoveArchivedValues={this.removeArchivedValues}
+              requestUpdateArchivedValue={this.updateArchivedValue}
               requestRewind={this.rewind}
               requestRemoval={this.removeToken}
               onEndToken={this.onEndToken}
@@ -353,6 +365,21 @@ export class SearchBar extends Component {
   }
 
   @Bind
+  updateArchivedValue (idx, newBoxedValue) {
+    try {
+      this.state.activeMachine.updateArchivedValue(idx, newBoxedValue);
+      return true;
+    } catch (err) {
+      if (err instanceof ValueArchiveError) {
+        console.error(err.message); // eslint-disable-line no-console
+        return false;
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  @Bind
   rewind (targetState) {
     const oldState = this.state.activeMachine.state;
     const newState = this.state.activeMachine.rewind(targetState);
@@ -368,8 +395,9 @@ export class SearchBar extends Component {
   onKeyDown (e) {
     this.unboxedValue = e.target.value;
     const code = normalizeKey(e);
-    if (this.assistant && this.state.proxiedEvents.get(code) === true) {
-      this.assistant.delegateEvent(e);
+    if (this.state.proxiedEvents.get(code) === true) {
+      const consumed = this.assistant && this.assistant.delegateEvent(e);
+      if (!consumed) this.tokenBuilder.delegateEvent(e);
     }
   }
 

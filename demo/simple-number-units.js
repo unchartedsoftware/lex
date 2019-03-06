@@ -1,19 +1,18 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, OptionState, OptionStateOption, NumericEntryState, TransitionFactory } from '../src/lex';
+import { Lex, ValueState, ValueStateValue, NumericEntryState, TransitionFactory } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 // Since we want to suggest tokens for the user we will start with an option state
 // which makes it easy for lex to provide options to the user
 const language = Lex
-  .from('field', OptionState, {
+  .from('field', ValueState, {
     name: 'Choose a field to search',
-    // This is our list of options we are providing to the user to select from
-    // we can return a promise from this method as well to support network requests
-    options: [
-      new OptionStateOption('Age', { type: 'age' }),
-      new OptionStateOption('Height', { type: 'height' }),
-      new OptionStateOption('Weight', { type: 'weight' })
+    // This is our list of suggestions we are providing to the user to select from
+    suggestions: [
+      new ValueStateValue('Age', { type: 'age' }),
+      new ValueStateValue('Height', { type: 'height' }),
+      new ValueStateValue('Weight', { type: 'weight' })
     ],
     icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
   })

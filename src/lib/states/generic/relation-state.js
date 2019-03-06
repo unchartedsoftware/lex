@@ -1,25 +1,19 @@
-import {OptionStateOption, OptionState} from '../generic/option-state';
+import {ValueStateValue, ValueState} from '../generic/value-state';
 
 /**
  * This state supports the selection of a relation from a list of options.
  *
- * @param {Object} config - A configuration object. Supports all of the parameters from `OptionState` and `StateTemplate`,
+ * @param {Object} config - A configuration object. Supports all of the parameters from `ValueState` and `StateTemplate`,
  *                          providing defaults for `name` and `options`. `config.options` should be a function returning
- *                          `OptionStateOption`s.
+ *                          `ValueStateValue`s.
  */
-export class RelationState extends OptionState {
+export class RelationState extends ValueState {
   constructor (config) {
     if (config.name === undefined) config.name = 'Choose a relation';
-    if (Array.isArray(config.options)) {
-      const opts = config.options;
-      config.options = function () {
-        return opts;
-      };
-    }
-    config.refreshSuggestions = function (hint) {
+    config.fetchSuggestions = function (hint) {
       return config.options().map(o => {
         return o.key.toLowerCase().indexOf(hint.toLowerCase()) === 0
-          ? new OptionStateOption(o.key, o.meta, {
+          ? new ValueStateValue(o.key, o.meta, {
             shortKey: o.shortKey,
             hidden: o.hidden,
             highlighted: true

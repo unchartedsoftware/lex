@@ -15,14 +15,17 @@ $lex-token-remove-button-color: lighten($lex-token-color, 45%) !default;
 $lex-token-remove-button-hover-color: darken($lex-token-remove-button-color, 15%) !default;
 $lex-token-border-color: darken($lex-token-background, 15%) !default;
 $lex-token-active-background: darken($lex-token-background, 15%) !default; // lighten for dark theme
-$lex-token-input-border-color: transparent !default;
+$lex-token-input-background-color: #fff !default; // lighten for dark theme
+$lex-token-input-border-color: $lex-token-background !default;
 $lex-token-invalid-background: #e2a4a4 !default; // lighten for dark theme
 $lex-assistant-background: #fff !default;
 $lex-assistant-text-color: #333 !default;
 $lex-assistant-border-color: $lex-token-border-color !default;
-$lex-assistant-header-background: $lex-token-background !default;
+$lex-assistant-header-background: #fff !default;
 $lex-assistant-header-color: #8d8d8d !default;
 $lex-assistant-list-height: 290px !default; // Approximately 10 items which is the default limit for option assistant
+
+@import './animation.scss';
 
 div.lex-box {
   min-height: 40px;
@@ -61,7 +64,11 @@ div.lex-box div.lex-placeholder {
   padding: $lex-token-padding + 1px;
 }
 
-div.lex-box div.token  {
+div.lex-box div.token-container {
+  display: inline-block;
+}
+
+div.lex-box div.token, ul.entered-values li.entered-value {
   color: $lex-token-color;
   display: inline-block;
   background: $lex-token-background;
@@ -73,6 +80,10 @@ div.lex-box div.token  {
   white-space: nowrap;
   cursor: default;
   user-select: none;
+
+  &.active {
+    padding: $lex-token-padding ($lex-token-padding + 2px) $lex-token-padding ($lex-token-padding + 2px);
+  }
 
   &.suggestion {
     border: 1px solid $lex-highlight-color;
@@ -109,7 +120,8 @@ div.lex-box div.token  {
     box-shadow: none;
     outline: 0;
     &.active {
-      background: $lex-token-active-background;
+      background: $lex-token-input-background-color;
+      box-shadow: 0 0 0.5em $lex-token-active-background inset;
       @if $lex-token-input-border-color == 'transparent' {
         // Noop
       } @else {
@@ -127,9 +139,15 @@ div.lex-box div.token  {
     }
   }
 
-  &.active .token-input.rewindable:hover {
+  &.active .token-input.rewindable {
     cursor: text;
-    background: $lex-token-active-background;
+    margin: 0 0.1em;
+    padding: 0 0.5em;
+    box-shadow: 0 0 0.5em $lex-token-active-background inset;
+  }
+
+  &.active .token-input.rewindable:hover {
+    background: white;
     @if $lex-token-input-border-color == 'transparent' {
       // Noop
     } @else {
@@ -163,7 +181,7 @@ div.lex-box div.token  {
       width: 250px;
       min-width: 250px;
     }
-    
+
     &.has-preview {
       color: transparent; // Make the text transparent so we dont see it when we have a preview value
       text-indent: -9999em; // Shift the text offscreen so we dont see any cursors when we have a preview value
@@ -175,9 +193,10 @@ div.lex-box div.token  {
     position: relative;
     span.preview {
       position: absolute;
-      background: darken($lex-token-background, 15%);
-      left: 2px;
-      line-height: 24px;
+      background: transparent;
+      top: 4px;
+      left: 3px;
+      line-height: 18px;
       padding-right: 5px;
       pointer-events: none;
       user-select: none;
@@ -206,6 +225,10 @@ div.lex-box div.token  {
       line-height: 1em;
     }
   }
+
+  button.token-next {
+    margin: 0 0 0 2px;
+  }
 }
 
 div.lex-box.disabled div.token {
@@ -227,6 +250,7 @@ div.lex-assistant-box {
   display: block;
   margin: 0 auto;
   min-width: 400px;
+  max-width: 600px;
   background-color: $lex-assistant-background;
   border:  1px solid $lex-assistant-border-color;
   position: absolute;
@@ -237,16 +261,18 @@ div.lex-assistant-box {
     display: none;
   }
 
+  .assistant-header-progress {
+    display: block;
+    width: 100%;
+    z-index: 1;
+  }
+
   div.assistant-header {
     color: $lex-assistant-header-color;
     background-color: $lex-assistant-header-background;
-    border-bottom: 1px solid $lex-assistant-border-color;
+    border-top: 1px solid $lex-assistant-border-color;
     display:block;
-    min-height: 2.5rem;
     padding: 0.5rem 1rem;
-    .assistant-menu {
-      margin-top: -1px;
-    }
   }
 
   ul {
@@ -281,43 +307,25 @@ div.lex-assistant-box {
         }
       }
     }
+
     &.entered-values {
-      border:  1px solid $lex-assistant-border-color;
-      li {
-        span { display: none }
-        color: $lex-assistant-text-color;
-        &:hover, &.active {
-          text-decoration: line-through;
-          color: $lex-assistant-text-color;
-          background-color: $lex-token-invalid-background;
-          span { display: inline }
+      padding: 10px;
+      li.entered-value {
+        display: inline-block;
+        cursor: text;
+        &:hover {
+          box-shadow: 0 0 5px $lex-token-border-color;
         }
       }
     }
   }
 
-  div.assistant-body  {
+  div.assistant-content-menu {
+    padding: 5px;
+  }
+
+  div.assistant-body {
     position: relative;
-
-    .assistant-left, .assistant-right {
-      display: inline-block;
-      vertical-align: top;
-      width: 50%;
-
-      .dp-permanent {
-        max-width: 100%;
-      }
-    }
-
-    .assistant-left:after {
-      content: "";
-      border-right: 1px solid $lex-assistant-border-color;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 50%;
-    }
-
     .lex-dp-container {
       background-color: #f5f5f5;
       padding: 5px;
@@ -332,7 +340,7 @@ div.lex-assistant-box {
     .lex-dp-input {
       display: none;
     }
-    
+
     .dp-permanent {
       width: 100%;
       max-width: 500px;

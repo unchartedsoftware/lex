@@ -32,7 +32,8 @@ export class Assistant extends Builder {
           this.connectListeners();
           this.afterChangeMachineState();
         }
-      }
+      },
+      {k: 'tokenXIcon', default: '&times'}
     ]);
     super.processProps(props);
   }
@@ -49,6 +50,13 @@ export class Assistant extends Builder {
   afterChangeMachineState () {
   }
 
+  /*
+   * Get the configured DOM to represent 'X' icons
+   */
+  get xicon () {
+    return <span dangerouslySetInnerHTML={{__html: this.state.tokenXIcon}} />;
+  }
+
   /*!
    * @private
    */
@@ -56,75 +64,35 @@ export class Assistant extends Builder {
     // do nothing
   }
 
+  /**
+   * Children may set loading in order to visually indicate that the Assistant is performing an async operation.
+   *
+   * @param {boolean} isLoading - Whether or not this Assistant is performing an async operation.
+   */
+  set loading (isLoading) {
+    this.setState({loading: isLoading});
+  }
+
   /*!
    * @private
    */
   renderInteractive (props, state) {
-    const menu = this.renderAssistantMenu(props, state);
     const body = this.renderAssistantBody(props, state);
-    const instructions = this.renderAssistantInstructions(props, state);
-    return (
-      <div className='assistant'>
-        <div className='assistant-header'>
-          {instructions}
-          <span className='pull-right assistant-menu'>
-            {menu}
-          </span>
-        </div>
-        {body}
+    const spinner = state.loading ? (
+      <div className='assistant-header-progress'>
+        <div className='line' />
+        <div className='subline inc' />
+        <div className='subline dec' />
       </div>
-    );
-  }
-
-  /**
-   * Render the interactive instructions for this `Assistant`. Will appear at the top-left of the `Assistant` in its navigation bar.
-   * Can override in subclasses.
-   *
-   * @param {Object} props - Properties.
-   * @param {Object} state - Component state (`this.state`).
-   * @param {boolean} state.valid - True iff the value of the underlying `State` is valid.
-   * @param {boolean} state.readOnly - True iff this `Builder` is in read-only mode (generally speaking, if the user has progressed past this `State` to a later one).
-   * @param {State} state.machineState - The underlying `State`.
-   * @returns {string} The instructions string.
-   */
-  renderAssistantInstructions (props, state) { // eslint-disable-line no-unused-vars
-    return this.machineState.name;
-  }
-
-  @Bind
-  clickRewind () {
-    this.requestRewind();
-  }
-
-  @Bind
-  clickCancel () {
-    this.requestCancel();
-  }
-
-  @Bind
-  clickTransition () {
-    this.requestTransition();
-  }
-
-  /**
-   * Render the interactive menu of this `Assistant`. Will appear at the top-right of the `Assistant` in its navigation bar.
-   * Can override in subclasses.
-   *
-   * @param {Object} props - Properties.
-   * @param {Object} state - Component state (`this.state`).
-   * @param {boolean} state.valid - True iff the value of the underlying `State` is valid.
-   * @param {boolean} state.readOnly - True iff this `Builder` is in read-only mode (generally speaking, if the user has progressed past this `State` to a later one).
-   * @param {State} state.machineState - The underlying `State`.
-   * @returns {VNode} The menu content.
-   */
-  renderAssistantMenu (props, state) { // eslint-disable-line no-unused-vars
-    return (
-      <span className='btn-group'>
-        <button className='btn btn-xs btn-default' onClick={this.clickRewind} disabled={this.state.machine.state === this.state.machine.rootState}>&lt;&nbsp;Back</button>
-        <button className='btn btn-xs btn-default' onClick={this.clickCancel}>{this.state.editing ? 'Discard Changes' : 'Cancel'}</button>
-        <button className='btn btn-xs btn-default' onClick={this.clickTransition}>{this.state.machine.state.isTerminal ? 'Finish' : 'Next'}&nbsp;&gt;</button>
-      </span>
-    );
+    ) : '';
+    if (body || state.loading) {
+      return (
+        <div className='assistant'>
+          {spinner}
+          {body}
+        </div>
+      );
+    }
   }
 
   /**
@@ -140,17 +108,5 @@ export class Assistant extends Builder {
    */
   renderAssistantBody (props, state) { // eslint-disable-line no-unused-vars
     // do nothing
-  }
-
-  /**
-   * Receives `keydown` events from the associated `Builder`, proxied to this component so
-   * that users can interact with this `Assistant` via keyboard controls without losing
-   * focus on their `Builder`.
-   *
-   * @param {Event} e - The incoming event.
-   * @returns {boolean} - Returns `true` iff the event was consumed by this `Assistant`.
-   */
-  delegateEvent (e) { // eslint-disable-line no-unused-vars
-    // override in subclass - keyDown events coming from search-box. Return true if the event was consumed.
   }
 }

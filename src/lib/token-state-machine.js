@@ -75,20 +75,13 @@ export class TokenStateMachine extends EventEmitter {
               await this.state.doInitialize(this.boxedValue, v);
             }
             for (const x of v) {
-              if (typeof x === 'object') {
-                this.state.value = x;
-              } else {
-                this.state.unboxedValue = x;
-              }
+              this.state.value = x;
               this.state.archiveValue();
             }
             this.state.unarchiveValue(); // make the last value the "active" one
-          } else if (typeof v === 'object') {
+          } else {
             await this.state.doInitialize(this.boxedValue, [this.state.unboxValue(v)]);
             this.state.value = v;
-          } else {
-            await this.state.doInitialize(this.boxedValue, [v]);
-            this.state.unboxedValue = v;
           }
           // set action values
           this.state.actionValues = actionValues;
@@ -97,7 +90,7 @@ export class TokenStateMachine extends EventEmitter {
           // if there's more values, transition
           if (Object.keys(copy).length > 0 || finalTransition) {
             try {
-              this.transition({ignoreBindOnly: true, ignoreAutoAdvance: true}); // ignore bind-only states
+              this.transition({ignoreBindOnly: true, ignoreAutoAdvance: true, ignoreValidation: true}); // ignore bind-only states
             } catch (err) {
               console.error(err); // eslint-disable-line no-console
               throw err; // the value for this state is invalid, so break out.
@@ -136,13 +129,14 @@ export class TokenStateMachine extends EventEmitter {
    * @param {boolean} conf.ignoreBindOnly - All bind-only states are illegal transitions unless `ignoreBindOnly` is true.
    * @param {boolean} conf.nextToken - Whether or not to move to the next `Token` in the `Lex` bar, if this `Token` is complete.
    * @param {boolean} conf.ignoreAutoAdvance - Do not perform auto-advancements, even if `State` is configured as such.
+   * @param {boolean} conf.ignoreValidation - Used by bindValues() to ignore validation.
    * @throws {StateTransitionError} If this state is invalid, or if there is no valid child transition given the current state's value.
    * @returns {State} The new current state.
    */
-  transition ({ignoreBindOnly, nextToken, ignoreAutoAdvance} = {ignoreBindOnly: false, nextToken: true, ignoreAutoAdvance: false}) {
+  transition ({ignoreBindOnly, nextToken, ignoreAutoAdvance, ignoreValidation} = {ignoreBindOnly: false, nextToken: true, ignoreAutoAdvance: false, ignoreValidation: false}) {
     this.emit('before state change', this.state);
     // validate current state value
-    if (!this.state.isValid) {
+    if (!ignoreValidation && !this.state.isValid) {
       const err = new StateTransitionError(`Cannot transition from invalid current state "${this.state.name}" with value: ${this.state.unboxedValue}.`);
       this.emit('state change failed', err);
       throw err;
@@ -224,6 +218,22 @@ export class TokenStateMachine extends EventEmitter {
   removeArchivedValues () {
     try {
       this.state.removeArchivedValues();
+      this.emit('state changed', this.state, this.state);
+    } catch (err) {
+      this.emit('state change failed', err);
+      throw err;
+    }
+  }
+
+  /**
+   * Replaces an existing archived value with a new one.
+   *
+   * @param {number} idx - The index of the value to replace.
+   * @param {Object} newBoxedValue - The new boxed value to replace the specified archived value with.
+   */
+  updateArchivedValue (idx, newBoxedValue) {
+    try {
+      this.state.updateArchivedValue(idx, newBoxedValue);
       this.emit('state changed', this.state, this.state);
     } catch (err) {
       this.emit('state change failed', err);

@@ -1,35 +1,27 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, OptionState, OptionStateOption, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, Action, ActionButton } from '../src/lex';
+import { Lex, TransitionFactory, ValueState, ValueStateValue, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, Action, ActionButton } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import '../node_modules/flatpickr/dist/flatpickr.min.css';
 
-// This array and the following two functions are simulations of a back-end API for fetching options
+// This array and the following function is a simulation of a back-end API for fetching options
 const options = [
-  new OptionStateOption('Name', {type: 'string'}),
-  new OptionStateOption('Income', {type: 'currency'}),
-  new OptionStateOption('Keywords', {type: 'multistring'}),
-  new OptionStateOption('GeoHash', {type: 'geohash'}),
-  new OptionStateOption('DateTime', {type: 'datetime'})
+  new ValueStateValue('Name', {type: 'string'}),
+  new ValueStateValue('Income', {type: 'currency'}),
+  new ValueStateValue('Keywords', {type: 'multistring'}),
+  new ValueStateValue('GeoHash', {type: 'geohash'}, {hidden: true}),
+  new ValueStateValue('DateTime', {type: 'datetime'})
 ];
 
-function fetchOptions (query) {
-  return new Promise((resolve) => {
-    const lookup = new Map();
-    query.forEach(v => lookup.set(v.toLowerCase(), true));
-    // This simulates a network call for options (your API should filter based on the hint/context)
-    setTimeout(() => {
-      resolve(options.filter(o => lookup.has(o.key.toLowerCase())));
-    }, 25);
-  });
-}
-
-function searchOptions (hint) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(options.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
-    }, 25);
-  });
+function searchOptionsFactory (options, delay = 0) {
+  return function (hint) {
+    console.log(`Fetching options with hint ${hint}...`);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(options.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
+      }, delay);
+    });
+  };
 }
 
 class PinAction extends Action {
@@ -59,10 +51,9 @@ class PinActionButton extends ActionButton {
   }
 }
 
-const language = Lex.from('field', OptionState, {
+const language = Lex.from('field', ValueState, {
   name: 'Choose a field to search',
-  options: fetchOptions,
-  refreshSuggestions: searchOptions,
+  fetchSuggestions: searchOptionsFactory(options, 250),
   icon: (value) => {
     if (!value) return '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>';
     switch (value.key) {
@@ -84,7 +75,7 @@ const language = Lex.from('field', OptionState, {
   defaultValue: false
 }).branch(
   Lex.from('relation', TextRelationState, {
-    defaultValue: new OptionStateOption('is', {}, {shortKey: '='}),
+    defaultValue: new ValueStateValue('is', {}, {shortKey: '='}),
     autoAdvanceDefault: true,
     cssClasses: ['token-text-entry'],
     ...TransitionFactory.optionMetaCompare({type: 'string'})
@@ -92,26 +83,26 @@ const language = Lex.from('field', OptionState, {
   Lex.from('value', TextEntryState, {
     multivalue: true,
     multivalueLimit: 3,
-    options: [
+    suggestions: [
       'lex',
       'multi-value',
       'entry',
       'text'
-    ].map(t => new OptionStateOption(t)),
+    ].map(t => new ValueStateValue(t)),
     ...TransitionFactory.optionMetaCompare({type: 'multistring'})
   }),
   Lex.from('relation', NumericRelationState, TransitionFactory.optionMetaCompare({type: 'currency'})).branch(
-    Lex.from('value', CurrencyEntryState, { units: 'CAD', ...TransitionFactory.optionKeyIsNot('between') }),
+    Lex.from('value', CurrencyEntryState, { units: 'CAD', ...TransitionFactory.valueKeyIsNot('between') }),
     // override icon in this state as an example. Last icon specified in the chain is used.
     Lex.from('value', CurrencyEntryState, {
       icon: () => '<span class="glyphicon glyphicon-usd" aria-hidden="true"></span><span class="glyphicon glyphicon-usd" aria-hidden="true"></span>',
       units: 'CAD',
-      ...TransitionFactory.optionKeyIs('between')
+      ...TransitionFactory.valueKeyIs('between')
     }).to(LabelState, {label: 'and'}).to('secondaryValue', CurrencyEntryState, {units: 'CAD'})
   ),
   Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime'})).branch(
-    Lex.from('value', DateTimeEntryState, { ...TransitionFactory.optionKeyIsNot('between'), enableTime: true }),
-    Lex.from('value', DateTimeEntryState, { ...TransitionFactory.optionKeyIs('between'), enableTime: true })
+    Lex.from('value', DateTimeEntryState, { ...TransitionFactory.valueKeyIsNot('between'), enableTime: true }),
+    Lex.from('value', DateTimeEntryState, { ...TransitionFactory.valueKeyIs('between'), enableTime: true })
       .to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState, {enableTime: true})
   ),
   Lex.from('value', TextEntryState, {
@@ -149,22 +140,18 @@ window.clearQuery = function () {
 window.setQuery = async function () {
   try {
     await lex.setQuery([
-      {field: 'Name', relation: 'is like', value: 'Sean'},
-      {field: 'Income', relation: 'equals', value: '12'},
-      {field: 'Keywords', value: ['Rob', 'Phil', 'two']},
-      {field: 'GeoHash', value: 'geohash things'}
+      {field: options[0], relation: TextRelationState.IS_LIKE, value: new ValueStateValue('Sean')},
+      {field: options[1], relation: NumericRelationState.EQUALS, value: new ValueStateValue(12)},
+      {field: options[2], value: ['Rob', 'Phil', 'two'].map((k) => new ValueStateValue(k))},
+      {field: options[3], value: new ValueStateValue('geohash things')}
     ]);
-    // await lex.setQuery([
-    //   {field: options[0], relation: new OptionStateOption('is like'), value: new OptionStateOption('Sean')},
-    //   {field: options[1], relation: new OptionStateOption('equals'), value: new OptionStateOption('12')}
-    // ]);
   } catch (err) {
     console.log('Something went wrong');
     console.error(err);
   }
 };
 window.setSuggestions = function () {
-  lex.setSuggestions([{field: 'Name', relation: 'is like', value: 'Sean'}]);
+  lex.setSuggestions([{field: options[0], relation: TextRelationState.IS_LIKE, value: new ValueStateValue('sean')}]);
 };
 window.focusSearchBar = function () {
   lex.focus();

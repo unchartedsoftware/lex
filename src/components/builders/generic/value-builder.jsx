@@ -4,15 +4,7 @@ import { Builder } from '../../builder';
 import { ENTER, TAB, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
 import { lexStillHasFocus } from '../../../lib/util';
 
-/**
- * A visual interaction mechanism for supplying values
- * to an `OptionState`. By default, this is registered as
- * the `Builder` for `OptionState`s.
- *
- * @example
- * lex.registerBuilder(OptionState, OptionBuilder)
- */
-export class OptionBuilder extends Builder {
+export class ValueBuilder extends Builder {
   cleanupListeners () {
     super.cleanupListeners();
     if (this.machineState) {
@@ -40,34 +32,48 @@ export class OptionBuilder extends Builder {
   }
 
   commitTypedValue () {
+    if (this.machine.state !== this.machineState) return; // don't do anything if our state is not active
     if (this.machineState.previewValue) {
       this.machineState.value = this.machineState.previewValue;
     } else if (this.state.typedText && this.state.typedText.length > 0) {
-      this.unboxedValue = this.machineState.unformatUnboxedValue(this.state.typedText, this.machine.boxedValue);
+      const unformatted = this.machineState.unformatUnboxedValue(this.state.typedText, this.machine.boxedValue);
+      if (!this.machineState.allowUnknown && Array.isArray(this.machineState.suggestions) && this.machineState.suggestions.length > 0) {
+        let set = false;
+        for (const s of this.machineState.suggestions) {
+          if (s.highlighted) {
+            set = true;
+            this.value = s;
+            break;
+          }
+        }
+        if (!set) {
+          this.value = this.machineState.suggestions[0];
+        }
+      } else if (!this.machineState.allowUnknown) {
+        // set value to null, since we can't create values and no suggestions match what was typed
+        this.value = null;
+      } else {
+        this.unboxedValue = unformatted;
+      }
     }
   }
 
-  @Bind
-  handleKeyDown (e) {
+  delegateEvent (e) {
     let consumed = true;
     const nothingEntered = e.target.value === undefined || e.target.value === null || e.target.value.length === 0;
     const normalizedKey = normalizeKey(e);
     switch (normalizedKey) {
-      case this.state.multivalueDelimiter:
-        if (nothingEntered) {
-          consumed = false;
-          break;
-        }
-        consumed = this.machineState.isMultivalue;
-        if (this.machineState.isMultivalue) {
-          this.commitTypedValue();
-          this.requestArchive();
-        }
-        break;
       case ENTER:
       case TAB:
-        this.commitTypedValue();
-        consumed = this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
+        consumed = true;
+        this.machineState.currentFetch.then(() => {
+          this.commitTypedValue();
+          if (this.machineState.canArchiveValue) {
+            this.requestArchive();
+          } else {
+            this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
+          }
+        });
         break;
       case BACKSPACE:
         if (nothingEntered) {
@@ -95,12 +101,13 @@ export class OptionBuilder extends Builder {
   @Debounce(250) // 250ms debounce
   handleKeyUp (e) {
     const boxed = this.machine.boxedValue;
-    this.machineState.refreshSuggestions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed);
+    this.machineState.fetchSuggestions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed);
   }
 
   focus () {
+    if (document.activeElement === this.textInput) return; // prevent focus loops
     if (this.textInput) {
-      this.textInput.focus();
+      this.textInput.focus(); // don't loop focus
       // move cursor to end of input
       this.textInput.selectionStart = this.textInput.selectionEnd = this.textInput.value.length;
     }
@@ -117,7 +124,9 @@ export class OptionBuilder extends Builder {
 
   @Bind
   beforeTransition () {
-    this.commitTypedValue();
+    if (this.machineState.value === null) {
+      this.commitTypedValue();
+    }
     if (this.state.typedText === undefined || this.state.typedText === null || this.state.typedText.length === 0) {
       if (this.archive.length > 0) {
         this.requestUnarchive();
@@ -148,11 +157,17 @@ export class OptionBuilder extends Builder {
   }
 
   @Bind
+  requestFocus () {
+    this.machineState.fetchSuggestions('', this.machine.boxedValue);
+    return super.requestFocus();
+  }
+
+  @Bind
   onBlur (e) {
     try { this.commitTypedValue(); } catch (err) { /* do nothing */ }
     if (this.machine.state === this.machineState && this.cancelOnBlur) {
       const assistantBox = document.getElementById('lex-assistant-box');
-      if (!lexStillHasFocus(e, assistantBox)) {
+      if ((!this.machineState.isMultivalue || this.machineState.canArchiveValue) && !lexStillHasFocus(e, assistantBox)) {
         this.requestCancel();
       }
     } else {
@@ -169,9 +184,11 @@ export class OptionBuilder extends Builder {
   @Bind
   onPaste (e) {
     if (this.machineState.isMultivalue) {
+      const clipboardData = (e.clipboardData || window.clipboardData).getData('Text');
+      // ignore any paste that isn't a multivalue paste
+      if (typeof clipboardData !== 'string' || clipboardData.indexOf(this.state.multivaluePasteDelimiter) < 0) return;
       e.preventDefault();
       e.stopPropagation();
-      const clipboardData = (e.clipboardData || window.clipboardData).getData('Text');
       const values = clipboardData.split(this.state.multivaluePasteDelimiter).map(e => e.trim());
       values.forEach(v => {
         this.machineState.unboxedValue = this.machineState.unformatUnboxedValue(v, this.machine.boxedValue);
@@ -183,14 +200,14 @@ export class OptionBuilder extends Builder {
   renderReadOnly (props, state) {
     const units = this.machineState.units !== undefined ? <span className='text-muted'> { this.machineState.units }</span> : '';
     if (this.machineState.value) {
-      const shortKey = this.machineState.value.shortKey !== undefined ? this.machineState.value.shortKey : this.machineState.formatUnboxedValue(this.machineState.value.key, this.machine.boxedValue);
+      const displayKey = this.machineState.value.displayKey !== undefined ? this.machineState.value.displayKey : this.machineState.formatUnboxedValue(this.machineState.value.key, this.machine.boxedValue);
       if (this.machineState.isMultivalue && this.archive.length > 0) {
         return (
-          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass} ${state.machineState.rewindableClass}`} onMouseDown={this.requestRewindTo}>{shortKey}{units} & {this.archive.length} others</span>
+          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass} ${state.machineState.rewindableClass}`} onMouseDown={this.requestRewindTo}>{displayKey}{units} & {this.archive.length} others</span>
         );
       } else {
         return (
-          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass} ${state.machineState.rewindableClass}`} onMouseDown={this.requestRewindTo}>{shortKey}{units}</span>
+          <span className={`token-input ${state.valid ? '' : 'invalid'} ${state.machineState.vkeyClass} ${state.machineState.rewindableClass}`} onMouseDown={this.requestRewindTo}>{displayKey}{units}</span>
         );
       }
     } else {
@@ -213,7 +230,6 @@ export class OptionBuilder extends Builder {
           <input type='text'
             spellCheck='false'
             className={inputClass}
-            onKeyDown={this.handleKeyDown}
             onKeyUp={this.handleKeyUp}
             onMouseDown={this.clearPreview}
             value={typedText}

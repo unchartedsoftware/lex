@@ -1,16 +1,15 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, OptionState, OptionStateOption, TextEntryState, NumericEntryState, NumericRelationState, LabelState } from '../src/lex';
+import { Lex, TransitionFactory, ValueState, ValueStateValue, TextEntryState, NumericEntryState, NumericRelationState, LabelState } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 const language = Lex
-  .from('field', OptionState, {
+  .from('field', ValueState, {
     name: 'Choose a field to search',
-    // This is our list of options we are providing to the user to select from
-    // we can return a promise from this method as well to support network requests
-    options: [
-      new OptionStateOption('Height', { type: 'number' }),
-      new OptionStateOption('Name', { type: 'string' })
+    // This is our list of suggestions we are providing to the user to select from
+    suggestions: [
+      new ValueStateValue('Height', { type: 'number' }),
+      new ValueStateValue('Name', { type: 'string' })
     ],
     icon: (value) => {
       // Define icons to be used for each property
@@ -35,7 +34,7 @@ const language = Lex
       .from('relation', NumericRelationState, TransitionFactory.optionMetaCompare({type: 'number'}))
       .branch(
         // When the option is not "between" we just use a simple numeric entry
-        Lex.from('value', NumericEntryState, TransitionFactory.optionKeyIsNot('between')),
+        Lex.from('value', NumericEntryState, TransitionFactory.valueKeyIsNot('between')),
         // When the option is "between" we want to go deeper to provide a better result token
         Lex
           .from('value', NumericEntryState, {
@@ -46,7 +45,7 @@ const language = Lex
                 <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
               `;
             },
-            ...TransitionFactory.optionKeyIs('between')
+            ...TransitionFactory.valueKeyIs('between')
           })
           // Once we have the first value lets add a label "and" to make the token more readable
           .to(LabelState, {label: 'and'})
