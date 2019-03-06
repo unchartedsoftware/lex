@@ -184,9 +184,11 @@ export class ValueBuilder extends Builder {
   @Bind
   onPaste (e) {
     if (this.machineState.isMultivalue) {
+      const clipboardData = (e.clipboardData || window.clipboardData).getData('Text');
+      // ignore any paste that isn't a multivalue paste
+      if (typeof clipboardData !== 'string' || clipboardData.indexOf(this.state.multivaluePasteDelimiter) < 0) return;
       e.preventDefault();
       e.stopPropagation();
-      const clipboardData = (e.clipboardData || window.clipboardData).getData('Text');
       const values = clipboardData.split(this.state.multivaluePasteDelimiter).map(e => e.trim());
       values.forEach(v => {
         this.machineState.unboxedValue = this.machineState.unformatUnboxedValue(v, this.machine.boxedValue);
