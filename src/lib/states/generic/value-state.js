@@ -217,7 +217,7 @@ export class ValueState extends State {
    * transformation of a user-supplied value by unformatUnboxedValue.
    *
    * @param {string} key - The user-supplied value.
-   * @returns {OptionStateOption} An `OptionStateOption` instance.
+   * @returns {ValueStateValue} An `ValueStateValue` instance.
    */
   boxValue (key) {
     if (!this.allowUnknown) {
@@ -236,8 +236,8 @@ export class ValueState extends State {
    * Transforms an internal representation of a value (ValueStateValue) into a string key, where a key is
    * the transformation of a user-supplied value by unformatUnboxedValue.
    *
-   * @param {OptionStateOption} option - An `OptionStateOption` instance.
-   * @returns {string} - The string value of the `OptionStateOption`'s key.
+   * @param {ValueStateValue} option - An `ValueStateValue` instance.
+   * @returns {string} - The string value of the `ValueStateValue`'s key.
    */
   unboxValue (option) {
     if (option === undefined || option === null) return null;
