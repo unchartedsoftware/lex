@@ -75,7 +75,8 @@ const _units = new WeakMap();
  * - `on('suggestions changed', (newSuggestions, oldSuggestions) => {})` when the internal list of suggestions changes.
  *
  * @param {Object} config - A configuration object. Inherits all options from `State`, and adds the following:
- * @param {AsyncFunction | undefined} config.fetchSuggestions - A (required) function which is utilized for fetching suggestions via a hint (what the user has typed). `async (hint, context) => ValueStateValue[]`, executing in the scope of this `ValueState`, allowing access to its instance methods.
+ * @param {Array[ValueStateValue]|undefined} config.suggestions - A pre-defined array of suggestions which can be suggested to the user. If this is specified, config.fetchSuggestions should be null.
+ * @param {AsyncFunction | undefined} config.fetchSuggestions - A (required) function which is utilized for fetching suggestions via a hint (what the user has typed). `async (hint, context) => ValueStateValue[]`, executing in the scope of this `ValueState`, allowing access to its instance methods. If this is specified, config.suggestions should be null.
  * @param {boolean | undefined} config.allowUnknown - Allow user to supply unknown values (i.e. not from suggestions). Defaults to false.
  * @param {Function | undefined} config.onUnknownValue - Optional hook (`(ValueStateValue) => ValueStateValue`) which, when a user enters an unknown `ValueStateValue`, allows for augmentation with things like metadata. Must return a new `ValueStateValue`, since `ValueStateValue` is immutable.
  * @param {number | undefined} config.suggestionLimit - A limit on the number of suggestions that will be shown at one time. Defaults to 5.
@@ -101,6 +102,14 @@ export class ValueState extends State {
     if (config.name === undefined) config.name = config.multivalue ? 'Select from the following values' : 'Choose a value';
     if (config.allowUnknown === undefined) config.allowUnknown = false;
     if (config.suggestionLimit === undefined) config.suggestionLimit = 5;
+    if (Array.isArray(config.suggestions)) {
+      if (config.fetchSuggestions) {
+        throw new Error('Cannot specify config.suggestions AND config.fetchSuggestions');
+      }
+      config.fetchSuggestions = function (hint) {
+        return config.suggestions.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1);
+      };
+    }
     super(config);
 
     _suggestions.set(this, []);

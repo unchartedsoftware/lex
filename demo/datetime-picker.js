@@ -1,34 +1,26 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, OptionState, OptionStateOption, LabelState, DateTimeRelationState, DateTimeEntryState } from '../src/lex';
+import { Lex, TransitionFactory, ValueState, ValueStateValue, LabelState, DateTimeRelationState, DateTimeEntryState } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import '../node_modules/flatpickr/dist/flatpickr.min.css';
 
-// This array and the following two functions are simulations of a back-end API for fetching options
+// This array and the following function is a simulation of a back-end API for fetching options
 const options = [
-  new OptionStateOption('Date', {type: 'date'}),
-  new OptionStateOption('Time', {type: 'time'}),
-  new OptionStateOption('DateTime', {type: 'datetime'}),
-  new OptionStateOption('DateTime 24hr', {type: 'datetime24hr'})
+  new ValueStateValue('Date', {type: 'date'}),
+  new ValueStateValue('Time', {type: 'time'}),
+  new ValueStateValue('DateTime', {type: 'datetime'}),
+  new ValueStateValue('DateTime 24hr', {type: 'datetime24hr'})
 ];
 
-function fetchOptions (query) {
-  return new Promise((resolve) => {
-    const lookup = new Map();
-    query.forEach(v => lookup.set(v.toLowerCase(), true));
-    // This simulates a network call for options (your API should filter based on the hint/context)
-    setTimeout(() => {
-      resolve(options.filter(o => lookup.has(o.key.toLowerCase())));
-    }, 25);
-  });
-}
-
-function searchOptions (hint) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(options.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
-    }, 25);
-  });
+function searchOptionsFactory (options, delay = 0) {
+  return function (hint) {
+    console.log(`Fetching options with hint ${hint}...`);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(options.filter(o => o.key.toLowerCase().indexOf(hint.toLowerCase()) > -1));
+      }, delay);
+    });
+  };
 }
 
 const SECONDS = 1000;
@@ -39,10 +31,10 @@ const YESTERDAY_AT_MIDNIGHT = new Date();
 YESTERDAY_AT_MIDNIGHT.setHours(0, 0, 0, 0);
 const TODAY_AT_LUNCH = new Date(YESTERDAY_AT_MIDNIGHT.valueOf() + (12 * HOURS));
 
-const language = Lex.from('field', OptionState, {
+const language = Lex.from('field', ValueState, {
   name: 'Choose a field to search',
-  options: fetchOptions,
-  refreshSuggestions: searchOptions,
+  // This is our list of suggestions we are providing to the user to select from
+  fetchSuggestions: searchOptionsFactory(options, 100),
   icon: (value) => {
     if (!value) return '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>';
     return '<span class="glyphicon glyphicon-time" aria-hidden="true"></span>';

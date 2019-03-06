@@ -1,15 +1,15 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, OptionState, OptionStateOption, TerminalState, TextEntryState, TransitionFactory } from '../src/lex';
+import { Lex, ValueState, ValueStateValue, TerminalState, TextEntryState, TransitionFactory } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 const language = Lex
-  .from('field', OptionState, {
+  .from('field', ValueState, {
     name: 'Choose a field to search',
     // One option will immediately end the token, the other will not.
-    options: [
-      new OptionStateOption('Name', {type: 'string'}),
-      new OptionStateOption('Terminal', {type: 'terminal'})
+    suggestions: [
+      new ValueStateValue('Name', {type: 'string'}),
+      new ValueStateValue('Terminal', {type: 'terminal'})
     ],
     icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
   })

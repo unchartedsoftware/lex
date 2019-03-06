@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, OptionState, OptionStateOption, TextEntryState, Action, ActionButton } from '../src/lex';
+import { Lex, ValueState, ValueStateValue, TextEntryState, Action, ActionButton } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 // We can define a custom Action, with a callback (onAction) and
@@ -32,13 +32,12 @@ class PinActionButton extends ActionButton {
 // A simple language. Our Action will only appear on completed Tokens, and only
 // if that Token is displaying the state which implies our Action.
 const language = Lex
-  .from('field', OptionState, {
+  .from('field', ValueState, {
     name: 'Choose a field to search',
-    // This is our list of options we are providing to the user to select from
-    // we can return a promise from this method as well to support network requests
-    options: [
-      new OptionStateOption('First Name'),
-      new OptionStateOption('Last Name')
+    // This is our list of suggestions we are providing to the user to select from
+    suggestions: [
+      new ValueStateValue('First Name'),
+      new ValueStateValue('Last Name')
     ],
     icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
   })

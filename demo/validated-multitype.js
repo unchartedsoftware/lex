@@ -1,16 +1,15 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, OptionState, OptionStateOption, TextEntryState, NumericEntryState } from '../src/lex';
+import { Lex, TransitionFactory, ValueState, ValueStateValue, TextEntryState, NumericEntryState } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
 const language = Lex
-  .from('field', OptionState, {
+  .from('field', ValueState, {
     name: 'Choose a field to search',
-    // This is our list of options we are providing to the user to select from
-    // we can return a promise from this method as well to support network requests
-    options: [
-      new OptionStateOption('Height', { type: 'number' }),
-      new OptionStateOption('Name', { type: 'string' })
+    // This is our list of suggestions we are providing to the user to select from
+    suggestions: [
+      new ValueStateValue('Height', { type: 'number' }),
+      new ValueStateValue('Name', { type: 'string' })
     ],
     icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
   })

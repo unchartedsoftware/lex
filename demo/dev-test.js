@@ -83,12 +83,12 @@ const language = Lex.from('field', ValueState, {
   Lex.from('value', TextEntryState, {
     multivalue: true,
     multivalueLimit: 3,
-    fetchSuggestions: searchOptionsFactory([
+    suggestions: [
       'lex',
       'multi-value',
       'entry',
       'text'
-    ].map(t => new ValueStateValue(t))),
+    ].map(t => new ValueStateValue(t)),
     ...TransitionFactory.optionMetaCompare({type: 'multistring'})
   }),
   Lex.from('relation', NumericRelationState, TransitionFactory.optionMetaCompare({type: 'currency'})).branch(
