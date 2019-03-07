@@ -12,18 +12,33 @@ const options = [
  *                          providing defaults for `name` and `options`.
  */
 export class NumericRelationState extends RelationState {
+  /**
+   * The "equals" option.
+   */
   static get EQUALS () {
     return options[0];
   }
+  /**
+   * The "does not equal" option.
+   */
   static get DOES_NOT_EQUAL () {
     return options[1];
   }
+  /**
+   * The "less than" option.
+   */
   static get LESS_THAN () {
     return options[2];
   }
+  /**
+   * The "greater than" option.
+   */
   static get GREATER_THAN () {
     return options[3];
   }
+  /**
+   * The "between" option.
+   */
   static get BETWEEN () {
     return options[4];
   }

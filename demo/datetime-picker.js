@@ -147,10 +147,10 @@ window.clearQuery = function () {
 window.setQuery = async function () {
   try {
     await lex.setQuery([
-      {field: 'Date', relation: 'equals', value: new Date()},
-      {field: 'Time', relation: 'equals', value: new Date()},
-      {field: 'DateTime', relation: 'equals', value: new Date()},
-      {field: 'DateTime 24hr', relation: 'equals', value: new Date()}
+      {field: options[0], relation: DateTimeRelationState.EQUALS, value: new Date()},
+      {field: options[1], relation: DateTimeRelationState.EQUALS, value: new Date()},
+      {field: options[2], relation: DateTimeRelationState.EQUALS, value: new Date()},
+      {field: options[3], relation: DateTimeRelationState.EQUALS, value: new Date()}
     ]);
   } catch (err) {
     console.log('Something went wrong');

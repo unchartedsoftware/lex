@@ -1,6 +1,6 @@
 toc:
-  - name: General Usage
-    file: src/docs/usage.md
+  - name: README
+    file: README.md
   - name: Styling Lex
     file: src/docs/style-customization.md
   - name: API Documentation
@@ -14,21 +14,29 @@ toc:
   - Assistant
   - TransitionFactory
   - name: Choice States
-  - OptionState
-  - OptionStateOption
+  - ValueState
+  - ValueStateValue
+  - RelationState
   - TextRelationState
   - NumericRelationState
+  - DateTimeRelationState
   - name: Value Entry States
   - TextEntryState
   - NumericEntryState
+  - CurrencyEntryState
+  - DateTimeEntryState
   - name: Static States
   - LabelState
   - name: Builders
-  - OptionBuilder
+  - ValueBuilder
   - LabelBuilder
+  - TerminalBuilder
+  - DateTimeEntryBuilder
   - name: Assistants
-  - OptionAssistant
-  - name: Creating a Builder
-    file: src/docs/creating-a-builder.md
-  - name: Creating an Assistant
-    file: src/docs/creating-an-assistant.md
+  - ValueAssistant
+  - DateTimeEntryAssistant
+  - name: Miscellaneous
+  # - name: Creating a Builder
+  #   file: src/docs/creating-a-builder.md
+  # - name: Creating an Assistant
+  #   file: src/docs/creating-an-assistant.md
