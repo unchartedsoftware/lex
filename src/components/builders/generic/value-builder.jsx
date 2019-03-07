@@ -4,6 +4,14 @@ import { Builder } from '../../builder';
 import { ENTER, TAB, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
 import { lexStillHasFocus } from '../../../lib/util';
 
+/**
+ * A visual interaction mechanism for supplying values
+ * to a `ValueState`. By default, this is registered as
+ * the `Builder` for `ValueState`s.
+ *
+ * @example
+ * lex.registerBuilder(ValueState, ValueBuilder)
+ */
 export class ValueBuilder extends Builder {
   cleanupListeners () {
     super.cleanupListeners();
