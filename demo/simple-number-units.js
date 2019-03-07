@@ -22,15 +22,15 @@ const language = Lex
     // We want to let the user supply a valid number value so lets branch to a numeric entry state
     Lex.from('value', NumericEntryState, {
       units: 'year(s)',
-      ...TransitionFactory.optionMetaCompare({ type: 'age' })
+      ...TransitionFactory.valueMetaCompare({ type: 'age' })
     }),
     Lex.from('value', NumericEntryState, {
       units: 'm',
-      ...TransitionFactory.optionMetaCompare({ type: 'height' })
+      ...TransitionFactory.valueMetaCompare({ type: 'height' })
     }),
     Lex.from('value', NumericEntryState, {
       units: 'kg',
-      ...TransitionFactory.optionMetaCompare({ type: 'weight' })
+      ...TransitionFactory.valueMetaCompare({ type: 'weight' })
     })
   );
 

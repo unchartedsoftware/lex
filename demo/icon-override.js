@@ -27,11 +27,11 @@ const language = Lex
   .branch(
     Lex.from('value', TextEntryState, {
       // User option meta compare to limit this branch to string fields
-      ...TransitionFactory.optionMetaCompare({ type: 'string' })
+      ...TransitionFactory.valueMetaCompare({ type: 'string' })
     }),
     // For numbers we want to add the ability to modify the search relationship
     Lex
-      .from('relation', NumericRelationState, TransitionFactory.optionMetaCompare({type: 'number'}))
+      .from('relation', NumericRelationState, TransitionFactory.valueMetaCompare({type: 'number'}))
       .branch(
         // When the option is not "between" we just use a simple numeric entry
         Lex.from('value', NumericEntryState, TransitionFactory.valueKeyIsNot('between')),
