@@ -18,7 +18,7 @@ const language = Lex
   .branch(
     Lex.from('value', TextEntryState, {
       // User option meta compare to limit this branch to string fields
-      ...TransitionFactory.optionMetaCompare({ type: 'string' }),
+      ...TransitionFactory.valueMetaCompare({ type: 'string' }),
       validate: function (field) {
         // Custom validation method to ensure our value has a length greater than 1
         return field && field.key.length > 1;
@@ -26,7 +26,7 @@ const language = Lex
     }),
     Lex.from('value', NumericEntryState, {
       // User option meta compare to limit this branch to number fields
-      ...TransitionFactory.optionMetaCompare({ type: 'number' }),
+      ...TransitionFactory.valueMetaCompare({ type: 'number' }),
       validate: function (field) {
         // Custom validation method to ensure our value is greater than 0
         return field && !isNaN(field.key) && parseInt(field.key) > 0;

@@ -40,9 +40,9 @@ export class TransitionFactory {
    * @param {Object} toCompare - The metadata object.
    * @returns {Object} A config object with key `transition` and the intended transition function, to be used directly or further customized.
    * @example
-   * TransitionFactory.optionMetaCompare({type: 'string'})
+   * TransitionFactory.valueMetaCompare({type: 'string'})
    */
-  static optionMetaCompare (toCompare) {
+  static valueMetaCompare (toCompare) {
     return {
       transition: (parentVal) => {
         return parentVal && Object.keys(toCompare).map(k => parentVal.meta[k] === toCompare[k]).indexOf(false) < 0;

@@ -78,7 +78,7 @@ const language = Lex.from('field', ValueState, {
     defaultValue: new ValueStateValue('is', {}, {shortKey: '='}),
     autoAdvanceDefault: true,
     cssClasses: ['token-text-entry'],
-    ...TransitionFactory.optionMetaCompare({type: 'string'})
+    ...TransitionFactory.valueMetaCompare({type: 'string'})
   }).to('value', TextEntryState),
   Lex.from('value', TextEntryState, {
     multivalue: true,
@@ -89,9 +89,9 @@ const language = Lex.from('field', ValueState, {
       'entry',
       'text'
     ].map(t => new ValueStateValue(t)),
-    ...TransitionFactory.optionMetaCompare({type: 'multistring'})
+    ...TransitionFactory.valueMetaCompare({type: 'multistring'})
   }),
-  Lex.from('relation', NumericRelationState, TransitionFactory.optionMetaCompare({type: 'currency'})).branch(
+  Lex.from('relation', NumericRelationState, TransitionFactory.valueMetaCompare({type: 'currency'})).branch(
     Lex.from('value', CurrencyEntryState, { units: 'CAD', ...TransitionFactory.valueKeyIsNot('between') }),
     // override icon in this state as an example. Last icon specified in the chain is used.
     Lex.from('value', CurrencyEntryState, {
@@ -100,14 +100,14 @@ const language = Lex.from('field', ValueState, {
       ...TransitionFactory.valueKeyIs('between')
     }).to(LabelState, {label: 'and'}).to('secondaryValue', CurrencyEntryState, {units: 'CAD'})
   ),
-  Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime'})).branch(
+  Lex.from('relation', DateTimeRelationState, TransitionFactory.valueMetaCompare({type: 'datetime'})).branch(
     Lex.from('value', DateTimeEntryState, { ...TransitionFactory.valueKeyIsNot('between'), enableTime: true }),
     Lex.from('value', DateTimeEntryState, { ...TransitionFactory.valueKeyIs('between'), enableTime: true })
       .to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState, {enableTime: true})
   ),
   Lex.from('value', TextEntryState, {
     bindOnly: true, // this state can only be transitioned to programmatically, not interactively
-    ...TransitionFactory.optionMetaCompare({type: 'geohash'})
+    ...TransitionFactory.valueMetaCompare({type: 'geohash'})
   })
 );
 

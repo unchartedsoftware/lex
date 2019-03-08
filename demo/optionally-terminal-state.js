@@ -14,9 +14,9 @@ const language = Lex
     icon: '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>'
   })
   .branch(
-    Lex.from('value', TextEntryState, TransitionFactory.optionMetaCompare({type: 'string'})),
+    Lex.from('value', TextEntryState, TransitionFactory.valueMetaCompare({type: 'string'})),
     // terminal state is invisible, and simply exists to "end" that branch of the language tree.
-    Lex.from('terminal', TerminalState, TransitionFactory.optionMetaCompare({type: 'terminal'}))
+    Lex.from('terminal', TerminalState, TransitionFactory.valueMetaCompare({type: 'terminal'}))
   );
 
 // Now that we have a language defined we can initialize our lex instance

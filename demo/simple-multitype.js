@@ -18,11 +18,11 @@ const language = Lex
   .branch(
     Lex.from('value', TextEntryState, {
       // User option meta compare to limit this branch to string fields
-      ...TransitionFactory.optionMetaCompare({ type: 'string' })
+      ...TransitionFactory.valueMetaCompare({ type: 'string' })
     }),
     Lex.from('value', NumericEntryState, {
       // User option meta compare to limit this branch to number fields
-      ...TransitionFactory.optionMetaCompare({ type: 'number' })
+      ...TransitionFactory.valueMetaCompare({ type: 'number' })
     })
   );
 

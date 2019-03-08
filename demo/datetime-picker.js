@@ -40,7 +40,7 @@ const language = Lex.from('field', ValueState, {
     return '<span class="glyphicon glyphicon-time" aria-hidden="true"></span>';
   }
 }).branch(
-  Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'date'})).branch(
+  Lex.from('relation', DateTimeRelationState, TransitionFactory.valueMetaCompare({type: 'date'})).branch(
     // This example displays the functionality of minDay, maxDate, and hilightedDate
     Lex.from('value', DateTimeEntryState, {
       ...TransitionFactory.valueKeyIsNot('between'),
@@ -51,7 +51,7 @@ const language = Lex.from('field', ValueState, {
     }),
     Lex.from('value', DateTimeEntryState, TransitionFactory.valueKeyIs('between')).to(LabelState, {label: 'and'}).to('secondaryValue', DateTimeEntryState)
   ),
-  Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'time'})).branch(
+  Lex.from('relation', DateTimeRelationState, TransitionFactory.valueMetaCompare({type: 'time'})).branch(
     // This example displays the functionality of minDate, and maxDate as it applies to the time picker
     Lex.from('value', DateTimeEntryState, {
       ...TransitionFactory.valueKeyIsNot('between'),
@@ -76,7 +76,7 @@ const language = Lex.from('field', ValueState, {
       timezone: 'America/Toronto'
     })
   ),
-  Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime'})).branch(
+  Lex.from('relation', DateTimeRelationState, TransitionFactory.valueMetaCompare({type: 'datetime'})).branch(
     // This example displays the functionality of the date + time picker in 12 hour format (default)
     Lex.from('value', DateTimeEntryState, {
       ...TransitionFactory.valueKeyIsNot('between'),
@@ -95,7 +95,7 @@ const language = Lex.from('field', ValueState, {
       timezone: 'America/Toronto'
     })
   ),
-  Lex.from('relation', DateTimeRelationState, TransitionFactory.optionMetaCompare({type: 'datetime24hr'})).branch(
+  Lex.from('relation', DateTimeRelationState, TransitionFactory.valueMetaCompare({type: 'datetime24hr'})).branch(
     // This example displays the functionality of the date + time picker in 24 hour format
     Lex.from('value', DateTimeEntryState, {
       ...TransitionFactory.valueKeyIsNot('between'),
