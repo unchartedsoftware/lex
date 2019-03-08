@@ -12,18 +12,33 @@ const options = [
  *                          providing defaults for `name` and `options`.
  */
 export class TextRelationState extends RelationState {
+  /**
+   * The "is" option.
+   */
   static get IS () {
     return options[0];
   }
+  /**
+   * The "is not" option.
+   */
   static get IS_NOT () {
     return options[1];
   }
+  /**
+   * The "is like" option.
+   */
   static get IS_LIKE () {
     return options[2];
   }
+  /**
+   * The "contains" option.
+   */
   static get CONTAINS () {
     return options[3];
   }
+  /**
+   * The "does not contain" option.
+   */
   static get DOES_NOT_CONTAIN () {
     return options[4];
   }
