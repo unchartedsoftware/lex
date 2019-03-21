@@ -1,12 +1,13 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, ValueState, ValueStateValue, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, Action, ActionButton } from '../src/lex';
+import { Lex, TransitionFactory, ValueState, ValueStateValue, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, EnumEntryState, Action, ActionButton } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import '../node_modules/flatpickr/dist/flatpickr.min.css';
 
 // This array and the following function is a simulation of a back-end API for fetching options
 const options = [
   new ValueStateValue('Name', {type: 'string'}),
+  new ValueStateValue('Enum', {type: 'enum'}),
   new ValueStateValue('Income', {type: 'currency'}),
   new ValueStateValue('Keywords', {type: 'multistring'}),
   new ValueStateValue('GeoHash', {type: 'geohash'}, {hidden: true}),
@@ -80,6 +81,14 @@ const language = Lex.from('field', ValueState, {
     cssClasses: ['token-text-entry'],
     ...TransitionFactory.valueMetaCompare({type: 'string'})
   }).to('value', TextEntryState),
+  Lex.from('value', EnumEntryState, {
+    suggestions: [
+      new ValueStateValue(1, {enum: 'one'}),
+      new ValueStateValue(2, {enum: 'two'}),
+      new ValueStateValue(3, {enum: 'three'})
+    ],
+    ...TransitionFactory.valueMetaCompare({type: 'enum'})
+  }),
   Lex.from('value', TextEntryState, {
     multivalue: true,
     multivalueLimit: 3,
