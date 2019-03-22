@@ -1,23 +1,40 @@
-import {ValueState} from '../generic/value-state';
+import {ValueState, ValueStateValue} from '../generic/value-state';
 
 const _originalSuggestions = new WeakMap();
 
 /**
+ * An EnumEntryStateValue represents an Enumeration value, with a string name and a numerical index.
+ */
+export class EnumEntryStateValue extends ValueStateValue {
+  constructor (idx, name) {
+    super(idx, {enum: name}, {});
+  }
+}
+
+/**
  * This state supports the entry of an enum Value, a string associated with a number, with possible auto-complete
- * `config.suggestions` should be supplied as an array of `ValueStateValue`s which indicate the associated number value
- * in their metadata. For example, the enum value `"hello"->1` would be represented as `new ValueStateValue('hello', {enum: 1})`.
+ * `config.suggestions` should be supplied as an array of `EnumEntryStateValue`s.
+ * For example, the enum value `"hello"->1` would be represented as `new EnumEntryStateValue(1, 'hello')`.
  *
  * @param {Object} config - A configuration object. Supports most of the parameters from `ValueState` and `StateTemplate`,
  *                          providing defaults for `name`. `allowUnknown` is and must be false.
- *                          Suggestions must be fixed and provided via `config.suggestions`; `config.fetchSuggestions` is not supported.
+ *                          Possible Enumeration values must be fixed and provided via `config.enums`;
+ *                          `config.fetchSuggestions`and `config.suggestions` are not supported.
  */
 export class EnumEntryState extends ValueState {
   constructor (config) {
     if (config.fetchSuggestions !== undefined) {
-      throw new Error('EnumEntryState does not support fetchSuggestions. Suggestions must be fixed and provided via config.sugggestions.');
+      throw new Error('EnumEntryState does not support fetchSuggestions. Possible Enumeration values must be fixed and provided via config.enums.');
+    }
+    if (config.suggestions !== undefined) {
+      throw new Error('EnumEntryState does not support suggestions. Possible Enumeration values must be fixed and provided via config.enums.');
+    }
+    if (!Array.isArray(config.enums)) {
+      throw new Error('config.enums must be an Array of EnumEntryStateValues.');
     }
     if (config.name === undefined) config.name = 'Enter a value';
     config.allowUnknown = false;
+    config.suggestions = config.enums;
     super(config);
     _originalSuggestions.set(this, config.suggestions);
     config.fetchSuggestions = function (hint) {

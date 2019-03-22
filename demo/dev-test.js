@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, ValueState, ValueStateValue, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, EnumEntryState, Action, ActionButton } from '../src/lex';
+import { Lex, TransitionFactory, ValueState, ValueStateValue, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, EnumEntryState, EnumEntryStateValue, Action, ActionButton } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import '../node_modules/flatpickr/dist/flatpickr.min.css';
 
@@ -82,10 +82,10 @@ const language = Lex.from('field', ValueState, {
     ...TransitionFactory.valueMetaCompare({type: 'string'})
   }).to('value', TextEntryState),
   Lex.from('value', EnumEntryState, {
-    suggestions: [
-      new ValueStateValue(1, {enum: 'one'}),
-      new ValueStateValue(2, {enum: 'two'}),
-      new ValueStateValue(3, {enum: 'three'})
+    enums: [
+      new EnumEntryStateValue(1, 'one'),
+      new EnumEntryStateValue(2, 'two'),
+      new EnumEntryStateValue(3, 'three')
     ],
     ...TransitionFactory.valueMetaCompare({type: 'enum'})
   }),

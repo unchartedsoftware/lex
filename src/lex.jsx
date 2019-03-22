@@ -18,7 +18,7 @@ import { DateTimeRelationState } from './lib/states/temporal/datetime-relation-s
 import { TextEntryState } from './lib/states/text/text-entry-state';
 import { NumericEntryState } from './lib/states/numeric/numeric-entry-state';
 import { CurrencyEntryState } from './lib/states/numeric/currency-entry-state';
-import { EnumEntryState } from './lib/states/numeric/enum-entry-state';
+import { EnumEntryState, EnumEntryStateValue } from './lib/states/numeric/enum-entry-state';
 import { DateTimeEntryState } from './lib/states/temporal/datetime-entry-state';
 import { LabelBuilder } from './components/builders/generic/label-builder';
 import { TerminalBuilder } from './components/builders/generic/terminal-builder';
@@ -319,6 +319,7 @@ export {
   CurrencyEntryState,
   NumericEntryState,
   EnumEntryState,
+  EnumEntryStateValue,
   DateTimeEntryState,
   // Base UI components
   Builder,
