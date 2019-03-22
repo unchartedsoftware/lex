@@ -38,10 +38,11 @@ export class EnumEntryState extends ValueState {
     super(config);
     _originalSuggestions.set(this, config.suggestions);
     config.fetchSuggestions = function (hint) {
-      if (hint.length === 0) {
-        return _originalSuggestions.get(this);
-      }
-      return _originalSuggestions.get(this).filter(o => o.key === hint);
+      return _originalSuggestions.get(this).map(s => {
+        return new ValueStateValue(s.key, s.meta, {
+          highlighted: s.key === hint
+        });
+      });
     };
   }
 

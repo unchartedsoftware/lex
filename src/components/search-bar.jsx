@@ -149,7 +149,7 @@ export class SearchBar extends Component {
   get assistantPosition () {
     const rect = this.searchBox.getBoundingClientRect();
     const builderRect = this.tokenBuilder.base.getBoundingClientRect();
-    const width = Math.min(rect.width, 600);
+    const width = Math.min(rect.width, 400);
     const pos = {
       top: builderRect.top + builderRect.height - 2,
       'min-width': width,
