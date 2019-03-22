@@ -87,6 +87,7 @@ const language = Lex.from('field', ValueState, {
       new EnumEntryStateValue(2, 'two'),
       new EnumEntryStateValue(3, 'three')
     ],
+    multivalue: true,
     ...TransitionFactory.valueMetaCompare({type: 'enum'})
   }),
   Lex.from('value', TextEntryState, {
