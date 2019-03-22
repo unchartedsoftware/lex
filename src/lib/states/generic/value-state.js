@@ -94,10 +94,8 @@ export class ValueState extends State {
       if (thisVal.key.length === 0) return false;
       // don't allow duplicates
       if (thisArchive.map(e => e.key === thisVal.key).reduce((l, r) => l || r, false)) return false;
-      // if we allow unknown values, then return true
-      if (this.allowUnknown) return true;
-      // otherwise, return whether or not the entered value matches a known option or suggestion
-      return this.suggestions.filter(o => o.key === thisVal.key).length === 1;
+      // otherwise, return true
+      return true;
     };
     if (config.name === undefined) config.name = config.multivalue ? 'Select from the following values' : 'Choose a value';
     if (config.allowUnknown === undefined) config.allowUnknown = false;
