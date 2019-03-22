@@ -3,7 +3,7 @@ import {RelationState} from '../generic/relation-state';
 
 const options = [
   ['is', '='], ['is not', '≠'], ['is like', '≅'], ['contains', '⊇'], ['does not contain', '⊉']
-].map(o => new ValueStateValue(o[0], {}, {shortKey: o[1]}));
+].map(o => new ValueStateValue(o[0], {}, {displayKey: o[1]}));
 
 /**
  * This state supports the selection of a text relation from a list of options.

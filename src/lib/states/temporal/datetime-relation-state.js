@@ -3,7 +3,7 @@ import {RelationState} from '../generic/relation-state';
 
 const options = [
   ['equals', '='], ['does not equal', '≠'], ['before', '<'], ['after', '>'], ['between', 'between']
-].map(o => new ValueStateValue(o[0], {}, {shortKey: o[1]}));
+].map(o => new ValueStateValue(o[0], {}, {displayKey: o[1]}));
 
 /**
  * This state supports the selection of a datetime relation from a list of options.

@@ -76,7 +76,7 @@ const language = Lex.from('field', ValueState, {
   defaultValue: false
 }).branch(
   Lex.from('relation', TextRelationState, {
-    defaultValue: new ValueStateValue('is', {}, {shortKey: '='}),
+    defaultValue: new ValueStateValue('is', {}, {displayKey: '='}),
     autoAdvanceDefault: true,
     cssClasses: ['token-text-entry'],
     ...TransitionFactory.valueMetaCompare({type: 'string'})

@@ -14,7 +14,7 @@ export class RelationState extends ValueState {
       return config.options().map(o => {
         return o.key.toLowerCase().indexOf(hint.toLowerCase()) === 0
           ? new ValueStateValue(o.key, o.meta, {
-            shortKey: o.shortKey,
+            displayKey: o.displayKey,
             hidden: o.hidden,
             highlighted: true
           }) : o;
