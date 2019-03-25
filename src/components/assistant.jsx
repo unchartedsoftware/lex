@@ -88,8 +88,8 @@ export class Assistant extends Builder {
     if (body || state.loading) {
       return (
         <div className='assistant'>
-          {spinner}
           {body}
+          {spinner}
         </div>
       );
     }
