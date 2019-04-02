@@ -51,6 +51,7 @@ export class SearchBar extends Component {
       {k: 'tokenXIcon', default: '&times'},
       {k: 'cssClass', default: []},
       {k: 'cancelOnBlur', default: true},
+      {k: 'displayCancelOnCreate', default: false},
       {k: 'multivalueDelimiter', default: COMMA},
       {k: 'multivaluePasteDelimiter', default: ','},
       {k: 'onStartToken', default: () => undefined},
@@ -187,6 +188,7 @@ export class SearchBar extends Component {
         machine={activeMachine}
         builders={builders}
         cancelOnBlur={this.state.cancelOnBlur}
+        displayCancelOnCreate={this.state.displayCancelOnCreate}
         requestFocus={this.focus}
         requestBlur={this.blur}
         requestCancel={this.cancel}
@@ -514,18 +516,18 @@ export class SearchBar extends Component {
     this.state.onSuggestionsChanged(this.state.suggestions.map(t => t.value), oldSuggestionValues.map(t => t.value), newUnboxedValues, oldUnboxedValues);
   }
 
-  render (props, {placeholder, active, focused, enabled, tokenValues, suggestions, builders, activeMachine, tokenXIcon, cssClass, cancelOnBlur, multivalueDelimiter, multivaluePasteDelimiter}) {
+  render (props, {placeholder, active, focused, enabled, tokenValues, suggestions, builders, activeMachine, tokenXIcon, cssClass, cancelOnBlur, displayCancelOnCreate, multivalueDelimiter, multivaluePasteDelimiter}) {
     return (
       <div className={`lex-box form-control ${cssClass.join(' ')}` + (active && enabled ? ' active' : '') + (focused && enabled ? ' focused' : '') + (!enabled ? ' disabled' : '')} onKeyDown={this.onKeyDown} onMouseDown={this.activate} onFocus={this.activate} tabIndex='0' ref={(a) => { this.searchBox = a; }}>
         { !active && placeholder !== undefined && tokenValues.length === 0 && suggestions.length === 0 ? <div className='text-muted lex-placeholder'>{ placeholder }</div> : '' }
         {
           tokenValues.map((v, i) => {
-            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} requestRemoval={this.removeToken} requestEdit={this.editToken} onActionValueChanged={this.onActionValueChanged(i)} idx={i} />;
+            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} displayCancelOnCreate={displayCancelOnCreate} requestRemoval={this.removeToken} requestEdit={this.editToken} onActionValueChanged={this.onActionValueChanged(i)} idx={i} />;
           })
         }
         {
           suggestions.map((v, j) => {
-            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} requestRemoval={this.rejectSuggestion} requestAcceptSuggestion={this.acceptSuggestion} onActionValueChanged={this.onActionValueChanged(j)} idx={j} suggestion />;
+            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} displayCancelOnCreate={displayCancelOnCreate} requestRemoval={this.rejectSuggestion} requestAcceptSuggestion={this.acceptSuggestion} onActionValueChanged={this.onActionValueChanged(j)} idx={j} suggestion />;
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }
