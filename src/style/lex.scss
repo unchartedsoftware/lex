@@ -85,6 +85,10 @@ div.lex-box div.token, ul.entered-values li.entered-value {
     padding: $lex-token-padding ($lex-token-padding + 16px) $lex-token-padding ($lex-token-padding + 2px);
   }
 
+  &.editing {
+    padding: $lex-token-padding ($lex-token-padding + 2px) $lex-token-padding ($lex-token-padding + 2px);
+  }
+
   &.suggestion {
     border: 1px solid $lex-highlight-color;
     background: transparentize($lex-highlight-color, 0.85);

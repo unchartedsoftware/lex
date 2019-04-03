@@ -295,10 +295,10 @@ export class Token extends Component {
     return this.activeBuilder && this.activeBuilder.delegateEvent(e);
   }
 
-  render (props, {active, flash, cancelOnBlur, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter}) {
+  render (props, {active, flash, cancelOnBlur, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter, editing}) {
     return (
       <div className='token-container'>
-        <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''} ${this.compileBuilderClassHints()}`} onMouseDown={this.requestEdit}>
+        <div className={`token ${active ? 'active' : ''} ${editing ? 'editing' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''} ${this.compileBuilderClassHints()}`} onMouseDown={this.requestEdit}>
           {this.icon}
           {this.state.stateArray.map(s => {
             const Builder = this.state.builders.getBuilder(s.constructor);
