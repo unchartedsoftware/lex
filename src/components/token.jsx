@@ -20,7 +20,6 @@ export class Token extends Component {
       {k: 'multivaluePasteDelimiter', default: ','},
       {k: 'stateArray', default: []},
       {k: 'cancelOnBlur', default: true},
-      {k: 'displayCancelOnCreate', default: false},
       {k: 'requestTransition', default: () => true},
       {k: 'requestArchive', default: () => true},
       {k: 'requestUnarchive', default: () => true},
@@ -283,16 +282,10 @@ export class Token extends Component {
         </span>
       );
     } else {
-      let cancelBtn;
-      if (this.state.displayCancelOnCreate) {
-        cancelBtn = (
-          <button type='button' onMouseDown={this.requestCancel} className='btn btn-xs btn-default token-next' aria-label='Cancel Edits'>Cancel</button>
-        );
-      }
       return (
         <span className='button-group'>
           <button type='button' onMouseDown={(e) => this.requestTransition(e, false)} className={`btn btn-xs ${this.state.machine.state.isTerminal ? 'btn-primary' : 'btn-default'} token-next`} aria-label={nextLabel}>{nextLabel} &gt;</button>
-          {cancelBtn}
+          <button type='button' onMouseDown={this.requestCancel} className='btn btn-xs btn-link token-cancel' aria-label='Cancel New Token'>{this.xicon}</button>
         </span>
       );
     }

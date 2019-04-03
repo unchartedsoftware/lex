@@ -82,7 +82,7 @@ div.lex-box div.token, ul.entered-values li.entered-value {
   user-select: none;
 
   &.active {
-    padding: $lex-token-padding ($lex-token-padding + 2px) $lex-token-padding ($lex-token-padding + 2px);
+    padding: $lex-token-padding ($lex-token-padding + 16px) $lex-token-padding ($lex-token-padding + 2px);
   }
 
   &.suggestion {
@@ -206,7 +206,7 @@ div.lex-box div.token, ul.entered-values li.entered-value {
     }
   }
 
-  button.token-remove {
+  button.token-remove, button.token-cancel {
     color: $lex-token-remove-button-color;
     padding: 0.2em 0.2em 0.2em 0;
     display: inline-block;
