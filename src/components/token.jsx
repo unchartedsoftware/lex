@@ -204,8 +204,12 @@ export class Token extends Component {
   }
 
   @Bind
-  requestCancel () {
-    this.state.requestCancel();
+  requestCancel (e) {
+    if (this.state.editing) {
+      this.state.requestCancel();
+    } else {
+      this.requestRemoval(e);
+    }
   }
 
   @Bind
@@ -278,7 +282,12 @@ export class Token extends Component {
         </span>
       );
     } else {
-      return (<button type='button' onMouseDown={(e) => this.requestTransition(e, false)} className={`btn btn-xs ${this.state.machine.state.isTerminal ? 'btn-primary' : 'btn-default'} token-next`} aria-label={nextLabel}>{nextLabel} &gt;</button>);
+      return (
+        <span className='button-group'>
+          <button type='button' onMouseDown={(e) => this.requestTransition(e, false)} className={`btn btn-xs ${this.state.machine.state.isTerminal ? 'btn-primary' : 'btn-default'} token-next`} aria-label={nextLabel}>{nextLabel} &gt;</button>
+          <button type='button' onMouseDown={this.requestCancel} className='btn btn-xs btn-link token-cancel' aria-label='Cancel New Token'>{this.xicon}</button>
+        </span>
+      );
     }
   }
 
@@ -286,10 +295,10 @@ export class Token extends Component {
     return this.activeBuilder && this.activeBuilder.delegateEvent(e);
   }
 
-  render (props, {active, flash, cancelOnBlur, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter}) {
+  render (props, {active, flash, cancelOnBlur, suggestion, machine, multivalueDelimiter, multivaluePasteDelimiter, editing}) {
     return (
       <div className='token-container'>
-        <div className={`token ${active ? 'active' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''} ${this.compileBuilderClassHints()}`} onMouseDown={this.requestEdit}>
+        <div className={`token ${active ? 'active' : ''} ${editing ? 'editing' : ''} ${suggestion ? 'suggestion' : ''} ${flash ? 'anim-flash' : ''} ${machine.isBindOnly ? 'bind-only' : ''} ${this.compileBuilderClassHints()}`} onMouseDown={this.requestEdit}>
           {this.icon}
           {this.state.stateArray.map(s => {
             const Builder = this.state.builders.getBuilder(s.constructor);

@@ -151,9 +151,11 @@ window.setQuery = async function () {
   try {
     await lex.setQuery([
       {field: options[0], relation: TextRelationState.IS_LIKE, value: new ValueStateValue('Sean')},
-      {field: options[1], relation: NumericRelationState.EQUALS, value: new ValueStateValue(12)},
-      {field: options[2], value: ['Rob', 'Phil', 'two'].map((k) => new ValueStateValue(k))},
-      {field: options[3], value: new ValueStateValue('geohash things')}
+      {field: options[1], relation: NumericRelationState.EQUALS, value: new EnumEntryStateValue(2)},
+      {field: options[2], relation: NumericRelationState.EQUALS, value: new ValueStateValue(12)},
+      {field: options[3], value: ['Rob', 'Phil', 'two'].map((k) => new ValueStateValue(k))},
+      {field: options[4], value: new ValueStateValue('geohash things')},
+      {field: options[5], relation: DateTimeRelationState.EQUALS, value: new Date()}
     ]);
   } catch (err) {
     console.log('Something went wrong');
