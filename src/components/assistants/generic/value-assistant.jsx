@@ -91,7 +91,6 @@ export class ValueAssistant extends Assistant {
       activeSuggestion: idx
     });
     this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
-    setTimeout(() => this.fixListScrollPosition());
   }
 
   @Bind
