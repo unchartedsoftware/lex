@@ -76,7 +76,7 @@ const _units = new WeakMap();
  *
  * @param {Object} config - A configuration object. Inherits all options from `State`, and adds the following:
  * @param {Array[ValueStateValue]|undefined} config.suggestions - A pre-defined array of suggestions which can be suggested to the user. If this is specified, config.fetchSuggestions should be null.
- * @param {AsyncFunction | undefined} config.fetchSuggestions - A (required) function which is utilized for fetching suggestions via a hint (what the user has typed). `async (hint, context) => ValueStateValue[]`, executing in the scope of this `ValueState`, allowing access to its instance methods. If this is specified, config.suggestions should be null.
+ * @param {AsyncFunction | undefined} config.fetchSuggestions - A (required) function which is utilized for fetching suggestions via a hint (what the user has typed). `async (hint, context, formattedHint) => ValueStateValue[]`, executing in the scope of this `ValueState`, allowing access to its instance methods. If this is specified, config.suggestions should be null.
  * @param {boolean | undefined} config.allowUnknown - Allow user to supply unknown values (i.e. not from suggestions). Defaults to false.
  * @param {Function | undefined} config.onUnknownValue - Optional hook (`(ValueStateValue) => ValueStateValue`) which, when a user enters an unknown `ValueStateValue`, allows for augmentation with things like metadata. Must return a new `ValueStateValue`, since `ValueStateValue` is immutable.
  * @param {number | undefined} config.suggestionLimit - A limit on the number of suggestions that will be shown at one time. Defaults to 5.
@@ -111,12 +111,12 @@ export class ValueState extends State {
     super(config);
 
     _suggestions.set(this, []);
-    _fetchSuggestions.set(this, async (hint = '', context = []) => {
+    _fetchSuggestions.set(this, async (hint = '', context = [], formattedHint = '') => {
       if (typeof config.fetchSuggestions !== 'function') {
         return [];
       }
       try {
-        return config.fetchSuggestions.call(this, hint, context);
+        return config.fetchSuggestions.call(this, hint, context, formattedHint);
       } catch (err) {
         console.error(`Could not fetch list of suggestions for hint ${hint}.`); // eslint-disable-line no-console
         throw err;
@@ -294,16 +294,17 @@ export class ValueState extends State {
    * Can be called by a child class to trigger a refresh of suggestions based on a hint (what the
    * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.fetchSuggestions`.
    *
-   * @param {string | undefined} hint - What the user has typed, if anything, converted to a key by unformatUnboxedValue.
+   * @param {string} hint - What the user has typed, if anything, converted to a key by unformatUnboxedValue.
    * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
+   * @param {string} formattedHint - What the user has typed, if anything, but untouched by unformatUnboxedValue.
    * @returns {Promise} Resolves with the new list of options.
    */
-  async fetchSuggestions (hint = '', context = {}) {
+  async fetchSuggestions (hint = '', context = {}, formattedHint = '') {
     if (hint === null) console.error('hint cannot be null in fetchSuggestions - perhaps unformatUnboxedValue returned null?'); // eslint-disable-line no-console
     // start lookup
     this.emit('fetching suggestions');
     _lastRefresh.set(this, hint);
-    _lastRefreshPromise.set(this, _fetchSuggestions.get(this)(hint, context));
+    _lastRefreshPromise.set(this, _fetchSuggestions.get(this)(hint, context, formattedHint));
     try {
       const newSuggestions = await _lastRefreshPromise.get(this);
       this.setupNextFetchPromise().resolve();

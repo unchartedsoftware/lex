@@ -583,7 +583,7 @@ export class State extends EventEmitter {
    */
   archiveValue (context) { // eslint-disable-line no-unused-vars
     if (!this.isValid) {
-      throw new ValueArchiveError(`Cannot archive invalid value for current state: ${this.value}`);
+      throw new ValueArchiveError(`Cannot archive invalid value for current state: ${JSON.stringify(this.value)}`);
     } else if (this.multivalueLimit && this.archive.length === this.multivalueLimit) {
       throw new ValueArchiveError(`Multivalue size limit reached for state ${this.name}`);
     }
