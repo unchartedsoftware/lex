@@ -109,7 +109,7 @@ export class ValueBuilder extends Builder {
   @Debounce(250) // 250ms debounce
   handleKeyUp (e) {
     const boxed = this.machine.boxedValue;
-    this.machineState.fetchSuggestions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed);
+    this.machineState.fetchSuggestions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed, e.target.value);
   }
 
   focus () {
@@ -166,7 +166,7 @@ export class ValueBuilder extends Builder {
 
   @Bind
   requestFocus () {
-    this.machineState.fetchSuggestions('', this.machine.boxedValue);
+    this.machineState.fetchSuggestions('', this.machine.boxedValue, '');
     return super.requestFocus();
   }
 
