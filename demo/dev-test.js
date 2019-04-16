@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, ValueState, ValueStateValue, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, EnumEntryState, EnumEntryStateValue, Action, ActionButton } from '../src/lex';
+import { Lex, TransitionFactory, TokenSuggestionState, TokenSuggestionStateValue, ValueState, ValueStateValue, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, EnumEntryState, EnumEntryStateValue, Action, ActionButton } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import '../node_modules/flatpickr/dist/flatpickr.min.css';
 
@@ -52,7 +52,17 @@ class PinActionButton extends ActionButton {
   }
 }
 
-const language = Lex.from('field', ValueState, {
+const language = Lex.from('intelligent', TokenSuggestionState, {
+  tokenSuggestions: [
+    new TokenSuggestionStateValue(/\w+/, 'Name', (match) => {
+      return {
+        field: options[0],
+        relation: TextRelationState.IS,
+        value: new ValueStateValue(match[0])
+      };
+    })
+  ]
+}).to('field', ValueState, {
   name: 'Choose a field to search',
   fetchSuggestions: searchOptionsFactory(options, 250),
   icon: (value) => {
@@ -76,7 +86,7 @@ const language = Lex.from('field', ValueState, {
   defaultValue: false
 }).branch(
   Lex.from('relation', TextRelationState, {
-    defaultValue: new ValueStateValue('is', {}, {displayKey: '='}),
+    defaultValue: TextRelationState.IS,
     autoAdvanceDefault: true,
     cssClasses: ['token-text-entry'],
     ...TransitionFactory.valueMetaCompare({type: 'string'})
