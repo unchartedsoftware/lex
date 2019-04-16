@@ -7,6 +7,7 @@ import { State, StateTemplate } from './lib/state';
 import { Action } from './lib/action';
 import { StateBuilderFactory } from './lib/state-builder-factory';
 import { TransitionFactory } from './lib/transition-factory';
+import { TokenSuggestionFactory } from './lib/token-suggestion-factory';
 import { SearchBar } from './components/search-bar';
 import { LabelState } from './lib/states/generic/label-state';
 import { TerminalState } from './lib/states/generic/terminal-state';
@@ -35,6 +36,7 @@ const _language = new WeakMap();
 const _placeholder = new WeakMap();
 const _popupContainer = new WeakMap();
 const _builders = new WeakMap();
+const _tokenPatterns = new WeakMap();
 const _proxiedEvents = new WeakMap();
 const _defaultValue = new WeakMap();
 const _tokenXIcon = new WeakMap();
@@ -101,6 +103,7 @@ class Lex extends EventEmitter {
     _placeholder.set(this, placeholder);
     _popupContainer.set(this, container);
     _builders.set(this, new StateBuilderFactory());
+    _tokenPatterns.set(this, new TokenSuggestionFactory());
     _defaultValue.set(this, defaultQuery);
     _builders.get(this)
       .registerBuilder(ValueState, ValueBuilder)
@@ -162,6 +165,18 @@ class Lex extends EventEmitter {
   }
 
   /**
+   * Register a token pattern which, when matched, calls `factory` with the match
+   * so that a `TokenStateMachine` value can be produced. Patterns are tested in
+   * registration order.
+   *
+   * @param {RegExp} regex - A regular expression which may match what the user types.
+   * @param {Function} factory - A function which, receiving the match, returns a `TokenStateMachine` boxedValue. `(Array) => Object`.
+   */
+  registerTokenPattern (regex, factory) {
+    _tokenPatterns.get(this).registerTokenPattern(regex, factory);
+  }
+
+  /**
    * Define a new search language.
    *
    * @param {string} vkey - The (optional) unique key used to store this state's value within a `Token` output object. If not supplied, this state won't be represented in the `Token` value.
@@ -207,6 +222,7 @@ class Lex extends EventEmitter {
         popupContainer={_popupContainer.get(this)}
         value={_defaultValue.get(this)}
         builders={_builders.get(this)}
+        tokenPatterns={_tokenPatterns.get(this)}
         machineTemplate={_language.get(this)}
         proxiedEvents={_proxiedEvents.get(this)}
         tokenXIcon={_tokenXIcon.get(this)}
