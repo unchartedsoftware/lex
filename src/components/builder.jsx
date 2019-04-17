@@ -87,6 +87,7 @@ export class Builder extends Component {
       {k: 'multivalueDelimiter', default: COMMA},
       {k: 'multivaluePasteDelimiter', default: ','},
       {k: 'requestTransition', default: () => true},
+      {k: 'requestEndAndCreateToken', default: () => true},
       {k: 'requestArchive', default: () => true},
       {k: 'requestUnarchive', default: () => true},
       {k: 'requestRemoveArchivedValue', default: () => true},
@@ -138,6 +139,16 @@ export class Builder extends Component {
    */
   requestTransition (options) {
     return this.state.requestTransition(options);
+  }
+
+  @Bind
+  /**
+   * Call from a subclass to request an immediate cancelling of the current state machine, and the creation of a brand new token.
+   *
+   * @param {object} boxedTokenValue - The boxed token value to immediately create
+   */
+  requestEndAndCreateToken (boxedTokenValue) {
+    return this.state.requestEndAndCreateToken(boxedTokenValue);
   }
 
   @Bind
@@ -325,7 +336,7 @@ export class Builder extends Component {
    * @returns {boolean} Returns `true` iff this `State` is valid. Should throw an exception with information about validation error otherwise.
    */
   get isValid () {
-    this.state.machineState.isValid();
+    return this.state.machineState.isValid;
   }
 
   /**

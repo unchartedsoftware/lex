@@ -44,7 +44,7 @@ export class TokenSuggestionState extends ValueState {
     _tokenSuggestions.set(this, config.tokenSuggestions);
     config.fetchSuggestions = function (hint) {
       return _tokenSuggestions.get(this).filter(s => s.meta.pattern.test(hint)).map(s => {
-        return new ValueStateValue(s.key, s.meta, {
+        return new ValueStateValue(s.key, {...s.meta, match: s.meta.pattern.exec(hint)}, {
           highlighted: true
         });
       });

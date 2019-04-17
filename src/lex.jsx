@@ -24,7 +24,9 @@ import { TokenSuggestionState, TokenSuggestionStateValue } from './lib/states/su
 import { LabelBuilder } from './components/builders/generic/label-builder';
 import { TerminalBuilder } from './components/builders/generic/terminal-builder';
 import { ValueBuilder } from './components/builders/generic/value-builder';
+import { TokenSuggestionBuilder } from './components/builders/suggestion/token-suggestion-builder';
 import { ValueAssistant } from './components/assistants/generic/value-assistant';
+import { TokenSuggestionAssistant } from './components/assistants/suggestion/token-suggestion-assistant';
 import { DateTimeEntryBuilder } from './components/builders/temporal/datetime-entry-builder';
 import { DateTimeEntryAssistant } from './components/assistants/temporal/datetime-entry-assistant';
 import { ActionButton } from './components/action-button';
@@ -105,10 +107,12 @@ class Lex extends EventEmitter {
     _defaultValue.set(this, defaultQuery);
     _builders.get(this)
       .registerBuilder(ValueState, ValueBuilder)
+      .registerBuilder(TokenSuggestionState, TokenSuggestionBuilder)
       .registerBuilder(DateTimeEntryState, DateTimeEntryBuilder)
       .registerBuilder(LabelState, LabelBuilder)
       .registerBuilder(TerminalState, TerminalBuilder)
       .registerAssistant(ValueState, ValueAssistant)
+      .registerAssistant(TokenSuggestionState, TokenSuggestionAssistant)
       .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant)
       .registerActionButton(Action, ActionButton);
     _proxiedEvents.set(this, new Map());
@@ -330,6 +334,8 @@ export {
   // UI components
   ValueBuilder,
   ValueAssistant,
+  TokenSuggestionBuilder,
+  TokenSuggestionAssistant,
   DateTimeEntryBuilder,
   DateTimeEntryAssistant,
   ActionButton,

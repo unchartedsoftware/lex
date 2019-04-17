@@ -191,6 +191,7 @@ export class SearchBar extends Component {
         requestBlur={this.blur}
         requestCancel={this.cancel}
         requestTransition={this.transition}
+        requestEndAndCreateToken={this.endAndCreateToken}
         requestArchive={this.archive}
         requestUnarchive={this.unarchive}
         requestRemoveArchivedValue={this.removeArchivedValue}
@@ -226,6 +227,7 @@ export class SearchBar extends Component {
               requestBlur={this.blur}
               requestCancel={this.cancel}
               requestTransition={this.transition}
+              requestEndAndCreateToken={this.endAndCreateToken}
               requestArchive={this.archive}
               requestUnarchive={this.unarchive}
               requestRemoveArchivedValue={this.removeArchivedValue}
@@ -302,6 +304,12 @@ export class SearchBar extends Component {
         throw err;
       }
     }
+  }
+
+  @Bind
+  endAndCreateToken (boxedTokenValue) {
+    this.cancel();
+    this.onEndToken(boxedTokenValue);
   }
 
   @Bind
@@ -410,7 +418,7 @@ export class SearchBar extends Component {
   }
 
   @Bind
-  onEndToken (v, nextToken) {
+  onEndToken (v, nextToken = false) {
     const oldQueryValues = this.state.tokenValues;
     const newMachine = new TokenStateMachine(this.state.machineTemplate);
     newMachine.bindValues(v).then(() => {

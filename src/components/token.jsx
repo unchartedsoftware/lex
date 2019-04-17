@@ -21,6 +21,7 @@ export class Token extends Component {
       {k: 'stateArray', default: []},
       {k: 'cancelOnBlur', default: true},
       {k: 'requestTransition', default: () => true},
+      {k: 'requestEndAndCreateToken', default: () => true},
       {k: 'requestArchive', default: () => true},
       {k: 'requestUnarchive', default: () => true},
       {k: 'requestRemoveArchivedValue', default: () => true},
@@ -308,6 +309,7 @@ export class Token extends Component {
               machineState={s}
               cancelOnBlur={cancelOnBlur}
               requestTransition={this.state.requestTransition}
+              requestEndAndCreateToken={this.state.requestEndAndCreateToken}
               requestArchive={this.state.requestArchive}
               requestUnarchive={this.state.requestUnarchive}
               requestRemoveArchivedValue={this.state.requestRemoveArchivedValue}
