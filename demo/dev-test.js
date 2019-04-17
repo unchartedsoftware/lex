@@ -54,7 +54,15 @@ class PinActionButton extends ActionButton {
 
 const language = Lex.from('intelligent', TokenSuggestionState, {
   tokenSuggestions: [
-    new TokenSuggestionStateValue(/\w+/, 'Name', (match) => {
+    new TokenSuggestionStateValue(/^\$?(\d+(?:\.\d\d)?)$/, (match) => `Search "${match[0]}" as Income`, (match) => {
+      console.log(match);
+      return {
+        field: options[2],
+        relation: TextRelationState.IS,
+        value: new ValueStateValue(match[1])
+      };
+    }),
+    new TokenSuggestionStateValue(/[A-Za-z\s]+/, (match) => `Search "${match[0]}" as a Name`, (match) => {
       return {
         field: options[0],
         relation: TextRelationState.IS,

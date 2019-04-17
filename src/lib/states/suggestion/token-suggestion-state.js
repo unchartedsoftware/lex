@@ -8,12 +8,12 @@ const _tokenSuggestions = new WeakMap();
  * which would be suggested if the regexp is matched.
  *
  * @param {RegExp} regex - A regular expression which may match what the user types.
- * @param {string} description - Text to show a user describing this suggestion.
+ * @param {Function} description - A function which, receiving the match, returns the text to show a user describing this suggestion.
  * @param {Function} factory - A function which, receiving the match, returns a `TokenStateMachine` boxedValue.
  */
 export class TokenSuggestionStateValue extends ValueStateValue {
   constructor (regex, description, factory) {
-    super(description, {pattern: regex, factory: factory}, {});
+    super(regex, {description: description, pattern: regex, factory: factory}, {});
   }
 }
 
@@ -44,7 +44,8 @@ export class TokenSuggestionState extends ValueState {
     _tokenSuggestions.set(this, config.tokenSuggestions);
     config.fetchSuggestions = function (hint) {
       return _tokenSuggestions.get(this).filter(s => s.meta.pattern.test(hint)).map(s => {
-        return new ValueStateValue(s.key, {...s.meta, match: s.meta.pattern.exec(hint)}, {
+        const match = s.meta.pattern.exec(hint);
+        return new ValueStateValue(s.meta.description(match), {...s.meta, match: match}, {
           highlighted: true
         });
       });
