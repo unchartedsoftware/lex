@@ -54,21 +54,21 @@ class PinActionButton extends ActionButton {
 
 const language = Lex.from('intelligent', TokenSuggestionState, {
   tokenSuggestions: [
-    new TokenSuggestionStateValue(/^\$?(\d+(?:\.\d\d)?)$/, (match) => `Search "${match[0]}" as Income`, (match) => {
+    new TokenSuggestionStateValue([/^\$?(\d+(?:\.\d\d)?)$/], (match) => `Search "${match[0]}" as Income`, (match) => {
       return {
         field: options[2],
         relation: TextRelationState.IS,
         value: new ValueStateValue(match[1])
       };
     }),
-    new TokenSuggestionStateValue(/^[A-Za-z\s]+$/, (match) => `Search "${match[0]}" as a Name`, (match) => {
+    new TokenSuggestionStateValue([/^[A-Za-z\s]+$/], (match) => `Search "${match[0]}" as a Name`, (match) => {
       return {
         field: options[0],
         relation: TextRelationState.IS,
         value: new ValueStateValue(match[0])
       };
     }),
-    new TokenSuggestionStateValue(/^(?:[A-Za-z]+)(?:,\s?[A-Za-z]+){0,2}$/, (match) => `Search "${match[0]}" as Keywords`, (match) => {
+    new TokenSuggestionStateValue([/^(?:[A-Za-z]+)(?:,\s?[A-Za-z]+){0,2}$/], (match) => `Search "${match[0]}" as Keywords`, (match) => {
       return {
         field: options[3],
         value: match[0].split(',').map(v => new ValueStateValue(v))

@@ -67,7 +67,7 @@ const _onRejectSuggestion = new WeakMap();
  * @param {Object[]} config.defaultQuery - The default search state for this search box. Can either be an array of arrays of boxed or unboxed (basic type) values.
  * @param {string} config.tokenXIcon - The default X icon for tokens (DOM string).
  * @param {number} config.multivalueDelimiterKey - The JS key code of the delimiter which will notionally 'separate' multiple values in any visual representation of a multivalue state. 188 (',') by default.
- * @param {string[]} config.multivaluePasteDelimiter - The characters which are supported as delimiters text which is pasted into a multivalue state. ',' by default.
+ * @param {string} config.multivaluePasteDelimiter - The characters which are supported as delimiters text which is pasted into a multivalue state. ',' by default.
  * @param {string[]} config.cssClass - Add unique classes to the lex search bar and associated assistant
  * @param {boolean} config.cancelOnBlur - Whether or not to cancel token creation/editing on blur. True by default.
  * @param {function | undefined} config.onAcceptSuggestion - A callback called when the user presses "add" on a suggestion. A no-op by default (`(s, idx) => s`) but, if supplied, can be used to transform the incoming boxed suggestion, perform additional actions, etc. Return `null` to stop Lex from updating suggestions and query automatically, or return the suggestion (or a transformed version) to allow Lex to handle the rest.
