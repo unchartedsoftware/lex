@@ -307,6 +307,7 @@ export class Token extends Component {
             const Builder = this.state.builders.getBuilder(s.constructor);
             return (<Builder
               key={s.id}
+              editing={editing}
               machine={machine}
               machineState={s}
               cancelOnBlur={cancelOnBlur}

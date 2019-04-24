@@ -132,7 +132,7 @@ export class ValueBuilder extends Builder {
 
   @Bind
   beforeTransition () {
-    if (this.machineState.value === null) {
+    if (this.machineState.value === null || (this.state.editing && this.machineState.value.key !== this.state.typedText)) {
       this.commitTypedValue();
     }
     if (this.state.typedText === undefined || this.state.typedText === null || this.state.typedText.length === 0) {
