@@ -26,6 +26,16 @@ export class TokenSuggestionBuilder extends ValueBuilder {
   }
 
   @Bind
+  requestRewindTo (e) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    this.skipNextBlur = true;
+    super.requestRewindTo(e);
+  }
+
+  @Bind
   onBlur (e) {
     if (!this.skipNextBlur) {
       super.onBlur(e);
@@ -33,8 +43,10 @@ export class TokenSuggestionBuilder extends ValueBuilder {
     this.skipNextBlur = false;
   }
 
-  renderReadOnly () {
-    return null;
+  renderReadOnly (props, {tokenActive, editing}) {
+    if (tokenActive && !editing) {
+      return (<button type='button' onMouseDown={this.requestRewindTo} className='btn btn-xs btn-default token-next' aria-label='Simple Search'>Simple</button>);
+    }
   }
 
   renderInteractive (props, {valid, readOnly, typedText, machineState}) {
