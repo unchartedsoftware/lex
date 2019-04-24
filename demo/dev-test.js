@@ -102,7 +102,7 @@ const language = Lex.from('intelligent', TokenSuggestionState, {
   Lex.from('relation', TextRelationState, {
     defaultValue: TextRelationState.IS,
     autoAdvanceDefault: true,
-    cssClasses: ['token-text-entry'],
+    // cssClasses: ['token-text-entry'],
     ...TransitionFactory.valueMetaCompare({type: 'string'})
   }).to('value', TextEntryState),
   Lex.from('value', EnumEntryState, {
