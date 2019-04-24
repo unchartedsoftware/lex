@@ -1,4 +1,5 @@
 import { h } from 'preact';
+import { Bind } from 'lodash-decorators';
 import { ValueAssistant } from '../generic/value-assistant';
 
 export class TokenSuggestionAssistant extends ValueAssistant {

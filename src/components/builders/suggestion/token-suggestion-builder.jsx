@@ -1,4 +1,5 @@
 import { h } from 'preact';
+import { Bind } from 'lodash-decorators';
 import { ValueBuilder } from '../generic/value-builder';
 
 export class TokenSuggestionBuilder extends ValueBuilder {
@@ -14,6 +15,25 @@ export class TokenSuggestionBuilder extends ValueBuilder {
 
   renderReadOnly () {
     return null;
+  }
+
+  @Bind
+  startAdvanced (e) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    this.value = null;
+    this.skipNextBlur = true;
+    super.requestTransition();
+  }
+
+  @Bind
+  onBlur (e) {
+    if (!this.skipNextBlur) {
+      super.onBlur(e);
+    }
+    this.skipNextBlur = false;
   }
 
   renderInteractive (props, {valid, readOnly, typedText, machineState}) {
@@ -37,6 +57,7 @@ export class TokenSuggestionBuilder extends ValueBuilder {
             disabled={readOnly || (machineState.isMultivalue && !machineState.canArchiveValue)} />
           { machineState.units !== undefined ? <span className='token-input token-input-units text-muted'>{ machineState.units }</span> : '' }
         </span>
+        <button type='button' onMouseDown={this.startAdvanced} className='btn btn-xs btn-default token-next' aria-label='Advanced Search'>Advanced</button>
       </span>
     );
   }

@@ -37,9 +37,18 @@ export class TokenSuggestionState extends ValueState {
     if (!Array.isArray(config.tokenSuggestions)) {
       throw new Error('config.tokenSuggestions must be an Array of TokenSuggestionStateValue.');
     }
-    if (config.name === undefined) config.name = 'Enter a value';
+    if (config.name === undefined) config.name = 'Begin typing to see search suggestions';
     config.allowUnknown = false;
+    config.hideLifecycleInteractions = true;
     config.suggestions = config.tokenSuggestions;
+    config.overrideValidation = true;
+    const origValidate = config.validate;
+    config.validate = (thisVal, thisArchive) => {
+      // try incoming validation function before trying ours
+      if (origValidate !== undefined && !origValidate(thisVal, thisArchive)) return false;
+      // allow null values and otherwise, return true
+      return true;
+    };
     super(config);
     _tokenSuggestions.set(this, config.tokenSuggestions);
     config.fetchSuggestions = function (hint) {

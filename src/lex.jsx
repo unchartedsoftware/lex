@@ -119,10 +119,6 @@ class Lex extends EventEmitter {
     _tokenXIcon.set(this, tokenXIcon);
     _multivalueDelimiterKey.set(this, multivalueDelimiterKey);
     _multivaluePasteDelimiter.set(this, multivaluePasteDelimiter);
-    // ensure that the multivalueDelimiter is proxied to assistants
-    if (proxiedEvents.indexOf(multivalueDelimiterKey) < 0) {
-      proxiedEvents.push(multivalueDelimiterKey);
-    }
     proxiedEvents.forEach(e => _proxiedEvents.get(this).set(e, true));
     _cssClass.set(this, cssClass);
     _cancelOnBlur.set(this, cancelOnBlur);

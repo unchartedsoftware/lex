@@ -62,11 +62,17 @@ const language = Lex.from('intelligent', TokenSuggestionState, {
         value: new ValueStateValue(match[1])
       };
     }),
-    new TokenSuggestionStateValue(/[A-Za-z\s]+/, (match) => `Search "${match[0]}" as a Name`, (match) => {
+    new TokenSuggestionStateValue(/^[A-Za-z\s]+$/, (match) => `Search "${match[0]}" as a Name`, (match) => {
       return {
         field: options[0],
         relation: TextRelationState.IS,
         value: new ValueStateValue(match[0])
+      };
+    }),
+    new TokenSuggestionStateValue(/(?:[A-Za-z]+)(?:,\s?[A-Za-z]+)*/, (match) => `Search "${match[0]}" as a Keywords`, (match) => {
+      return {
+        field: options[3],
+        value: match[0].split(',').map(v => new ValueStateValue(v))
       };
     })
   ]
