@@ -44,6 +44,7 @@ export class TokenSuggestionState extends ValueState {
     config.overrideValidation = true;
     const origValidate = config.validate;
     config.validate = (thisVal, thisArchive) => {
+      if (thisVal instanceof Error) return false;
       // try incoming validation function before trying ours
       if (origValidate !== undefined && !origValidate(thisVal, thisArchive)) return false;
       // otherwise, return true
