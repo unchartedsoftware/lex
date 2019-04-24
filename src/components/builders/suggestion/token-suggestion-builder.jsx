@@ -13,10 +13,6 @@ export class TokenSuggestionBuilder extends ValueBuilder {
     }
   }
 
-  renderReadOnly () {
-    return null;
-  }
-
   @Bind
   startAdvanced (e) {
     if (e) {
@@ -29,11 +25,27 @@ export class TokenSuggestionBuilder extends ValueBuilder {
   }
 
   @Bind
+  requestRewindTo (e) {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    this.skipNextBlur = true;
+    super.requestRewindTo(e);
+  }
+
+  @Bind
   onBlur (e) {
     if (!this.skipNextBlur) {
       super.onBlur(e);
     }
     this.skipNextBlur = false;
+  }
+
+  renderReadOnly (props, {editing}) {
+    if (!editing) {
+      return (<button type='button' onMouseDown={this.requestRewindTo} className='btn btn-xs btn-default token-next' aria-label='Simple Search'>Simple</button>);
+    }
   }
 
   renderInteractive (props, {valid, readOnly, typedText, machineState}) {
