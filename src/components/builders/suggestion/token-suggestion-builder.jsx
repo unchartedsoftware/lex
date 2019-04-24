@@ -56,7 +56,7 @@ export class TokenSuggestionBuilder extends ValueBuilder {
 
   renderReadOnly (props, {tokenActive, editing}) {
     if (tokenActive && !editing) {
-      return (<button type='button' onMouseDown={this.requestRewindTo} className='btn btn-xs btn-default token-next' aria-label='Simple Search'>Simple</button>);
+      return (<button type='button' onMouseDown={this.requestRewindTo} className='btn btn-xs btn-default token-prev' aria-label='Simple Search'>Simple</button>);
     }
   }
 
@@ -65,7 +65,7 @@ export class TokenSuggestionBuilder extends ValueBuilder {
     const inputClass = `token-input ${valid ? 'active' : 'invalid'}`;
     return (
       <span>
-        {machineState.isMultivalue && <span className='badge'>{machineState.archive.length}</span>}
+        <button type='button' onMouseDown={this.startAdvanced} className='btn btn-xs btn-default token-prev' aria-label='Advanced Search'>Advanced</button>
         <span className='text-input'>
           <input type='text'
             spellCheck='false'
@@ -81,7 +81,6 @@ export class TokenSuggestionBuilder extends ValueBuilder {
             disabled={readOnly || (machineState.isMultivalue && !machineState.canArchiveValue)} />
           { machineState.units !== undefined ? <span className='token-input token-input-units text-muted'>{ machineState.units }</span> : '' }
         </span>
-        <button type='button' onMouseDown={this.startAdvanced} className='btn btn-xs btn-default token-next' aria-label='Advanced Search'>Advanced</button>
       </span>
     );
   }
