@@ -1,6 +1,7 @@
 import { h } from 'preact';
 import { Bind } from 'lodash-decorators';
 import { ValueBuilder } from '../generic/value-builder';
+import { ValueStateValue } from '../../../lex';
 
 export class TokenSuggestionBuilder extends ValueBuilder {
   // override request transition to short-circuit token creation
@@ -19,19 +20,9 @@ export class TokenSuggestionBuilder extends ValueBuilder {
       e.stopPropagation();
       e.preventDefault();
     }
-    this.value = null;
+    this.value = new ValueStateValue('');
     this.skipNextBlur = true;
     super.requestTransition();
-  }
-
-  @Bind
-  requestRewindTo (e) {
-    if (e) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-    this.skipNextBlur = true;
-    super.requestRewindTo(e);
   }
 
   @Bind
@@ -42,10 +33,8 @@ export class TokenSuggestionBuilder extends ValueBuilder {
     this.skipNextBlur = false;
   }
 
-  renderReadOnly (props, {editing}) {
-    if (!editing) {
-      return (<button type='button' onMouseDown={this.requestRewindTo} className='btn btn-xs btn-default token-next' aria-label='Simple Search'>Simple</button>);
-    }
+  renderReadOnly () {
+    return null;
   }
 
   renderInteractive (props, {valid, readOnly, typedText, machineState}) {

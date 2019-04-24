@@ -174,12 +174,12 @@ window.clearQuery = function () {
 window.setQuery = async function () {
   try {
     await lex.setQuery([
-      {intelligent: null, field: options[0], relation: TextRelationState.IS_LIKE, value: new ValueStateValue('Sean')},
-      {intelligent: null, field: options[1], relation: NumericRelationState.EQUALS, value: new EnumEntryStateValue(2)},
-      {intelligent: null, field: options[2], relation: NumericRelationState.EQUALS, value: new ValueStateValue(12)},
-      {intelligent: null, field: options[3], value: ['Rob', 'Phil', 'two'].map((k) => new ValueStateValue(k))},
-      {intelligent: null, field: options[4], value: new ValueStateValue('geohash things')},
-      {intelligent: null, field: options[5], relation: DateTimeRelationState.EQUALS, value: new Date()}
+      {intelligent: new ValueStateValue(''), field: options[0], relation: TextRelationState.IS_LIKE, value: new ValueStateValue('Sean')},
+      {intelligent: new ValueStateValue(''), field: options[1], relation: NumericRelationState.EQUALS, value: new EnumEntryStateValue(2)},
+      {intelligent: new ValueStateValue(''), field: options[2], relation: NumericRelationState.EQUALS, value: new ValueStateValue(12)},
+      {intelligent: new ValueStateValue(''), field: options[3], value: ['Rob', 'Phil', 'two'].map((k) => new ValueStateValue(k))},
+      {intelligent: new ValueStateValue(''), field: options[4], value: new ValueStateValue('geohash things')},
+      {intelligent: new ValueStateValue(''), field: options[5], relation: DateTimeRelationState.EQUALS, value: new Date()}
     ]);
   } catch (err) {
     console.log('Something went wrong');

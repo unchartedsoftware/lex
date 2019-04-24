@@ -46,7 +46,7 @@ export class TokenSuggestionState extends ValueState {
     config.validate = (thisVal, thisArchive) => {
       // try incoming validation function before trying ours
       if (origValidate !== undefined && !origValidate(thisVal, thisArchive)) return false;
-      // allow null values and otherwise, return true
+      // otherwise, return true
       return true;
     };
     super(config);
