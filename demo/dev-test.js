@@ -53,6 +53,7 @@ class PinActionButton extends ActionButton {
 }
 
 const language = Lex.from('intelligent', TokenSuggestionState, {
+  icon: () => '<span class="glyphicon glyphicon-search" aria-hidden="true"></span>',
   tokenSuggestions: [
     new TokenSuggestionStateValue([/^\$?(\d+(?:\.\d\d)?)$/], (match) => `Search "${match[0]}" as Income`, (match) => {
       return {
