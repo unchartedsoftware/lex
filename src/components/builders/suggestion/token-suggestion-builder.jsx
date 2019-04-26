@@ -69,6 +69,7 @@ export class TokenSuggestionBuilder extends ValueBuilder {
         <span className='text-input'>
           <input type='text'
             spellCheck='false'
+            autoComplete='false'
             className={inputClass}
             onKeyUp={this.handleKeyUp}
             onMouseDown={this.clearPreview}

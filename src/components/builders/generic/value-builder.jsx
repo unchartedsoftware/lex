@@ -237,6 +237,7 @@ export class ValueBuilder extends Builder {
           <span className='text-muted preview'>{previewText}</span>
           <input type='text'
             spellCheck='false'
+            autoComplete='false'
             className={inputClass}
             onKeyUp={this.handleKeyUp}
             onMouseDown={this.clearPreview}
