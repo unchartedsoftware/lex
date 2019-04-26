@@ -13,7 +13,7 @@ export class EnumEntryStateValue extends ValueStateValue {
 
 /**
  * This state supports the entry of an enum Value, a string associated with a number, with possible auto-complete
- * `config.suggestions` should be supplied as an array of `EnumEntryStateValue`s.
+ * `config.enums` should be supplied as an array of `EnumEntryStateValue`s.
  * For example, the enum value `"hello"->1` would be represented as `new EnumEntryStateValue(1, 'hello')`.
  *
  * @param {Object} config - A configuration object. Supports most of the parameters from `ValueState` and `StateTemplate`,

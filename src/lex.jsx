@@ -20,10 +20,13 @@ import { NumericEntryState } from './lib/states/numeric/numeric-entry-state';
 import { CurrencyEntryState } from './lib/states/numeric/currency-entry-state';
 import { EnumEntryState, EnumEntryStateValue } from './lib/states/numeric/enum-entry-state';
 import { DateTimeEntryState } from './lib/states/temporal/datetime-entry-state';
+import { TokenSuggestionState, TokenSuggestionStateValue } from './lib/states/suggestion/token-suggestion-state';
 import { LabelBuilder } from './components/builders/generic/label-builder';
 import { TerminalBuilder } from './components/builders/generic/terminal-builder';
 import { ValueBuilder } from './components/builders/generic/value-builder';
+import { TokenSuggestionBuilder } from './components/builders/suggestion/token-suggestion-builder';
 import { ValueAssistant } from './components/assistants/generic/value-assistant';
+import { TokenSuggestionAssistant } from './components/assistants/suggestion/token-suggestion-assistant';
 import { DateTimeEntryBuilder } from './components/builders/temporal/datetime-entry-builder';
 import { DateTimeEntryAssistant } from './components/assistants/temporal/datetime-entry-assistant';
 import { ActionButton } from './components/action-button';
@@ -64,7 +67,7 @@ const _onRejectSuggestion = new WeakMap();
  * @param {Object[]} config.defaultQuery - The default search state for this search box. Can either be an array of arrays of boxed or unboxed (basic type) values.
  * @param {string} config.tokenXIcon - The default X icon for tokens (DOM string).
  * @param {number} config.multivalueDelimiterKey - The JS key code of the delimiter which will notionally 'separate' multiple values in any visual representation of a multivalue state. 188 (',') by default.
- * @param {string[]} config.multivaluePasteDelimiter - The characters which are supported as delimiters text which is pasted into a multivalue state. ',' by default.
+ * @param {string} config.multivaluePasteDelimiter - The characters which are supported as delimiters text which is pasted into a multivalue state. ',' by default.
  * @param {string[]} config.cssClass - Add unique classes to the lex search bar and associated assistant
  * @param {boolean} config.cancelOnBlur - Whether or not to cancel token creation/editing on blur. True by default.
  * @param {function | undefined} config.onAcceptSuggestion - A callback called when the user presses "add" on a suggestion. A no-op by default (`(s, idx) => s`) but, if supplied, can be used to transform the incoming boxed suggestion, perform additional actions, etc. Return `null` to stop Lex from updating suggestions and query automatically, or return the suggestion (or a transformed version) to allow Lex to handle the rest.
@@ -104,20 +107,18 @@ class Lex extends EventEmitter {
     _defaultValue.set(this, defaultQuery);
     _builders.get(this)
       .registerBuilder(ValueState, ValueBuilder)
+      .registerBuilder(TokenSuggestionState, TokenSuggestionBuilder)
       .registerBuilder(DateTimeEntryState, DateTimeEntryBuilder)
       .registerBuilder(LabelState, LabelBuilder)
       .registerBuilder(TerminalState, TerminalBuilder)
       .registerAssistant(ValueState, ValueAssistant)
+      .registerAssistant(TokenSuggestionState, TokenSuggestionAssistant)
       .registerAssistant(DateTimeEntryState, DateTimeEntryAssistant)
       .registerActionButton(Action, ActionButton);
     _proxiedEvents.set(this, new Map());
     _tokenXIcon.set(this, tokenXIcon);
     _multivalueDelimiterKey.set(this, multivalueDelimiterKey);
     _multivaluePasteDelimiter.set(this, multivaluePasteDelimiter);
-    // ensure that the multivalueDelimiter is proxied to assistants
-    if (proxiedEvents.indexOf(multivalueDelimiterKey) < 0) {
-      proxiedEvents.push(multivalueDelimiterKey);
-    }
     proxiedEvents.forEach(e => _proxiedEvents.get(this).set(e, true));
     _cssClass.set(this, cssClass);
     _cancelOnBlur.set(this, cancelOnBlur);
@@ -321,12 +322,16 @@ export {
   EnumEntryState,
   EnumEntryStateValue,
   DateTimeEntryState,
+  TokenSuggestionState,
+  TokenSuggestionStateValue,
   // Base UI components
   Builder,
   Assistant,
   // UI components
   ValueBuilder,
   ValueAssistant,
+  TokenSuggestionBuilder,
+  TokenSuggestionAssistant,
   DateTimeEntryBuilder,
   DateTimeEntryAssistant,
   ActionButton,

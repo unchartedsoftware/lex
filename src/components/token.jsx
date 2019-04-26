@@ -21,6 +21,7 @@ export class Token extends Component {
       {k: 'stateArray', default: []},
       {k: 'cancelOnBlur', default: true},
       {k: 'requestTransition', default: () => true},
+      {k: 'requestEndAndCreateToken', default: () => true},
       {k: 'requestArchive', default: () => true},
       {k: 'requestUnarchive', default: () => true},
       {k: 'requestRemoveArchivedValue', default: () => true},
@@ -275,16 +276,18 @@ export class Token extends Component {
     if (!this.state.active) {
       return (<button type='button' onMouseDown={this.requestRemoval} className='btn btn-xs btn-link token-remove' aria-label='Close'>{this.xicon}</button>);
     } else if (this.state.editing) {
+      const lifecycle = this.state.machine.state.hideLifecycleInteractions ? '' : <button type='button' onMouseDown={this.requestTransition} className='btn btn-xs btn-default token-next' aria-label='Next'>{nextLabel} &gt;</button>;
       return (
         <span className='button-group'>
-          <button type='button' onMouseDown={this.requestTransition} className='btn btn-xs btn-default token-next' aria-label='Next'>{nextLabel} &gt;</button>
+          {lifecycle}
           <button type='button' onMouseDown={this.requestCancel} className='btn btn-xs btn-default token-next' aria-label='Cancel Edits'>Cancel</button>
         </span>
       );
     } else {
+      const lifecycle = this.state.machine.state.hideLifecycleInteractions ? '' : <button type='button' onMouseDown={(e) => this.requestTransition(e, false)} className={`btn btn-xs ${this.state.machine.state.isTerminal ? 'btn-primary' : 'btn-default'} token-next`} aria-label={nextLabel}>{nextLabel} &gt;</button>;
       return (
         <span className='button-group'>
-          <button type='button' onMouseDown={(e) => this.requestTransition(e, false)} className={`btn btn-xs ${this.state.machine.state.isTerminal ? 'btn-primary' : 'btn-default'} token-next`} aria-label={nextLabel}>{nextLabel} &gt;</button>
+          {lifecycle}
           <button type='button' onMouseDown={this.requestCancel} className='btn btn-xs btn-link token-cancel' aria-label='Cancel New Token'>{this.xicon}</button>
         </span>
       );
@@ -304,10 +307,12 @@ export class Token extends Component {
             const Builder = this.state.builders.getBuilder(s.constructor);
             return (<Builder
               key={s.id}
+              editing={editing}
               machine={machine}
               machineState={s}
               cancelOnBlur={cancelOnBlur}
               requestTransition={this.state.requestTransition}
+              requestEndAndCreateToken={this.state.requestEndAndCreateToken}
               requestArchive={this.state.requestArchive}
               requestUnarchive={this.state.requestUnarchive}
               requestRemoveArchivedValue={this.state.requestRemoveArchivedValue}

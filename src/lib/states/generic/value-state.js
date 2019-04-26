@@ -75,6 +75,7 @@ const _units = new WeakMap();
  * - `on('suggestions changed', (newSuggestions, oldSuggestions) => {})` when the internal list of suggestions changes.
  *
  * @param {Object} config - A configuration object. Inherits all options from `State`, and adds the following:
+ * @param {boolean | undefined} config.overrideValidation - Whether or not config.validate fully overrides `ValueState`'s internal validation. If `false`, it works in conjunction with it. `false` by default.
  * @param {Array[ValueStateValue]|undefined} config.suggestions - A pre-defined array of suggestions which can be suggested to the user. If this is specified, config.fetchSuggestions should be null.
  * @param {AsyncFunction | undefined} config.fetchSuggestions - A (required) function which is utilized for fetching suggestions via a hint (what the user has typed). `async (hint, context, formattedHint) => ValueStateValue[]`, executing in the scope of this `ValueState`, allowing access to its instance methods. If this is specified, config.suggestions should be null.
  * @param {boolean | undefined} config.allowUnknown - Allow user to supply unknown values (i.e. not from suggestions). Defaults to false.
@@ -87,7 +88,14 @@ export class ValueState extends State {
     const origValidate = config.validate;
     config.validate = (thisVal, thisArchive) => {
       // try incoming validation function before trying ours
-      if (origValidate !== undefined && !origValidate(thisVal, thisArchive)) return false;
+      if (origValidate !== undefined) {
+        const origIsValid = origValidate(thisVal, thisArchive);
+        if (config.overrideValidation) {
+          return origIsValid;
+        } else if (!origIsValid) {
+          return false;
+        }
+      }
       // don't allow null values
       if (thisVal === null || thisVal === undefined) return false;
       // don't allow empty keys

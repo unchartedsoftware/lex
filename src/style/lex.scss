@@ -233,6 +233,10 @@ div.lex-box div.token, ul.entered-values li.entered-value {
   button.token-next {
     margin: 0 0 0 2px;
   }
+
+  button.token-prev {
+    margin: 0 2px 0 0;
+  }
 }
 
 div.lex-box.disabled div.token {

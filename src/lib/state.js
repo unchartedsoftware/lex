@@ -15,6 +15,7 @@ const _validate = new WeakMap();
 const _transitionFunction = new WeakMap();
 const _readOnly = new WeakMap();
 const _bindOnly = new WeakMap();
+const _hideLifecycleInteractions = new WeakMap();
 const _defaultValue = new WeakMap();
 const _autoAdvanceDefault = new WeakMap();
 const _previewValue = new WeakMap();
@@ -174,6 +175,7 @@ export class StateTemplate {
  * @param {boolean} config.autoAdvanceDefault - If a `defaultValue` is set and `autoAdvanceDefault` is true, this `State` auto-transition to the next `State` using its `defaultValue`.
  * @param {boolean} config.readOnly - This state is read only (for display purposes only) and should be skipped by the state machine. False by default.
  * @param {boolean} config.bindOnly - This state is bind only (can be created programatically, but not by a user). False by default.
+ * @param {boolean} config.hideLifecycleInteractions - This state should not be presented with visual lifecycle interactions. False by default.
  * @param {boolean} config.multivalue - Whether or not this state supports multi-value entry.
  * @param {number | undefined} config.multivalueLimit - An optional limit on the number of values this state can contain.
  * @param {string | Function} config.icon - A function which produces an icon suggestion (HTML `string`) for the containing `Token`, given the value of this state. May also supply an HTML `string` to suggest regardless of state value. The suggestion closest to the current valid state is used.
@@ -199,7 +201,7 @@ export class StateTemplate {
  */
 export class State extends EventEmitter {
   constructor (config) {
-    const {parent, name, vkey, transition, validate, defaultValue, autoAdvanceDefault, readOnly, bindOnly, multivalue, multivalueLimit, icon, cssClasses, resetOnRewind} = config;
+    const {parent, name, vkey, transition, validate, defaultValue, autoAdvanceDefault, readOnly, bindOnly, hideLifecycleInteractions, multivalue, multivalueLimit, icon, cssClasses, resetOnRewind} = config;
     super();
     this._id = Math.random();
     _parent.set(this, parent);
@@ -214,6 +216,7 @@ export class State extends EventEmitter {
     _multivalueLimit.set(this, multivalueLimit);
     _readOnly.set(this, readOnly !== undefined ? readOnly : false);
     _bindOnly.set(this, bindOnly !== undefined ? bindOnly : false);
+    _hideLifecycleInteractions.set(this, hideLifecycleInteractions !== undefined ? hideLifecycleInteractions : false);
     _children.set(this, []);
     _icon.set(this, icon);
     _cssClasses.set(this, Array.isArray(cssClasses) ? cssClasses : []);
@@ -233,6 +236,10 @@ export class State extends EventEmitter {
 
   get isBindOnly () {
     return _bindOnly.get(this);
+  }
+
+  get hideLifecycleInteractions () {
+    return _hideLifecycleInteractions.get(this);
   }
 
   get parent () {

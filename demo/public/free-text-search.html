@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>"Free Text" Search with Lex</title>
+    <style>
+      html {
+        max-width: 700px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>"Free Text" Search with Lex</h1>
+    <p>The goal of this example is to convey how "free text" searching can be accomplished with Lex. Developers can register patterns (regexes) which correspond to known Token values. As a user types, suggestions will be presented based on matches with these patterns and, once selected, a fully-formed Token is added to the search bar.</p>
+    <p>Try typing a name or a number to begin.</p>
+    <div id="LexContainer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>
+    <script type="application/javascript" src="free-text-search.js"></script>
+  </body>
+</html>

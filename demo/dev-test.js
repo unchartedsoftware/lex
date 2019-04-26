@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from 'preact';
-import { Lex, TransitionFactory, ValueState, ValueStateValue, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, EnumEntryState, EnumEntryStateValue, Action, ActionButton } from '../src/lex';
+import { Lex, TransitionFactory, TokenSuggestionState, TokenSuggestionStateValue, ValueState, ValueStateValue, TextRelationState, NumericRelationState, TextEntryState, CurrencyEntryState, LabelState, DateTimeRelationState, DateTimeEntryState, EnumEntryState, EnumEntryStateValue, Action, ActionButton } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 import '../node_modules/flatpickr/dist/flatpickr.min.css';
 
@@ -52,7 +52,30 @@ class PinActionButton extends ActionButton {
   }
 }
 
-const language = Lex.from('field', ValueState, {
+const language = Lex.from('intelligent', TokenSuggestionState, {
+  tokenSuggestions: [
+    new TokenSuggestionStateValue([/^\$?(\d+(?:\.\d\d)?)$/], (match) => `Search "${match[0]}" as Income`, (match) => {
+      return {
+        field: options[2],
+        relation: TextRelationState.IS,
+        value: new ValueStateValue(match[1])
+      };
+    }),
+    new TokenSuggestionStateValue([/^[A-Za-z\s]+$/], (match) => `Search "${match[0]}" as a Name`, (match) => {
+      return {
+        field: options[0],
+        relation: TextRelationState.IS,
+        value: new ValueStateValue(match[0])
+      };
+    }),
+    new TokenSuggestionStateValue([/^(?:[A-Za-z]+)(?:,\s?[A-Za-z]+){0,2}$/], (match) => `Search "${match[0]}" as Keywords`, (match) => {
+      return {
+        field: options[3],
+        value: match[0].split(',').map(v => new ValueStateValue(v))
+      };
+    })
+  ]
+}).to('field', ValueState, {
   name: 'Choose a field to search',
   fetchSuggestions: searchOptionsFactory(options, 250),
   icon: (value) => {
@@ -76,9 +99,9 @@ const language = Lex.from('field', ValueState, {
   defaultValue: false
 }).branch(
   Lex.from('relation', TextRelationState, {
-    defaultValue: new ValueStateValue('is', {}, {displayKey: '='}),
+    defaultValue: TextRelationState.IS,
     autoAdvanceDefault: true,
-    cssClasses: ['token-text-entry'],
+    // cssClasses: ['token-text-entry'],
     ...TransitionFactory.valueMetaCompare({type: 'string'})
   }).to('value', TextEntryState),
   Lex.from('value', EnumEntryState, {
@@ -150,12 +173,12 @@ window.clearQuery = function () {
 window.setQuery = async function () {
   try {
     await lex.setQuery([
-      {field: options[0], relation: TextRelationState.IS_LIKE, value: new ValueStateValue('Sean')},
-      {field: options[1], relation: NumericRelationState.EQUALS, value: new EnumEntryStateValue(2)},
-      {field: options[2], relation: NumericRelationState.EQUALS, value: new ValueStateValue(12)},
-      {field: options[3], value: ['Rob', 'Phil', 'two'].map((k) => new ValueStateValue(k))},
-      {field: options[4], value: new ValueStateValue('geohash things')},
-      {field: options[5], relation: DateTimeRelationState.EQUALS, value: new Date()}
+      {intelligent: new ValueStateValue(''), field: options[0], relation: TextRelationState.IS_LIKE, value: new ValueStateValue('Sean')},
+      {intelligent: new ValueStateValue(''), field: options[1], relation: NumericRelationState.EQUALS, value: new EnumEntryStateValue(2)},
+      {intelligent: new ValueStateValue(''), field: options[2], relation: NumericRelationState.EQUALS, value: new ValueStateValue(12)},
+      {intelligent: new ValueStateValue(''), field: options[3], value: ['Rob', 'Phil', 'two'].map((k) => new ValueStateValue(k))},
+      {intelligent: new ValueStateValue(''), field: options[4], value: new ValueStateValue('geohash things')},
+      {intelligent: new ValueStateValue(''), field: options[5], relation: DateTimeRelationState.EQUALS, value: new Date()}
     ]);
   } catch (err) {
     console.log('Something went wrong');

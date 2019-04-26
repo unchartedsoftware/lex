@@ -182,6 +182,8 @@ export class DateTimeEntryBuilder extends Builder {
         <span className='text-input'>
           <span className='text-muted preview'>{previewText}</span>
           <input type='text'
+            spellCheck='false'
+            autoComplete='false'
             className={`token-input token-wide ${valid ? 'active' : 'invalid'}`}
             onKeyDown={this.handleKeyDown}
             onKeyUp={this.handleKeyUp}
