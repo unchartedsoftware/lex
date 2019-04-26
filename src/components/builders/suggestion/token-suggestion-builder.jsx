@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { Bind } from 'lodash-decorators';
 import { ValueBuilder } from '../generic/value-builder';
-import { ValueStateValue } from '../../../lex';
+import { ValueStateValue } from '../../../lib/states/generic/value-state';
 
 export class TokenSuggestionBuilder extends ValueBuilder {
   // override request transition to short-circuit token creation
@@ -26,27 +26,6 @@ export class TokenSuggestionBuilder extends ValueBuilder {
   }
 
   @Bind
-  startAdvanced (e) {
-    if (e) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-    this.value = new ValueStateValue('');
-    this.skipNextBlur = true;
-    super.requestTransition();
-  }
-
-  @Bind
-  requestRewindTo (e) {
-    if (e) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-    this.skipNextBlur = true;
-    super.requestRewindTo(e);
-  }
-
-  @Bind
   onBlur (e) {
     if (!this.skipNextBlur) {
       super.onBlur(e);
@@ -54,10 +33,8 @@ export class TokenSuggestionBuilder extends ValueBuilder {
     this.skipNextBlur = false;
   }
 
-  renderReadOnly (props, {tokenActive, editing}) {
-    if (tokenActive && !editing) {
-      return (<button type='button' onMouseDown={this.requestRewindTo} className='btn btn-xs btn-default token-prev' aria-label='Simple Search'>Simple</button>);
-    }
+  renderReadOnly () {
+    return null;
   }
 
   renderInteractive (props, {valid, readOnly, typedText, machineState}) {
@@ -65,7 +42,6 @@ export class TokenSuggestionBuilder extends ValueBuilder {
     const inputClass = `token-input ${valid ? 'active' : 'invalid'}`;
     return (
       <span>
-        <button type='button' onMouseDown={this.startAdvanced} className='btn btn-xs btn-default token-prev' aria-label='Advanced Search'>Advanced</button>
         <span className='text-input'>
           <input type='text'
             spellCheck='false'

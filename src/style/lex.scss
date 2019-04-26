@@ -311,6 +311,10 @@ div.lex-assistant-box {
           background-color: $lex-highlight-color;
         }
       }
+      &.selectable.hoverable:hover {
+        color: $lex-highlight-text-color;
+        background-color: $lex-highlight-color;
+      }
       &.removable {
         cursor: pointer;
         &:hover, &.active {
