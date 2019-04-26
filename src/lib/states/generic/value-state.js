@@ -168,8 +168,8 @@ export class ValueState extends State {
     }
   }
 
-  archiveValue (context) {
-    super.archiveValue(context);
+  archiveValue (context, skipValidation) {
+    super.archiveValue(context, skipValidation);
   }
 
   removeArchivedValue (idx, context) {

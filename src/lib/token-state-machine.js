@@ -76,7 +76,7 @@ export class TokenStateMachine extends EventEmitter {
             }
             for (const x of v) {
               this.state.value = x;
-              this.state.archiveValue();
+              this.state.archiveValue(this.boxedValue, true);
             }
             this.state.unarchiveValue(); // make the last value the "active" one
           } else {
@@ -173,10 +173,12 @@ export class TokenStateMachine extends EventEmitter {
   /**
    * Rather than transitioning to the next state, supply a new value for this `State`
    * and save the current one in the `State`'s archive.
+   *
+   * @param {boolean} skipValidation - Whether or not to skip validation. `false` by default.
    */
-  archive () {
+  archive (skipValidation = false) {
     try {
-      this.state.archiveValue(this.boxedValue);
+      this.state.archiveValue(this.boxedValue, skipValidation);
       this.emit('state changed', this.state, this.state);
     } catch (err) {
       this.emit('state change failed', err);

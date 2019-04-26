@@ -587,9 +587,10 @@ export class State extends EventEmitter {
    * Moves the current value to the archive, and resets the current value.
    *
    * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
+   * @param {boolean} skipValidation - Whether or not to skip validation.
    */
-  archiveValue (context) { // eslint-disable-line no-unused-vars
-    if (!this.isValid) {
+  archiveValue (context, skipValidation = false) { // eslint-disable-line no-unused-vars
+    if (!skipValidation && !this.isValid) {
       throw new ValueArchiveError(`Cannot archive invalid value for current state: ${JSON.stringify(this.value)}`);
     } else if (this.multivalueLimit && this.archive.length === this.multivalueLimit) {
       throw new ValueArchiveError(`Multivalue size limit reached for state ${this.name}`);
