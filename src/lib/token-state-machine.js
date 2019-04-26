@@ -55,8 +55,9 @@ export class TokenStateMachine extends EventEmitter {
    *
    * @param {Object | undefined} values - A optional array of (boxed) values to apply to the machine's states (applied from the root state onward). If any value is an array, all but the final value are added to the `State` archive.
    * @param {boolean} finalTransition - Whether or not to apply the final transition.
+   * @param {boolean} editing - Whether or not the token we're binding to is being edited.
    */
-  async bindValues (values, finalTransition = false) {
+  async bindValues (values, finalTransition = false, editing = false) {
     try {
       // bind to states
       if (values !== undefined) {
@@ -65,6 +66,7 @@ export class TokenStateMachine extends EventEmitter {
         delete copy.actionValues; // we don't need actionValues in copy.
         while (Object.keys(copy).length > 0) {
           const v = copy[this.state.vkey];
+          this.state.reset();
           if (v === undefined) {
             await this.state.doInitialize(this.boxedValue);
             break; // we're missing a value for the current state, so break out.
@@ -78,7 +80,9 @@ export class TokenStateMachine extends EventEmitter {
               this.state.value = x;
               this.state.archiveValue(this.boxedValue, true);
             }
-            this.state.unarchiveValue(); // make the last value the "active" one
+            if (!editing) {
+              this.state.unarchiveValue(); // make the last value the "active" one
+            }
           } else {
             await this.state.doInitialize(this.boxedValue, [this.state.unboxValue(v)]);
             this.state.value = v;

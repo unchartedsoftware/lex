@@ -83,6 +83,9 @@ div.lex-box div.token, ul.entered-values li.entered-value {
 
   &.active {
     padding: $lex-token-padding ($lex-token-padding + 16px) $lex-token-padding ($lex-token-padding + 2px);
+    .token-input {
+      cursor: text;
+    }
   }
 
   &.editing {
