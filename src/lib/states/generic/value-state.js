@@ -60,6 +60,7 @@ const _allowUnknown = new WeakMap();
 const _onUnknownValue = new WeakMap();
 const _suggestionLimit = new WeakMap();
 const _units = new WeakMap();
+const _typedText = new WeakMap();
 
 /**
  * A state representing the selection of a value from a list of suggested values.
@@ -73,6 +74,7 @@ const _units = new WeakMap();
  * - `on('fetching suggestions', () => {})` when a fetch for suggestions is triggered.
  * - `on('fetching suggestions finished', (err) => {})` when a fetch for suggestions is finished, regardless of whether or not the suggestions changed. `err` may be defined if something went wrong.
  * - `on('suggestions changed', (newSuggestions, oldSuggestions) => {})` when the internal list of suggestions changes.
+ * - `on('typed text changed', (newText, oldText) => {})` when a user types text into the associated Builder
  *
  * @param {Object} config - A configuration object. Inherits all options from `State`, and adds the following:
  * @param {boolean | undefined} config.overrideValidation - Whether or not config.validate fully overrides `ValueState`'s internal validation. If `false`, it works in conjunction with it. `false` by default.
@@ -118,6 +120,7 @@ export class ValueState extends State {
     }
     super(config);
 
+    _typedText.set(this, '');
     _suggestions.set(this, []);
     _fetchSuggestions.set(this, async (hint = '', context = [], formattedHint = '') => {
       if (typeof config.fetchSuggestions !== 'function') {
@@ -138,6 +141,28 @@ export class ValueState extends State {
       throw new Error(`Cannot specify config.onUnknownValue in state ${this.name} when config.allowUnknown is false.`);
     }
     _suggestionLimit.set(this, config.suggestionLimit);
+  }
+
+  /**
+   * Getter for `typedText`.
+   *
+   * @returns {string} - What the user has typed.
+   */
+  get typedText () {
+    return _typedText.get(this);
+  }
+
+  /**
+   * Setter for `typedText`.
+   *
+   * @param {string} typedText - What the user has typed.
+   */
+  set typedText (typedText) {
+    const oldText = _typedText.get(this);
+    _typedText.set(this, typedText);
+    if (oldText !== typedText) {
+      this.emit('typed text changed', typedText, oldText);
+    }
   }
 
   /**

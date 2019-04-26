@@ -110,6 +110,8 @@ export class ValueBuilder extends Builder {
   handleKeyUp (e) {
     const boxed = this.machine.boxedValue;
     this.machineState.fetchSuggestions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed, e.target.value);
+    // inform state of typed text
+    this.machineState.typedText = e.target.value;
   }
 
   focus () {

@@ -26,6 +26,7 @@ export class ValueAssistant extends Assistant {
       this.machineState.removeListener('fetching suggestions', this.onFetchingSuggestions);
       this.machineState.removeListener('fetching suggestions finished', this.onFetchSuggestionsEnd);
       this.machineState.removeListener('suggestions changed', this.onSuggestionsChanged);
+      this.machineState.removeListener('typed text changed', this.onTypedTextChanged);
     }
   }
 
@@ -36,6 +37,7 @@ export class ValueAssistant extends Assistant {
       this.machineState.on('fetching suggestions', this.onFetchingSuggestions);
       this.machineState.on('fetching suggestions finished', this.onFetchSuggestionsEnd);
       this.machineState.on('suggestions changed', this.onSuggestionsChanged);
+      this.machineState.on('typed text changed', this.onTypedTextChanged);
     }
   }
 
@@ -43,6 +45,11 @@ export class ValueAssistant extends Assistant {
     if (this.machineState) {
       this.machineState.fetchSuggestions(hint, this.machine.value, formattedHint);
     }
+  }
+
+  @Bind
+  onTypedTextChanged () {
+    // override in subclass if necessary
   }
 
   @Bind
