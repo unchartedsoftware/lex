@@ -11,7 +11,9 @@ export class TextEntryState extends ValueState {
    * @param {Object} config - A configuration object.
    */
   constructor (config) {
-    if (config.name === undefined) config.name = 'Enter a value';
+    if (config.name === undefined) {
+      config.name = !config.multivalue ? 'Enter a value' : 'Enter values';
+    }
     if (config.validate === undefined) {
       config.validate = (val) => {
         return val && typeof val.key === 'string' && val.key.length > 0;

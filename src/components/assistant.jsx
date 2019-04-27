@@ -1,6 +1,5 @@
 import { h } from 'preact';
 import { Builder } from './builder';
-import { Bind } from 'lodash-decorators';
 import { propsToState } from '../lib/util';
 
 /**
@@ -88,6 +87,7 @@ export class Assistant extends Builder {
     if (body || state.loading) {
       return (
         <div className='assistant'>
+          <div className='assistant-header'>{this.machineState.name}</div>
           {body}
           {spinner}
         </div>
