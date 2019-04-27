@@ -48,8 +48,10 @@ export class ValueAssistant extends Assistant {
   }
 
   @Bind
-  onTypedTextChanged () {
-    // override in subclass if necessary
+  onTypedTextChanged (newText) {
+    this.setState({
+      typedText: newText
+    });
   }
 
   @Bind
@@ -338,23 +340,25 @@ export class ValueAssistant extends Assistant {
     }
   }
 
-  renderAssistantBody (props, {activeSuggestion, suggestions}) {
-    if (this.machineState.isMultivalue || (Array.isArray(this.machineState.suggestions) && this.machineState.suggestions.length > 0)) {
-      return (
-        <div className='assistant-body'>
-          {this.renderArchive(props)}
-          <div className=''>
-            { this.machineState.isMultivalue && <div className='assistant-header'>Suggestions</div>}
-            <ul ref={(n) => { this.suggestionContainer = n; }}>
-              {
-                (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (suggestions.map((o, idx) => <li key={o.key} tabIndex='0' onClick={() => this.onSuggestionSelected(o)} onMouseOver={() => this.onSuggestionOver(idx)} onMouseOut={this.onSuggestionOut} className={idx === activeSuggestion ? 'selectable active' : 'selectable'}>{this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)}</li>))
-              }
-              { (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (!suggestions || suggestions.length === 0) && <li><em className='text-muted'>No suggestions</em></li>}
-              { this.machineState.isMultivalue && !this.machineState.canArchiveValue && <li><em className='text-muted anim-flash'>Maximum number of values reached. <button className={`btn btn-xs ${this.state.machine.state.isTerminal ? 'btn-primary' : 'btn-default'}`} onMouseDown={this.requestTransition}>{this.state.machine.state.isTerminal ? 'Finish' : 'Next'}?</button></em></li> }
-            </ul>
-          </div>
-        </div>
-      );
+  renderAssistantBody (props, {typedText, loading, activeSuggestion, suggestions}) {
+    let prompt = '';
+    if (typedText && typedText.length > 0 && !loading) {
+      prompt = `No suggestions for "${typedText}"`;
     }
+    return (
+      <div className='assistant-body'>
+        {this.renderArchive(props)}
+        <div className=''>
+          { this.machineState.isMultivalue && this.machineState.archive.length > 0 && <div className='assistant-header'>Suggestions</div>}
+          <ul ref={(n) => { this.suggestionContainer = n; }}>
+            {
+              (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (suggestions.map((o, idx) => <li key={o.key} tabIndex='0' onClick={() => this.onSuggestionSelected(o)} onMouseOver={() => this.onSuggestionOver(idx)} onMouseOut={this.onSuggestionOut} className={idx === activeSuggestion ? 'selectable active' : 'selectable'}>{this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)}</li>))
+            }
+            { (!this.machineState.isMultivalue || this.machineState.canArchiveValue) && (!suggestions || suggestions.length === 0) && (prompt.length > 0) && <li><em className='text-muted'>{prompt}</em></li>}
+            { this.machineState.isMultivalue && !this.machineState.canArchiveValue && <li><em className='text-muted anim-flash'>Maximum number of values reached. <button className={`btn btn-xs ${this.state.machine.state.isTerminal ? 'btn-primary' : 'btn-default'}`} onMouseDown={this.requestTransition}>{this.state.machine.state.isTerminal ? 'Finish' : 'Next'}?</button></em></li> }
+          </ul>
+        </div>
+      </div>
+    );
   }
 }
