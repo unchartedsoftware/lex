@@ -61,6 +61,7 @@ const _onUnknownValue = new WeakMap();
 const _suggestionLimit = new WeakMap();
 const _units = new WeakMap();
 const _typedText = new WeakMap();
+const _suggestionsDisabled = new WeakMap();
 
 /**
  * A state representing the selection of a value from a list of suggested values.
@@ -119,6 +120,10 @@ export class ValueState extends State {
       };
     }
     super(config);
+
+    if (!Array.isArray(config.suggestions) && typeof config.fetchSuggestions !== 'function') {
+      _suggestionsDisabled.set(this, true);
+    }
 
     _typedText.set(this, '');
     _suggestions.set(this, []);
@@ -217,6 +222,13 @@ export class ValueState extends State {
    */
   get suggestionLimit () {
     return _suggestionLimit.get(this);
+  }
+
+  /**
+   * @returns {boolean} - Whether or not any mechanism for supplying suggestions has been configured.
+   */
+  get suggestionsDisabled () {
+    return _suggestionsDisabled.get(this) && true;
   }
 
   /**

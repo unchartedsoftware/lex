@@ -29,7 +29,7 @@ export class TokenSuggestionAssistant extends ValueAssistant {
 
   renderAssistantBody (props, {loading, typedText, activeSuggestion, suggestions}) {
     let prompt = '';
-    if (typedText && typedText.length > 0 && !loading) {
+    if (!this.machineState.suggestionsDisabled && typedText && typedText.length > 0 && !loading) {
       prompt = `No suggestions for "${typedText}"`;
     }
     return (

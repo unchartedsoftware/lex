@@ -342,7 +342,7 @@ export class ValueAssistant extends Assistant {
 
   renderAssistantBody (props, {typedText, loading, activeSuggestion, suggestions}) {
     let prompt = '';
-    if (typedText && typedText.length > 0 && !loading) {
+    if (!this.machineState.suggestionsDisabled && typedText && typedText.length > 0 && !loading) {
       prompt = `No suggestions for "${typedText}"`;
     }
     return (
