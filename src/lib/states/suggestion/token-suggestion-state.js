@@ -37,7 +37,7 @@ export class TokenSuggestionState extends ValueState {
     if (!Array.isArray(config.tokenSuggestions)) {
       throw new Error('config.tokenSuggestions must be an Array of TokenSuggestionStateValue.');
     }
-    if (config.name === undefined) config.name = 'Begin typing to see search suggestions';
+    if (config.name === undefined) config.name = 'Type to see search suggestions';
     config.allowUnknown = false;
     config.hideLifecycleInteractions = true;
     config.suggestions = config.tokenSuggestions;
