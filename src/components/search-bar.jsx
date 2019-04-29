@@ -315,11 +315,10 @@ export class SearchBar extends Component {
   @Bind
   archive () {
     try {
-      this.state.activeMachine.archive(this.state.activeMachine.boxedValue);
+      this.state.activeMachine.archive();
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
-        console.error(err.message); // eslint-disable-line no-console
         return false;
       } else {
         throw err;
@@ -330,11 +329,10 @@ export class SearchBar extends Component {
   @Bind
   unarchive () {
     try {
-      this.state.activeMachine.unarchive(this.state.activeMachine.boxedValue);
+      this.state.activeMachine.unarchive();
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
-        console.error(err.message); // eslint-disable-line no-console
         return false;
       } else {
         throw err;
@@ -345,11 +343,10 @@ export class SearchBar extends Component {
   @Bind
   removeArchivedValue (idx) {
     try {
-      this.state.activeMachine.removeArchivedValue(idx, this.state.activeMachine.boxedValue);
+      this.state.activeMachine.removeArchivedValue(idx);
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
-        console.error(err.message); // eslint-disable-line no-console
         return false;
       } else {
         throw err;
@@ -364,7 +361,6 @@ export class SearchBar extends Component {
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
-        console.error(err.message); // eslint-disable-line no-console
         return false;
       } else {
         throw err;
@@ -379,7 +375,6 @@ export class SearchBar extends Component {
       return true;
     } catch (err) {
       if (err instanceof ValueArchiveError) {
-        console.error(err.message); // eslint-disable-line no-console
         return false;
       } else {
         throw err;

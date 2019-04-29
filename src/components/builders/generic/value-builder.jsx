@@ -54,8 +54,10 @@ export class ValueBuilder extends Builder {
             break;
           }
         }
-        if (!set) {
+        if (!set && this.machineState.suggestions[0].highlighted) {
           this.value = this.machineState.suggestions[0];
+        } else if (!set) {
+          this.value = null;
         }
       } else if (!this.machineState.allowUnknown) {
         // set value to null, since we can't create values and no suggestions match what was typed
