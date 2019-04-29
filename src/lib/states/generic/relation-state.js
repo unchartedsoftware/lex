@@ -12,12 +12,11 @@ export class RelationState extends ValueState {
     if (config.name === undefined) config.name = 'Choose a relation';
     config.fetchSuggestions = function (hint) {
       return config.options().map(o => {
-        return o.key.toLowerCase().indexOf(hint.toLowerCase()) === 0
-          ? new ValueStateValue(o.key, o.meta, {
-            displayKey: o.displayKey,
-            hidden: o.hidden,
-            highlighted: true
-          }) : o;
+        return new ValueStateValue(o.key, o.meta, {
+          displayKey: o.displayKey,
+          hidden: o.hidden,
+          highlighted: o.key.toLowerCase().indexOf(hint.toLowerCase()) === 0
+        });
       });
     };
     super(config);
