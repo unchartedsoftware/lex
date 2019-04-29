@@ -84,10 +84,11 @@ export class Assistant extends Builder {
         <div className='subline dec' />
       </div>
     ) : '';
+    const header = typeof this.machineState.name === 'string' && this.machineState.name.length > 0 ? (<div className='assistant-header'>{this.machineState.name}</div>) : '';
     if (body || state.loading) {
       return (
         <div className='assistant'>
-          <div className='assistant-header'>{this.machineState.name}</div>
+          {header}
           {body}
           {spinner}
         </div>

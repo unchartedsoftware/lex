@@ -9,7 +9,7 @@ const _tokenSuggestions = new WeakMap();
  *
  * @param {[]RegExp} regexArr - An array of regular expressions which may match what the user types.
  * @param {Function} description - A function which, receiving the match, returns the text to show a user describing this suggestion.
- * @param {Function} factory - A function which, receiving the match, returns a `TokenStateMachine` boxedValue.
+ * @param {AsyncFunction} factory - A function which, receiving the match, returns a `TokenStateMachine` boxedValue.
  */
 export class TokenSuggestionStateValue extends ValueStateValue {
   constructor (regexArr, description, factory) {

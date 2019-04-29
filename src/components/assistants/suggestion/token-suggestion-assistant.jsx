@@ -6,15 +6,18 @@ import { ValueStateValue } from '../../../lib/states/generic/value-state';
 export class TokenSuggestionAssistant extends ValueAssistant {
   // override request transition to short-circuit token creation
   requestTransition () {
-    try {
-      const toBind = this.value.meta.factory(this.value.meta.match);
-      toBind[this.state.machineState.vkey] = this.value;
-      if (this.isValid) {
-        this.requestEndAndCreateToken(toBind);
+    const self = this;
+    (async function () {
+      try {
+        const toBind = await self.value.meta.factory(self.value.meta.match);
+        toBind[self.state.machineState.vkey] = self.value;
+        if (self.isValid) {
+          self.requestEndAndCreateToken(toBind);
+        }
+      } catch (err) {
+        self.state.machine.emit('state change failed', err); // a bit of a hack
       }
-    } catch (err) {
-      this.state.machine.emit('state change failed', err); // a bit of a hack
-    }
+    })();
   }
 
   @Bind
