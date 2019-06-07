@@ -189,6 +189,11 @@ export class ValueBuilder extends Builder {
 
   @Bind
   handleInput (e) {
+    if (e.target.value.length > 0 && !!this.state.previewText) {
+      this.setState({
+        previewText: null
+      });
+    }
     // assign typedText without re-rendering
     this.state.typedText = e.target.value;
   }
