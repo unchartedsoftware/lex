@@ -78,7 +78,7 @@ export class ValueBuilder extends Builder {
         consumed = true;
         this.machineState.currentFetch.then(() => {
           this.commitTypedValue();
-          if (this.machineState.canArchiveValue) {
+          if (this.machineState.canArchiveValue && !nothingEntered) {
             this.requestArchive();
           } else {
             this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
