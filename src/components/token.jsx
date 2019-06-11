@@ -20,6 +20,7 @@ export class Token extends Component {
       {k: 'multivaluePasteDelimiter', default: ','},
       {k: 'stateArray', default: []},
       {k: 'cancelOnBlur', default: true},
+      {k: 'searchBox'},
       {k: 'requestTransition', default: () => true},
       {k: 'requestEndAndCreateToken', default: () => true},
       {k: 'requestArchive', default: () => true},
@@ -311,6 +312,7 @@ export class Token extends Component {
               machine={machine}
               machineState={s}
               cancelOnBlur={cancelOnBlur}
+              searchBox={this.state.searchBox}
               requestTransition={this.state.requestTransition}
               requestEndAndCreateToken={this.state.requestEndAndCreateToken}
               requestArchive={this.state.requestArchive}

@@ -74,6 +74,7 @@ export class Builder extends Component {
       {k: 'readOnly', default: false},
       {k: 'tokenActive', default: false},
       {k: 'cancelOnBlur', default: true},
+      {k: 'searchBox'},
       {
         k: 'machine',
         before: () => { this.cleanupListeners(); },
@@ -259,7 +260,7 @@ export class Builder extends Component {
    */
   requestBlur (e) {
     const assistantBox = document.getElementById('lex-assistant-box');
-    if (!lexStillHasFocus(e, assistantBox)) {
+    if (!lexStillHasFocus(e, this.state.searchBox, assistantBox)) {
       this.state.requestBlur();
     }
   }

@@ -187,6 +187,7 @@ export class SearchBar extends Component {
         machine={activeMachine}
         builders={builders}
         cancelOnBlur={this.state.cancelOnBlur}
+        searchBox={this.searchBox}
         requestFocus={this.focus}
         requestBlur={this.blur}
         requestCancel={this.cancel}
@@ -520,12 +521,12 @@ export class SearchBar extends Component {
         { !active && placeholder !== undefined && tokenValues.length === 0 && suggestions.length === 0 ? <div className='text-muted lex-placeholder'>{ placeholder }</div> : '' }
         {
           tokenValues.map((v, i) => {
-            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} requestRemoval={this.removeToken} requestEdit={this.editToken} onActionValueChanged={this.onActionValueChanged(i)} idx={i} />;
+            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} searchBox={this.searchBox} requestRemoval={this.removeToken} requestEdit={this.editToken} onActionValueChanged={this.onActionValueChanged(i)} idx={i} />;
           })
         }
         {
           suggestions.map((v, j) => {
-            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} requestRemoval={this.rejectSuggestion} requestAcceptSuggestion={this.acceptSuggestion} onActionValueChanged={this.onActionValueChanged(j)} idx={j} suggestion />;
+            return <Token key={v.id} tokenXIcon={tokenXIcon} multivalueDelimiter={multivalueDelimiter} multivaluePasteDelimiter={multivaluePasteDelimiter} machine={v} builders={builders} cancelOnBlur={cancelOnBlur} searchBox={this.searchBox} requestRemoval={this.rejectSuggestion} requestAcceptSuggestion={this.acceptSuggestion} onActionValueChanged={this.onActionValueChanged(j)} idx={j} suggestion />;
           })
         }
         { this.renderTokenBuilder(activeMachine, builders) }
