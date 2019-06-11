@@ -50,8 +50,12 @@ export class ValueAssistant extends Assistant {
   @Bind
   onTypedTextChanged (newText) {
     this.setState({
+      activeSuggestion: -1,
       typedText: newText
     });
+    if (this.machineState) {
+      this.machineState.previewValue = null;
+    }
   }
 
   @Bind
