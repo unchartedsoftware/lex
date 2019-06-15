@@ -136,7 +136,6 @@ export class SearchBar extends Component {
     if (!wasActive) {
       this.setState({active: true});
       setTimeout(() => this.tokenBuilder && this.tokenBuilder.focus(), 10);
-      this.state.activeMachine.reset();
       this.state.onStartToken();
     }
   }
