@@ -424,7 +424,6 @@ export class SearchBar extends Component {
       }, () => {
         this.state.activeMachine.reset();
         this.queryChanged(oldQueryValues, nextToken);
-        this.state.onEndToken();
         if (nextToken) {
           setTimeout(() => this.activate());
         } else {
