@@ -28,6 +28,7 @@ const _icon = new WeakMap();
 const _cssClasses = new WeakMap();
 const _resetOnRewind = new WeakMap();
 const _impliedActions = new WeakMap();
+const _isDirty = new WeakMap();
 
 /**
  * A factory for a `State`, which can be used to produce instances
@@ -224,6 +225,7 @@ export class State extends EventEmitter {
     _value.set(this, _defaultValue.get(this));
     _previewValue.set(this, null);
     _archive.set(this, []);
+    _isDirty.set(this, false);
   }
 
   get id () {
@@ -306,6 +308,10 @@ export class State extends EventEmitter {
     return _initialized.get(this) || true;
   }
 
+  get isDirty () {
+    return _isDirty.get(this) || false;
+  }
+
   get actions () {
     return _impliedActions.get(this);
   }
@@ -325,6 +331,8 @@ export class State extends EventEmitter {
     await Promise.all(_impliedActions.get(this).map(a => a.doInitialize(context)));
     // done
     _initialized.set(this, true);
+    // reset isDirty in case intialize set the states value
+    _isDirty.set(this, false);
     return result;
   }
 
@@ -349,6 +357,8 @@ export class State extends EventEmitter {
     this.previewValue = undefined;
     _archive.set(this, []);
     _impliedActions.get(this).forEach(a => a.reset());
+    // reset isDirty even if we don't initialize because we are technically clean
+    _isDirty.set(this, false);
   }
 
   /**
@@ -451,6 +461,7 @@ export class State extends EventEmitter {
       const oldVal = this.value;
       const oldUnboxedVal = this.unboxedValue;
       _value.set(this, newVal);
+      _isDirty.set(this, true);
       this.emit('value changed', newVal, oldVal, this.unboxedValue, oldUnboxedVal);
     }
   }
