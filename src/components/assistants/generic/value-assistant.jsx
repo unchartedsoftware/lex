@@ -229,37 +229,40 @@ export class ValueAssistant extends Assistant {
     switch (normalizedKey) {
       // Fallthrough case to handle IE
       case UP_ARROW:
-        this.setState({activeSuggestion: Math.max(this.state.activeSuggestion - 1, 0)});
-        this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
-        consumed = true;
-        setTimeout(() => this.fixListScrollPosition());
+        if (this.machineState.canArchiveValue) {
+          this.setState({activeSuggestion: Math.max(this.state.activeSuggestion - 1, 0)});
+          this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
+          consumed = true;
+          setTimeout(() => this.fixListScrollPosition());
+        }
         break;
       // Fallthrough case to handle IE
       case DOWN_ARROW:
-        this.setState({activeSuggestion: Math.min(this.state.activeSuggestion + 1, this.state.suggestions.length - 1)});
-        this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
-        consumed = true;
-        setTimeout(() => this.fixListScrollPosition());
+        if (this.machineState.canArchiveValue) {
+          this.setState({activeSuggestion: Math.min(this.state.activeSuggestion + 1, this.state.suggestions.length - 1)});
+          this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
+          consumed = true;
+          setTimeout(() => this.fixListScrollPosition());
+        }
         break;
       case ENTER:
       case TAB:
-        const activeSuggestion = this.state.suggestions[this.state.activeSuggestion];
-        if (activeSuggestion) {
-          this.machineState.value = activeSuggestion;
-          if (this.machineState.canArchiveValue) {
-            this.requestArchive();
-          } else {
-            this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
+        if (this.machineState.canArchiveValue) {
+          const activeSuggestion = this.state.suggestions[this.state.activeSuggestion];
+          if (activeSuggestion) {
+            this.machineState.value = activeSuggestion;
+            consumed = true;
+          } else if (this.state.suggestions.length === 1 && !this.machineState.allowUnknown) {
+            this.machineState.value = this.state.suggestions[0];
+            consumed = true;
           }
-          consumed = true;
-        } else if (this.state.suggestions.length === 1 && !this.machineState.allowUnknown) {
-          this.machineState.value = this.state.suggestions[0];
-          if (this.machineState.canArchiveValue) {
+          if (consumed) {
             this.requestArchive();
-          } else {
-            this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
           }
+        }
+        if (!consumed) {
           consumed = true;
+          this.requestTransition({nextToken: normalizedKey === TAB}); // only consume the event if the transition succeeds
         }
         break;
       default:

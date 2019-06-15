@@ -141,7 +141,7 @@ div.lex-box div.token, ul.entered-values li.entered-value {
     &.token-input-units {
       padding-left: 0.3em;
     }
-    &[disabled] {
+    &[disabled], &.read-only {
       background: transparentize($lex-token-active-background, 0.7);
     }
   }

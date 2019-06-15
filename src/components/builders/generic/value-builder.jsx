@@ -112,8 +112,8 @@ export class ValueBuilder extends Builder {
   handleKeyUp (e) {
     const boxed = this.machine.boxedValue;
     this.machineState.fetchSuggestions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed, e.target.value);
-    // inform state of typed text
-    this.machineState.typedText = e.target.value;
+    // inform state of typed text by calling out handle input event handler
+    this.handleInput(e);
   }
 
   focus () {
@@ -191,8 +191,15 @@ export class ValueBuilder extends Builder {
 
   @Bind
   handleInput (e) {
-    // assign typedText without re-rendering
-    this.state.typedText = e.target.value;
+    if (this.state.readOnly || (this.machineState.isMultivalue && !this.machineState.canArchiveValue)) {
+      if (this.textInput) {
+        // force text input back to empty since we wont accept the value
+        this.textInput.value = '';
+      }
+    } else {
+      // assign typedText without re-rendering
+      this.state.typedText = e.target.value;
+    }
   }
 
   @Bind
@@ -235,7 +242,8 @@ export class ValueBuilder extends Builder {
 
   renderInteractive (props, {valid, readOnly, typedText, previewText, machineState}) {
     const hasPreview = typeof previewText === 'string' && previewText.trim().length > 0;
-    const inputClass = `token-input ${valid ? 'active' : 'invalid'} ${hasPreview ? 'has-preview' : ''}`;
+    const multivalueReadOnly = machineState.isMultivalue && !machineState.canArchiveValue;
+    const inputClass = `token-input ${valid ? 'active' : 'invalid'} ${multivalueReadOnly ? 'read-only' : ''} ${hasPreview ? 'has-preview' : ''}`;
     return (
       <span>
         {machineState.isMultivalue && <span className='badge'>{machineState.archive.length}</span>}
@@ -253,7 +261,7 @@ export class ValueBuilder extends Builder {
             onFocusOut={this.onBlur}
             onPaste={this.onPaste}
             ref={this.captureInputRef}
-            disabled={readOnly || (machineState.isMultivalue && !machineState.canArchiveValue)} />
+            disabled={readOnly} />
           { machineState.units !== undefined ? <span className='token-input token-input-units text-muted'>{ machineState.units }</span> : '' }
         </span>
       </span>
