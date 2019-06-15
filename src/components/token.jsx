@@ -213,6 +213,8 @@ export class Token extends Component {
   @Bind
   requestCancel (e) {
     if (this.state.editing) {
+      e.preventDefault();
+      e.stopPropagation();
       this.state.requestCancel();
     } else {
       this.requestRemoval(e);
