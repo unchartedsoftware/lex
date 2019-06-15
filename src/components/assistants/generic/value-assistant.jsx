@@ -262,9 +262,6 @@ export class ValueAssistant extends Assistant {
           consumed = true;
         }
         break;
-      default:
-        consumed = true;
-        break;
     }
     if (consumed) {
       e.stopPropagation();
