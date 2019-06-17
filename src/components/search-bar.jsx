@@ -9,6 +9,7 @@ import ElementResizeDetector from 'element-resize-detector';
 import { propsToState } from '../lib/util';
 
 const _erd = new WeakMap();
+const _tokenStarted = new WeakMap();
 
 /**
  * @private
@@ -98,6 +99,7 @@ export class SearchBar extends Component {
   }
 
   componentDidMount () {
+    _tokenStarted.set(this, 0); // semaphore to track token starts/ends
     if (!_erd.has(this)) _erd.set(this, ElementResizeDetector({ strategy: 'scroll' }));
     _erd.get(this).listenTo(this.searchBox, this.forceDraw);
     window.addEventListener('resize', this.forceDraw);
@@ -138,6 +140,7 @@ export class SearchBar extends Component {
       setTimeout(() => this.tokenBuilder && this.tokenBuilder.focus(), 10);
       this.state.activeMachine.reset();
       this.state.onStartToken();
+      _tokenStarted.set(this, _tokenStarted.get(this) + 1);
     }
   }
 
@@ -272,7 +275,8 @@ export class SearchBar extends Component {
     if (this.state.activeMachine.rootState.isDefault) {
       const {focused, active} = this.state;
       this.setState({focused: false, active: false});
-      if (focused !== this.state.focused || active !== this.state.active) {
+      if ((focused !== this.state.focused || active !== this.state.active) && _tokenStarted.get(this) > 0) {
+        _tokenStarted.set(this, 0);
         this.state.onEndToken();
       }
     } else {
@@ -289,7 +293,10 @@ export class SearchBar extends Component {
       setTimeout(() => this.blur()); // TODO this is a cheat. DO IT PROPERLY.
     } else {
       this.setState({focused: false, active: false, editing: false});
-      this.state.onEndToken();
+      if (_tokenStarted.get(this) > 0) {
+        _tokenStarted.set(this, 0);
+        this.state.onEndToken();
+      }
     }
   }
 
@@ -425,7 +432,10 @@ export class SearchBar extends Component {
       }, () => {
         this.state.activeMachine.reset();
         this.queryChanged(oldQueryValues, nextToken);
-        this.state.onEndToken();
+        if (_tokenStarted.get(this) > 0) {
+          _tokenStarted.set(this, 0);
+          this.state.onEndToken();
+        }
         if (nextToken) {
           setTimeout(() => this.activate());
         } else {
