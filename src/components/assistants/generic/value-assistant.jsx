@@ -229,7 +229,7 @@ export class ValueAssistant extends Assistant {
     switch (normalizedKey) {
       // Fallthrough case to handle IE
       case UP_ARROW:
-        if (this.focused) {
+        if (!this.machineState.isMultivalue || this.machineState.canArchiveValue) {
           this.setState({activeSuggestion: Math.max(this.state.activeSuggestion - 1, 0)});
           this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
           consumed = true;
@@ -238,7 +238,7 @@ export class ValueAssistant extends Assistant {
         break;
       // Fallthrough case to handle IE
       case DOWN_ARROW:
-        if (this.focused) {
+        if (!this.machineState.isMultivalue || this.machineState.canArchiveValue) {
           this.setState({activeSuggestion: Math.min(this.state.activeSuggestion + 1, this.state.suggestions.length - 1)});
           this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
           consumed = true;
