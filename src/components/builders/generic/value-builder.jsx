@@ -114,6 +114,7 @@ export class ValueBuilder extends Builder {
     this.machineState.fetchSuggestions(this.machineState.unformatUnboxedValue(e.target.value, boxed), boxed, e.target.value);
     // inform state of typed text by calling out handle input event handler
     this.handleInput(e);
+    this.machineState.typedText = this.state.typedText;
   }
 
   focus () {
