@@ -229,17 +229,21 @@ export class ValueAssistant extends Assistant {
     switch (normalizedKey) {
       // Fallthrough case to handle IE
       case UP_ARROW:
-        this.setState({activeSuggestion: Math.max(this.state.activeSuggestion - 1, 0)});
-        this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
-        consumed = true;
-        setTimeout(() => this.fixListScrollPosition());
+        if (this.focused) {
+          this.setState({activeSuggestion: Math.max(this.state.activeSuggestion - 1, 0)});
+          this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
+          consumed = true;
+          setTimeout(() => this.fixListScrollPosition());
+        }
         break;
       // Fallthrough case to handle IE
       case DOWN_ARROW:
-        this.setState({activeSuggestion: Math.min(this.state.activeSuggestion + 1, this.state.suggestions.length - 1)});
-        this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
-        consumed = true;
-        setTimeout(() => this.fixListScrollPosition());
+        if (this.focused) {
+          this.setState({activeSuggestion: Math.min(this.state.activeSuggestion + 1, this.state.suggestions.length - 1)});
+          this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
+          consumed = true;
+          setTimeout(() => this.fixListScrollPosition());
+        }
         break;
       case ENTER:
       case TAB:
