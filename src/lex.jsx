@@ -86,7 +86,7 @@ class Lex extends EventEmitter {
     const {
       language,
       placeholder,
-      proxiedEvents = [KEYS.UP_ARROW, KEYS.DOWN_ARROW, KEYS.TAB, KEYS.ENTER],
+      proxiedEvents = [KEYS.UP_ARROW, KEYS.DOWN_ARROW, KEYS.TAB, KEYS.ENTER, KEYS.ESCAPE],
       defaultQuery = [],
       tokenXIcon = '&times;',
       multivalueDelimiterKey = KEYS.COMMA,
