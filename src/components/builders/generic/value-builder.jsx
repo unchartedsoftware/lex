@@ -179,7 +179,7 @@ export class ValueBuilder extends Builder {
     try { this.commitTypedValue(); } catch (err) { /* do nothing */ }
     if (this.machine.state === this.machineState && this.cancelOnBlur) {
       const assistantBox = document.getElementById('lex-assistant-box');
-      if ((!this.machineState.isMultivalue || this.machineState.canArchiveValue) && !lexStillHasFocus(e, this.state.searchBox, assistantBox)) {
+      if ((!this.machineState.isMultivalue) && !lexStillHasFocus(e, this.state.searchBox, assistantBox)) {
         this.requestCancel();
       } else {
         this.focus();
@@ -235,7 +235,12 @@ export class ValueBuilder extends Builder {
 
   renderInteractive (props, {valid, readOnly, typedText, previewText, machineState}) {
     const hasPreview = typeof previewText === 'string' && previewText.trim().length > 0;
-    const inputClass = `token-input ${valid ? 'active' : 'invalid'} ${hasPreview ? 'has-preview' : ''}`;
+    const multivalueLimit = machineState.isMultivalue && !machineState.canArchiveValue;
+    const maxlength = {};
+    if (multivalueLimit) {
+      maxlength.maxLength = '0';
+    }
+    const inputClass = `token-input ${valid ? 'active' : 'invalid'} ${multivalueLimit ? 'multivalue-limit' : ''} ${hasPreview ? 'has-preview' : ''}`;
     return (
       <span>
         {machineState.isMultivalue && <span className='badge'>{machineState.archive.length}</span>}
@@ -253,7 +258,9 @@ export class ValueBuilder extends Builder {
             onFocusOut={this.onBlur}
             onPaste={this.onPaste}
             ref={this.captureInputRef}
-            disabled={readOnly || (machineState.isMultivalue && !machineState.canArchiveValue)} />
+            disabled={readOnly}
+            {...maxlength}
+          />
           { machineState.units !== undefined ? <span className='token-input token-input-units text-muted'>{ machineState.units }</span> : '' }
         </span>
       </span>

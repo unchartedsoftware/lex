@@ -141,7 +141,8 @@ div.lex-box div.token, ul.entered-values li.entered-value {
     &.token-input-units {
       padding-left: 0.3em;
     }
-    &[disabled] {
+    &[disabled], &.multivalue-limit {
+      color: rgba(0,0,0,0);
       background: transparentize($lex-token-active-background, 0.7);
     }
   }
@@ -163,7 +164,8 @@ div.lex-box div.token, ul.entered-values li.entered-value {
     &.invalid {
       background: $lex-token-invalid-background;
     }
-    &[disabled] {
+    &[disabled], &.multivalue-limit {
+      color: rgba(0,0,0,0);
       background: transparentize($lex-token-active-background, 0.7);
     }
   }
