@@ -249,7 +249,9 @@ export class ValueAssistant extends Assistant {
       case TAB:
         const activeSuggestion = this.state.suggestions[this.state.activeSuggestion];
         if (activeSuggestion) {
-          this.machineState.value = activeSuggestion;
+          if (!this.machineState.isMultivalue || this.machineState.canArchiveValue) {
+            this.machineState.value = activeSuggestion;
+          }
           if (this.machineState.canArchiveValue) {
             this.requestArchive();
           } else {
@@ -257,7 +259,9 @@ export class ValueAssistant extends Assistant {
           }
           consumed = true;
         } else if (this.state.suggestions.length === 1 && !this.machineState.allowUnknown) {
-          this.machineState.value = this.state.suggestions[0];
+          if (!this.machineState.isMultivalue || this.machineState.canArchiveValue) {
+            this.machineState.value = activeSuggestion;
+          }
           if (this.machineState.canArchiveValue) {
             this.requestArchive();
           } else {
