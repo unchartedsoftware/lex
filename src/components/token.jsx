@@ -106,10 +106,9 @@ export class Token extends Component {
       stateArray: result
     });
     // this.setState({focused: true});
-    if (result[0] && result[0].isDirty) {
-      // Only request focus when our first state is dirty
-      // This way we don't request focus when the state is reset
-      // We only want to request focus when the state change was a result of a transition
+    const stateBeforeCurrent = result[result.length - 2];
+    if (stateBeforeCurrent && stateBeforeCurrent.isDirty) {
+      // If the state before our current state is dirty, then request focus, this is a transition
       this.state.requestFocus();
     }
   }

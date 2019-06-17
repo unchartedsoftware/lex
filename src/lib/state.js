@@ -222,10 +222,11 @@ export class State extends EventEmitter {
     _icon.set(this, icon);
     _cssClasses.set(this, Array.isArray(cssClasses) ? cssClasses : []);
     _resetOnRewind.set(this, resetOnRewind);
-    _value.set(this, _defaultValue.get(this));
+    _value.set(this, null);
     _previewValue.set(this, null);
     _archive.set(this, []);
-    _isDirty.set(this, false);
+    _impliedActions.set(this, []);
+    this.reset();
   }
 
   get id () {
@@ -317,7 +318,7 @@ export class State extends EventEmitter {
   }
 
   set actionValues (newValues = {}) {
-    _impliedActions.get(this).forEach(a => {
+    this.actions.forEach(a => {
       a.value = newValues[a.vkey];
     });
   }
@@ -328,11 +329,9 @@ export class State extends EventEmitter {
   async doInitialize (context = [], initialValue) {
     const result = await this.initialize(context, initialValue);
     // initialize actions
-    await Promise.all(_impliedActions.get(this).map(a => a.doInitialize(context)));
+    await Promise.all(this.actions.map(a => a.doInitialize(context)));
     // done
     _initialized.set(this, true);
-    // reset isDirty in case intialize set the states value
-    _isDirty.set(this, false);
     return result;
   }
 
@@ -353,12 +352,11 @@ export class State extends EventEmitter {
    */
   reset () {
     _initialized.delete(this);
+    _isDirty.set(this, false);
     this.value = this.defaultValue;
     this.previewValue = undefined;
     _archive.set(this, []);
-    _impliedActions.get(this).forEach(a => a.reset());
-    // reset isDirty even if we don't initialize because we are technically clean
-    _isDirty.set(this, false);
+    this.actions.forEach(a => a.reset());
   }
 
   /**
@@ -457,11 +455,11 @@ export class State extends EventEmitter {
    * @param {any} newVal - Set a new (boxed) value for this `State`.
    */
   set value (newVal) {
+    _isDirty.set(this, true);
     if (newVal !== this.value) {
       const oldVal = this.value;
       const oldUnboxedVal = this.unboxedValue;
       _value.set(this, newVal);
-      _isDirty.set(this, true);
       this.emit('value changed', newVal, oldVal, this.unboxedValue, oldUnboxedVal);
     }
   }

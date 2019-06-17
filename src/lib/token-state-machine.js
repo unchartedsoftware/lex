@@ -154,7 +154,7 @@ export class TokenStateMachine extends EventEmitter {
         let next = this.getFirstLegalTransition(this.state, ignoreBindOnly);
         while ((next.isReadOnly || next.autoAdvanceDefault) && !next.isTerminal) {
           if (next.autoAdvanceDefault && ignoreAutoAdvance) break;
-          if (next.autoAdvanceDefault) next.doInitialize(next.defaultValue);
+          if (next.autoAdvanceDefault) next.doInitialize(this.boxedValue, next.defaultValue);
           next = this.getFirstLegalTransition(next, ignoreBindOnly);
         }
         next.doInitialize(this.boxedValue);
