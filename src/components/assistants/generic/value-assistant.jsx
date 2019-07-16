@@ -94,7 +94,7 @@ export class ValueAssistant extends Assistant {
         this.machineState.fetchSuggestions('', this.machine.boxedValue, '');
       }
     } else {
-      this.requestTransition();
+      this.requestTransition({nextToken: false});
     }
   }
 
