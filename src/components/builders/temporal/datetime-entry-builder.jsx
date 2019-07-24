@@ -149,9 +149,9 @@ export class DateTimeEntryBuilder extends Builder {
 
   @Bind
   onBlur (e) {
-    if (this.machine.state === this.machineState && this.cancelOnBlur) {
+    if (this.machine.state === this.machineState) {
       const assistantBox = document.getElementById('lex-assistant-box');
-      if (!lexStillHasFocus(e, this.state.searchBox, assistantBox)) {
+      if (!lexStillHasFocus(e, this.state.searchBox, assistantBox) && this.cancelOnBlur) {
         this.requestCancel();
       } else {
         this.focus();
