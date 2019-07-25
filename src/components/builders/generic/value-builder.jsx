@@ -177,9 +177,9 @@ export class ValueBuilder extends Builder {
   @Bind
   onBlur (e) {
     try { this.commitTypedValue(); } catch (err) { /* do nothing */ }
-    if (this.machine.state === this.machineState && this.cancelOnBlur) {
+    if (this.machine.state === this.machineState) {
       const assistantBox = document.getElementById('lex-assistant-box');
-      if ((!this.machineState.isMultivalue) && !lexStillHasFocus(e, this.state.searchBox, assistantBox)) {
+      if ((!this.machineState.isMultivalue) && !lexStillHasFocus(e, this.state.searchBox, assistantBox) && this.cancelOnBlur) {
         this.requestCancel();
       } else {
         this.focus();
