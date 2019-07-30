@@ -226,7 +226,7 @@ export class SearchBar extends Component {
               tokenXIcon={this.state.tokenXIcon}
               ref={(a) => { this.assistant = a; }}
               multivalueDelimiter={this.state.multivalueDelimiter}
-              multivaluePasteDelimiter={this.searchBox.multivaluePasteDelimiter}
+              multivaluePasteDelimiter={this.state.multivaluePasteDelimiter}
               requestFocus={this.focus}
               requestBlur={this.blur}
               requestCancel={this.cancel}
