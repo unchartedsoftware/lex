@@ -151,8 +151,10 @@ export class ValueAssistant extends Assistant {
       archiveValueEditIndex: idx
     });
     setTimeout(() => {
-      if (this._editArchivedValueRef) {
+      if (this._editArchivedValueRef && idx > -1) {
         this._editArchivedValueRef.focus();
+      } else if (idx === -1) {
+        this.state.requestFocus();
       }
     }, 10);
   }
