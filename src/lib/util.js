@@ -32,10 +32,14 @@ export function propsToState (scope, incomingProps, toMigrate) {
   }
 }
 
-export function lexStillHasFocus (event, searchBoxEl, assistantBoxEl) {
-  const relatedTarget = event.relatedTarget || // The default behaviour which works in modern browsers
+export function getRelatedTarget (event) {
+  return event.relatedTarget || // The default behaviour which works in modern browsers
     event.explicitOriginalTarget || // FireFox fix :(
     document.activeElement; // Fallback to what the browser says is currently focused
+}
+
+export function lexStillHasFocus (event, searchBoxEl, assistantBoxEl) {
+  const relatedTarget = getRelatedTarget(event);
 
   return relatedTarget != null && assistantBoxEl != null && searchBoxEl != null &&
     (assistantBoxEl.contains(relatedTarget) || searchBoxEl.contains(relatedTarget));
