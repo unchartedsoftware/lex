@@ -1,7 +1,7 @@
 import { h } from 'preact';
 import { Bind } from 'lodash-decorators';
 import { Assistant } from '../../assistant';
-import { UP_ARROW, DOWN_ARROW, TAB, ENTER, normalizeKey } from '../../../lib/keys';
+import { UP_ARROW, DOWN_ARROW, TAB, ENTER, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -280,6 +280,36 @@ export class ValueAssistant extends Assistant {
     return consumed;
   }
 
+  @Bind
+  archiveEditDelegateEvent (e) {
+    let consumed = true;
+    const nothingEntered = e.target.value === undefined || e.target.value === null || e.target.value.length === 0;
+    const normalizedKey = normalizeKey(e);
+    switch (normalizedKey) {
+      case ENTER:
+      case TAB:
+        consumed = true;
+        this.onUpdateArchivedValue(e);
+        break;
+      case BACKSPACE:
+        if (nothingEntered) {
+          this.cancelEditArchivedValue();
+        } else {
+          consumed = false;
+        }
+        break;
+      case ESCAPE:
+        this.cancelEditArchivedValue();
+        break;
+      default:
+        consumed = false;
+    }
+    if (consumed) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }
+
   fixListScrollPosition () {
     if (this.suggestionContainer) {
       const activeNode = this.suggestionContainer.querySelector('li.active');
@@ -319,7 +349,7 @@ export class ValueAssistant extends Assistant {
                 if (idx === this.state.archiveValueEditIndex) {
                   return (
                     <li tabIndex='0' key={key} id={`lex-multivalue-${idx}`} className='entered-value active'>
-                      <input type='text' className={`token-input active ${this.state.valid ? '' : 'invalid'}`} autoFocus onBlur={this.cancelEditArchivedValue} value={key} ref={this.captureEditArchivedValueInputRef} />
+                      <input type='text' className={`token-input active ${this.state.valid ? '' : 'invalid'}`} autoFocus onBlur={this.cancelEditArchivedValue} value={key} ref={this.captureEditArchivedValueInputRef} onKeyDown={this.archiveEditDelegateEvent} />
                       <span className='btn-group'>
                         <button type='button' onMouseDown={this.onUpdateArchivedValue} className='btn btn-xs btn-primary token-next' aria-label='Save'>Save</button>
                         <button type='button' onMouseDown={this.cancelEditArchivedValue} className='btn btn-xs btn-default token-next' aria-label='Cancel'>Cancel</button>
