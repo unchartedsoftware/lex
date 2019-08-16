@@ -103,7 +103,6 @@ export class ValueAssistant extends Assistant {
     this.setState({
       activeSuggestion: idx
     });
-    this.machineState.previewValue = this.state.suggestions[this.state.activeSuggestion];
   }
 
   @Bind
@@ -111,7 +110,6 @@ export class ValueAssistant extends Assistant {
     this.setState({
       activeSuggestion: -1
     });
-    this.machineState.previewValue = null;
   }
 
   @Bind
