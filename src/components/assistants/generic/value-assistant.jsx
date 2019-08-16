@@ -185,19 +185,43 @@ export class ValueAssistant extends Assistant {
     }
     if (this.machineState) {
       // via https://hackernoon.com/copying-text-to-clipboard-with-javascript-df4d4988697f
-      const el = document.createElement('textarea');
-      el.value = this.machineState.archive.map((o) => this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)).join(this.state.multivaluePasteDelimiter);
-      el.setAttribute('readonly', '');
+      // Create a P element to hold our text content
+      // Using a P element instead of an input because we cannot change focus
+      // The active builder will try and maintain focus which will cause our copy to fail
+      const el = document.createElement('p');
+      el.innerText = this.machineState.archive.map((o) => this.machineState.formatUnboxedValue(o.key, this.machine.boxedValue)).join(this.state.multivaluePasteDelimiter);
       el.style.position = 'absolute';
       el.style.left = '-9999px';
+
+      // Add the element to the document so we can select it
       document.body.appendChild(el);
+      const selection = window.getSelection();
+
+      // Cache the current selection
       const selected =
         document.getSelection().rangeCount > 0
           ? document.getSelection().getRangeAt(0)
           : false;
-      el.select();
+
+      // Create selection for our element
+      const newSelectionRange = document.createRange();
+      newSelectionRange.setStart(el, 0);
+      newSelectionRange.setEnd(el, 0);
+      newSelectionRange.selectNode(el);
+
+      // Remove existing selection
+      selection.removeAllRanges();
+
+      // Add new selection
+      selection.addRange(newSelectionRange);
+
+      // Copy the contents
       document.execCommand('copy');
+
+      // Remove the element now that we are done with it
       document.body.removeChild(el);
+
+      // Restore cached selection
       if (selected) {
         document.getSelection().removeAllRanges();
         document.getSelection().addRange(selected);
