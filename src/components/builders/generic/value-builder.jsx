@@ -179,9 +179,10 @@ export class ValueBuilder extends Builder {
     try { this.commitTypedValue(); } catch (err) { /* do nothing */ }
     if (this.machine.state === this.machineState) {
       const assistantBox = document.getElementById('lex-assistant-box');
-      if ((!this.machineState.isMultivalue) && !lexStillHasFocus(e, this.state.searchBox, assistantBox) && this.cancelOnBlur) {
+      const lexStillFocused = lexStillHasFocus(e, this.state.searchBox, assistantBox);
+      if ((!this.machineState.isMultivalue) && !lexStillFocused && this.cancelOnBlur) {
         this.requestCancel();
-      } else {
+      } else if (lexStillFocused) {
         this.focus();
       }
     } else {
