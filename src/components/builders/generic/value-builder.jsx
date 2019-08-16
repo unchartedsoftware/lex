@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { Bind, Debounce } from 'lodash-decorators';
 import { Builder } from '../../builder';
 import { ENTER, TAB, BACKSPACE, ESCAPE, normalizeKey } from '../../../lib/keys';
-import { lexStillHasFocus } from '../../../lib/util';
+import { lexStillHasFocus, getRelatedTarget } from '../../../lib/util';
 
 /**
  * A visual interaction mechanism for supplying values
@@ -179,10 +179,11 @@ export class ValueBuilder extends Builder {
     try { this.commitTypedValue(); } catch (err) { /* do nothing */ }
     if (this.machine.state === this.machineState) {
       const assistantBox = document.getElementById('lex-assistant-box');
+      const relatedTarget = getRelatedTarget(e);
       const lexStillFocused = lexStillHasFocus(e, this.state.searchBox, assistantBox);
       if ((!this.machineState.isMultivalue) && !lexStillFocused && this.cancelOnBlur) {
         this.requestCancel();
-      } else if (lexStillFocused) {
+      } else if (lexStillFocused && (relatedTarget == null || !relatedTarget.classList.contains('token-input'))) {
         this.focus();
       }
     } else {
