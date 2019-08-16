@@ -272,7 +272,7 @@ export class ValueAssistant extends Assistant {
       case ENTER:
       case TAB:
         const activeSuggestion = this.state.suggestions[this.state.activeSuggestion];
-        if (activeSuggestion) {
+        if (activeSuggestion && this.machineState.previewValue !== null) {
           if (!this.machineState.isMultivalue || this.machineState.canArchiveValue) {
             this.machineState.value = activeSuggestion;
           }
