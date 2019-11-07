@@ -46,7 +46,7 @@ export class ActionButton extends Component {
   /**
    * If overridden, must be called via `super.componentWillReceiveProps(nextProps)`.
    *
-   * @param {Object} nextProps - Incoming properties.
+   * @param {object} nextProps - Incoming properties.
    */
   componentWillReceiveProps (nextProps) {
     this.processProps(nextProps);
@@ -55,7 +55,7 @@ export class ActionButton extends Component {
   /**
    * If overridden, must be called via `super.processProps(props)`.
    *
-   * @param {Object} props - Incoming properties.
+   * @param {object} props - Incoming properties.
    */
   processProps (props) {
     propsToState(this, props, [
@@ -66,8 +66,8 @@ export class ActionButton extends Component {
   /**
    * Called whenever the value of the underlying `Action` changes.
    *
-   * @param {Object} newVal - The new value.
-   * @param {Object} oldVal - The previous value.
+   * @param {object} newVal - The new value.
+   * @param {object} oldVal - The previous value.
    */
   @Bind
   onValueChanged (newVal, oldVal) { // eslint-disable-line no-unused-vars
@@ -88,8 +88,8 @@ export class ActionButton extends Component {
   /**
    * Render the interactive version of this `Action`, presented only on completed `Token`s.
    *
-   * @param {Object} props - Properties.
-   * @param {Object} state - Component state (`this.state`).
+   * @param {object} props - Properties.
+   * @param {object} state - Component state (`this.state`).
    */
   render (props, state) { // eslint-disable-line no-unused-vars
     const {action} = state;

@@ -8,7 +8,7 @@ const options = [
 /**
  * This state supports the selection of a datetime relation from a list of options.
  *
- * @param {Object} config - A configuration object. Supports all of the parameters from `ValueState` and `StateTemplate`,
+ * @param {object} config - A configuration object. Supports all of the parameters from `ValueState` and `StateTemplate`,
  *                          providing defaults for `name` and `options`.
  */
 export class DateTimeRelationState extends RelationState {

@@ -12,9 +12,9 @@ const _enableCalendar = new WeakMap();
 const _time24hr = new WeakMap();
 
 /**
- * This state supports the entry of a Date/Time value, with support for a custom acceptable format
+ * This state supports the entry of a Date/Time value, with support for a custom acceptable format.
  *
- * @param {Object} config - A configuration object. Supports all of the parameters from `State`,
+ * @param {object} config - A configuration object. Supports all of the parameters from `State`,
  *                          providing defaults for `name` and `validate`.
  * @param {string|undefined} config.format - The acceptable format for a typed date. Defaults to `'YYYY/MM/DD'`.
  * @param {string|undefined} config.timezone - The assumed timezone for a typed date. Defaults to `'Etc/UTC'`.

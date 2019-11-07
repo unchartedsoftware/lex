@@ -75,16 +75,16 @@ const _suggestionsDisabled = new WeakMap();
  * - `on('fetching suggestions', () => {})` when a fetch for suggestions is triggered.
  * - `on('fetching suggestions finished', (err) => {})` when a fetch for suggestions is finished, regardless of whether or not the suggestions changed. `err` may be defined if something went wrong.
  * - `on('suggestions changed', (newSuggestions, oldSuggestions) => {})` when the internal list of suggestions changes.
- * - `on('typed text changed', (newText, oldText) => {})` when a user types text into the associated Builder
+ * - `on('typed text changed', (newText, oldText) => {})` when a user types text into the associated Builder.
  *
- * @param {Object} config - A configuration object. Inherits all options from `State`, and adds the following:
+ * @param {object} config - A configuration object. Inherits all options from `State`, and adds additional elements.
  * @param {boolean | undefined} config.overrideValidation - Whether or not config.validate fully overrides `ValueState`'s internal validation. If `false`, it works in conjunction with it. `false` by default.
  * @param {Array[ValueStateValue]|undefined} config.suggestions - A pre-defined array of suggestions which can be suggested to the user. If this is specified, config.fetchSuggestions should be null.
  * @param {AsyncFunction | undefined} config.fetchSuggestions - A (required) function which is utilized for fetching suggestions via a hint (what the user has typed). `async (hint, context, formattedHint) => ValueStateValue[]`, executing in the scope of this `ValueState`, allowing access to its instance methods. If this is specified, config.suggestions should be null.
- * @param {boolean | undefined} config.allowUnknown - Allow user to supply unknown values (i.e. not from suggestions). Defaults to false.
+ * @param {boolean | undefined} config.allowUnknown - Allow user to supply unknown values (not from suggestions). Defaults to false.
  * @param {Function | undefined} config.onUnknownValue - Optional hook (`(ValueStateValue) => ValueStateValue`) which, when a user enters an unknown `ValueStateValue`, allows for augmentation with things like metadata. Must return a new `ValueStateValue`, since `ValueStateValue` is immutable.
  * @param {number | undefined} config.suggestionLimit - A limit on the number of suggestions that will be shown at one time. Defaults to 5.
- * @param {string} config.units - A textual label which represents "units" for the value state, such as "(h) or (kg)"
+ * @param {string} config.units - A textual label which represents "units" for the value state, such as "(h) or (kg)".
  */
 export class ValueState extends State {
   constructor (config) {
@@ -239,8 +239,8 @@ export class ValueState extends State {
   }
 
   /**
-   * Transform a user-supplied value into a `key`. Override in a subclass if the
-   * `typedText` is not directly usable as a `key` (i.e. to strip $ or whitespace).
+   * Transform a user-supplied value into a `key`. Override in a subclass if the `typedText` is
+   * not directly usable as a `key` (for example, to strip $ or whitespace).
    *
    * @param {string} typedText - What the user actually types/sees.
    * @param {any[]} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
@@ -253,7 +253,7 @@ export class ValueState extends State {
   /**
    * Transform a `key` of a `ValueStateValue` within this `State` into
    * `typedText` - what a user would actually see or type. Override in a subclass if the
-   * `typedText`is not directly interchangable with a `key` (i.e. to add $ or whitespace).
+   * `typedText`is not directly interchangable with a `key` (for example, to add $ or whitespace).
    * TIP: Don't format values that don't "make sense". Pass them through as-is and allow validation to catch them.
    *
    * @param {string} key - The key of a `ValueStateValue` within this `State`.
@@ -340,7 +340,7 @@ export class ValueState extends State {
    * user has typed so far). Will trigger the `async` function supplied to the constructor as `config.fetchSuggestions`.
    *
    * @param {string} hint - What the user has typed, if anything, converted to a key by unformatUnboxedValue.
-   * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
+   * @param {object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    * @param {string} formattedHint - What the user has typed, if anything, but untouched by unformatUnboxedValue.
    * @returns {Promise} Resolves with the new list of options.
    */

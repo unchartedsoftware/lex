@@ -1,4 +1,4 @@
-// /** @jsx h */
+// /* @jsx h */
 import './style/lex.scss';
 import { h, render } from 'preact';
 import EventEmitter from 'wolfy87-eventemitter';
@@ -167,7 +167,7 @@ class Lex extends EventEmitter {
    *
    * @param {string} vkey - The (optional) unique key used to store this state's value within a `Token` output object. If not supplied, this state won't be represented in the `Token` value.
    * @param {State} StateKlass - The root state - must be a class which extends `State`.
-   * @param {Object} config - Construction parameters for the root `State` class.
+   * @param {object} config - Construction parameters for the root `State` class.
    * @returns {StateTemplate} A reference to the new root `StateTemplate`, for chaining purposes to `.addChild()`.
    * @example
    * import { Lex } from 'lex';

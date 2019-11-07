@@ -18,9 +18,9 @@ export class TokenSuggestionStateValue extends ValueStateValue {
 }
 
 /**
- * This state supports the suggestion of entire token values, with possible auto-complete
+ * This state supports the suggestion of entire token values, with possible auto-complete.
  *
- * @param {Object} config - A configuration object. Supports all of the parameters from
+ * @param {object} config - A configuration object. Supports all of the parameters from
  *                          `ValueState` and `StateTemplate`, providing defaults for `name`,
  *                          `validate` and `allowUnknown` (false). `suggestions` and `fetchSuggestions`
  *                          are not supported, and are supplanted by `config.tokenSuggestions`.

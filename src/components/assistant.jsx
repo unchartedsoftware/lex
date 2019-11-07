@@ -17,7 +17,7 @@ export class Assistant extends Builder {
   /**
    * If overridden, must be called via `super.processProps(props)`.
    *
-   * @param {Object} props - Incoming properties.
+   * @param {object} props - Incoming properties.
    */
   processProps (props) {
     propsToState(this, props, [
@@ -100,8 +100,8 @@ export class Assistant extends Builder {
    * Render the interactive content of this `Assistant`.
    * Must override in subclasses.
    *
-   * @param {Object} props - Properties.
-   * @param {Object} state - Component state (`this.state`).
+   * @param {object} props - Properties.
+   * @param {object} state - Component state (`this.state`).
    * @param {boolean} state.valid - True iff the value of the underlying `State` is valid.
    * @param {boolean} state.readOnly - True iff this `Builder` is in read-only mode (generally speaking, if the user has progressed past this `State` to a later one).
    * @param {State} state.machineState - The underlying `State`.
