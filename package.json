@@ -86,7 +86,7 @@
     "preact": "8.x",
     "moment": "2.24.x",
     "moment-timezone": "0.5.x",
-    "flatpickr": "4.5.x"
+    "flatpickr": "4.6.x"
   },
   "dependencies": {
     "lodash": "4.17.15",
