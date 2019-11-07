@@ -31,13 +31,12 @@ const _impliedActions = new WeakMap();
 
 /**
  * A factory for a `State`, which can be used to produce instances
- * from the provided configuration object.
- *
- * Also a builder for chaining this `StateTemplate` to children, creating a
- * DAG of `StateTemplate`s which describes your search language.
+ * from the provided configuration object.Also a builder for chaining
+ * this `StateTemplate` to children, creating a DAG of `StateTemplate`s
+ * which describes your search language.
  *
  * @param {Class} klass - A `State` class that this factory will produce.
- * @param {object} config - Options which will be applied to `State` `klass` upon instantiation
+ * @param {object} config - Options which will be applied to `State` `klass` upon instantiation.
  */
 export class StateTemplate {
   constructor (klass, config = {}) {
@@ -85,7 +84,7 @@ export class StateTemplate {
    * Add an `Action` implication to this `State`.
    *
    * @param {Action} ActionKlass - The `Action` type of this action.
-   * @param {Object} config - Construction parameters for the `Action` class.
+   * @param {object} config - Construction parameters for the `Action` class.
    * @returns {StateTemplate} A reference to the new child `State`, for chaining purposes.
    */
   impliesAction (ActionKlass, config = {}) {
@@ -98,7 +97,7 @@ export class StateTemplate {
    *
    * @param {string} vkey - The (optional) unique key used to store this state's value within a `Token` output object. If not supplied, this state won't be represented in the `Token` value.
    * @param {State} StateKlass - The `State` type of the child state - must be a class which extends `State`.
-   * @param {Object} config - Construction parameters for the child `State` class.
+   * @param {object} config - Construction parameters for the child `State` class.
    * @returns {StateTemplate} A reference to the new child `State`, for chaining purposes.
    */
   to (vkey, StateKlass, config = {}) {
@@ -586,7 +585,7 @@ export class State extends EventEmitter {
   /**
    * Moves the current value to the archive, and resets the current value.
    *
-   * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
+   * @param {object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    * @param {boolean} skipValidation - Whether or not to skip validation.
    */
   archiveValue (context, skipValidation = false) { // eslint-disable-line no-unused-vars
@@ -607,7 +606,7 @@ export class State extends EventEmitter {
   /**
    * Moves the top value from the archive back to the current value, overwriting it.
    *
-   * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
+   * @param {object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    */
   unarchiveValue (context) { // eslint-disable-line no-unused-vars
     if (this.archive.length === 0) {
@@ -624,7 +623,7 @@ export class State extends EventEmitter {
    * Remove a specific value from the archive, by index.
    *
    * @param {number} idx - The index of the archived value to remove.
-   * @param {Object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
+   * @param {object} context - The current boxed value of the containing `TokenStateMachine` (all `State`s up to and including this one).
    */
   removeArchivedValue (idx, context) { // eslint-disable-line no-unused-vars
     if (this.archive.length <= idx) {
@@ -648,7 +647,7 @@ export class State extends EventEmitter {
    * Replaces an existing archived value with a new one.
    *
    * @param {number} idx - The index of the value to replace.
-   * @param {Object} newBoxedValue - The new boxed value to replace the specified archived value with.
+   * @param {object} newBoxedValue - The new boxed value to replace the specified archived value with.
    */
   updateArchivedValue (idx, newBoxedValue) {
     if (this.archive.length <= idx) {

@@ -16,6 +16,7 @@ const entry = fs.readdirSync(testFolder)
   }, {});
 
 module.exports = {
+  mode: 'development',
   devtool: 'inline-source-map',
   entry: entry,
   output: {

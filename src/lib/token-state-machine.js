@@ -53,7 +53,7 @@ export class TokenStateMachine extends EventEmitter {
   /**
    * Overwrite this machine with the given values, in sequence. If `values` is `undefined`, this is equivalent to `this.reset()`.
    *
-   * @param {Object | undefined} values - A optional array of (boxed) values to apply to the machine's states (applied from the root state onward). If any value is an array, all but the final value are added to the `State` archive.
+   * @param {object | undefined} values - A optional array of (boxed) values to apply to the machine's states (applied from the root state onward). If any value is an array, all but the final value are added to the `State` archive.
    * @param {boolean} finalTransition - Whether or not to apply the final transition.
    * @param {boolean} editing - Whether or not the token we're binding to is being edited.
    */
@@ -129,7 +129,7 @@ export class TokenStateMachine extends EventEmitter {
    * Transition to the first viable child state, iff the current state is valid. If this is a terminal state, this will
    * trigger an 'end' event.
    *
-   * @param {Object} conf - Transition configuration.
+   * @param {object} conf - Transition configuration.
    * @param {boolean} conf.ignoreBindOnly - All bind-only states are illegal transitions unless `ignoreBindOnly` is true.
    * @param {boolean} conf.nextToken - Whether or not to move to the next `Token` in the `Lex` bar, if this `Token` is complete.
    * @param {boolean} conf.ignoreAutoAdvance - Do not perform auto-advancements, even if `State` is configured as such.
@@ -235,7 +235,7 @@ export class TokenStateMachine extends EventEmitter {
    * Replaces an existing archived value with a new one.
    *
    * @param {number} idx - The index of the value to replace.
-   * @param {Object} newBoxedValue - The new boxed value to replace the specified archived value with.
+   * @param {object} newBoxedValue - The new boxed value to replace the specified archived value with.
    */
   updateArchivedValue (idx, newBoxedValue) {
     try {
@@ -295,7 +295,7 @@ export class TokenStateMachine extends EventEmitter {
   /**
    * Get the values (including archived values) bound to underlying states, up to the current state.
    *
-   * @returns {Object} An object of arrays of boxed values, along with action values (under `.action`).
+   * @returns {object} An object of arrays of boxed values, along with action values (under `.action`).
    */
   get value () {
     const result = Object.create(null);
@@ -315,7 +315,7 @@ export class TokenStateMachine extends EventEmitter {
   /**
    * Alias for this.value.
    *
-   * @returns {Object} An object of boxed values.
+   * @returns {object} An object of boxed values.
    */
   get boxedValue () {
     return this.value;
@@ -324,7 +324,7 @@ export class TokenStateMachine extends EventEmitter {
   /**
    * Get the (unboxed) values (including archived values) bound to underlying states, up to the current state.
    *
-   * @returns {Object} An object of arrays of unboxed (basic type) values.
+   * @returns {object} An object of arrays of unboxed (basic type) values.
    */
   get unboxedValue () {
     const result = Object.create(null);

@@ -1,4 +1,4 @@
-/** @jsx h */
+/* @jsx h */
 import { h } from 'preact';
 import { Lex, TransitionFactory, ValueState, ValueStateValue, TextEntryState, NumericEntryState, NumericRelationState, LabelState } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';

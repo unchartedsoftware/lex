@@ -3,12 +3,12 @@ import {ValueState} from '../generic/value-state';
 /**
  * This state supports the entry of a String value, with possible auto-complete.
  *
- * @param {Object} config - A configuration object. Supports all of the parameters from `ValueState` and `StateTemplate`,
+ * @param {object} config - A configuration object. Supports all of the parameters from `ValueState` and `StateTemplate`,
  *                          providing defaults for `name`, `validate` and `allowUnknown` (true).
  */
 export class TextEntryState extends ValueState {
   /**
-   * @param {Object} config - A configuration object.
+   * @param {object} config - A configuration object.
    */
   constructor (config) {
     if (config.name === undefined) {

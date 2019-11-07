@@ -15,7 +15,7 @@ const _value = new WeakMap();
  * from the provided configuration object.
  *
  * @param {Class} klass - An `Action` class that this factory will produce.
- * @param {object} config - Options which will be applied to `Action` `klass` upon instantiation
+ * @param {object} config - Options which will be applied to `Action` `klass` upon instantiation.
  *
  */
 export class ActionTemplate {
@@ -40,10 +40,10 @@ export class ActionTemplate {
  * which allows users to interact with `Token`s in some way. Each `Action`
  * has its own internal value, and can only affect its own internal value.
  *
- * @param {object} config - Options for `Action` class
+ * @param {object} config - Options for `Action` class.
  * @param {string} config.name - A name for this `Action`, used by default for display purposes.
  * @param {string} config.vkey - A key used to uniquely identify the value of this `Action` when returned alongside others from the same `Token`.
- * @param {object} config.defaultValue - The default internal value for this `Action`
+ * @param {object} config.defaultValue - The default internal value for this `Action`.
  */
 export class Action extends EventEmitter {
   constructor (config) {

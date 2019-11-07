@@ -3,9 +3,9 @@
  * iff they have actually changed.
  *
  * @private
- * @param {Object} scope - A reference to the component's `this`.
- * @param {Object} incomingProps - The incoming props values.
- * @param {Object[]} toMigrate - A list of props (described by objects `{k, sk, transform, default, before, after}`) to migrate, including the potential default values and logic to run before and after the state change.
+ * @param {object} scope - A reference to the component's `this`.
+ * @param {object} incomingProps - The incoming props values.
+ * @param {object[]} toMigrate - A list of props (described by objects `{k, sk, transform, default, before, after}`) to migrate, including the potential default values and logic to run before and after the state change.
  */
 export function propsToState (scope, incomingProps, toMigrate) {
   for (const conf of toMigrate) {

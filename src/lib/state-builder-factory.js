@@ -26,6 +26,7 @@ function recursiveClassGet (map, clazz, baseClazz = State) {
 /**
  * Capable of mapping `StateTemplate`s to an interactable builder
  * component which can visually represent that `State`.
+ *
  * @private
  */
 export class StateBuilderFactory {

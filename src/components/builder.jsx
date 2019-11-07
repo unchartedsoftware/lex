@@ -55,7 +55,7 @@ export class Builder extends Component {
   /**
    * If overridden, must be called via `super.componentWillReceiveProps(nextProps)`.
    *
-   * @param {Object} nextProps - Incoming properties.
+   * @param {object} nextProps - Incoming properties.
    */
   componentWillReceiveProps (nextProps) {
     this.processProps(nextProps);
@@ -64,7 +64,7 @@ export class Builder extends Component {
   /**
    * If overridden, must be called via `super.processProps(props)`.
    *
-   * @param {Object} props - Incoming properties.
+   * @param {object} props - Incoming properties.
    */
   processProps (props) {
     propsToState(this, props, [
@@ -191,7 +191,7 @@ export class Builder extends Component {
    * Call from a subclass to request the state machine for the containing token to attempt replacement of a specific archived value.
    *
    * @param {number} idx - The index of the value to replace.
-   * @param {Object} newBoxedValue - The new boxed value to replace the specified archived value with.
+   * @param {object} newBoxedValue - The new boxed value to replace the specified archived value with.
    */
   requestUpdateArchivedValue (idx, newBoxedVal) {
     return this.state.requestUpdateArchivedValue(idx, newBoxedVal);
@@ -280,8 +280,8 @@ export class Builder extends Component {
    * Render the interactive version of this `Builder`. Usually some form of `<input>`.
    * Must override in subclasses.
    *
-   * @param {Object} props - Properties.
-   * @param {Object} state - Component state (`this.state`).
+   * @param {object} props - Properties.
+   * @param {object} state - Component state (`this.state`).
    * @param {boolean} state.valid - True iff the value of the underlying `State` is valid.
    * @param {boolean} state.readOnly - True iff this `Builder` is in read-only mode (generally speaking, if the user has progressed past this `State` to a later one).
    * @param {State} state.machineState - The underlying `State`.

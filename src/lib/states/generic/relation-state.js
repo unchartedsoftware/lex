@@ -3,7 +3,7 @@ import {ValueStateValue, ValueState} from '../generic/value-state';
 /**
  * This state supports the selection of a relation from a list of options.
  *
- * @param {Object} config - A configuration object. Supports all of the parameters from `ValueState` and `StateTemplate`,
+ * @param {object} config - A configuration object. Supports all of the parameters from `ValueState` and `StateTemplate`,
  *                          providing defaults for `name` and `options`. `config.options` should be a function returning
  *                          `ValueStateValue`s.
  */

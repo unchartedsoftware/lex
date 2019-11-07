@@ -1,18 +1,10 @@
-const webpack = require('webpack');
 const path = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-const MINIFY = process.env.MINIFY ? [
-  new webpack.optimize.UglifyJsPlugin({
-    cache: true,
-    parallel: true,
-    sourceMap: true
-  })
-] : [];
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const OUTFILE = process.env.MINIFY ? 'lex.min.js' : 'lex.js';
 
 module.exports = {
+  mode: 'production',
   devtool: 'source-map',
   entry: './src/lex.jsx',
   output: {
@@ -21,7 +13,10 @@ module.exports = {
     libraryTarget: 'commonjs2',
     path: path.resolve(__dirname, '../dist')
   },
-  plugins: [new ExtractTextPlugin({filename: 'lex.css'}), ...MINIFY],
+  optimization: {
+    minimize: process.env.MINIFY !== undefined
+  },
+  plugins: [new MiniCssExtractPlugin({filename: 'lex.css'})],
   module: {
     rules: [
       {
@@ -31,10 +26,12 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: ['css-loader', 'sass-loader']
-        })
+        use: [{
+          loader: MiniCssExtractPlugin.loader,
+          options: {
+            hmr: false
+          }
+        }, 'css-loader', 'sass-loader']
       }
     ]
   },

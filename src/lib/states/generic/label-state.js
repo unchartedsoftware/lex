@@ -7,7 +7,7 @@ const _label = new WeakMap();
  *
  * By default, this state (and any extending classes) can be visually represented by `LabelBuilder`.
  *
- * @param {Object} config - A configuration object. Inherits all options from `StateTemplate`, and adds the following:
+ * @param {object} config - A configuration object. Inherits all options from `StateTemplate`, and adds additional elements.
  * @param {string} config.label - The label to display. Will also be used as the (fixed) value.
  */
 export class LabelState extends State {
