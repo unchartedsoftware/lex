@@ -3,7 +3,7 @@ import { h } from 'preact';
 import { Lex, ValueState, ValueStateValue, TextEntryState } from '../src/lex';
 import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
-// This array and the following two functions are simulations of a back-end API for fetching options
+// This array and the following function is a simulation of a back-end API for fetching options
 const options = [
   new ValueStateValue('First Name'),
   new ValueStateValue('Last Name')
