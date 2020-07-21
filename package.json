@@ -87,7 +87,7 @@
     "flatpickr": "4.6.x"
   },
   "dependencies": {
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "lodash-decorators": "5.0.0"
   }
 }
