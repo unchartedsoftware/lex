@@ -1,7 +1,7 @@
 {
   "name": "@uncharted.software/lex",
   "description": "A preact micro-framework for building token-based search bars",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Sean McIntyre",
     "email": "smcintyre@uncharted.software"
