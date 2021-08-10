@@ -1,4 +1,4 @@
-import {ValueState} from '../generic/value-state';
+import { ValueState } from '../generic/value-state';
 
 /**
  * This state supports the entry of a Number value, with possible auto-complete.
@@ -11,7 +11,7 @@ export class NumericEntryState extends ValueState {
     if (config.name === undefined) config.name = 'Enter a value';
     if (config.validate === undefined) {
       config.validate = (val) => {
-        return !isNaN(val.key);
+        return val && !isNaN(val.key);
       };
     }
     config.allowUnknown = true;
