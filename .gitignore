@@ -2,5 +2,7 @@ node_modules
 /build
 /*.log
 /dist
+/demo/dist
+/pages
 /.cache
 /docs
