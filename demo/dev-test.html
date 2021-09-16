@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Lex Dev Testing</title>
+    <style>
+      html {
+        max-width: 700px;
+        margin: 0 auto;
+      }
+      div.lex-box div.token.token-text-entry {
+        background-color: #e5cc9d;
+      }
+      div.lex-box div.token.token-pinned {
+        background-color: #91afd2;
+      }
+    </style>
+  </head>
+  <body>
+    <h1> Lex </h1>
+    <div id="LexContainer"></div>
+    <br/>
+    <button class="btn btn-warning" onClick="clearQuery()">Clear Query</button>
+    <button class="btn btn-info" onClick="setQuery()">Set Query</button>
+    <button class="btn btn-info" onClick="setSuggestions()">Set Suggestions</button>
+    <button class="btn btn-info" onClick="focusSearchBar()">Focus</button>
+    <button class="btn btn-info" onClick="toggleEnabled()">Toggle Enabled</button>
+    <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@7/dist/polyfill.min.js"></script>
+    <script type="application/javascript" src="dev-test.js"></script>
+  </body>
+</html>
