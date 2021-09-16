@@ -1,0 +1,41 @@
+name: pages
+on:
+    push:
+        branches:
+            - main
+jobs:
+    clean-lint-build-test:
+
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [14.x]
+
+        steps:
+            - name: checkout
+              uses: actions/checkout@v2
+
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v1
+              with:
+                  node-version: ${{ matrix.node-version }}
+
+            - name: install
+              run: npm install
+
+            - name: clean
+              run: npm run clean
+
+            - name: lint
+              run: npm run lint
+
+            - name: build
+              run: npm run pages
+
+            - name: Deploy
+              uses: JamesIves/github-pages-deploy-action@3.6.2
+              with:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                BRANCH: gh-pages
+                FOLDER: pages
