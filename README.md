@@ -10,6 +10,15 @@ Lex is built internally with [Preact](https://preactjs.com/), ensuring a minimal
 
 ## API Documentation and Demos
 
+### Online
+
+For current API documentation, please visit: https://unchartedsoftware.github.io/lex/
+
+For demos of key features, visit: https://unchartedsoftware.github.io/lex/demo/
+
+
+### Local
+
 For current API documentation, please clone the project and run:
 
 ```bash
