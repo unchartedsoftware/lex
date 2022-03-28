@@ -1,6 +1,5 @@
 import { State } from '../../state';
-import moment from 'moment';
-import 'moment-timezone';
+import moment from 'moment-timezone';
 
 const _dateFormat = new WeakMap();
 const _timeZone = new WeakMap();

@@ -2,8 +2,7 @@ import { h } from 'preact';
 import { Bind } from 'lodash-decorators';
 import { Assistant } from '../../assistant';
 import { ENTER, TAB, normalizeKey } from '../../../lib/keys';
-import moment from 'moment';
-import 'moment-timezone';
+import moment from 'moment-timezone';
 import flatpickr from 'flatpickr';
 
 // Timezone logic
