@@ -40,7 +40,6 @@ module.exports = {
   },
   externals: {
     'preact': 'preact',
-    'moment': 'moment',
     'moment-timezone': 'moment-timezone',
     'element-resize-detector': 'element-resize-detector',
     'flatpickr': 'flatpickr',

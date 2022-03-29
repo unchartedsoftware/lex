@@ -70,8 +70,7 @@
     "if-env": "1.0.4",
     "mini-css-extract-plugin": "0.8.0",
     "mkdirp": "0.5.1",
-    "moment": "2.24.0",
-    "moment-timezone": "0.5.27",
+    "moment-timezone": "0.5.34",
     "node-sass": "4.14.1",
     "npm-run-all": "4.1.5",
     "preact": "8.5.2",
@@ -89,7 +88,6 @@
   "peerDependencies": {
     "element-resize-detector": "1.1.x",
     "flatpickr": "4.6.x",
-    "moment": "2.24.x",
     "moment-timezone": "0.5.x",
     "preact": "8.x"
   },
