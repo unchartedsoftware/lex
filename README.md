@@ -152,8 +152,7 @@ The following co-requisites must be part of your JS build in order to use Lex:
 {
   "element-resize-detector": "1.1.x", // developed against "1.1.15"
   "preact": "8.x", // developed against: "8.5.2",
-  "moment": "2.x", // developed aginst: "2.24.0"
-  "moment-timezone": "0.5.x", // developed against "0.5.23"
+  "moment-timezone": "0.5.x", // developed against "0.5.34"
   "flatpickr": "4.6.x" // developed against: "4.6.3"
 }
 ```
