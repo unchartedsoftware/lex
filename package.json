@@ -30,7 +30,8 @@
     "pages:copy:demos": "copyfiles -f demo/dist/* demo/public/* pages/demo",
     "pages:copy:docs": "copyfiles -u 1 docs/**/* docs/* pages",
     "docs": "documentation build --config documentation.yml src/lex.jsx -f html -o docs",
-    "serve-docs": "documentation serve --config documentation.yml --watch src/lex.jsx"
+    "serve-docs": "documentation serve --config documentation.yml --watch src/lex.jsx",
+    "test:e2e": "npx playwright test"
   },
   "main": "dist/lex.js",
   "style": "dist/lex.css",
@@ -42,6 +43,7 @@
     "@babel/plugin-transform-runtime": "7.6.2",
     "@babel/preset-env": "7.7.1",
     "@babel/runtime": "7.7.2",
+    "@playwright/test": "^1.21.1",
     "babel-eslint": "10.0.3",
     "babel-loader": "8.0.6",
     "babel-plugin-preact-require": "1.0.0",

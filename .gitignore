@@ -6,3 +6,6 @@ node_modules
 /pages
 /.cache
 /docs
+
+tests/e2e/test-report/
+tests/e2e/test-results/
