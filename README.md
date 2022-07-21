@@ -18,8 +18,8 @@ For demos of key features, visit: https://unchartedsoftware.github.io/lex/demo/
 
 
 ### Local
-*IMPORTANT*
-Node v14 required for local dev development
+*IMPORTANT*:
+Node v14 required for local dev development.
 For current API documentation, please clone the project and run:
 
 ```bash
