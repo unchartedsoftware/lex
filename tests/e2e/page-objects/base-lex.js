@@ -1,10 +1,9 @@
 /**
- * Page Object representing the SimpleString Lex Example
+ * Page Object representing the basic Lex components.
  */
-exports.SimpleString = class SimpleString {
+exports.BaseLex = class BaseLex {
   constructor (page) {
     this.page = page;
-    this.nameToken = page.locator('text=First Name');
     this.lexBox = page.locator('.lex-box');
     this.inputTextField = page.locator('input[type="text"]');
     this.closeBtn = page.locator('[aria-label="Close"]');
@@ -12,10 +11,6 @@ exports.SimpleString = class SimpleString {
     this.nextBtn = page.locator('[aria-label="Next"]');
     this.cancelBtn = page.locator('[aria-label="Cancel New Token"]');
     this.tokenContainer = page.locator('div.token-container');
-  }
-
-  async navigate () {
-    await this.page.goto('/simple-string.html');
   }
 
   async start () {
@@ -36,16 +31,5 @@ exports.SimpleString = class SimpleString {
 
   async clickCancel () {
     await this.cancelBtn.click();
-  }
-
-  async selectFirstNameToken () {
-    await this.nameToken.click();
-  }
-
-  async fillToken (input) {
-    await this.start();
-    await this.selectFirstNameToken();
-    await this.inputTextField.fill(input);
-    await this.clickFinish();
   }
 };

@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { SimpleString } = require('../../page-objects/SimpleString');
+const { SimpleString } = require('../../page-objects/simple-string');
 
 test.describe.parallel('Simple String Lex Bar', () => {
   let simpleString;
@@ -28,6 +28,14 @@ test.describe.parallel('Simple String Lex Bar', () => {
 
   test('should be valid', async () => {
     await simpleString.fillToken('Bob');
+
+    const btn = await simpleString.closeBtn;
+    await expect(btn).toBeVisible();
+    await expect(btn).toHaveClass(/token-remove/);
+  });
+
+  test('should be valid with number', async () => {
+    await simpleString.fillToken('21');
 
     const btn = await simpleString.closeBtn;
     await expect(btn).toBeVisible();
