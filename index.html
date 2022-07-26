@@ -1548,6 +1548,14 @@ $ npm run serve-docs</pre>
 <p>For demos of key features, refer to source in the <code>demo</code> directory, while running:</p>
 <pre class='hljs'>$ npm install
 $ npm run serve-demos</pre>
+<h3>Testing</h3>
+<p>Testing is done through <a href="https://playwright.dev">Playwright</a> based on the <code>demo</code> examples included. Playwright is installed as a dependency but requires an additional step to pull the appropriate browsers for testing, to do this simply run:</p>
+<pre class='hljs'>$ npm install
+$ npx playwright install</pre>
+<p>To run the tests simply start the <code>demos</code> using <code>npm run demos</code> and run the <code>test:e2e</code> script in a separate terminal. If developing within VSCode you can use the official <a href="https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright">Playwright Plugin</a> to run the tests within the IDE.</p>
+<blockquote>
+<p>Testing is still WIP and a number of tests still need to be added.</p>
+</blockquote>
 <h2>Using Lex</h2>
 <h3>Defining a Search Language</h3>
 <blockquote>
