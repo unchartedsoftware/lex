@@ -31,7 +31,8 @@
     "pages:copy:docs": "copyfiles -u 1 docs/**/* docs/* pages",
     "docs": "documentation build --config documentation.yml src/lex.jsx -f html -o docs",
     "serve-docs": "documentation serve --config documentation.yml --watch src/lex.jsx",
-    "test:e2e": "npx playwright test"
+    "test:e2e": "npx playwright test",
+    "test:init": "npx playwright install"
   },
   "main": "dist/lex.js",
   "style": "dist/lex.css",
