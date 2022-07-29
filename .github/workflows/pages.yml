@@ -30,6 +30,11 @@ jobs:
             - name: lint
               run: npm run lint
 
+            - name: test
+              run: |
+                npm run test:init
+                npm run test:e2e
+
             - name: build
               run: npm run pages
 
