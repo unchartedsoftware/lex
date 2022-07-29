@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const { SimpleNumberUnits } = require('../../page-objects/simple-number-units');
 
-test.describe.parallel('Simple Number Lex Bar', () => {
+test.describe.parallel('Simple Number with Units Lex Bar', () => {
   let simpleNumber;
 
   test.beforeEach(async ({ page }) => {

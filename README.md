@@ -38,8 +38,9 @@ $ npm run serve-demos
 Testing is done through [Playwright](https://playwright.dev) based on the `demo` examples included. Playwright is installed as a dependency but requires an additional step to pull the appropriate browsers for testing, to do this simply run:
 ```bash
 $ npm install
-$ npx playwright install
+$ npm run test:init
 ```
+
 To run the tests simply start the `demos` using `npm run demos` and run the `test:e2e` script in a separate terminal. If developing within VSCode you can use the official [Playwright Plugin](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) to run the tests within the IDE.
 
 > Testing is still WIP and a number of tests still need to be added.

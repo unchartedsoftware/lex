@@ -56,4 +56,23 @@ test.describe.parallel('Simple String Lex Bar', () => {
     await simpleString.clickClose();
     await expect(simpleString.tokenContainer).not.toBeVisible();
   });
+
+  test('should filter out the suggestions to entered text', async () => {
+    await simpleString.inputText('fir');
+
+    // validate that only the `first name` suggestion is present
+    await expect(simpleString.nameToken).toBeVisible();
+    await expect(simpleString.lastNameToken).not.toBeVisible();
+
+    await simpleString.selectFirstNameToken();
+    await expect(simpleString.finishBtn).toBeVisible();
+  });
+
+  test('should be able to edit completed pill', async () => {
+    await simpleString.fillToken('Bob');
+    await simpleString.tokenContainer.click();
+
+    await expect(simpleString.nextBtn).toBeVisible(); // This seems wrong that it uses the next button but displays Finish
+    await expect(simpleString.cancelEditBtn).toBeVisible();
+  });
 });

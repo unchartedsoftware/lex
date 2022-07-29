@@ -10,6 +10,7 @@ exports.BaseLex = class BaseLex {
     this.finishBtn = page.locator('[aria-label="Finish"]');
     this.nextBtn = page.locator('[aria-label="Next"]');
     this.cancelBtn = page.locator('[aria-label="Cancel New Token"]');
+    this.cancelEditBtn = page.locator('[aria-label="Cancel Edits"]');
     this.tokenContainer = page.locator('div.token-container');
   }
 
@@ -31,5 +32,44 @@ exports.BaseLex = class BaseLex {
 
   async clickCancel () {
     await this.cancelBtn.click();
+  }
+
+  async inputText (input) {
+    await this.inputTextField.type(input);
+  }
+
+  /**
+   * Retrieves the OS being used by the browser.
+   * NOTE: This does not mean it is the machine OS however.
+   *
+   * @returns OS Platform.
+   */
+  async getBrowserOs () {
+    const response = String(
+      await this.page.evaluate(() => {
+        return navigator.userAgent;
+      })
+    );
+    if (response.indexOf('Win') !== -1) return 'Windows';
+    if (response.indexOf('Mac') !== -1) return 'MacOS';
+    if (response.indexOf('X11') !== -1) return 'Unix';
+    if (response.indexOf('Linux') !== -1) return 'Linux';
+  }
+
+  /**
+   * Retrieves the platfrom of the user agent used.
+   *
+   * @returns OS Platform.
+   */
+  async getOs () {
+    const response = String(
+      await this.page.evaluate(() => {
+        return navigator.platform;
+      })
+    );
+    if (response.indexOf('Win') !== -1) return 'Windows';
+    if (response.indexOf('Mac') !== -1) return 'MacOS';
+    if (response.indexOf('X11') !== -1) return 'Unix';
+    if (response.indexOf('Linux') !== -1) return 'Linux';
   }
 };
