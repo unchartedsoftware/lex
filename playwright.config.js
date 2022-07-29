@@ -97,10 +97,10 @@ const config = {
   ],
 
   /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run demo',
-  //   port: 8080
-  // },
+  webServer: {
+    command: 'npm run demo',
+    port: 8023
+  },
 
   /* Folder for test artifacts such as screenshots, videos, traces, etc. */
   outputDir: './tests/e2e/test-results/'

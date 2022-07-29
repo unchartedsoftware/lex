@@ -59,7 +59,8 @@ test.describe.parallel('Multi String Lex Bar', () => {
     await expect(multiString.page.locator('div.multivalue-list')).toBeEmpty();
   });
 
-  test('should be able to copy all tokens', async () => {
+  // TODO: OS issues with clipboard, revist in Playwright v1.24 as there are improvements coming
+  test.skip('should be able to copy all tokens', async () => {
     await multiString.fillTokens('Bob', 'Jim', 'Fred');
     await expect(multiString.badge).toContainText('3');
     await multiString.clickCopy();
