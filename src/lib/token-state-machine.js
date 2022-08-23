@@ -303,7 +303,7 @@ export class TokenStateMachine extends EventEmitter {
     let current = this.state;
     while (current !== undefined) {
       if (!current.isReadOnly && current.vkey) result[current.vkey] = current.isMultivalue ? [...current.archive, current.value] : current.value;
-      current.actions.forEach(a => {
+      current.actionValues.forEach(a => {
         actionValues[a.vkey] = a.value;
       });
       current = current.parent;
@@ -332,7 +332,7 @@ export class TokenStateMachine extends EventEmitter {
     let current = this.state;
     while (current !== undefined) {
       if (!current.isReadOnly && current.vkey) result[current.vkey] = current.isMultivalue ? [...current.unboxedArchive, current.unboxedValue] : current.unboxedValue;
-      current.actions.forEach(a => {
+      current.actionValues.forEach(a => {
         actionValues[a.vkey] = a.value;
       });
       current = current.parent;

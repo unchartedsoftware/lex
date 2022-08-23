@@ -49,8 +49,8 @@ export class Token extends Component {
 
     // Remove all action listeners on clean up
     if (Array.isArray(this.state.stateArray)) {
-      this.state.stateArray.filter(s => s.actions.length > 0).forEach(s => {
-        return s.actions.forEach(a => {
+      this.state.stateArray.filter(s => s.actionValues.length > 0).forEach(s => {
+        return s.actionValues.forEach(a => {
           a.removeAllListeners();
         });
       });
@@ -258,8 +258,8 @@ export class Token extends Component {
   get actionButtons () {
     // only show actions when the token is inactive
     if (!this.state.active) {
-      const actions = this.state.stateArray.filter(s => s.actions.length > 0).map(s => {
-        return s.actions.map(a => {
+      const actions = this.state.stateArray.filter(s => s.actionValues.length > 0).map(s => {
+        return s.actionValues.map(a => {
           // Note this is a bit of a hack... will maybe leak listeners a bit.
           // See Token.cleanupListeners() for where we remove the final listener
           a.removeAllListeners();
