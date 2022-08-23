@@ -309,10 +309,14 @@ export class State extends EventEmitter {
     return _impliedActions.get(this);
   }
 
-  set actionValues (newValues = {}) {
+  set actionValues (newValues) {
     _impliedActions.get(this).forEach(a => {
       a.value = newValues[a.vkey];
     });
+  }
+
+  get actionValues () {
+    return _impliedActions.get(this);
   }
 
   /*

@@ -182,7 +182,7 @@ export class Token extends Component {
           defaultClass = defaultClass.concat(klassSuggestion);
         }
         // add in action suggestions
-        st.actions.map(a => {
+        st.actionValues.map(a => {
           const actionKlassSuggestion = a.suggestCssClass();
           if (Array.isArray(actionKlassSuggestion)) {
             defaultClass = defaultClass.concat(actionKlassSuggestion);
