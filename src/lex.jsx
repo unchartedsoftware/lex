@@ -202,7 +202,7 @@ class Lex extends EventEmitter {
     while (target.firstChild) {
       target.removeChild(target.firstChild);
     }
-    this.root = render((
+    render((
       <SearchBar
         placeholder={_placeholder.get(this)}
         popupContainer={_popupContainer.get(this)}
