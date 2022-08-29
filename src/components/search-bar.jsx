@@ -1,6 +1,6 @@
 import { Bind } from 'lodash-decorators';
 import { h, Component } from 'preact';
-import { createPortal } from 'preact/compat';
+import Portal from 'preact-portal';
 import { TokenStateMachine } from '../lib/token-state-machine';
 import { StateTransitionError, ValueArchiveError } from '../lib/errors';
 import { Token } from './token';
@@ -214,39 +214,9 @@ export class SearchBar extends Component {
     try {
       if (!this.state.editing && (!this.state.active || !this.state.focused)) return;
       const Assistant = this.state.builders.getAssistant(activeMachine.state.constructor);
-      const props = {
-        id: 'lex-assistant-box',
-        className: `lex-assistant-box ${this.state.cssClass.join(' ')}`,
-        style: this.assistantPosition
-
-      };
       // See portal bug workaround for why we have a ref that we dont use
       // https://github.com/developit/preact-portal/issues/2
-      return createPortal(h('div', props, <Assistant
-          editing={this.state.editing}
-          machine={activeMachine}
-          machineState={activeMachine.state}
-          tokenXIcon={this.state.tokenXIcon}
-          ref={(a) => { this.assistant = a; }}
-          multivalueDelimiter={this.state.multivalueDelimiter}
-          multivaluePasteDelimiter={this.state.multivaluePasteDelimiter}
-          requestFocus={this.focus}
-          requestBlur={this.blur}
-          requestCancel={this.cancel}
-          requestTransition={this.transition}
-          requestEndAndCreateToken={this.endAndCreateToken}
-          requestArchive={this.archive}
-          requestUnarchive={this.unarchive}
-          requestRemoveArchivedValue={this.removeArchivedValue}
-          requestRemoveArchivedValues={this.removeArchivedValues}
-          requestUpdateArchivedValue={this.updateArchivedValue}
-          requestRewind={this.rewind}
-          requestRemoval={this.removeToken}
-          onEndToken={this.onEndToken}
-          onValidityChanged={this.state.onValidityChanged}
-        /> ),
-        this.state.popupContainer
-        /*
+      return (
         <Portal into={this.state.popupContainer} ref={(r) => { this._portal = r; }}>
           <div id='lex-assistant-box' className={`lex-assistant-box ${this.state.cssClass.join(' ')}`} style={this.assistantPosition} ref={(r) => { this._portalAssistant = r; }}>
             <Assistant
@@ -274,8 +244,6 @@ export class SearchBar extends Component {
             />
           </div>
         </Portal>
-
-         */
       );
     } catch (err) {
       // do nothing if there is no assistant.
