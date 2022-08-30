@@ -2,7 +2,7 @@ import { h } from 'preact';
 import { Builder } from '../../builder';
 
 /**
- * A visual representation of a LabelState
+ * A visual representation of a LabelState.
  *
  * @example
  * lex.registerBuilder(LabelState, LabelBuilder)
