@@ -15,6 +15,16 @@ const _tokenStarted = new WeakMap();
  * @private
  */
 export class SearchBar extends Component {
+  constructor () {
+    super();
+    this.state = {
+      active: false,
+      focused: false,
+      editing: false,
+      activeMachine: null
+    }
+  }
+
   processProps (props) {
     propsToState(this, props, [
       {k: 'enabled', default: true},
@@ -146,7 +156,8 @@ export class SearchBar extends Component {
 
   get machineInstance () {
     if (!this.state.machineTemplate) return null;
-    return new TokenStateMachine(this.state.machineTemplate);
+    const stateMachine = new TokenStateMachine(this.state.machineTemplate);
+    return stateMachine;
   }
 
   get assistantPosition () {
@@ -295,6 +306,7 @@ export class SearchBar extends Component {
   @Bind
   focus () {
     this.setState({focused: true});
+
     if (this.state.active) {
       if (this.tokenBuilder) this.tokenBuilder.focus();
     } else {
