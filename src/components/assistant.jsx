@@ -63,6 +63,9 @@ export class Assistant extends Builder {
     // do nothing
   }
 
+  get loading () {
+    return this.state.isLoading;
+  }
   /**
    * Children may set loading in order to visually indicate that the Assistant is performing an async operation.
    *
@@ -77,13 +80,15 @@ export class Assistant extends Builder {
    */
   renderInteractive (props, state) {
     const body = this.renderAssistantBody(props, state);
-    const spinner = state.loading ? (
+    const spinner = state.loading
+      ? (
       <div className='assistant-header-progress'>
         <div className='line' />
         <div className='subline inc' />
         <div className='subline dec' />
       </div>
-    ) : '';
+        )
+      : '';
     const header = typeof this.machineState.name === 'string' && this.machineState.name.length > 0 ? (<div className='assistant-header'>{this.machineState.name}</div>) : '';
     if (body || state.loading) {
       return (
