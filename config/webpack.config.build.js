@@ -21,16 +21,16 @@ module.exports = {
     rules: [
       {
         test: /.jsx?$/,
-        loader: 'babel-loader',
+        use: [{
+          loader: 'babel-loader'
+        }],
         exclude: /node_modules/
       },
       {
         test: /\.scss$/,
         use: [{
           loader: MiniCssExtractPlugin.loader,
-          options: {
-            hmr: false
-          }
+          options: {}
         }, 'css-loader', 'sass-loader']
       }
     ]
@@ -39,10 +39,10 @@ module.exports = {
     extensions: ['.js', '.jsx']
   },
   externals: {
-    'preact': 'preact',
+    preact: 'preact',
     'moment-timezone': 'moment-timezone',
     'element-resize-detector': 'element-resize-detector',
-    'flatpickr': 'flatpickr',
-    'h': 'h'
+    flatpickr: 'flatpickr',
+    h: 'h'
   }
 };

@@ -45,43 +45,66 @@ module.exports = {
       },
       {
         test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
-        loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 10000,
+            mimeType: 'application/font-woff'
+          }
+        }]
       },
       {
         test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-        loader: 'url-loader?limit=10000&mimetype=application/octet-stream'
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 10000,
+            mimeType: 'application/octet-stream'
+          }
+        }]
       },
       {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-        loader: 'file-loader'
+        use: [{
+          loader: 'file-loader'
+        }]
       },
       {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-        loader: 'url-loader?limit=10000&mimetype=image/svg+xml'
+        use: [{
+          loader: 'url-loader',
+          options: {
+            limit: 10000,
+            mimeType: 'image/svg+xml'
+          }
+        }]
       },
       {
         enforce: 'pre',
         test: /\.js$/,
-        loader: 'eslint-loader',
+        use: [{
+          loader: 'eslint-loader'
+        }],
         exclude: /node_modules/
       },
       {
         test: /.jsx?$/,
-        loader: 'babel-loader',
+        use: [{
+          loader: 'babel-loader'
+        }],
         exclude: /node_modules/
       }
     ]
   },
   plugins: [
-    new CleanWebpackPlugin({cleanOnceBeforeBuildPatterns: path.join(process.cwd(), 'dist/**')}),
-    new webpack.NamedModulesPlugin(),
+    new CleanWebpackPlugin({cleanOnceBeforeBuildPatterns: [path.join(process.cwd(), 'dist/**')]}),
     new webpack.HotModuleReplacementPlugin()
   ],
   resolve: {
     extensions: ['.js', '.jsx']
   },
   devServer: {
-    contentBase: [path.resolve(__dirname, '../demo/public')],
+    static: [path.resolve(__dirname, '../demo/public')],
     hot: true,
     port: 8023
   }
